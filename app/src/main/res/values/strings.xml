@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">My Application</string>
+
+    <string-array name="music_list">
+        <item>http://yinyueshiting.baidu.com/data2/music/62cf8e4129d6fb866ed7b8e31167ac21/559184467/559184467.mp3?xcode=b9b99fa7492414e3b169a51e193c0fa9</item>
+        <item>http://yinyueshiting.baidu.com/data2/music/bf641ddb9e11695ecba670b9d537f816/542369659/542369659.mp3?xcode=b9b99fa7492414e3718197b4a0f16666</item>
+        <item> http://yinyueshiting.baidu.com/data2/music/2305a56de029940d9673c5fecb46538f/559950083/559950083.mp3?xcode=a85e0f3656499a3ef4316fffb8ff8771</item>
+        <item> http://yinyueshiting.baidu.com/data2/music/d18915b6d48590906ffd704775bc0aa4/554927040/554927040.mp3?xcode=a85e0f3656499a3e9d88bb873c3ec0e5</item>
+        <item>  http://yinyueshiting.baidu.com/data2/music/8595c259a7b749c6029da3116c2c4409/565030410/565030410.mp3?xcode=a85e0f3656499a3eb4504f1dc3711450</item>
+        <item> http://yinyueshiting.baidu.com/data2/music/6a23a82cbd48c9376f6c37398d795bc5/556428231/556428231.mp3?xcode=a85e0f3656499a3e3d7cab37c0a62272</item>
+        <item>  http://yinyueshiting.baidu.com/data2/music/f109f7e368b9a7c6a1e80bd892921480/258477404/258477404.mp3?xcode=a85e0f3656499a3ee23725bcf113dbcd</item>
+        <item> http://yinyueshiting.baidu.com/data2/music/39f54b18e03047961ef4ef7104996689/564102560/564102560.mp3?xcode=a85e0f3656499a3e0e36f2067d58dcad</item>
+        <item> http://yinyueshiting.baidu.com/data2/music/9e888c761156e813415294f171ac5a3b/541617983/541617983.mp3?xcode=a85e0f3656499a3e0e36f2067d58dcad</item>
+        <item>   http://yinyueshiting.baidu.com/data2/music/95f7406efe4254a3d8e74b64e5429aeb/566311113/566311113.mp3?xcode=a85e0f3656499a3e23407a79428c3f0f</item>
+        <item>  http://yinyueshiting.baidu.com/data2/music/c7e10bdb43e6da59217fd5ee2926c4d7/566055913/566055913.mp3?xcode=a85e0f3656499a3edcd0b1435228577d</item>
+        <item>  http://yinyueshiting.baidu.com/data2/music/dbd6bce40c653a1fdf2daaa41f309c49/541990317/541990317.mp3?xcode=a85e0f3656499a3eb6f28ebc1a3b5868</item>
+    </string-array>
+
+</resources>
