@@ -29,10 +29,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycle_view);
 
-        mServiceToken = MusicManager.bindToService(this, new ServiceConnection() {
+        mServiceToken = MusicManager.get().bindToService(this, new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 Log.i("xian", "音乐服务链接成功...");
+                List<String> list = Arrays.asList(getResources().getStringArray(R.array.music_list));
+                List<MusicInfo> musicInfos = new ArrayList<>();
+                for (String string : list) {
+                    MusicInfo info = new MusicInfo();
+                    info.setMusicUrl(string);
+                    musicInfos.add(info);
+                }
+                musicAdapter.setMusicInfos(musicInfos);
+                MusicManager.get().setMusicList(musicInfos);
             }
 
             @Override
@@ -44,18 +53,8 @@ public class MainActivity extends AppCompatActivity {
         musicAdapter = new MusicAdapter();
         recyclerView.setAdapter(musicAdapter);
 
-        MusicManager.addObservable(musicAdapter);
-
-        List<String> list = Arrays.asList(getResources().getStringArray(R.array.music_list));
-        List<MusicInfo> musicInfos = new ArrayList<>();
-        for (String string : list) {
-            MusicInfo info = new MusicInfo();
-            info.setMusicUrl(string);
-            musicInfos.add(info);
-        }
-        musicAdapter.setMusicInfos(musicInfos);
-
-        MusicManager.setListener(new OnPlayerEventListener() {
+        MusicManager.get().addObservable(musicAdapter);
+        MusicManager.get().setOnPlayerEventListener(new OnPlayerEventListener() {
             @Override
             public void onMusicChange(MusicInfo music) {
                 Log.i("xian", "== onMusicChange ==");
@@ -72,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPublish(int progress) {
-                Log.i("xian", "== onPublish == " + progress);
+            public void onProgress(int progress) {
+                Log.i("xian", "== onProgress == " + progress);
             }
 
             @Override
@@ -91,6 +90,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MusicManager.unbindService(mServiceToken);
+        MusicManager.get().unbindService(mServiceToken);
     }
 }

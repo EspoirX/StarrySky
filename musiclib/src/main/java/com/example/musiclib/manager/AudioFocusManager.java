@@ -1,7 +1,9 @@
-package com.example.musiclib.service;
+package com.example.musiclib.manager;
 
 import android.media.AudioManager;
 import android.support.annotation.NonNull;
+
+import com.example.musiclib.service.MusicPlayService;
 
 import static android.content.Context.AUDIO_SERVICE;
 

@@ -1,12 +1,12 @@
-package com.example.musiclib.service;
+package com.example.musiclib.manager;
 
 import android.os.Build;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.example.musiclib.manager.MusicManager;
 import com.example.musiclib.model.MusicInfo;
+import com.example.musiclib.service.MusicPlayService;
 import com.example.musiclib.utils.CoverLoader;
 
 
@@ -66,7 +66,7 @@ public class MediaSessionManager {
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, CoverLoader.getInstance().getDefaultCover());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            metaData.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, MusicManager.getMusicList().size());
+            metaData.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, MusicManager.get().getMusicList().size());
         }
 
         mMediaSession.setMetadata(metaData.build());

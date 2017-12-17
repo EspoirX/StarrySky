@@ -9,7 +9,7 @@ import android.text.format.DateUtils;
  * Created by lzx on 2017/8/8.
  */
 public class QuitTimer {
-    private IMusicPlayService mPlayService;
+    private MusicPlayService mPlayService;
     private EventCallback<Long> mTimerCallback;
     private Handler mHandler;
     private long mTimerRemain;
@@ -25,7 +25,7 @@ public class QuitTimer {
     private QuitTimer() {
     }
 
-    public void init(@NonNull IMusicPlayService playService, @NonNull Handler handler, @NonNull EventCallback<Long> timerCallback) {
+    public void init(@NonNull MusicPlayService playService, @NonNull Handler handler, @NonNull EventCallback<Long> timerCallback) {
         mPlayService = playService;
         mHandler = handler;
         mTimerCallback = timerCallback;

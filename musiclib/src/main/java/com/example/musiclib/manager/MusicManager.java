@@ -7,15 +7,16 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.os.RemoteException;
 
 import com.example.musiclib.model.MusicInfo;
 import com.example.musiclib.model.PlayMode;
-import com.example.musiclib.service.EventCallback;
 import com.example.musiclib.service.IMusicPlayService;
+import com.example.musiclib.service.IOnPlayerEventListener;
 import com.example.musiclib.service.MusicPlayService;
 import com.example.musiclib.service.OnPlayerEventListener;
-import com.example.musiclib.service.QuitTimer;
 import com.example.musiclib.service.SubjectObservable;
 
 import java.util.ArrayList;
@@ -30,24 +31,37 @@ import java.util.WeakHashMap;
 
 public class MusicManager {
 
-    private static final WeakHashMap<Context, MusicPlayServiceConnection> mConnectionMap;
-    private static IMusicPlayService mService;
-    public static List<MusicInfo> mMusicList;
-    public static OnPlayerEventListener listener;
-    public static Handler mHandler = new Handler();
-    private static SubjectObservable observable;
-    private static final long TIME_UPDATE = 1000L;
+    private WeakHashMap<Context, MusicPlayServiceConnection> mConnectionMap;
+    private IMusicPlayService mService;
+    private SubjectObservable observable;
+    private OnPlayerEventListener mOnPlayerEventListener;
+    private static final int MSG_MUSIC_CHANGE = 0;
+    private static final int MSG_PLAYER_START = 1;
+    private static final int MSG_PLAYER_PAUSE = 2;
+    private static final int MSG_PROGRESS = 3;
+    private static final int MSG_BUFFERING_UPDATE = 4;
+    private static final int MSG_ON_TIMER = 5;
 
-    static {
+    private MusicManager() {
         mConnectionMap = new WeakHashMap<>();
-        mMusicList = new ArrayList<>();
         observable = new SubjectObservable();
+    }
+
+    public static MusicManager get() {
+        return SingletonHolder.sInstance;
+    }
+
+    /**
+     * 静态内部类
+     */
+    private static class SingletonHolder {
+        private static final MusicManager sInstance = new MusicManager();
     }
 
     /**
      * 添加观察者
      */
-    public static void addObservable(Observer o) {
+    public void addObservable(Observer o) {
         if (observable != null) {
             observable.addObserver(o);
         }
@@ -60,7 +74,7 @@ public class MusicManager {
      * @param callback
      * @return
      */
-    public static ServiceToken bindToService(final Context context, final ServiceConnection callback) {
+    public ServiceToken bindToService(final Context context, final ServiceConnection callback) {
         context.startService(new Intent(context, MusicPlayService.class));
         final MusicPlayServiceConnection binder = new MusicPlayServiceConnection(callback, context);
         Intent intent = new Intent(context, MusicPlayService.class);
@@ -76,27 +90,29 @@ public class MusicManager {
      *
      * @param token
      */
-    public static void unbindService(ServiceToken token) {
+    public void unbindService(ServiceToken token) {
         if (token == null) {
             return;
         }
-        final Context mContextWrapper = token.mWrappedContext;
-        final MusicPlayServiceConnection mBinder = mConnectionMap.remove(mContextWrapper);
-        if (mBinder == null) {
-            return;
-        }
-        mContextWrapper.unbindService(mBinder);
-        if (mConnectionMap.isEmpty()) {
-            mService = null;
-            mMusicList = null;
-            mPublishRunnable = null;
+        if (mService != null && mService.asBinder().isBinderAlive()) {
+            try {
+                mService.unregisterListener(mIOnPlayerEventListener);
+                final Context mContextWrapper = token.mWrappedContext;
+                final MusicPlayServiceConnection mBinder = mConnectionMap.remove(mContextWrapper);
+                if (mBinder == null) {
+                    return;
+                }
+                mContextWrapper.unbindService(mBinder);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     /**
      * Binder
      */
-    public static final class MusicPlayServiceConnection implements ServiceConnection {
+    public class MusicPlayServiceConnection implements ServiceConnection {
 
         private final ServiceConnection mCallback;
         private final Context mContext;
@@ -108,7 +124,13 @@ public class MusicManager {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = IMusicPlayService.Stub.asInterface(service);
+            IMusicPlayService musicPlayService = IMusicPlayService.Stub.asInterface(service);
+            try {
+                mService = musicPlayService;
+                musicPlayService.registerListener(mIOnPlayerEventListener);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
             if (mCallback != null) {
                 mCallback.onServiceConnected(name, service);
             }
@@ -120,8 +142,87 @@ public class MusicManager {
             if (mCallback != null) {
                 mCallback.onServiceDisconnected(name);
             }
+            mHandler.removeCallbacksAndMessages(null);
             mService = null;
         }
+    }
+
+    private IOnPlayerEventListener mIOnPlayerEventListener = new IOnPlayerEventListener.Stub() {
+        @Override
+        public void onMusicChange(MusicInfo music) throws RemoteException {
+            mHandler.obtainMessage(MSG_MUSIC_CHANGE, music).sendToTarget();
+        }
+
+        @Override
+        public void onPlayerStart() throws RemoteException {
+            mHandler.obtainMessage(MSG_PLAYER_START).sendToTarget();
+        }
+
+        @Override
+        public void onPlayerPause() throws RemoteException {
+            mHandler.obtainMessage(MSG_PLAYER_PAUSE).sendToTarget();
+        }
+
+        @Override
+        public void onProgress(int progress) throws RemoteException {
+            mHandler.obtainMessage(MSG_PROGRESS, progress).sendToTarget();
+        }
+
+        @Override
+        public void onBufferingUpdate(int percent) throws RemoteException {
+            mHandler.obtainMessage(MSG_BUFFERING_UPDATE, percent).sendToTarget();
+        }
+
+        @Override
+        public void onTimer(long remain) throws RemoteException {
+            mHandler.obtainMessage(MSG_ON_TIMER, remain).sendToTarget();
+        }
+    };
+
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_MUSIC_CHANGE:
+                    if (mOnPlayerEventListener != null) {
+                        mOnPlayerEventListener.onMusicChange((MusicInfo) msg.obj);
+                    }
+                    break;
+                case MSG_PLAYER_START:
+                    observable.subjectNotifyObservers(MusicPlayService.STATE_PLAYING);
+                    if (mOnPlayerEventListener != null) {
+                        mOnPlayerEventListener.onPlayerStart();
+                    }
+                    break;
+                case MSG_PLAYER_PAUSE:
+                    observable.subjectNotifyObservers(MusicPlayService.STATE_PAUSE);
+                    if (mOnPlayerEventListener != null) {
+                        mOnPlayerEventListener.onPlayerPause();
+                    }
+                    break;
+                case MSG_PROGRESS:
+                    if (mOnPlayerEventListener != null) {
+                        mOnPlayerEventListener.onProgress((Integer) msg.obj);
+                    }
+                    break;
+                case MSG_BUFFERING_UPDATE:
+                    if (mOnPlayerEventListener != null) {
+                        mOnPlayerEventListener.onBufferingUpdate((Integer) msg.obj);
+                    }
+                    break;
+                case MSG_ON_TIMER:
+                    if (mOnPlayerEventListener != null) {
+                        mOnPlayerEventListener.onTimer((Long) msg.obj);
+                    }
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    };
+
+    public void setOnPlayerEventListener(OnPlayerEventListener onPlayerEventListener) {
+        mOnPlayerEventListener = onPlayerEventListener;
     }
 
     public static final class ServiceToken {
@@ -133,40 +234,39 @@ public class MusicManager {
     }
 
     public static void initPlaybackServiceWithSettings(final Context context) {
-        QuitTimer.getInstance().init(mService, mHandler, new EventCallback<Long>() {
-            @Override
-            public void onEvent(Long aLong) {
-                if (listener != null) {
-                    listener.onTimer(aLong);
-                }
-            }
-        });
+
     }
 
-    private static boolean isServiceNotNull() {
+    private boolean isServiceNotNull() {
         return mService != null;
     }
 
-    public static List<MusicInfo> getMusicList() {
-        return mMusicList;
+    public List<MusicInfo> getMusicList() {
+        if (isServiceNotNull()) {
+            try {
+                return mService.getMusicList();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return new ArrayList<>();
     }
 
-    public static void setMusicList(List<MusicInfo> musicList) {
-        mMusicList = musicList;
+    public void setMusicList(List<MusicInfo> musicList) {
+        if (isServiceNotNull()) {
+            try {
+                mService.setMusicList(musicList);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public static OnPlayerEventListener getListener() {
-        return listener;
-    }
-
-    public static void setListener(OnPlayerEventListener listener) {
-        MusicManager.listener = listener;
-    }
 
     /**
      * 暂停/播放
      */
-    public static void playPause() {
+    public void playPause() {
         if (isServiceNotNull()) {
             if (isPreparing()) {
                 //如果是准备状态，停止
@@ -187,7 +287,7 @@ public class MusicManager {
     /**
      * 暂停/播放,没有监听
      */
-    public static void playPauseOnly() {
+    public void playPauseOnly() {
         if (isServiceNotNull()) {
             try {
                 mService.playPause();
@@ -200,15 +300,10 @@ public class MusicManager {
     /**
      * 开始播放
      */
-    public static void startPlay() {
+    public void startPlay() {
         if (isServiceNotNull()) {
             try {
                 mService.start();
-                mHandler.post(mPublishRunnable);
-                if (listener != null) {
-                    listener.onPlayerStart();
-                }
-                observable.subjectNotifyObservers(MusicPlayService.STATE_PLAYING);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -218,15 +313,10 @@ public class MusicManager {
     /**
      * 暂停播放
      */
-    public static void pause() {
+    public void pause() {
         if (isServiceNotNull()) {
             try {
                 mService.pause();
-                mHandler.removeCallbacks(mPublishRunnable);
-                if (listener != null) {
-                    listener.onPlayerPause();
-                }
-                observable.subjectNotifyObservers(MusicPlayService.STATE_PAUSE);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -236,11 +326,10 @@ public class MusicManager {
     /**
      * 停止播放
      */
-    public static void stop() {
+    public void stop() {
         if (isServiceNotNull()) {
             try {
                 mService.stop();
-                observable.subjectNotifyObservers(MusicPlayService.STATE_PAUSE);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -265,13 +354,10 @@ public class MusicManager {
      *
      * @param msec 时间
      */
-    public static void seekTo(int msec) {
+    public void seekTo(int msec) {
         if (isServiceNotNull()) {
             try {
                 mService.seekTo(msec);
-                if (listener != null) {
-                    listener.onPublish(msec);
-                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -283,7 +369,7 @@ public class MusicManager {
      *
      * @return
      */
-    public static boolean isPlaying() {
+    public boolean isPlaying() {
         if (isServiceNotNull()) {
             try {
                 return mService.isPlaying();
@@ -299,7 +385,7 @@ public class MusicManager {
      *
      * @return
      */
-    public static boolean isPausing() {
+    public boolean isPausing() {
         if (isServiceNotNull()) {
             try {
                 return mService.isPausing();
@@ -315,7 +401,7 @@ public class MusicManager {
      *
      * @return
      */
-    public static boolean isPreparing() {
+    public boolean isPreparing() {
         if (isServiceNotNull()) {
             try {
                 return mService.isPreparing();
@@ -331,7 +417,7 @@ public class MusicManager {
      *
      * @return
      */
-    public static boolean isIdle() {
+    public boolean isIdle() {
         if (isServiceNotNull()) {
             try {
                 return mService.isIdle();
@@ -347,16 +433,10 @@ public class MusicManager {
      *
      * @param position
      */
-    public static void playByPosition(int position) {
+    public void playByPosition(int position) {
         if (isServiceNotNull()) {
             try {
                 mService.playByPosition(position);
-                mHandler.post(mPublishRunnable);
-                if (listener != null) {
-                    listener.onPlayerStart();
-                    listener.onMusicChange(mMusicList.get(position));
-                }
-                observable.subjectNotifyObservers(MusicPlayService.STATE_PLAYING);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -368,15 +448,10 @@ public class MusicManager {
      *
      * @param music
      */
-    public static void playByMusicInfo(MusicInfo music) {
+    public void playByMusicInfo(MusicInfo music) {
         if (isServiceNotNull()) {
             try {
                 mService.playByMusicInfo(music);
-                mHandler.post(mPublishRunnable);
-                if (listener != null) {
-                    listener.onPlayerStart();
-                    listener.onMusicChange(music);
-                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -386,7 +461,7 @@ public class MusicManager {
     /**
      * 获取正在播放的本地歌曲的序号
      */
-    public static int getPlayingPosition() {
+    public int getPlayingPosition() {
         if (isServiceNotNull()) {
             try {
                 return mService.getPlayingPosition();
@@ -402,7 +477,7 @@ public class MusicManager {
      *
      * @param playingPosition
      */
-    public static void setPlayingPosition(int playingPosition) {
+    public void setPlayingPosition(int playingPosition) {
         if (isServiceNotNull()) {
             try {
                 mService.setPlayingPosition(playingPosition);
@@ -415,7 +490,7 @@ public class MusicManager {
     /**
      * 播放下一首
      */
-    public static void playNext() {
+    public void playNext() {
         if (isServiceNotNull()) {
             try {
                 mService.next();
@@ -430,7 +505,7 @@ public class MusicManager {
      *
      * @return
      */
-    public static int getCurrentPosition() {
+    public int getCurrentPosition() {
         if (isServiceNotNull()) {
             try {
                 return (int) mService.getCurrentPosition();
@@ -444,7 +519,7 @@ public class MusicManager {
     /**
      * 获取正在播放的歌曲[网络]
      */
-    public static MusicInfo getPlayingMusic() {
+    public MusicInfo getPlayingMusic() {
         if (isServiceNotNull()) {
             try {
                 return mService.getPlayingMusic();
@@ -499,13 +574,5 @@ public class MusicManager {
         }
     }
 
-    public static Runnable mPublishRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (isPlaying() && listener != null) {
-                listener.onPublish(getCurrentPosition());
-            }
-            mHandler.postDelayed(this, TIME_UPDATE);
-        }
-    };
+
 }

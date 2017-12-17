@@ -2,6 +2,7 @@
 package com.example.musiclib.service;
 
 import com.example.musiclib.model.MusicInfo;
+import com.example.musiclib.service.IOnPlayerEventListener;
 
 interface IMusicPlayService {
     //暂停/播放
@@ -44,4 +45,12 @@ interface IMusicPlayService {
     String getPlayMode();
     //设置播放模式
     void setPlayMode(String playMode);
+    //注册监听器
+    void registerListener(IOnPlayerEventListener listener);
+    //解注册监听器
+    void unregisterListener(IOnPlayerEventListener listener);
+    //设置音乐列表
+    void setMusicList(in List<MusicInfo> musicList);
+    //获取音乐列表
+    List<MusicInfo> getMusicList();
 }

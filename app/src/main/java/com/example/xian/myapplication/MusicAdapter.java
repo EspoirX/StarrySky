@@ -27,8 +27,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
 
     public void setMusicInfos(List<MusicInfo> musicInfos) {
         this.musicInfos = musicInfos;
-
-        MusicManager.setMusicList(musicInfos);
         notifyDataSetChanged();
     }
 
@@ -45,11 +43,11 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
         holder.mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MusicInfo info = MusicManager.getPlayingMusic();
+                MusicInfo info = MusicManager.get().getPlayingMusic();
                 if (info != null && info.getMusicUrl().equals(musicInfo.getMusicUrl())) {
-                    MusicManager.playPause();
+                    MusicManager.get().playPause();
                 } else {
-                    MusicManager.playByPosition(position);
+                    MusicManager.get().playByPosition(position);
                 }
             }
         });
@@ -71,7 +69,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
         int status = (int) o;
         Log.i("xian", "收到通知 = " + status);
         for (int i = 0; i < musicInfos.size(); i++) {
-            if (i == MusicManager.getPlayingPosition()) {
+            if (i == MusicManager.get().getPlayingPosition()) {
                 musicInfos.get(i).setPlayStatus(status);
             } else {
                 musicInfos.get(i).setPlayStatus(MusicPlayService.STATE_PAUSE);

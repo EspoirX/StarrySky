@@ -6,19 +6,26 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.RemoteCallbackList;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.musiclib.contants.MusicAction;
-import com.example.musiclib.manager.MusicManager;
+import com.example.musiclib.manager.AudioFocusManager;
+import com.example.musiclib.manager.MediaSessionManager;
 import com.example.musiclib.model.MusicInfo;
 import com.example.musiclib.model.PlayMode;
 import com.example.musiclib.receiver.NoisyAudioStreamReceiver;
 import com.example.musiclib.utils.CoverLoader;
+import com.example.musiclib.utils.RunUtil;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -32,7 +39,6 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
 
     private static final String TAG = "MusicPlayService";
 
-
     public static final int STATE_IDLE = 0; //空闲状态
     public static final int STATE_PREPARING = 1; //准备状态
     public static final int STATE_PLAYING = 2; //正在播放
@@ -40,17 +46,19 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
     // 正在播放的本地歌曲的序号
     private int mPlayingPosition = -1;
     private int mPlayState = STATE_IDLE;
-
+    private static final long TIME_UPDATE = 1000L;
     private MediaPlayer mPlayer = new MediaPlayer();
     private AudioFocusManager mAudioFocusManager;
     private MediaSessionManager mMediaSessionManager;
 
     private final NoisyAudioStreamReceiver mNoisyReceiver = new NoisyAudioStreamReceiver();
     private final IntentFilter mNoisyFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-
-
+    public static Handler mHandler = new Handler();
     private MusicInfo mPlayingMusic;
     private PlayMode playMode;
+
+    public CopyOnWriteArrayList<MusicInfo> mMusicList = new CopyOnWriteArrayList<>();
+    private RemoteCallbackList<IOnPlayerEventListener> mListenerList = new RemoteCallbackList<>();
 
     @Override
     public void onCreate() {
@@ -66,14 +74,167 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         mPlayer.setOnErrorListener(this);
         //当使用seekTo()设置播放位置的时候回调。
         mPlayer.setOnSeekCompleteListener(this);
-
-        Log.i("xian", "MusicPlayService#onCreate()");
+        QuitTimer.getInstance().init(this, mHandler, new EventCallback<Long>() {
+            @Override
+            public void onEvent(Long aLong) {
+                int N = mListenerList.beginBroadcast();
+                for (int i = 0; i < N; i++) {
+                    IOnPlayerEventListener listener = mListenerList.getBroadcastItem(i);
+                    if (listener != null) {
+                        try {
+                            listener.onTimer(aLong);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                mListenerList.finishBroadcast();
+            }
+        });
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return new MusicPlayServiceStub(this);
+    }
+
+    public class MusicPlayServiceStub extends IMusicPlayService.Stub {
+
+        private MusicPlayService mService;
+
+        public MusicPlayServiceStub(MusicPlayService musicPlayService) {
+            this.mService = musicPlayService;
+        }
+
+        @Override
+        public void playPause() throws RemoteException {
+            mService.playPause();
+        }
+
+        @Override
+        public void start() throws RemoteException {
+            mService.start();
+        }
+
+        @Override
+        public void pause() throws RemoteException {
+            mService.pause();
+        }
+
+        @Override
+        public void stop() throws RemoteException {
+            mService.stop();
+        }
+
+        @Override
+        public void prev() throws RemoteException {
+            mService.prev();
+        }
+
+        @Override
+        public void seekTo(int msec) throws RemoteException {
+            mService.seekTo(msec);
+        }
+
+        @Override
+        public boolean isPlaying() throws RemoteException {
+            return mService.isPlaying();
+        }
+
+        @Override
+        public boolean isPausing() throws RemoteException {
+            return mService.isPausing();
+        }
+
+        @Override
+        public boolean isPreparing() throws RemoteException {
+            return mService.isPreparing();
+        }
+
+        @Override
+        public boolean isIdle() throws RemoteException {
+            return mService.isIdle();
+        }
+
+        @Override
+        public void playByPosition(int position) throws RemoteException {
+            mService.play(position);
+        }
+
+        @Override
+        public void playByMusicInfo(MusicInfo music) throws RemoteException {
+            mService.play(music);
+        }
+
+        @Override
+        public int getPlayingPosition() throws RemoteException {
+            return mService.getPlayingPosition();
+        }
+
+        @Override
+        public void setPlayingPosition(int playingPosition) throws RemoteException {
+            mService.setPlayingPosition(playingPosition);
+        }
+
+        @Override
+        public void next() throws RemoteException {
+            mService.next();
+        }
+
+        @Override
+        public long getCurrentPosition() throws RemoteException {
+            return mService.getCurrentPosition();
+        }
+
+        @Override
+        public MusicInfo getPlayingMusic() throws RemoteException {
+            return mService.getPlayingMusic();
+        }
+
+        @Override
+        public void quit() throws RemoteException {
+            mService.quit();
+        }
+
+        @Override
+        public String getPlayMode() throws RemoteException {
+            return mService.getPlayMode();
+        }
+
+        @Override
+        public void setPlayMode(String playMode) throws RemoteException {
+            mService.setPlayMode(playMode);
+        }
+
+        @Override
+        public void registerListener(final IOnPlayerEventListener listener) throws RemoteException {
+            RunUtil.getThreadPool().execute(new Runnable() {
+                @Override
+                public void run() {
+                    mListenerList.register(listener);
+                }
+            });
+
+        }
+
+        @Override
+        public void unregisterListener(IOnPlayerEventListener listener) throws RemoteException {
+            mListenerList.unregister(listener);
+        }
+
+        @Override
+        public void setMusicList(List<MusicInfo> musicList) throws RemoteException {
+            if (musicList == null) {
+                return;
+            }
+            mService.setMusicList(musicList);
+        }
+
+        @Override
+        public List<MusicInfo> getMusicList() throws RemoteException {
+            return mService.getMusicList();
+        }
     }
 
     @Override
@@ -103,6 +264,15 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         mAudioFocusManager.abandonAudioFocus();
         mMediaSessionManager.release();
         unregisterReceiver(mNoisyReceiver);
+    }
+
+    public CopyOnWriteArrayList<MusicInfo> getMusicList() {
+        return mMusicList;
+    }
+
+    public void setMusicList(List<MusicInfo> musicList) {
+        mMusicList.clear();
+        mMusicList.addAll(musicList);
     }
 
     /**
@@ -158,9 +328,18 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
      */
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
-//        if (mOnPlayerEventListener != null) {
-//            mOnPlayerEventListener.onBufferingUpdate(percent);
-//        }
+        int N = mListenerList.beginBroadcast();
+        for (int i = 0; i < N; i++) {
+            IOnPlayerEventListener listener = mListenerList.getBroadcastItem(i);
+            if (listener != null) {
+                try {
+                    listener.onBufferingUpdate(percent);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        mListenerList.finishBroadcast();
     }
 
     /**
@@ -201,15 +380,25 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         if (!isPreparing() && !isPausing()) {
             return;
         }
-
         if (mAudioFocusManager.requestAudioFocus()) {
             mPlayer.start();
             mPlayState = STATE_PLAYING;
-
             //  Notifier.showPlay(mPlayingMusic);
             mMediaSessionManager.updatePlaybackState();
             registerReceiver(mNoisyReceiver, mNoisyFilter);
-
+            mHandler.post(mPublishRunnable);
+            int N = mListenerList.beginBroadcast();
+            for (int i = 0; i < N; i++) {
+                IOnPlayerEventListener listener = mListenerList.getBroadcastItem(i);
+                if (listener != null) {
+                    try {
+                        listener.onPlayerStart();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            mListenerList.finishBroadcast();
         }
     }
 
@@ -222,10 +411,22 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         }
         mPlayer.pause();
         mPlayState = STATE_PAUSE;
-
         // Notifier.showPause(mPlayingMusic);
         mMediaSessionManager.updatePlaybackState();
         unregisterReceiver(mNoisyReceiver);
+        mHandler.removeCallbacks(mPublishRunnable);
+        int N = mListenerList.beginBroadcast();
+        for (int i = 0; i < N; i++) {
+            IOnPlayerEventListener listener = mListenerList.getBroadcastItem(i);
+            if (listener != null) {
+                try {
+                    listener.onPlayerPause();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        mListenerList.finishBroadcast();
     }
 
     /**
@@ -250,6 +451,18 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         if (isPlaying() || isPausing()) {
             mPlayer.seekTo(msec);
             mMediaSessionManager.updatePlaybackState();
+            int N = mListenerList.beginBroadcast();
+            for (int i = 0; i < N; i++) {
+                IOnPlayerEventListener listener = mListenerList.getBroadcastItem(i);
+                if (listener != null) {
+                    try {
+                        listener.onProgress(msec);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            mListenerList.finishBroadcast();
         }
     }
 
@@ -275,11 +488,11 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
      * @param position 歌曲在列表中的位置
      */
     public void play(int position) {
-        if (MusicManager.getMusicList().size() == 0) {
+        if (getMusicList().size() == 0) {
             return;
         }
         mPlayingPosition = position;
-        MusicInfo music = MusicManager.getMusicList().get(mPlayingPosition);
+        MusicInfo music = getMusicList().get(mPlayingPosition);
         play(music);
     }
 
@@ -302,10 +515,25 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
             mPlayer.setOnPreparedListener(this);
             //网络流媒体的缓冲监听
             mPlayer.setOnBufferingUpdateListener(this);
-
             //     Notifier.showPlay(music);
             mMediaSessionManager.updateMetaData(mPlayingMusic);
             mMediaSessionManager.updatePlaybackState();
+            mHandler.post(mPublishRunnable);
+
+            int N = mListenerList.beginBroadcast();
+            for (int i = 0; i < N; i++) {
+                IOnPlayerEventListener listener = mListenerList.getBroadcastItem(i);
+                if (listener != null) {
+                    try {
+                        listener.onPlayerStart();
+                        listener.onMusicChange(music);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            mListenerList.finishBroadcast();
+
         } catch (IOException e) {
             e.printStackTrace();
             Log.i(TAG, "MusicPlayService#play = " + e.getMessage());
@@ -332,7 +560,7 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
      * 下一首
      */
     public void next() {
-        int size = MusicManager.getMusicList().size();
+        int size = getMusicList().size();
         if (size == 0) {
             return;
         }
@@ -340,8 +568,8 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         switch (mode) {
             //顺序播放
             case PlayMode.PLAY_IN_ORDER:
-                if (mPlayingPosition <= size) {
-                    mPlayingPosition = mPlayingPosition + 1;
+                mPlayingPosition = mPlayingPosition + 1;
+                if (mPlayingPosition <= size - 1) {
                     play(mPlayingPosition);
                 }
                 break;
@@ -358,7 +586,7 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
             case PlayMode.PLAY_IN_LIST_LOOP:
                 //如果正在播放的是最后一首歌，点下一首，播第一首
                 mPlayingPosition = mPlayingPosition + 1;
-                if (mPlayingPosition >= size) {
+                if (mPlayingPosition >= size - 1) {
                     mPlayingPosition = 0;
                 }
                 play(mPlayingPosition);
@@ -370,7 +598,7 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
      * 上一首
      */
     public void prev() {
-        int size = MusicManager.getMusicList().size();
+        int size = getMusicList().size();
         if (size == 0) {
             return;
         }
@@ -443,5 +671,22 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         stopSelf();
     }
 
-
+    public Runnable mPublishRunnable = new Runnable() {
+        @Override
+        public void run() {
+//            int N = mListenerList.beginBroadcast();
+//            for (int i = 0; i < N; i++) {
+//                IOnPlayerEventListener listener = mListenerList.getBroadcastItem(i);
+//                if (listener != null && isPlaying()) {
+//                    try {
+//                        listener.onProgress((int) getCurrentPosition());
+//                    } catch (RemoteException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            mListenerList.finishBroadcast();
+            mHandler.postDelayed(this, TIME_UPDATE);
+        }
+    };
 }
