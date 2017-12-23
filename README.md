@@ -31,6 +31,7 @@ public class MusicApplication extends Application {
     }
 }
 ```
+
 2. 然后进行服务的绑定和解绑定
 ``` java
 MusicManager.get().bindToService(this,new ServiceConnectionCallback());
@@ -97,6 +98,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
          
     }
 }
+
 //然后调用添加音乐监听观察者方法即可
 MusicAdapter musicAdapter = new MusicAdapter(this);
 recyclerView.setAdapter(musicAdapter);
@@ -107,6 +109,8 @@ MusicManager.get().addObservable(musicAdapter);
 
 ```
 
+关于通知栏，因为考虑到通知栏这种要设置点击打开的界面，所以还是留给自己去实现吧。  
+总体来说，整个Lib的封装代码还是非常简单的，有兴趣可以看看，希望你喜欢。
 
 #### About me
 An android developer in GuangZhou  
