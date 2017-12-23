@@ -30,10 +30,6 @@ public class MusicInfo implements Parcelable {
     private String musicPlayCount= "";
     private String musicTime= "0";
 
-    private int page= -1;
-    private String articleType;
-    private String articleId;
-
     private int playStatus = MusicPlayService.STATE_IDLE;
 
     public String getAlbumTitle() {
