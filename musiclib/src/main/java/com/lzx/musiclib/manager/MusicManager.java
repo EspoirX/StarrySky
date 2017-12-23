@@ -76,6 +76,10 @@ public class MusicManager implements OnPlayerEventListener {
         context.bindService(intent, mMusicPlayServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
+    public void bindToService(final Context context) {
+        bindToService(context, null);
+    }
+
     /**
      * 解绑服务
      */

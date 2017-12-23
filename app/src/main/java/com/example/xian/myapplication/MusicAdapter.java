@@ -35,6 +35,19 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
 
     public void setMusicInfos(List<MusicInfo> musicInfos) {
         this.musicInfos = musicInfos;
+        for (MusicInfo musicInfo : musicInfos) {
+            MusicInfo music = MusicManager.get().getPlayingMusic();
+            if (music.getMusicId().equals(musicInfo.getMusicId())) {
+                if (MusicManager.get().isPlaying()) {
+                    musicInfo.setPlayStatus(MusicPlayService.STATE_PLAYING);
+                } else {
+                    musicInfo.setPlayStatus(MusicPlayService.STATE_PAUSE);
+                }
+            } else {
+                musicInfo.setPlayStatus(MusicPlayService.STATE_PAUSE);
+            }
+        }
+        MusicManager.get().setMusicList(musicInfos);
         notifyDataSetChanged();
     }
 
@@ -47,12 +60,12 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
     @Override
     public void onBindViewHolder(MusicHolder holder, final int position) {
         final MusicInfo musicInfo = musicInfos.get(position);
-        holder.mMusicTitle.setText("歌曲_" + (position + 1));
+        holder.mMusicTitle.setText(musicInfo.getMusicTitle() + "-" + musicInfo.getAlbumNickname());
         holder.mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MusicInfo info = MusicManager.get().getPlayingMusic();
-                if (musicInfo.getMusicUrl().equals(info.getMusicUrl())) {
+                if (musicInfo.getMusicId().equals(info.getMusicId())) {
                     MusicManager.get().playPause();
                 } else {
                     MusicManager.get().playByPosition(position);
@@ -80,7 +93,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
     public void update(Observable observable, Object o) {
         for (MusicInfo musicInfo : musicInfos) {
             MusicInfo music = MusicManager.get().getPlayingMusic();
-            if (music.getMusicUrl().equals(musicInfo.getMusicUrl())) {
+            if (music.getMusicId().equals(musicInfo.getMusicId())) {
                 if (MusicManager.get().isPlaying()) {
                     musicInfo.setPlayStatus(MusicPlayService.STATE_PLAYING);
                 } else {
