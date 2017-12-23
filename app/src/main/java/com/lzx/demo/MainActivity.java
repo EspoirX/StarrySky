@@ -7,8 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.xian.myapplication.MusicAdapter;
-import com.example.xian.myapplication.R;
+
 import com.lzx.musiclib.manager.MusicManager;
 import com.lzx.musiclib.model.MusicInfo;
 import com.lzx.musiclib.service.MusicPlayService;
