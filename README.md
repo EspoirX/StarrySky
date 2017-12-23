@@ -13,6 +13,8 @@
 #### 关于 Demo：  
 demo中的音乐来自易源接口，不知道为什么，易源的接口就是慢，当你点击播放的时候可能要等一会，不过应该是能播的，你也可以换成你自己的音乐链接来做测试。
 
+#### apk下载链接：
+<a href="musicLibDemo.apk">musicLibDemo.apk</a>
 
 #### Demo 截图：  
 <a href="art/image1.png"><img src="art/image1.png" width="30%"/></a>
