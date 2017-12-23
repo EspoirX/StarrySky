@@ -36,20 +36,26 @@ public class MusicApplication extends Application {
 MusicManager.get().bindToService(this,new ServiceConnectionCallback());
 MusicManager.get().unbindService(this);
 ```
-如果绑定的时候不想要回调，可以调用一个参数的 bindToService 。之后就可以使用了。
+如果绑定的时候不想要回调，可以调用一个参数的 bindToService 。之后就可以使用了。  
+使用之前记得先设置播放列表：
+``` java
+private List<MusicInfo> musicInfos = new ArrayList<>();
+//...省略一堆操作
+MusicManager.get().setMusicList(musicInfos);
+```
 
 #### Api
 
 ``` java
-1. bindToService(Context context, ServiceConnectionCallback connectionCallback)  绑定服务  
-2. unbindService(Context context)  解绑服务
-3. addOnPlayerEventListener(OnPlayerEventListener onPlayerEventListener)  添加音乐播放监听
-4. removePlayerEventListener(OnPlayerEventListener onPlayerEventListener)  移除音乐播放监听
-5. clearPlayerEventListener()        清除所以音乐播放监听
-6. getMusicList()                    得到当前播放列表
-7. setMusicList()                    设置当前播放列表
-8. playPause()                       播放或者暂停
-9. startPlay()                       开始播放
+1.  bindToService(Context context, ServiceConnectionCallback connectionCallback) 绑定服务  
+2.  unbindService(Context context)                                               解绑服务
+3.  addOnPlayerEventListener(OnPlayerEventListener onPlayerEventListener)        添加音乐播放监听
+4.  removePlayerEventListener(OnPlayerEventListener onPlayerEventListener)       移除音乐播放监听
+5.  clearPlayerEventListener()       清除所以音乐播放监听
+6.  getMusicList()                   得到当前播放列表
+7.  setMusicList()                   设置当前播放列表
+8.  playPause()                      播放或者暂停
+9.  startPlay()                      开始播放
 10. pausePlay()                      暂停播放
 11. stopPlay()                       停止播放
 12. playPrev()                       播放上一首
@@ -71,7 +77,36 @@ MusicManager.get().unbindService(this);
 28. getPlayMode()                    得到当前的播放模式
 29. setPlayMode()                    设置当前播放模式
 30. setQuitTimer(long milli)         设置音乐定时停止的时间（单位：秒）
+31. addObservable(Observer o)        添加音乐监听观察者
 ```
+
+#### 关于音乐实体类 MusicInfo
+MusicInfo是我定义的一个音乐实体类，里面的字段基本能够应付大多数的情况了，如果跟你的觉得不合适的话，可以替换成自己的。
+
+#### 其他功能
+有些时候我只想监听音乐的播放和停止，比如在一个列表中监听这两种情况去改变一下UI（比如播放暂停按钮的状态），
+因为设置监听器有些麻烦，而且方法很多，所以除了设置监听器来监听音乐的播放情况外，还提供了一种监听方法，用法如下：  
+这种方法是利用了观察者模式去实现的。
+```java
+//比如在一个adapter中，监听列表播放暂停按钮的状态
+//首先让adapter继承Observer接口,并实现update方法
+public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder> implements Observer {
+    
+    @Override
+    public void update(Observable observable, Object o) {
+         
+    }
+}
+//然后调用添加音乐监听观察者方法即可
+MusicAdapter musicAdapter = new MusicAdapter(this);
+recyclerView.setAdapter(musicAdapter);
+MusicManager.get().addObservable(musicAdapter);
+
+//当音乐暂停或者开始的时候，update方法就会调用，Object参数的值是播放状态，分别是 MusicPlayService.STATE_PLAYING 和 MusicPlayService.STATE_PAUSE
+//这时候就可以根据这个状态去判断做自己的逻辑了。
+
+```
+
 
 #### About me
 An android developer in GuangZhou  
@@ -81,7 +116,7 @@ If you want to make friends with me, You can give me a Email and follow me。
 
 #### License
 ```
-Copyright 2017 L_Xian   
+Copyright 2018 L_Xian   
  
 Licensed under the Apache License, Version 2.0 (the "License");  
 you may not use this file except in compliance with the License.  

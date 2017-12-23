@@ -122,7 +122,6 @@ public class MusicManager implements OnPlayerEventListener {
 
     @Override
     public void onMusicChange(MusicInfo music) {
-        observable.subjectNotifyObservers(MusicPlayService.STATE_PLAYING);
         for (OnPlayerEventListener listener : mOnPlayerEventListenerList) {
             listener.onMusicChange(music);
         }
