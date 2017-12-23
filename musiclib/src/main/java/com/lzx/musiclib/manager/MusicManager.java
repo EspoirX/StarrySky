@@ -5,16 +5,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 
 import com.lzx.musiclib.model.MusicInfo;
 import com.lzx.musiclib.model.PlayMode;
 import com.lzx.musiclib.service.MusicPlayService;
 import com.lzx.musiclib.service.OnPlayerEventListener;
+import com.lzx.musiclib.service.ServiceConnectionCallback;
 import com.lzx.musiclib.service.SubjectObservable;
 
 import java.util.ArrayList;
@@ -31,10 +29,9 @@ public class MusicManager implements OnPlayerEventListener {
     private MusicPlayService mService;
     private SubjectObservable observable;
     private List<OnPlayerEventListener> mOnPlayerEventListenerList;
-    private static final int MSG_ON_TIMER = 5;
     private MusicPlayServiceConnection mMusicPlayServiceConnection;
-
     private Context mContext;
+    private ServiceConnectionCallback mConnectionCallback;
 
     private MusicManager() {
         observable = new SubjectObservable();
@@ -72,7 +69,8 @@ public class MusicManager implements OnPlayerEventListener {
      * @param context
      * @return
      */
-    public void bindToService(final Context context) {
+    public void bindToService(final Context context, ServiceConnectionCallback connectionCallback) {
+        this.mConnectionCallback = connectionCallback;
         Intent intent = new Intent(context, MusicPlayService.class);
         context.startService(intent);
         context.bindService(intent, mMusicPlayServiceConnection, Context.BIND_AUTO_CREATE);
@@ -88,6 +86,7 @@ public class MusicManager implements OnPlayerEventListener {
             }
             context.unbindService(mMusicPlayServiceConnection);
         }
+        mConnectionCallback = null;
     }
 
     public class MusicPlayServiceConnection implements ServiceConnection {
@@ -97,6 +96,9 @@ public class MusicManager implements OnPlayerEventListener {
             MusicPlayService musicPlayService = ((MusicPlayService.PlayBinder) service).getService();
             mService = musicPlayService;
             musicPlayService.setOnPlayerEventListener(MusicManager.this);
+            if (mConnectionCallback != null) {
+                mConnectionCallback.onServiceConnected(musicPlayService);
+            }
             Log.i("LogUtil", "音乐服务链接成功.....");
         }
 
@@ -105,8 +107,10 @@ public class MusicManager implements OnPlayerEventListener {
             if (mService != null) {
                 mService.setOnPlayerEventListener(null);
             }
-            mHandler.removeCallbacksAndMessages(null);
             mService = null;
+            if (mConnectionCallback != null) {
+                mConnectionCallback.onServiceDisconnected();
+            }
             Log.i("LogUtil", "音乐服务已断开.....");
         }
     }
@@ -159,7 +163,9 @@ public class MusicManager implements OnPlayerEventListener {
 
     @Override
     public void onTimer() {
-        mHandler.obtainMessage(MSG_ON_TIMER).sendToTarget();
+        for (OnPlayerEventListener listener : mOnPlayerEventListenerList) {
+            listener.onTimer();
+        }
     }
 
     @Override
@@ -169,20 +175,6 @@ public class MusicManager implements OnPlayerEventListener {
         }
     }
 
-    private Handler mHandler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_ON_TIMER:
-                    for (OnPlayerEventListener listener : mOnPlayerEventListenerList) {
-                        listener.onTimer();
-                    }
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
-        }
-    };
 
     /**
      * 添加监听

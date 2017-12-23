@@ -3,9 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="1dp"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
+    <ImageView
+        android:id="@+id/music_cover"
+        android:layout_width="50dp"
+        android:layout_marginBottom="1dp"
+        android:layout_height="50dp" />
 
     <TextView
         android:id="@+id/textView"

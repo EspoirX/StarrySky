@@ -5,16 +5,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.lzx.musiclib.R;
 import com.lzx.musiclib.contants.MusicAction;
+import com.lzx.musiclib.loader.ImageLoader;
 import com.lzx.musiclib.manager.AudioFocusManager;
 import com.lzx.musiclib.manager.MediaSessionManager;
 import com.lzx.musiclib.model.MusicInfo;
@@ -55,14 +61,13 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
     // 正在播放的本地歌曲的序号
     private int mPlayingPosition = -1;
     private int mPlayState = STATE_IDLE;
-    private static final long TIME_UPDATE = 1000L;
     private MediaPlayer mPlayer = new MediaPlayer();
     private AudioFocusManager mAudioFocusManager;
     private MediaSessionManager mMediaSessionManager;
 
     private final NoisyAudioStreamReceiver mNoisyReceiver = new NoisyAudioStreamReceiver();
     private final IntentFilter mNoisyFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-    public static Handler mHandler = new Handler();
+    public Handler mHandler = new Handler();
     private MusicInfo mPlayingMusic;
     private PlayMode playMode;
 
@@ -72,7 +77,6 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
     private long mServiceTimer = 0;
 
     private ServiceReceiver mServiceReceiver;
-    private boolean isAutoPlayNext = true;
 
     @Override
     public void onCreate() {
@@ -130,6 +134,29 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         return START_NOT_STICKY;
     }
 
+    /**
+     * 用户下载网络图片的handler
+     */
+    private Handler mMainHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            ImageLoader.LoaderResult result = (ImageLoader.LoaderResult) msg.obj;
+            Log.i(TAG, "bitmap = " + result.bitmap);
+            Bitmap albumArt;
+            if (result.bitmap == null) {
+                albumArt = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+            } else {
+                Bitmap.Config config = result.bitmap.getConfig();
+                if (config == null) {
+                    config = Bitmap.Config.ARGB_8888;
+                }
+                albumArt = result.bitmap.copy(config, false);
+            }
+            mMediaSessionManager.updateMetaData(mPlayingMusic, albumArt);
+            mMediaSessionManager.updatePlaybackState();
+        }
+    };
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -140,6 +167,8 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         mMediaSessionManager.release();
         mHandler.removeCallbacksAndMessages(null);
         mHandler = null;
+        mMainHandler.removeCallbacksAndMessages(null);
+        mMainHandler = null;
         unregisterReceiver(mNoisyReceiver);
         unregisterReceiver(mServiceReceiver);
     }
@@ -169,7 +198,6 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         if (mOnPlayerEventListener != null) {
             mOnPlayerEventListener.onPlayCompletion();
         }
-
         next();
     }
 
@@ -254,7 +282,6 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
         if (mAudioFocusManager.requestAudioFocus()) {
             mPlayer.start();
             mPlayState = STATE_PLAYING;
-            //  Notifier.showPlay(mPlayingMusic);
             mMediaSessionManager.updatePlaybackState();
             registerReceiver(mNoisyReceiver, mNoisyFilter);
             mHandler.post(mPublishRunnable);
@@ -356,9 +383,7 @@ public class MusicPlayService extends Service implements MediaPlayer.OnCompletio
             mPlayer.setOnPreparedListener(this);
             //网络流媒体的缓冲监听
             mPlayer.setOnBufferingUpdateListener(this);
-            //     Notifier.showPlay(music);
-            mMediaSessionManager.updateMetaData(mPlayingMusic);
-            mMediaSessionManager.updatePlaybackState();
+            ImageLoader.build(this).bindBitmap(music.getMusicCover(), mMainHandler);
             mHandler.post(mPublishRunnable);
             if (mOnPlayerEventListener != null) {
                 mOnPlayerEventListener.onMusicChange(music);

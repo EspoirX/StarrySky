@@ -1,17 +1,11 @@
 package com.lzx.musiclib.manager;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.lzx.musiclib.R;
 import com.lzx.musiclib.model.MusicInfo;
 import com.lzx.musiclib.service.MusicPlayService;
 
@@ -57,39 +51,22 @@ public class MediaSessionManager {
                         .build());
     }
 
-    public void updateMetaData(final MusicInfo music) {
+    public void updateMetaData(final MusicInfo music,Bitmap albumArt) {
         if (music == null) {
             mMediaSession.setMetadata(null);
             return;
         }
-        Glide.with(mPlayService.getApplicationContext()).load(music.getMusicCover()).asBitmap().error(R.drawable.ic_launcher)
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        Bitmap albumArt;
-                        if (resource == null) {
-                            albumArt = BitmapFactory.decodeResource(mPlayService.getApplicationContext().getResources(), R.drawable.ic_launcher);
-                        } else {
-                            Bitmap.Config config = resource.getConfig();
-                            if (config == null) {
-                                config = Bitmap.Config.ARGB_8888;
-                            }
-                            albumArt = resource.copy(config, false);
-                        }
-                        Log.i("LogUtil", "albumArt = " + albumArt);
-                        MediaMetadataCompat.Builder metaData = new MediaMetadataCompat.Builder()
-                                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, music.getMusicTitle())
-                                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, music.getAlbumNickname())
-                                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, music.getAlbumTitle())
-                                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, music.getAlbumNickname())
-                                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, Long.parseLong(music.getMusicTime()))
-                                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            metaData.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, mPlayService.getMusicList().size());
-                        }
-                        mMediaSession.setMetadata(metaData.build());
-                    }
-                });
+        MediaMetadataCompat.Builder metaData = new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, music.getMusicTitle())
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, music.getAlbumNickname())
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, music.getAlbumTitle())
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, music.getAlbumNickname())
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, Long.parseLong(music.getMusicTime()))
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            metaData.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, mPlayService.getMusicList().size());
+        }
+        mMediaSession.setMetadata(metaData.build());
     }
 
     public void release() {

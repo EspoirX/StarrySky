@@ -9,11 +9,9 @@ import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.os.StatFs;
 import android.support.v4.util.LruCache;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.lzx.musiclib.R;
 
@@ -47,7 +45,7 @@ public class ImageLoader {
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final long KEEP_ALIVE = 10L;
 
-    private static final int TAG_KEY_URI = R.id.imageloader_uri;
+    public static final int TAG_KEY_URI = R.id.imageloader_uri;
     private static final long DISK_CACHE_SIZE = 1024 * 1024 * 50;
     private static final int IO_BUFFER_SIZE = 8 * 1024;
     private static final int DISK_CACHE_INDEX = 0;
@@ -66,19 +64,6 @@ public class ImageLoader {
             KEEP_ALIVE, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>(), sThreadFactory);
 
-    private Handler mMainHandler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-            LoaderResult result = (LoaderResult) msg.obj;
-            ImageView imageView = result.imageView;
-            String uri = (String) imageView.getTag(TAG_KEY_URI);
-            if (uri.equals(result.uri)) {
-                imageView.setImageBitmap(result.bitmap);
-            } else {
-                Log.w(TAG, "set image bitmap,but url has changed, ignored!");
-            }
-        }
-    };
 
     private Context mContext;
     private ImageResizer mImageResizer = new ImageResizer();
@@ -112,6 +97,7 @@ public class ImageLoader {
 
     /**
      * build a new instance of ImageLoader
+     *
      * @param context
      * @return a new instance of ImageLoader
      */
@@ -132,19 +118,20 @@ public class ImageLoader {
     /**
      * load bitmap from memory cache or disk cache or network async, then bind imageView and bitmap.
      * NOTE THAT: should run in UI Thread
-     * @param uri http url
-     * @param imageView bitmap's bind object
+     *
+     * @param uri          http url
+     * @param mMainHandler result handler
      */
-    public void bindBitmap(final String uri, final ImageView imageView) {
-        bindBitmap(uri, imageView, 0, 0);
+    public void bindBitmap(final String uri, Handler mMainHandler) {
+        bindBitmap(uri, 0, 0, mMainHandler);
     }
 
-    public void bindBitmap(final String uri, final ImageView imageView,
-                           final int reqWidth, final int reqHeight) {
-        imageView.setTag(TAG_KEY_URI, uri);
+    public void bindBitmap(final String uri, final int reqWidth, final int reqHeight, final Handler mMainHandler) {
+
         Bitmap bitmap = loadBitmapFromMemCache(uri);
         if (bitmap != null) {
-            imageView.setImageBitmap(bitmap);
+            LoaderResult result = new LoaderResult(uri, bitmap);
+            mMainHandler.obtainMessage(MESSAGE_POST_RESULT, result).sendToTarget();
             return;
         }
 
@@ -154,7 +141,7 @@ public class ImageLoader {
             public void run() {
                 Bitmap bitmap = loadBitmap(uri, reqWidth, reqHeight);
                 if (bitmap != null) {
-                    LoaderResult result = new LoaderResult(imageView, uri, bitmap);
+                    LoaderResult result = new LoaderResult(uri, bitmap);
                     mMainHandler.obtainMessage(MESSAGE_POST_RESULT, result).sendToTarget();
                 }
             }
@@ -164,8 +151,9 @@ public class ImageLoader {
 
     /**
      * load bitmap from memory cache or disk cache or network.
-     * @param uri http url
-     * @param reqWidth the width ImageView desired
+     *
+     * @param uri       http url
+     * @param reqWidth  the width ImageView desired
      * @param reqHeight the height ImageView desired
      * @return bitmap, maybe null.
      */
@@ -238,7 +226,7 @@ public class ImageLoader {
         String key = hashKeyFormUrl(url);
         DiskLruCache.Snapshot snapShot = mDiskLruCache.get(key);
         if (snapShot != null) {
-            FileInputStream fileInputStream = (FileInputStream)snapShot.getInputStream(DISK_CACHE_INDEX);
+            FileInputStream fileInputStream = (FileInputStream) snapShot.getInputStream(DISK_CACHE_INDEX);
             FileDescriptor fileDescriptor = fileInputStream.getFD();
             bitmap = mImageResizer.decodeSampledBitmapFromFileDescriptor(fileDescriptor,
                     reqWidth, reqHeight);
@@ -348,13 +336,11 @@ public class ImageLoader {
         return (long) stats.getBlockSize() * (long) stats.getAvailableBlocks();
     }
 
-    private static class LoaderResult {
-        public ImageView imageView;
+    public static class LoaderResult {
         public String uri;
         public Bitmap bitmap;
 
-        public LoaderResult(ImageView imageView, String uri, Bitmap bitmap) {
-            this.imageView = imageView;
+        public LoaderResult(String uri, Bitmap bitmap) {
             this.uri = uri;
             this.bitmap = bitmap;
         }

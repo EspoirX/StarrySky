@@ -1,12 +1,16 @@
 package com.example.xian.myapplication;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.lzx.musiclib.manager.MusicManager;
 import com.lzx.musiclib.model.MusicInfo;
 import com.lzx.musiclib.service.MusicPlayService;
@@ -23,6 +27,11 @@ import java.util.Observer;
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder> implements Observer {
 
     private List<MusicInfo> musicInfos = new ArrayList<>();
+    private Context mContext;
+
+    public MusicAdapter(Context context) {
+        mContext = context;
+    }
 
     public void setMusicInfos(List<MusicInfo> musicInfos) {
         this.musicInfos = musicInfos;
@@ -43,19 +52,23 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
             @Override
             public void onClick(View view) {
                 MusicInfo info = MusicManager.get().getPlayingMusic();
-                if (info != null && info.getMusicUrl().equals(musicInfo.getMusicUrl())) {
+                if (musicInfo.getMusicUrl().equals(info.getMusicUrl())) {
                     MusicManager.get().playPause();
                 } else {
                     MusicManager.get().playByPosition(position);
                 }
             }
         });
-
         if (musicInfo.getPlayStatus() == MusicPlayService.STATE_PLAYING) {
             holder.mBtn.setText("暂停");
         } else {
             holder.mBtn.setText("播放");
         }
+        Glide.with(mContext)
+                .load(musicInfo.getMusicCover())
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(holder.musicCover);
     }
 
     @Override
@@ -65,12 +78,16 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
 
     @Override
     public void update(Observable observable, Object o) {
-        int status = (int) o;
-        for (int i = 0; i < musicInfos.size(); i++) {
-            if (i == MusicManager.get().getPlayingPosition()) {
-                musicInfos.get(i).setPlayStatus(status);
+        for (MusicInfo musicInfo : musicInfos) {
+            MusicInfo music = MusicManager.get().getPlayingMusic();
+            if (music.getMusicUrl().equals(musicInfo.getMusicUrl())) {
+                if (MusicManager.get().isPlaying()) {
+                    musicInfo.setPlayStatus(MusicPlayService.STATE_PLAYING);
+                } else {
+                    musicInfo.setPlayStatus(MusicPlayService.STATE_PAUSE);
+                }
             } else {
-                musicInfos.get(i).setPlayStatus(MusicPlayService.STATE_PAUSE);
+                musicInfo.setPlayStatus(MusicPlayService.STATE_PAUSE);
             }
         }
         notifyDataSetChanged();
@@ -79,11 +96,13 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
     class MusicHolder extends RecyclerView.ViewHolder {
         TextView mMusicTitle;
         Button mBtn;
+        ImageView musicCover;
 
         public MusicHolder(View itemView) {
             super(itemView);
             mMusicTitle = itemView.findViewById(R.id.textView);
             mBtn = itemView.findViewById(R.id.button);
+            musicCover = itemView.findViewById(R.id.music_cover);
         }
     }
 }
