@@ -1,16 +1,15 @@
 package com.example.xian.myapplication;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.musiclib.manager.MusicManager;
-import com.example.musiclib.model.MusicInfo;
-import com.example.musiclib.service.MusicPlayService;
+import com.lzx.musiclib.manager.MusicManager;
+import com.lzx.musiclib.model.MusicInfo;
+import com.lzx.musiclib.service.MusicPlayService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +66,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder>
     @Override
     public void update(Observable observable, Object o) {
         int status = (int) o;
-        Log.i("xian", "收到通知 = " + status);
         for (int i = 0; i < musicInfos.size(); i++) {
             if (i == MusicManager.get().getPlayingPosition()) {
                 musicInfos.get(i).setPlayStatus(status);
