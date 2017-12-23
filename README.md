@@ -106,7 +106,8 @@ MusicAdapter musicAdapter = new MusicAdapter(this);
 recyclerView.setAdapter(musicAdapter);
 MusicManager.get().addObservable(musicAdapter);
 
-//当音乐暂停或者开始的时候，update方法就会调用，Object参数的值是播放状态，分别是 MusicPlayService.STATE_PLAYING 和 MusicPlayService.STATE_PAUSE
+//当音乐暂停或者开始的时候，update方法就会调用，Object参数的值是播放状态，
+//分别是 MusicPlayService.STATE_PLAYING 和 MusicPlayService.STATE_PAUSE
 //这时候就可以根据这个状态去判断做自己的逻辑了。
 
 ```
