@@ -248,14 +248,7 @@ public class MusicManager implements OnPlayerEventListener {
         mContext.sendBroadcast(intent);
     }
 
-    /**
-     * 暂停/播放,没有监听
-     */
-    public void playPauseOnly() {
-        if (isServiceNotNull()) {
-            mService.playPause();
-        }
-    }
+
 
     /**
      * 开始播放
@@ -269,7 +262,7 @@ public class MusicManager implements OnPlayerEventListener {
     /**
      * 暂停播放
      */
-    public void pause() {
+    public void pausePlay() {
         Intent intent = new Intent();
         intent.setAction(MusicPlayService.ACTION_PAUSE);
         mContext.sendBroadcast(intent);
@@ -278,7 +271,7 @@ public class MusicManager implements OnPlayerEventListener {
     /**
      * 停止播放
      */
-    public void stop() {
+    public void stopPlay() {
         Intent intent = new Intent();
         intent.setAction(MusicPlayService.ACTION_STOP);
         mContext.sendBroadcast(intent);
@@ -287,7 +280,7 @@ public class MusicManager implements OnPlayerEventListener {
     /**
      * 上一首
      */
-    public void prev() {
+    public void playPrev() {
         Intent intent = new Intent();
         intent.setAction(MusicPlayService.ACTION_PRE);
         mContext.sendBroadcast(intent);
