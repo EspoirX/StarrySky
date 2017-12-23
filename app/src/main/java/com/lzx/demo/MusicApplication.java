@@ -1,4 +1,4 @@
-package com.example.xian.myapplication;
+package com.lzx.demo;
 
 import android.app.Application;
 

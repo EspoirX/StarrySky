@@ -1,4 +1,4 @@
-package com.example.xian.myapplication;
+package com.lzx.demo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.xian.myapplication.MusicAdapter;
+import com.example.xian.myapplication.R;
 import com.lzx.musiclib.manager.MusicManager;
 import com.lzx.musiclib.model.MusicInfo;
 import com.lzx.musiclib.service.MusicPlayService;

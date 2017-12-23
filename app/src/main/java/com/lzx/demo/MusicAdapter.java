@@ -1,4 +1,4 @@
-package com.example.xian.myapplication;
+package com.lzx.demo;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.xian.myapplication.R;
 import com.lzx.musiclib.manager.MusicManager;
 import com.lzx.musiclib.model.MusicInfo;
 import com.lzx.musiclib.service.MusicPlayService;
