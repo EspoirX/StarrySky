@@ -99,6 +99,24 @@ MusicManager.get().setMusicList(musicInfos);
 31. addObservable(Observer o)        添加音乐监听观察者
 ```
 
+#### 变量说明
+播放模式一共有4种，定义在PlayMode里面：
+```java
+PlayMode.PLAY_IN_ORDER       顺序播放
+PlayMode.PLAY_IN_SINGLE_LOOP 单曲循环
+PlayMode.PLAY_IN_RANDOM      随机播放
+PlayMode.PLAY_IN_LIST_LOOP   列表循环
+```
+默认是顺序播放。
+
+播放状态有4种，定义在MusicPlayService里面
+```java
+MusicPlayService.STATE_IDLE      空闲状态
+MusicPlayService.STATE_PREPARING 准备状态
+MusicPlayService.STATE_PLAYING   正在播放
+MusicPlayService.STATE_PAUSE     暂停
+```
+
 #### 关于音乐实体类 MusicInfo
 MusicInfo是我定义的一个音乐实体类，里面的字段基本能够应付大多数的情况了，如果跟你的觉得不合适的话，可以替换成自己的。
 
