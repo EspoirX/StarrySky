@@ -129,7 +129,8 @@ MusicManager.get().addObservable(musicAdapter);
 ```
 
 关于通知栏，因为考虑到通知栏这种要设置点击打开的界面，所以还是留给自己去实现吧。  
-总体来说，整个Lib的封装代码还是非常简单的，有兴趣可以看看，希望你喜欢。
+总体来说，整个Lib的封装代码还是非常简单的，有兴趣可以看看，希望你喜欢。  
+欢迎 Star 和 Fork，以及提出你宝贵的意见。
 
 #### About me
 An android developer in GuangZhou  
