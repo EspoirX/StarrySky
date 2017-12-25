@@ -20,6 +20,22 @@ demo中的音乐来自易源接口，不知道为什么，易源的接口就是�
 <a href="art/image1.png"><img src="art/image1.png" width="30%"/></a>
 <a href="art/image2.png"><img src="art/image2.png" width="30%"/></a>
 
+#### 引用：
+```
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+     compile 'com.github.lizixian18:MusicLib:v1.1'
+}
+```
+
+[![](https://jitpack.io/v/lizixian18/MusicLib.svg)](https://jitpack.io/#lizixian18/MusicLib)
+
 #### 用法：
 
 整个库的功能是通过 MusicManager 这个类去获取和控制的。 
