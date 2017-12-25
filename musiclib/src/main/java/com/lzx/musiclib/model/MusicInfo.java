@@ -136,36 +136,12 @@ public class MusicInfo implements Parcelable {
         this.musicTime = musicTime;
     }
 
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
     public int getPlayStatus() {
         return playStatus;
     }
 
     public void setPlayStatus(int playStatus) {
         this.playStatus = playStatus;
-    }
-
-    public String getArticleType() {
-        return articleType;
-    }
-
-    public void setArticleType(String articleType) {
-        this.articleType = articleType;
-    }
-
-    public String getArticleId() {
-        return articleId;
-    }
-
-    public void setArticleId(String articleId) {
-        this.articleId = articleId;
     }
 
     @Override
@@ -188,9 +164,6 @@ public class MusicInfo implements Parcelable {
         dest.writeString(this.musicDay);
         dest.writeString(this.musicPlayCount);
         dest.writeString(this.musicTime);
-        dest.writeString(this.articleId);
-        dest.writeString(this.articleType);
-        dest.writeInt(this.page);
         dest.writeInt(this.playStatus);
     }
 
@@ -211,9 +184,6 @@ public class MusicInfo implements Parcelable {
         this.musicDay = in.readString();
         this.musicPlayCount = in.readString();
         this.musicTime = in.readString();
-        this.articleId = in.readString();
-        this.articleType = in.readString();
-        this.page = in.readInt();
         this.playStatus = in.readInt();
     }
 
