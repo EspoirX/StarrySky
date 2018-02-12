@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MusicLibApp.iml" filepath="$PROJECT_DIR$/MusicLibApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/musiclib/musiclib.iml" filepath="$PROJECT_DIR$/musiclib/musiclib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/musiclib.iml" filepath="$PROJECT_DIR$/musiclib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/musiclibrary/musiclibrary.iml" filepath="$PROJECT_DIR$/musiclibrary/musiclibrary.iml" />
     </modules>
   </component>
 </project>

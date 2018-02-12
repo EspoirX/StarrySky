@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="cn.hugeterry.coordinatortablayout:coordinatortablayout-1.2.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/coordinatortablayout-1.2.2.aar/f7472000eaa1ef2513f7eb7c28108762/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/coordinatortablayout-1.2.2.aar/f7472000eaa1ef2513f7eb7c28108762/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/cn.hugeterry.coordinatortablayout/coordinatortablayout/1.2.2/dba15ee4c26160492ca07c00117df59585830a2c/coordinatortablayout-1.2.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

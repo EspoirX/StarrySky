@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">musicLibrary</string>
+    <string name="notification_channel">MUSIC_LIB_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for MUSIC_LIB</string>
+</resources>

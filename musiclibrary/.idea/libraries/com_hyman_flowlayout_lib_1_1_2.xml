@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="com.hyman:flowlayout-lib-1.1.2">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/flowlayout-lib-1.1.2.aar/baaff9daac507bb326f2d55b1cbb7078/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/flowlayout-lib-1.1.2.aar/baaff9daac507bb326f2d55b1cbb7078/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.hyman/flowlayout-lib/1.1.2/85304f03158cba26f21b5c1c37b1b56bf017e500/flowlayout-lib-1.1.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
