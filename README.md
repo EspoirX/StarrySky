@@ -1,4 +1,4 @@
-![](https://github.com/lizixian18/MusicLibrary/tree/master/art/bg1.jpg?raw=true)
+<a href="art/bg1.jpg"><img src="art/bg1.jpg" width="100%"/></a>
 
 # MusicLibrary
 一个比较完善的音乐播放封装库。
