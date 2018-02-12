@@ -1,6 +1,7 @@
+# MusicLibrary
+
 <a href="art/bg1.jpg"><img src="art/bg1.jpg" width="100%"/></a>
 
-# MusicLibrary
 一个比较完善的音乐播放封装库。
 
 因为还没有踩完多进程的坑，所以目前还没开多进程
