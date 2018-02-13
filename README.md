@@ -2,9 +2,14 @@
 
 <a href="art/bg1.jpg"><img src="art/bg1.jpg" width="100%"/></a>
 
-一个比较完善的音乐播放封装库。
+一个比较完善的音乐播放封装库。有了它，你不用管什么播放器和相关的封装，只需要调用相关的方法即可实现音频播放功能。
 
-PS：虽然写了aidl，但是因为还没有踩完多进程的坑，所以目前还没开多进程。
+PS：
+1. 虽然写了aidl，但是因为还没有踩完多进程的坑，所以目前还没开多进程。
+2. 还在不断的完善中，所以暂时不提供依赖的使用方法，可以先Clone源码导入
+3. 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。
+    
+
 
 #### Demo
 Demo 参考 https://github.com/lizixian18/NiceMusic
@@ -235,9 +240,129 @@ static boolean isCurrMusicIsPaused(SongInfo currMusic);
 ```
 
 
-
-
 #### 使用方法
+
+```java
+通过 MusicManager 去调用上面说到的所有方法，静态方法可以直接调用，非静态方法需要通过 MusicManager.get() 去调用。
+
+在 Application 中绑定音乐服务完成初始化：
+MusicManager.get().setContext(this).bindService();
+
+其中，一定要调用 setContext 设置上下文，否则会报错。  
+初始化的时候还有一些参数可以配置：  
+setAutoPlayNext(boolean autoPlayNext) //是否在播放完当前歌曲后自动播放下一首
+
+
+其他方法介绍：  
+/**
+* 解绑 Service
+*/
+void unbindService();
+
+/**
+* 添加状态监听观察者
+*/
+void addStateObservable(Observer o);
+
+/**
+* 删除状态监听观察者
+*/
+void deleteStateObservable(Observer o);
+
+/**
+* 清空所有状态监听观察者
+*/
+void clearStateObservable();
+
+/**
+* 添加一个状态监听器
+*/
+void addPlayerEventListener(OnPlayerEventListener listener);
+
+/**
+* 移除一个状态监听器
+*/
+void removePlayerEventListener(OnPlayerEventListener listener);
+
+/**
+* 清除所有状态监听器
+*/
+void clearPlayerEventListener();
+
+
+音乐状态监听说明：
+
+一个监听器有六个方法，分别回调六种状态。分别为切歌，开始播放，暂停播放，播放完成，播放出错和缓存,如下：
+
+public interface OnPlayerEventListener {
+    //music 切歌信息
+    void onMusicSwitch(SongInfo music);
+
+    void onPlayerStart();
+
+    void onPlayerPause();
+
+    void onPlayCompletion();
+    
+    //errorMsg 错误信息
+    void onError(String errorMsg);
+
+    //isFinishBuffer true为缓冲完成，false为还没缓冲完成,缓冲的过程既是加载音乐的异步过程
+    void onBuffering(boolean isFinishBuffer);
+}
+
+然后因为状态监听的方法太多，有时候并不需要这么多方法，所以还提供了一种观察者的监听方法。
+
+一个使用场景：一个音乐列表，列表中只需要知道两种状态，播放和暂停，根据这状态来显示不同的UI。
+如果实现 OnPlayerEventListener ，方法太多，很麻烦。
+
+这时候可以这样：
+在 Adapter 中实现 Observer接口，然后实现 update 方法，然后调用 addStateObservable 方法把 Adapter添加到监听队列中即可。
+
+具体代码展示
+
+Adapter：
+class SongListAdapter extends RecycleAdapter implements Observer{
+    ...
+    protected void BindViewHolder(BaseViewHolder viewHolder, int position) {
+         SongInfo songInfo = mDataList.get(position);
+        if (MusicManager.isCurrMusicIsPlayingMusic(songInfo)) {
+            //展示当前播放音乐的UI
+        }else {
+            //展示其他没在播放音乐的UI
+        }
+    }
+    
+    @Override
+    public void update(Observable observable, Object arg) {
+        //监听到状态改变，如果是开始和暂停两种的话就刷新adapter改变UI
+        int msg = (int) arg;
+        if (msg == MusicManager.MSG_PLAYER_START || msg == MusicManager.MSG_PLAYER_PAUSE) {
+            notifyDataSetChanged();
+        }
+    }
+    ...
+}
+
+Activity:
+...
+mAdapter = new SongListAdapter();
+mRecyclerView.setAdapter(mAdapter);
+//添加一个观察者
+MusicManager.get().addStateObservable(mAdapter);
+...
+
+不止是开始和暂停，所有状态都能监听到，分别为：
+
+MusicManager.MSG_MUSIC_CHANGE     切歌
+MusicManager.MSG_PLAYER_START     开始
+MusicManager.MSG_PLAYER_PAUSE     暂停
+MusicManager.MSG_PLAY_COMPLETION  播放完成
+MusicManager.MSG_PLAYER_ERROR     播放失败
+MusicManager.MSG_BUFFERING        缓冲
+
+
+```
 
 
 
