@@ -110,6 +110,17 @@ public class QueueHelper {
         return -1;
     }
 
+    public static int getMusicIndexOnQueue(List<SongInfo> queue, String mediaId) {
+        int index = 0;
+        for (SongInfo item : queue) {
+            if (mediaId.equals(item.getSongId())) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
     /**
      * 是否需要切歌
      */

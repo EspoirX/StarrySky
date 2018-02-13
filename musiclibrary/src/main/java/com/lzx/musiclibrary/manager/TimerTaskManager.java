@@ -25,12 +25,18 @@ public class TimerTaskManager {
     public void scheduleSeekBarUpdate() {
         stopSeekBarUpdate();
         if (!mExecutorService.isShutdown()) {
-            if (mUpdateProgressTask != null) {
-                mScheduleFuture = mExecutorService.scheduleAtFixedRate(mUpdateProgressTask,
-                        PROGRESS_UPDATE_INITIAL_INTERVAL,
-                        PROGRESS_UPDATE_INTERNAL,
-                        TimeUnit.MILLISECONDS);
-            }
+            mScheduleFuture = mExecutorService.scheduleAtFixedRate(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mUpdateProgressTask != null) {
+                                mHandler.post(mUpdateProgressTask);
+                            }
+                        }
+                    },
+                    PROGRESS_UPDATE_INITIAL_INTERVAL,
+                    PROGRESS_UPDATE_INTERNAL,
+                    TimeUnit.MILLISECONDS);
         }
     }
 
@@ -39,11 +45,31 @@ public class TimerTaskManager {
     }
 
 
+//    private final  Runnable mUpdateTimerTask = new Runnable() {
+//        @Override
+//        public void run() {
+//
+//        }
+//    };
+//
+//    private CountDownTimer mCountDownTimer = new CountDownTimer() {
+//        @Override
+//        public void onTick(long millisUntilFinished) {
+//
+//        }
+//
+//        @Override
+//        public void onFinish() {
+//
+//        }
+//    }
+
     public void stopSeekBarUpdate() {
         if (mScheduleFuture != null) {
             mScheduleFuture.cancel(false);
         }
     }
+
 
     public void onRemoveUpdateProgressTask() {
         stopSeekBarUpdate();

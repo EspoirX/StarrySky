@@ -142,7 +142,6 @@ public class MusicManager implements IPlayControl {
     private IOnPlayerEventListener mOnPlayerEventListener = new IOnPlayerEventListener.Stub() {
         @Override
         public void onMusicSwitch(SongInfo music) {
-            LogUtil.i("切歌啊 = " + music.getSongName());
             mClientHandler.obtainMessage(MSG_MUSIC_CHANGE, music).sendToTarget();
         }
 

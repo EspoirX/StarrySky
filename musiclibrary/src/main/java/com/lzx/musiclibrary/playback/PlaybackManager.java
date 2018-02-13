@@ -143,6 +143,8 @@ public class PlaybackManager implements Playback.Callback {
             //单曲循环
             case PlayMode.PLAY_IN_SINGLE_LOOP:
                 if (mQueueManager.skipQueuePosition(0)) {
+                    //重新设置id，否则不会重新播
+                    mPlayback.setCurrentMediaId("");
                     handlePlayRequest();
                 } else {
                     handleStopRequest(null);
