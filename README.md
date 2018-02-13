@@ -1,4 +1,7 @@
 # MusicLibrary
+
+<a href="art/bg1.jpg"><img src="art/bg1.jpg" width="100%"/></a>
+
 一个比较完善的音乐播放封装库。
 
 因为还没有踩完多进程的坑，所以目前还没开多进程
@@ -17,7 +20,7 @@ If you want to make friends with me, You can give me a Email and follow me。
 #### License
 ```
 Copyright 2018 L_Xian   
- 
+
 Licensed under the Apache License, Version 2.0 (the "License");  
 you may not use this file except in compliance with the License.  
 You may obtain a copy of the License at  
