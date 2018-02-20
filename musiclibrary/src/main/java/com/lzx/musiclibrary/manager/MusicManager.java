@@ -2,6 +2,7 @@ package com.lzx.musiclibrary.manager;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -42,9 +43,10 @@ public class MusicManager implements IPlayControl {
     public static final int MSG_BUFFERING = 5;
 
     private Context mContext;
-    private boolean isUseMediaPlayer;
+    private boolean isUseMediaPlayer = false;
     private boolean isAutoPlayNext = true;
-    private Notification mNotification;
+    private boolean isCreateNotification = false;
+
     private IPlayControl control;
     private ClientHandler mClientHandler;
     private PlayStateObservable mStateObservable;
@@ -65,7 +67,7 @@ public class MusicManager implements IPlayControl {
     }
 
     public MusicManager setContext(Context context) {
-        mContext = context;
+        mContext = context.getApplicationContext();
         return this;
     }
 
@@ -79,16 +81,25 @@ public class MusicManager implements IPlayControl {
         return this;
     }
 
-    public MusicManager setNotification(Notification notification) {
-        mNotification = notification;
+    public MusicManager setCreateNotification(boolean createNotification) {
+        this.isCreateNotification = createNotification;
         return this;
+    }
+
+    private void init(){
+        Intent intent = new Intent(mContext, MusicService.class);
+        intent.putExtra("isUseMediaPlayer", isUseMediaPlayer);
+        intent.putExtra("isAutoPlayNext", isAutoPlayNext);
+        intent.putExtra("isCreateNotification", isCreateNotification);
+        mContext.startService(intent);
+        mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     public void bindService() {
         Intent intent = new Intent(mContext, MusicService.class);
         intent.putExtra("isUseMediaPlayer", isUseMediaPlayer);
         intent.putExtra("isAutoPlayNext", isAutoPlayNext);
-        intent.putExtra("notification", mNotification);
+        intent.putExtra("isCreateNotification", isCreateNotification);
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -98,7 +109,6 @@ public class MusicManager implements IPlayControl {
             control = IPlayControl.Stub.asInterface(iBinder);
             try {
                 control.registerPlayerEventListener(mOnPlayerEventListener);
-                LogUtil.i("--onServiceConnected--");
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -106,7 +116,6 @@ public class MusicManager implements IPlayControl {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            LogUtil.i("--onServiceDisconnected--");
         }
     };
 
@@ -142,7 +151,6 @@ public class MusicManager implements IPlayControl {
     private IOnPlayerEventListener mOnPlayerEventListener = new IOnPlayerEventListener.Stub() {
         @Override
         public void onMusicSwitch(SongInfo music) {
-            LogUtil.i("切歌啊 = " + music.getSongName());
             mClientHandler.obtainMessage(MSG_MUSIC_CHANGE, music).sendToTarget();
         }
 
@@ -187,7 +195,6 @@ public class MusicManager implements IPlayControl {
             switch (msg.what) {
                 case MSG_MUSIC_CHANGE:
                     SongInfo musicInfo = (SongInfo) msg.obj;
-
                     manager.notifyPlayerEventChange(MSG_MUSIC_CHANGE, musicInfo, "", false);
                     manager.mStateObservable.stateChangeNotifyObservers(MSG_MUSIC_CHANGE);
                     break;
@@ -197,21 +204,21 @@ public class MusicManager implements IPlayControl {
                     break;
                 case MSG_PLAYER_PAUSE:
                     manager.notifyPlayerEventChange(MSG_PLAYER_PAUSE, null, "", false);
-                    manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAYER_START);
+                    manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAYER_PAUSE);
                     break;
                 case MSG_PLAY_COMPLETION:
                     manager.notifyPlayerEventChange(MSG_PLAY_COMPLETION, null, "", false);
-                    manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAYER_START);
+                    manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAY_COMPLETION);
                     break;
                 case MSG_PLAYER_ERROR:
                     String errMsg = (String) msg.obj;
                     manager.notifyPlayerEventChange(MSG_PLAYER_ERROR, null, errMsg, false);
-                    manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAYER_START);
+                    manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAYER_ERROR);
                     break;
                 case MSG_BUFFERING:
                     boolean isFinishBuffer = (boolean) msg.obj;
                     manager.notifyPlayerEventChange(MSG_BUFFERING, null, "", isFinishBuffer);
-                    manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAYER_START);
+                    manager.mStateObservable.stateChangeNotifyObservers(MSG_BUFFERING);
                     break;
                 default:
                     super.handleMessage(msg);
@@ -311,43 +318,10 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void playMusicAutoStopWhen(List<SongInfo> list, int index, int time) {
+    public void pausePlayInMillis(long time) {
         if (control != null) {
             try {
-                control.playMusicAutoStopWhen(list, index, time);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void playMusicByInfoAutoStopWhen(SongInfo info, int time) {
-        if (control != null) {
-            try {
-                control.playMusicByInfoAutoStopWhen(info, time);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void playMusicByIndexAutoStopWhen(int index, int time) {
-        if (control != null) {
-            try {
-                control.playMusicByIndexAutoStopWhen(index, time);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void setAutoStopTime(int time) {
-        if (control != null) {
-            try {
-                control.setAutoStopTime(time);
+                control.pausePlayInMillis(time);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -550,26 +524,34 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void setPlayMode(int mode) {
+    public void setPlayMode(int mode, boolean isSaveLocal) {
         if (control != null) {
             try {
-                control.setPlayMode(mode);
+                control.setPlayMode(mode, isSaveLocal);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    public void setPlayMode(int mode) {
+        setPlayMode(mode, false);
+    }
+
     @Override
-    public int getPlayMode() {
+    public int getPlayMode(boolean isGetLocal) {
         if (control != null) {
             try {
-                return control.getPlayMode();
+                return control.getPlayMode(isGetLocal);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }
         return 0;
+    }
+
+    public int getPlayMode() {
+        return getPlayMode(false);
     }
 
     @Override
@@ -600,6 +582,61 @@ public class MusicManager implements IPlayControl {
         if (control != null) {
             try {
                 control.reset();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void setStartOrPauseIntent(PendingIntent startOrPauseIntent) {
+        if (control != null) {
+            try {
+                control.setStartOrPauseIntent(startOrPauseIntent);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void setNextIntent(PendingIntent nextIntent) {
+        if (control != null) {
+            try {
+                control.setNextIntent(nextIntent);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void setPreIntent(PendingIntent preIntent) {
+        if (control != null) {
+            try {
+                control.setPreIntent(preIntent);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void setCloseIntent(PendingIntent closeIntent) {
+        if (control != null) {
+            try {
+                control.setCloseIntent(closeIntent);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void setNotification(Notification notification)  {
+        if (control != null) {
+            try {
+                control.setNotification(notification);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -662,7 +699,6 @@ public class MusicManager implements IPlayControl {
     public void unregisterPlayerEventListener(IOnPlayerEventListener listener) {
 
     }
-
 
     @Override
     public IBinder asBinder() {

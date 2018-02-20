@@ -82,7 +82,7 @@ public class FocusAndLockManager {
                     // playback should resume
                     mCurrentAudioFocusState = AUDIO_NO_FOCUS_NO_DUCK;
 
-                    if (mListener!=null){
+                    if (mListener != null) {
                         mListener.onAudioFocusLossTransient();
                     }
                     break;
@@ -92,7 +92,7 @@ public class FocusAndLockManager {
                     break;
             }
 
-            if (mListener!=null){
+            if (mListener != null) {
                 mListener.onAudioFocusChange();
             }
         }

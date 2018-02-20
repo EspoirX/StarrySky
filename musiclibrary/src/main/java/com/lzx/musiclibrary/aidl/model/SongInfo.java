@@ -309,7 +309,7 @@ public class SongInfo implements Parcelable {
         //dest.writeParcelable(this.metadataCompat, flags);
         dest.writeParcelable(this.albumInfo, flags);
         dest.writeParcelable(this.tempInfo, flags);
-        dest.writeParcelable(this.songCoverBitmap, flags);
+
     }
 
     public SongInfo() {
@@ -344,7 +344,7 @@ public class SongInfo implements Parcelable {
        // this.metadataCompat = in.readParcelable(MediaMetadataCompat.class.getClassLoader());
         this.albumInfo = in.readParcelable(AlbumInfo.class.getClassLoader());
         this.tempInfo = in.readParcelable(TempInfo.class.getClassLoader());
-        this.songCoverBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+
     }
 
     public static final Parcelable.Creator<SongInfo> CREATOR = new Parcelable.Creator<SongInfo>() {

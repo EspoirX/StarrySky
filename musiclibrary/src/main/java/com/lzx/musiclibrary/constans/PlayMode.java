@@ -21,7 +21,6 @@ public class PlayMode  {
 
     private int currPlayMode = PLAY_IN_LIST_LOOP;
 
-   
     public int getCurrPlayMode(Context context) {
         currPlayMode = (int) SPUtils.get(context, "music_key_play_model", PLAY_IN_LIST_LOOP);
         return currPlayMode;

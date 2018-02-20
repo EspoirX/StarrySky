@@ -1,6 +1,7 @@
 package com.lzx.musiclibrary.control;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 
@@ -12,50 +13,109 @@ import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.helper.QueueHelper;
+import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.player.ExoPlayback;
 import com.lzx.musiclibrary.playback.player.MediaPlayback;
 import com.lzx.musiclibrary.playback.player.Playback;
+import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.List;
 
 /**
+ * Binder
  * Created by xian on 2018/1/28.
  */
 
 public class PlayControl extends IPlayControl.Stub {
 
+    private MusicService mService;
     private PlayMode mPlayMode;
-
     private PlayController mController;
     private Playback playback;
+
 
     private RemoteCallbackList<IOnPlayerEventListener> mRemoteCallbackList;
 
     private NotifyContract.NotifyStatusChanged mNotifyStatusChanged;
     private NotifyContract.NotifyMusicSwitch mNotifyMusicSwitch;
 
-    public PlayControl(MusicService service, boolean isUseMediaPlayer, boolean isAutoPlayNext, Notification notification) {
+    private boolean hasInitNotification = false;
+    private boolean isCreateNotification = false;
+    private NotificationCreater mNotificationCreater;
+    private Notification mNotification;
+
+    private PlayControl(Builder builder) {
+        mService = builder.mMusicService;
+        isCreateNotification = builder.isCreateNotification;
         mNotifyStatusChanged = new NotifyStatusChange();
         mNotifyMusicSwitch = new NotifyMusicSwitch();
         mRemoteCallbackList = new RemoteCallbackList<>();
 
+        this.isCreateNotification = builder.isCreateNotification;
+        if (this.isCreateNotification) {
+            mNotificationCreater = NotificationCreater.getInstanse(mService.getApplicationContext());
+        }
+
         mPlayMode = new PlayMode();
-        playback = isUseMediaPlayer ? new MediaPlayback(service) : new ExoPlayback(service);
-        mController = new PlayController.Builder(service)
-                .setAutoPlayNext(isAutoPlayNext)
+        playback = builder.isUseMediaPlayer ? new MediaPlayback(mService.getApplicationContext())
+                : new ExoPlayback(mService.getApplicationContext());
+        mController = new PlayController.Builder(mService)
+                .setAutoPlayNext(builder.isAutoPlayNext)
                 .setNotifyMusicSwitch(mNotifyMusicSwitch)
                 .setNotifyStatusChanged(mNotifyStatusChanged)
                 .setPlayback(playback)
                 .setPlayMode(mPlayMode)
-                .setNotification(notification)
                 .build();
+    }
+
+    public PlayController getController() {
+        return mController;
+    }
+
+    public static class Builder {
+        private MusicService mMusicService;
+        private boolean isUseMediaPlayer = false;
+        private boolean isAutoPlayNext = true;
+        private boolean isCreateNotification = true;
+
+        public Builder(MusicService mService) {
+            mMusicService = mService;
+        }
+
+        public Builder setUseMediaPlayer(boolean useMediaPlayer) {
+            isUseMediaPlayer = useMediaPlayer;
+            return this;
+        }
+
+        public Builder setAutoPlayNext(boolean autoPlayNext) {
+            isAutoPlayNext = autoPlayNext;
+            return this;
+        }
+
+        public Builder setCreateNotification(boolean createNotification) {
+            isCreateNotification = createNotification;
+            return this;
+        }
+
+        public PlayControl build() {
+            return new PlayControl(this);
+        }
     }
 
     private class NotifyStatusChange implements NotifyContract.NotifyStatusChanged {
 
         @Override
-        public void notify(SongInfo info, int index, int status, String errorMsg, boolean isSwitchSong) {
+        public void notify(SongInfo info, int index, int status, String errorMsg) {
             synchronized (NotifyStatusChange.class) {
+
+                if (isCreateNotification && mNotification != null) {
+                    if (status == State.STATE_PLAYING) {
+                        mNotificationCreater.updateViewStateAtStart(mNotification);
+                    } else if (status == State.STATE_PAUSED) {
+                        mNotificationCreater.updateViewStateAtPause(mNotification);
+                    }
+                }
+
                 final int N = mRemoteCallbackList.beginBroadcast();
                 for (int i = 0; i < N; i++) {
 
@@ -83,9 +143,6 @@ public class PlayControl extends IPlayControl.Stub {
                                     listener.onError("");
                                     break;
                             }
-                            if (isSwitchSong) {
-                                listener.onMusicSwitch(info);
-                            }
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
@@ -101,6 +158,11 @@ public class PlayControl extends IPlayControl.Stub {
         @Override
         public void notify(SongInfo info) {
             synchronized (NotifyMusicSwitch.class) {
+
+                if (isCreateNotification && mNotification != null) {
+                    mNotificationCreater.updateModelDetail(info, mNotification);
+                }
+
                 final int N = mRemoteCallbackList.beginBroadcast();
                 for (int i = 0; i < N; i++) {
                     IOnPlayerEventListener listener = mRemoteCallbackList.getBroadcastItem(i);
@@ -147,23 +209,8 @@ public class PlayControl extends IPlayControl.Stub {
     }
 
     @Override
-    public void playMusicAutoStopWhen(List<SongInfo> list, int index, int time) throws RemoteException {
-
-    }
-
-    @Override
-    public void playMusicByInfoAutoStopWhen(SongInfo info, int time) throws RemoteException {
-
-    }
-
-    @Override
-    public void playMusicByIndexAutoStopWhen(int index, int time) throws RemoteException {
-
-    }
-
-    @Override
-    public void setAutoStopTime(int time) throws RemoteException {
-
+    public void pausePlayInMillis(long time) throws RemoteException {
+        mController.pausePlayInMillis(time);
     }
 
     @Override
@@ -205,7 +252,6 @@ public class PlayControl extends IPlayControl.Stub {
     public void deleteSongInfoOnPlayList(SongInfo info, boolean isNeedToPlayNext) throws RemoteException {
         mController.deleteMusicInfoOnPlayList(info, isNeedToPlayNext);
     }
-
 
     @Override
     public int getStatus() throws RemoteException {
@@ -253,12 +299,16 @@ public class PlayControl extends IPlayControl.Stub {
     }
 
     @Override
-    public void setPlayMode(int mode) throws RemoteException {
-        mPlayMode.setCurrPlayMode(mode);
+    public void setPlayMode(int mode, boolean isSaveLocal) throws RemoteException {
+        if (isSaveLocal) {
+            mPlayMode.setCurrPlayMode(mService, mode);
+        } else {
+            mPlayMode.setCurrPlayMode(mode);
+        }
     }
 
     @Override
-    public int getPlayMode() throws RemoteException {
+    public int getPlayMode(boolean isGetLocal) throws RemoteException {
         return mPlayMode.getCurrPlayMode();
     }
 
@@ -275,6 +325,50 @@ public class PlayControl extends IPlayControl.Stub {
     @Override
     public void reset() throws RemoteException {
 
+    }
+
+    @Override
+    public void setStartOrPauseIntent(PendingIntent startOrPauseIntent) throws RemoteException {
+        if (isCreateNotification && startOrPauseIntent != null) {
+            mNotificationCreater.setStartOrPausePendingIntent(startOrPauseIntent);
+        }
+    }
+
+    @Override
+    public void setNextIntent(PendingIntent nextIntent) throws RemoteException {
+        if (isCreateNotification && nextIntent != null) {
+            mNotificationCreater.setNextPendingIntent(nextIntent);
+        }
+    }
+
+    @Override
+    public void setPreIntent(PendingIntent preIntent) throws RemoteException {
+        if (isCreateNotification && preIntent != null) {
+            mNotificationCreater.setPrePendingIntent(preIntent);
+        }
+    }
+
+    @Override
+    public void setCloseIntent(PendingIntent closeIntent) throws RemoteException {
+        if (isCreateNotification && closeIntent != null) {
+            mNotificationCreater.setClosePendingIntent(closeIntent);
+        }
+    }
+
+    @Override
+    public void setNotification(Notification notification) throws RemoteException {
+        if (!hasInitNotification) {
+            hasInitNotification = true;
+            mNotification = notification;
+            try {
+                if (mNotification != null) {
+                    mService.startForeground(NotificationCreater.NOTIFICATION_ID, mNotification);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                LogUtil.i(e.getMessage());
+            }
+        }
     }
 
     @Override

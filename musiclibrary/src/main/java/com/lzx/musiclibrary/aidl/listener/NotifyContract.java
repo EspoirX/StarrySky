@@ -12,7 +12,7 @@ public interface NotifyContract {
      * 统一通知播放状态改变
      */
     interface NotifyStatusChanged {
-        void notify(SongInfo info, int index, int status, String errorMsg,boolean isSwitchSong);
+        void notify(SongInfo info, int index, int status, String errorMsg);
     }
 
     /**

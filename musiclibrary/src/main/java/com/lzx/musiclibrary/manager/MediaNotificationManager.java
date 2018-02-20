@@ -1,6 +1,7 @@
 package com.lzx.musiclibrary.manager;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -8,11 +9,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.lzx.musiclibrary.MusicService;
+import com.lzx.musiclibrary.R;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
+import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.playback.PlaybackManager;
+import com.lzx.musiclibrary.utils.AlbumArtCache;
 
 /**
  * @author lzx
@@ -45,12 +54,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private boolean mStarted = false;
     private SongInfo mSongInfo;
     private MusicService mService;
-    private Notification mNotification;
     private PlaybackManager mPlaybackManager;
 
-    public MediaNotificationManager(MusicService musicService, Notification notification, PlaybackManager playbackManager) {
+    public MediaNotificationManager(MusicService musicService, PlaybackManager playbackManager) {
         mService = musicService;
-        mNotification = notification;
         mPlaybackManager = playbackManager;
 
         mNotificationManager = (NotificationManager) mService.getSystemService(Service.NOTIFICATION_SERVICE);
@@ -69,7 +76,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     public void stopNotification() {
-        if (mStarted && mNotification != null) {
+        if (mStarted) {
             mStarted = false;
             try {
                 mNotificationManager.cancel(NOTIFICATION_ID);
@@ -82,17 +89,108 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     public void startNotification() {
-        if (!mStarted && mNotification != null) {
-            mSongInfo = MusicManager.get().getCurrPlayingMusic();
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(ACTION_NEXT);
-            filter.addAction(ACTION_PAUSE);
-            filter.addAction(ACTION_PLAY);
-            filter.addAction(ACTION_PREV);
-            filter.addAction(ACTION_STOP_CASTING);
-            mService.registerReceiver(this, filter);
-            mService.startForeground(NOTIFICATION_ID, mNotification);
-            mStarted = true;
+        if (!mStarted) {
+            Notification notification = createNotification();
+            if (notification != null) {
+                mSongInfo = MusicManager.get().getCurrPlayingMusic();
+                IntentFilter filter = new IntentFilter();
+                filter.addAction(ACTION_NEXT);
+                filter.addAction(ACTION_PAUSE);
+                filter.addAction(ACTION_PLAY);
+                filter.addAction(ACTION_PREV);
+                filter.addAction(ACTION_STOP_CASTING);
+                mService.registerReceiver(this, filter);
+                mService.startForeground(NOTIFICATION_ID, notification);
+                mStarted = true;
+            }
+        }
+    }
+
+    private Notification createNotification() {
+        if (mSongInfo == null) {
+            return null;
+        }
+        String fetchArtUrl = null;
+        Bitmap art = null;
+        if (!TextUtils.isEmpty(mSongInfo.getSongCover())) {
+            String artUrl = mSongInfo.getSongCover();
+            art = AlbumArtCache.getInstance().getBigImage(artUrl);
+            if (art == null) {
+                fetchArtUrl = artUrl;
+                art = BitmapFactory.decodeResource(mService.getResources(), R.drawable.icon_notification);
+            }
+        }
+        // Notification channels are only supported on Android O+.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
+        final NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(mService, CHANNEL_ID);
+
+        notificationBuilder
+                .setDeleteIntent(mStopIntent)
+                .setSmallIcon(R.drawable.icon_notification)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setOnlyAlertOnce(true)
+                .setContentIntent(createContentIntent(mSongInfo))
+                .setContentTitle(mSongInfo.getSongName())
+                .setContentText(mSongInfo.getArtist())
+                .setLargeIcon(art);
+
+        setNotificationPlaybackState(notificationBuilder);
+        if (fetchArtUrl != null) {
+            fetchBitmapFromURLAsync(fetchArtUrl, notificationBuilder);
+        }
+
+        return notificationBuilder.build();
+    }
+
+    private void setNotificationPlaybackState(NotificationCompat.Builder builder) {
+        if (mSongInfo == null || !mStarted) {
+            mService.stopForeground(true);
+            return;
+        }
+        builder.setOngoing(MusicManager.get().getStatus() == State.STATE_PLAYING);
+    }
+
+    private void fetchBitmapFromURLAsync(final String bitmapUrl,
+                                         final NotificationCompat.Builder builder) {
+        AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
+            @Override
+            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
+                if (mSongInfo != null && !TextUtils.isEmpty(mSongInfo.getSongCover()) && mSongInfo.getSongCover().equals(artUrl)) {
+                    builder.setLargeIcon(bitmap);
+                    mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+                }
+            }
+        });
+    }
+
+    private PendingIntent createContentIntent(SongInfo songInfo) {
+//        Intent openUI = new Intent(mService, MusicPlayerActivity.class);
+//        openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//        openUI.putExtra(MusicPlayerActivity.EXTRA_START_FULLSCREEN, true);
+//        if (description != null) {
+//            openUI.putExtra(MusicPlayerActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+//        }
+//        return PendingIntent.getActivity(mService, REQUEST_CODE, openUI,
+//                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        return null;
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        if (mNotificationManager.getNotificationChannel(CHANNEL_ID) == null) {
+            NotificationChannel notificationChannel =
+                    new NotificationChannel(CHANNEL_ID,
+                            mService.getString(R.string.notification_channel),
+                            NotificationManager.IMPORTANCE_LOW);
+
+            notificationChannel.setDescription(
+                    mService.getString(R.string.notification_channel_description));
+
+            mNotificationManager.createNotificationChannel(notificationChannel);
         }
     }
 
@@ -137,7 +235,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
 //            art = AlbumArtCache.getInstance().getBigImage(artUrl);
 //            if (art == null) {
 //                fetchArtUrl = artUrl;
-//                art = BitmapFactory.decodeResource(mService.getResources(), R.drawable.ic_default_art);
+//                art = BitmapFactory.decodeResource(mService.getResources(), R.drawable.icon_notification);
 //            }
 //        }
 //
@@ -149,7 +247,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
 //        final NotificationCompat.Builder notificationBuilder =
 //                new NotificationCompat.Builder(mService, CHANNEL_ID);
 //        notificationBuilder
-//                .setSmallIcon(R.drawable.ic_default_art)
+//                .setSmallIcon(R.drawable.icon_notification)
 //                .setLargeIcon(art)
 //                .setWhen(System.currentTimeMillis())
 //                .setContentIntent(createContentIntent(Notification.FLAG_ONGOING_EVENT))
