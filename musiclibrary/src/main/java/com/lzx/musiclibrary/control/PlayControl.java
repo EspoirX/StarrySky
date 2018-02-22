@@ -17,7 +17,6 @@ import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.player.ExoPlayback;
 import com.lzx.musiclibrary.playback.player.MediaPlayback;
 import com.lzx.musiclibrary.playback.player.Playback;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.List;
 
@@ -39,22 +38,13 @@ public class PlayControl extends IPlayControl.Stub {
     private NotifyContract.NotifyStatusChanged mNotifyStatusChanged;
     private NotifyContract.NotifyMusicSwitch mNotifyMusicSwitch;
 
-    private boolean hasInitNotification = false;
-    private boolean isCreateNotification = false;
-    private NotificationCreater mNotificationCreater;
-    private Notification mNotification;
 
     private PlayControl(Builder builder) {
         mService = builder.mMusicService;
-        isCreateNotification = builder.isCreateNotification;
+
         mNotifyStatusChanged = new NotifyStatusChange();
         mNotifyMusicSwitch = new NotifyMusicSwitch();
         mRemoteCallbackList = new RemoteCallbackList<>();
-
-        this.isCreateNotification = builder.isCreateNotification;
-        if (this.isCreateNotification) {
-            mNotificationCreater = NotificationCreater.getInstanse(mService.getApplicationContext());
-        }
 
         mPlayMode = new PlayMode();
         playback = builder.isUseMediaPlayer ? new MediaPlayback(mService.getApplicationContext())
@@ -63,6 +53,7 @@ public class PlayControl extends IPlayControl.Stub {
                 .setAutoPlayNext(builder.isAutoPlayNext)
                 .setNotifyMusicSwitch(mNotifyMusicSwitch)
                 .setNotifyStatusChanged(mNotifyStatusChanged)
+                .setNotificationCreater(builder.notificationCreater)
                 .setPlayback(playback)
                 .setPlayMode(mPlayMode)
                 .build();
@@ -76,7 +67,7 @@ public class PlayControl extends IPlayControl.Stub {
         private MusicService mMusicService;
         private boolean isUseMediaPlayer = false;
         private boolean isAutoPlayNext = true;
-        private boolean isCreateNotification = true;
+        private NotificationCreater notificationCreater;
 
         public Builder(MusicService mService) {
             mMusicService = mService;
@@ -92,8 +83,10 @@ public class PlayControl extends IPlayControl.Stub {
             return this;
         }
 
-        public Builder setCreateNotification(boolean createNotification) {
-            isCreateNotification = createNotification;
+
+
+        public Builder setNotificationCreater(NotificationCreater notificationCreater) {
+            this.notificationCreater = notificationCreater;
             return this;
         }
 
@@ -107,15 +100,6 @@ public class PlayControl extends IPlayControl.Stub {
         @Override
         public void notify(SongInfo info, int index, int status, String errorMsg) {
             synchronized (NotifyStatusChange.class) {
-
-                if (isCreateNotification && mNotification != null) {
-                    if (status == State.STATE_PLAYING) {
-                        mNotificationCreater.updateViewStateAtStart(mNotification);
-                    } else if (status == State.STATE_PAUSED) {
-                        mNotificationCreater.updateViewStateAtPause(mNotification);
-                    }
-                }
-
                 final int N = mRemoteCallbackList.beginBroadcast();
                 for (int i = 0; i < N; i++) {
 
@@ -158,11 +142,6 @@ public class PlayControl extends IPlayControl.Stub {
         @Override
         public void notify(SongInfo info) {
             synchronized (NotifyMusicSwitch.class) {
-
-                if (isCreateNotification && mNotification != null) {
-                    mNotificationCreater.updateModelDetail(info, mNotification);
-                }
-
                 final int N = mRemoteCallbackList.beginBroadcast();
                 for (int i = 0; i < N; i++) {
                     IOnPlayerEventListener listener = mRemoteCallbackList.getBroadcastItem(i);
@@ -328,50 +307,6 @@ public class PlayControl extends IPlayControl.Stub {
     }
 
     @Override
-    public void setStartOrPauseIntent(PendingIntent startOrPauseIntent) throws RemoteException {
-        if (isCreateNotification && startOrPauseIntent != null) {
-            mNotificationCreater.setStartOrPausePendingIntent(startOrPauseIntent);
-        }
-    }
-
-    @Override
-    public void setNextIntent(PendingIntent nextIntent) throws RemoteException {
-        if (isCreateNotification && nextIntent != null) {
-            mNotificationCreater.setNextPendingIntent(nextIntent);
-        }
-    }
-
-    @Override
-    public void setPreIntent(PendingIntent preIntent) throws RemoteException {
-        if (isCreateNotification && preIntent != null) {
-            mNotificationCreater.setPrePendingIntent(preIntent);
-        }
-    }
-
-    @Override
-    public void setCloseIntent(PendingIntent closeIntent) throws RemoteException {
-        if (isCreateNotification && closeIntent != null) {
-            mNotificationCreater.setClosePendingIntent(closeIntent);
-        }
-    }
-
-    @Override
-    public void setNotification(Notification notification) throws RemoteException {
-        if (!hasInitNotification) {
-            hasInitNotification = true;
-            mNotification = notification;
-            try {
-                if (mNotification != null) {
-                    mService.startForeground(NotificationCreater.NOTIFICATION_ID, mNotification);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                LogUtil.i(e.getMessage());
-            }
-        }
-    }
-
-    @Override
     public void registerPlayerEventListener(IOnPlayerEventListener listener) throws RemoteException {
         mRemoteCallbackList.register(listener);
     }
@@ -380,6 +315,4 @@ public class PlayControl extends IPlayControl.Stub {
     public void unregisterPlayerEventListener(IOnPlayerEventListener listener) throws RemoteException {
         mRemoteCallbackList.unregister(listener);
     }
-
-
 }

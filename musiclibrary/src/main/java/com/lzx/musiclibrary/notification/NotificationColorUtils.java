@@ -140,7 +140,7 @@ public class NotificationColorUtils {
 
         try {
             Resources res = context.getResources();
-            smallIcon = res.getIdentifier("notification_default", "drawable", context.getPackageName());
+            smallIcon = res.getIdentifier("icon_notification", "drawable", context.getPackageName());
         } catch (Exception var8) {
             var8.printStackTrace();
         }

@@ -19,6 +19,7 @@ import com.lzx.musiclibrary.aidl.listener.IPlayControl;
 import com.lzx.musiclibrary.aidl.listener.OnPlayerEventListener;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.State;
+import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.PlayStateObservable;
 import com.lzx.musiclibrary.utils.LogUtil;
 
@@ -45,12 +46,12 @@ public class MusicManager implements IPlayControl {
     private Context mContext;
     private boolean isUseMediaPlayer = false;
     private boolean isAutoPlayNext = true;
-    private boolean isCreateNotification = false;
 
     private IPlayControl control;
     private ClientHandler mClientHandler;
     private PlayStateObservable mStateObservable;
     private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
+    private NotificationCreater mNotificationCreater;
 
     public static MusicManager get() {
         return SingletonHolder.sInstance;
@@ -81,25 +82,27 @@ public class MusicManager implements IPlayControl {
         return this;
     }
 
-    public MusicManager setCreateNotification(boolean createNotification) {
-        this.isCreateNotification = createNotification;
+    public MusicManager setNotificationCreater(NotificationCreater notificationCreater) {
+        mNotificationCreater = notificationCreater;
         return this;
     }
 
-    private void init(){
-        Intent intent = new Intent(mContext, MusicService.class);
-        intent.putExtra("isUseMediaPlayer", isUseMediaPlayer);
-        intent.putExtra("isAutoPlayNext", isAutoPlayNext);
-        intent.putExtra("isCreateNotification", isCreateNotification);
-        mContext.startService(intent);
-        mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+    public void init() {
+        init(true);
     }
 
     public void bindService() {
+        init(false);
+    }
+
+    private void init(boolean isStartService) {
         Intent intent = new Intent(mContext, MusicService.class);
         intent.putExtra("isUseMediaPlayer", isUseMediaPlayer);
         intent.putExtra("isAutoPlayNext", isAutoPlayNext);
-        intent.putExtra("isCreateNotification", isCreateNotification);
+        intent.putExtra("notificationCreater", mNotificationCreater);
+        if (isStartService) {
+            mContext.startService(intent);
+        }
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -588,73 +591,12 @@ public class MusicManager implements IPlayControl {
         }
     }
 
-    @Override
-    public void setStartOrPauseIntent(PendingIntent startOrPauseIntent) {
-        if (control != null) {
-            try {
-                control.setStartOrPauseIntent(startOrPauseIntent);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void setNextIntent(PendingIntent nextIntent) {
-        if (control != null) {
-            try {
-                control.setNextIntent(nextIntent);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void setPreIntent(PendingIntent preIntent) {
-        if (control != null) {
-            try {
-                control.setPreIntent(preIntent);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void setCloseIntent(PendingIntent closeIntent) {
-        if (control != null) {
-            try {
-                control.setCloseIntent(closeIntent);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void setNotification(Notification notification)  {
-        if (control != null) {
-            try {
-                control.setNotification(notification);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     /**
      * 判断当前的音乐是不是正在播放的音乐
      */
     public static boolean isCurrMusicIsPlayingMusic(SongInfo currMusic) {
         SongInfo playingMusic = MusicManager.get().getCurrPlayingMusic();
-        boolean result;
-        if (playingMusic == null) {
-            result = false;
-        } else {
-            result = currMusic.getSongId().equals(playingMusic.getSongId());
-        }
-        return result;
+        return playingMusic != null && currMusic.getSongId().equals(playingMusic.getSongId());
     }
 
     /**

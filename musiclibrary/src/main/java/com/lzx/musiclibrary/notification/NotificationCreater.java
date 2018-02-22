@@ -1,288 +1,229 @@
 package com.lzx.musiclibrary.notification;
 
-import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
-import android.text.TextUtils;
-import android.widget.RemoteViews;
-
-import com.lzx.musiclibrary.R;
-import com.lzx.musiclibrary.aidl.model.SongInfo;
-import com.lzx.musiclibrary.receiver.PlayerReceiver;
-import com.lzx.musiclibrary.utils.AlbumArtCache;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
- * Created by xian on 2018/2/18.
+ * Created by xian on 2018/2/22.
  */
 
-public class NotificationCreater {
+public class NotificationCreater implements Parcelable {
 
-    private Context mContext;
-    private static NotificationCreater instanse;
-
-    public static final String ACTION_PLAY_PAUSE = "com.lzx.nicemusic.play_pause";
-    public static final String ACTION_PAUSE = "com.lzx.nicemusic.pause";
-    public static final String ACTION_PLAY = "com.lzx.nicemusic.play";
-    public static final String ACTION_PREV = "com.lzx.nicemusic.prev";
-    public static final String ACTION_NEXT = "com.lzx.nicemusic.next";
-    public static final String ACTION_STOP = "com.lzx.nicemusic.stop";
-    public static final String ACTION_CLOSE = "com.lzx.nicemusic.close";
-    public static final String ACTION_STOP_CASTING = "com.lzx.nicemusic.stop_cast";
-    public static final String ACTION_INTENT_CLICK = "com.lzx.nicemusic.EXTRY_NOTIFICATION_TO_MAINACTIVITY";
-
-    private RemoteViews mRemoteView;
+    private String targetClass;
+    private String contentTitle;
+    private String contentText;
     private PendingIntent startOrPauseIntent;
     private PendingIntent nextIntent;
     private PendingIntent preIntent;
     private PendingIntent closeIntent;
-    private final NotificationManager mNotificationManager;
+    private PendingIntent favoriteIntent;
+    private PendingIntent lyricsIntent;
+    private PendingIntent playIntent;
+    private PendingIntent pauseIntent;
+    private PendingIntent stopIntent;
+    private PendingIntent downloadIntent;
 
-    private Resources res;
-    private String packageName;
-
-    public static final String CHANNEL_ID = "com.lzx.nicemusic.MUSIC_CHANNEL_ID";
-    public static final int NOTIFICATION_ID = 412;
-
-    private NotificationCreater(Context context) {
-        mContext = context;
-        res = context.getResources();
-        mNotificationManager = (NotificationManager) mContext.getSystemService(Service.NOTIFICATION_SERVICE);
-        packageName = mContext.getPackageName();
+    private NotificationCreater(Builder builder) {
+        this.targetClass = builder.targetClass;
+        this.contentTitle = builder.contentTitle;
+        this.contentText = builder.contentText;
+        this.startOrPauseIntent = builder.startOrPauseIntent;
+        this.nextIntent = builder.nextIntent;
+        this.preIntent = builder.preIntent;
+        this.closeIntent = builder.closeIntent;
+        this.favoriteIntent = builder.favoriteIntent;
+        this.lyricsIntent = builder.lyricsIntent;
+        this.playIntent = builder.playIntent;
+        this.pauseIntent = builder.pauseIntent;
+        this.stopIntent = builder.stopIntent;
+        this.downloadIntent = builder.downloadIntent;
     }
 
-    public <T> Notification initNotification(Context context, Class<T> targetClass) {
-        return createNotification(context, targetClass);
-    }
+    public static class Builder {
+        private String targetClass;
+        private String contentTitle;
+        private String contentText;
+        private PendingIntent startOrPauseIntent;
+        private PendingIntent nextIntent;
+        private PendingIntent preIntent;
+        private PendingIntent closeIntent;
+        private PendingIntent favoriteIntent;
+        private PendingIntent lyricsIntent;
+        private PendingIntent playIntent;
+        private PendingIntent pauseIntent;
+        private PendingIntent stopIntent;
+        private PendingIntent downloadIntent;
 
-    public static NotificationCreater getInstanse(Context context) {
-        if (instanse == null) {
-            synchronized (NotificationCreater.class) {
-                if (instanse == null) {
-                    instanse = new NotificationCreater(context.getApplicationContext());
-                }
-            }
+        public Builder setTargetClass(String targetClass) {
+            this.targetClass = targetClass;
+            return this;
         }
-        return instanse;
-    }
 
-    private <T> Notification createNotification(Context context, Class<T> targetClass) {
-        mRemoteView = createRemoteViews(context);
-        // Notification channels are only supported on Android O+.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel();
+        public Builder setContentTitle(String contentTitle) {
+            this.contentTitle = contentTitle;
+            return this;
         }
-        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mContext, CHANNEL_ID);
-        Intent notificationIntent = new Intent(context, targetClass);
-        notificationIntent.putExtra("notification_entry", ACTION_INTENT_CLICK);
-        @SuppressLint("WrongConstant")
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 134217728);
-        notificationBuilder
-                .setContentIntent(pendingIntent)
-                .setContentTitle("Nice Music")
-                .setContentText("随时随地 听我所想")
-                .setSmallIcon(getResourceId("icon_notification", "drawable"));
-        if (Build.VERSION.SDK_INT >= 16) {
-            notificationBuilder.setPriority(2);
-        }
-        if (Build.VERSION.SDK_INT >= 24) {
-            notificationBuilder.setCustomContentView(mRemoteView);
-        }
-        Notification notification;
-        if (Build.VERSION.SDK_INT >= 16) {
-            notification = notificationBuilder.build();
-        } else {
-            notification = notificationBuilder.getNotification();
-        }
-        if (Build.VERSION.SDK_INT < 24) {
-            notification.contentView = mRemoteView;
-        }
-        return notification;
-    }
 
-    private RemoteViews createRemoteViews(Context context) {
-        RemoteViews remoteView = new RemoteViews(context.getPackageName()
-                , getResourceId("view_notify_play", "layout"));
-        if (startOrPauseIntent == null) {
-            setStartOrPausePendingIntent(null);
+        public Builder setContentText(String contentText) {
+            this.contentText = contentText;
+            return this;
         }
-        if (startOrPauseIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId("img_notifyPlayOrPause", "id"), startOrPauseIntent);
-        }
-        if (nextIntent == null) {
-            setNextPendingIntent(null);
-        }
-        if (nextIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId("img_notifyNext", "id"), nextIntent);
-        }
-        if (preIntent == null) {
-            setPrePendingIntent(null);
-        }
-        if (preIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId("img_notifyPre", "id"), preIntent);
-        }
-        if (closeIntent == null) {
-            setClosePendingIntent(null);
-        }
-        if (closeIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId("img_notifyClose", "id"), closeIntent);
-        }
-        return remoteView;
-    }
 
-    private int getResourceId(String name, String className) {
-        return res.getIdentifier(name, className, packageName);
-    }
-
-    public void setStartOrPausePendingIntent(PendingIntent pendingIntent) {
-        if (pendingIntent == null) {
-            Intent intent = new Intent(ACTION_PLAY_PAUSE);
-            intent.setClass(mContext, PlayerReceiver.class);
-            startOrPauseIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
-        } else {
-            startOrPauseIntent = pendingIntent;
+        public Builder setStartOrPauseIntent(PendingIntent startOrPauseIntent) {
+            this.startOrPauseIntent = startOrPauseIntent;
+            return this;
         }
-    }
 
-    public void setNextPendingIntent(PendingIntent pendingIntent) {
-        if (pendingIntent == null) {
-            Intent intent = new Intent(ACTION_NEXT);
-            intent.setClass(mContext, PlayerReceiver.class);
-            nextIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
-        } else {
-            nextIntent = pendingIntent;
+        public Builder setNextIntent(PendingIntent nextIntent) {
+            this.nextIntent = nextIntent;
+            return this;
+        }
+
+        public Builder setPreIntent(PendingIntent preIntent) {
+            this.preIntent = preIntent;
+            return this;
+        }
+
+        public Builder setCloseIntent(PendingIntent closeIntent) {
+            this.closeIntent = closeIntent;
+            return this;
+        }
+
+        public Builder setFavoriteIntent(PendingIntent favoriteIntent) {
+            this.favoriteIntent = favoriteIntent;
+            return this;
+        }
+
+        public Builder setLyricsIntent(PendingIntent lyricsIntent) {
+            this.lyricsIntent = lyricsIntent;
+            return this;
+        }
+
+        public Builder setPlayIntent(PendingIntent playIntent) {
+            this.playIntent = playIntent;
+            return this;
+        }
+
+        public Builder setPauseIntent(PendingIntent pauseIntent) {
+            this.pauseIntent = pauseIntent;
+            return this;
+        }
+
+        public Builder setStopIntent(PendingIntent stopIntent) {
+            this.stopIntent = stopIntent;
+            return this;
+        }
+
+        public Builder setDownloadIntent(PendingIntent downloadIntent) {
+            this.downloadIntent = downloadIntent;
+            return this;
+        }
+
+        public NotificationCreater build() {
+            return new NotificationCreater(this);
         }
     }
 
-    public void setPrePendingIntent(PendingIntent pendingIntent) {
-        if (pendingIntent == null) {
-            Intent intent = new Intent(ACTION_PREV);
-            intent.setClass(mContext, PlayerReceiver.class);
-            preIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
-        } else {
-            preIntent = pendingIntent;
-        }
+    public String getTargetClass() {
+        return targetClass;
     }
 
-    public void setClosePendingIntent(PendingIntent pendingIntent) {
-        if (pendingIntent == null) {
-            Intent intent = new Intent(ACTION_CLOSE);
-            intent.setClass(mContext, PlayerReceiver.class);
-            closeIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
-        } else {
-            closeIntent = pendingIntent;
-        }
+    public String getContentTitle() {
+        return contentTitle;
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private void createNotificationChannel() {
-        if (mNotificationManager.getNotificationChannel(CHANNEL_ID) == null) {
-            NotificationChannel notificationChannel =
-                    new NotificationChannel(CHANNEL_ID,
-                            mContext.getString(R.string.notification_channel),
-                            NotificationManager.IMPORTANCE_LOW);
-
-            notificationChannel.setDescription(
-                    mContext.getString(R.string.notification_channel_description));
-
-            mNotificationManager.createNotificationChannel(notificationChannel);
-        }
+    public String getContentText() {
+        return contentText;
     }
 
-    /**
-     * 切歌的时候刷新
-     */
-    public void updateModelDetail(final SongInfo info, final Notification notification) {
-        if (notification != null) {
-            mRemoteView = createRemoteViews(mContext);
-            notification.contentView = mRemoteView;
-            if (info != null) {
-                mRemoteView.setTextViewText(getResourceId("txt_notifySongName", "id"), info.getSongName());
-                mRemoteView.setTextViewText(getResourceId("txt_notifyArtistName", "id"), info.getArtist());
-                mRemoteView.setImageViewResource(getResourceId("img_notifyPlayOrPause", "id"),
-                        getResourceId("notify_btn_pause", "drawable"));
-                String fetchArtUrl = null;
-                Bitmap art = null;
-                if (!TextUtils.isEmpty(info.getSongCover())) {
-                    String artUrl = info.getSongCover();
-                    art = AlbumArtCache.getInstance().getBigImage(artUrl);
-                    if (art == null) {
-                        fetchArtUrl = artUrl;
-                        art = BitmapFactory.decodeResource(res, R.drawable.icon_notification);
-                    }
-                }
-                if (fetchArtUrl != null) {
-                    final Bitmap finalArt = art;
-                    AlbumArtCache.getInstance().fetch(fetchArtUrl, new AlbumArtCache.FetchListener() {
-                        @Override
-                        public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
-                            if (!TextUtils.isEmpty(info.getSongCover()) && info.getSongCover().equals(artUrl)) {
-                                mRemoteView.setImageViewBitmap(getResourceId("img_notifyIcon", "id"), bitmap);
-                            } else {
-                                mRemoteView.setImageViewBitmap(getResourceId("img_notifyIcon", "id"), finalArt);
-                            }
-                            mNotificationManager.notify(NOTIFICATION_ID, notification);
-                        }
-                    });
-                } else {
-                    mNotificationManager.notify(NOTIFICATION_ID, notification);
-                }
-            }
-        }
+    public PendingIntent getStartOrPauseIntent() {
+        return startOrPauseIntent;
     }
 
-    /**
-     * 开始播放的时候
-     */
-    public void updateViewStateAtStart(Notification notification) {
-        if (notification != null) {
-            mRemoteView = createRemoteViews(mContext);
-            notification.contentView = mRemoteView;
-            if (mRemoteView != null) {
-                mRemoteView.setImageViewResource(getResourceId("img_notifyPlayOrPause", "id"),
-                        getResourceId("notify_btn_pause", "drawable"));
-                mNotificationManager.notify(NOTIFICATION_ID, notification);
-            }
-        }
+    public PendingIntent getNextIntent() {
+        return nextIntent;
     }
 
-    /**
-     * 暂停播放和播放完成的时候
-     */
-    public void updateViewStateAtPause(Notification notification) {
-        if (notification != null) {
-            mRemoteView = createRemoteViews(mContext);
-            notification.contentView = mRemoteView;
-            if (mRemoteView != null) {
-                mRemoteView.setImageViewResource(getResourceId("img_notifyPlayOrPause", "id"),
-                        getResourceId("notify_btn_play", "drawable"));
-                mNotificationManager.notify(NOTIFICATION_ID, notification);
-            }
-        }
+    public PendingIntent getPreIntent() {
+        return preIntent;
     }
 
-    public void closeNotification() {
-        if (mNotificationManager != null) {
-            //  stopForeground(true);
-            mNotificationManager.cancel(NOTIFICATION_ID);
-        }
+    public PendingIntent getCloseIntent() {
+        return closeIntent;
     }
 
-    public static void release() {
-        if (instanse != null) {
-            instanse.mRemoteView = null;
-            instanse = null;
-        }
+    public PendingIntent getFavoriteIntent() {
+        return favoriteIntent;
     }
 
+    public PendingIntent getLyricsIntent() {
+        return lyricsIntent;
+    }
+
+    public PendingIntent getPlayIntent() {
+        return playIntent;
+    }
+
+    public PendingIntent getPauseIntent() {
+        return pauseIntent;
+    }
+
+    public PendingIntent getStopIntent() {
+        return stopIntent;
+    }
+
+    public PendingIntent getDownloadIntent() {
+        return downloadIntent;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.targetClass);
+        dest.writeString(this.contentTitle);
+        dest.writeString(this.contentText);
+        dest.writeParcelable(this.startOrPauseIntent, flags);
+        dest.writeParcelable(this.nextIntent, flags);
+        dest.writeParcelable(this.preIntent, flags);
+        dest.writeParcelable(this.closeIntent, flags);
+        dest.writeParcelable(this.favoriteIntent, flags);
+        dest.writeParcelable(this.lyricsIntent, flags);
+        dest.writeParcelable(this.playIntent, flags);
+        dest.writeParcelable(this.pauseIntent, flags);
+        dest.writeParcelable(this.stopIntent, flags);
+        dest.writeParcelable(this.downloadIntent, flags);
+    }
+
+    protected NotificationCreater(Parcel in) {
+        this.targetClass = in.readString();
+        this.contentTitle = in.readString();
+        this.contentText = in.readString();
+        this.startOrPauseIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+        this.nextIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+        this.preIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+        this.closeIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+        this.favoriteIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+        this.lyricsIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+        this.playIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+        this.pauseIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+        this.stopIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+        this.downloadIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<NotificationCreater> CREATOR = new Parcelable.Creator<NotificationCreater>() {
+        @Override
+        public NotificationCreater createFromParcel(Parcel source) {
+            return new NotificationCreater(source);
+        }
+
+        @Override
+        public NotificationCreater[] newArray(int size) {
+            return new NotificationCreater[size];
+        }
+    };
 }
