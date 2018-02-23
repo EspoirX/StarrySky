@@ -10,7 +10,6 @@ import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.control.PlayControl;
 import com.lzx.musiclibrary.control.PlayController;
 import com.lzx.musiclibrary.notification.MediaNotificationManager;
-import com.lzx.musiclibrary.manager.MusicManager;
 
 /**
  * Created by xian on 2018/2/18.
@@ -37,7 +36,8 @@ public class PlayerReceiver extends BroadcastReceiver {
         }
         switch (action) {
             case MediaNotificationManager.ACTION_CLOSE:
-                MusicManager.get().unbindService();
+                controller.stopMusic();
+                controller.releaseMediaSession();
                 break;
             case MediaNotificationManager.ACTION_PLAY_PAUSE:
                 if (controller.getState() == State.STATE_PLAYING) {

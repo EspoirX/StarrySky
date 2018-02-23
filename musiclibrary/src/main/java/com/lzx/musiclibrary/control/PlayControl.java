@@ -1,7 +1,5 @@
 package com.lzx.musiclibrary.control;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 
@@ -304,6 +302,16 @@ public class PlayControl extends IPlayControl.Stub {
     @Override
     public void reset() throws RemoteException {
 
+    }
+
+    @Override
+    public void updateNotificationFavorite(boolean isFavorite) throws RemoteException {
+        mController.updateFavorite(isFavorite);
+    }
+
+    @Override
+    public void updateNotificationLyrics(boolean isChecked) throws RemoteException {
+        mController.updateLyrics(isChecked);
     }
 
     @Override

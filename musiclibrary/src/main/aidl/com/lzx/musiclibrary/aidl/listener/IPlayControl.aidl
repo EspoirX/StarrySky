@@ -84,6 +84,10 @@ interface IPlayControl {
     //初始化
     void reset();
 
+    void updateNotificationFavorite(boolean isFavorite);
+
+    void updateNotificationLyrics(boolean isChecked);
+
     void registerPlayerEventListener(IOnPlayerEventListener listener);
 
     void unregisterPlayerEventListener(IOnPlayerEventListener listener);

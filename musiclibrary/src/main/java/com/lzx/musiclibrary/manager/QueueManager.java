@@ -26,6 +26,7 @@ public class QueueManager {
     private MetadataUpdateListener mListener;
     private final ConcurrentMap<String, SongInfo> mMusicListById;
     private PlayMode mPlayMode;
+    private String playingSongId;
 
     public QueueManager(MetadataUpdateListener listener, PlayMode playMode) {
         mPlayingQueue = Collections.synchronizedList(new ArrayList<SongInfo>());
@@ -212,7 +213,6 @@ public class QueueManager {
      */
     public void setCurrentQueueItem(String musicId, boolean isJustPlay, boolean isSwitchMusic) {
         int index = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, musicId);
-
         setCurrentQueueIndex(index, isJustPlay, isSwitchMusic);
     }
 

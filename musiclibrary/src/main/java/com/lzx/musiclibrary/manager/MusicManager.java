@@ -1,8 +1,6 @@
 package com.lzx.musiclibrary.manager;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +19,6 @@ import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.PlayStateObservable;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -585,6 +582,28 @@ public class MusicManager implements IPlayControl {
         if (control != null) {
             try {
                 control.reset();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void updateNotificationFavorite(boolean isFavorite) {
+        if (control != null) {
+            try {
+                control.updateNotificationFavorite(isFavorite);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void updateNotificationLyrics(boolean isChecked) {
+        if (control != null) {
+            try {
+                control.updateNotificationLyrics(isChecked);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

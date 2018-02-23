@@ -30,7 +30,6 @@ import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
@@ -327,7 +326,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            LogUtil.i("playbackState = " + playbackState + " playWhenReady = " + playWhenReady);
             if (mCallback != null) {
                 switch (playbackState) {
                     case Player.STATE_IDLE:

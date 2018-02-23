@@ -207,6 +207,13 @@ public class PlaybackManager implements Playback.Callback {
 
     }
 
+    /**
+     * 获取当前媒体id
+     */
+    public String getCurrentMediaId() {
+        return mPlayback.getCurrentMediaId();
+    }
+
     public void updatePlaybackState(String error) {
         long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
         if (mPlayback != null && mPlayback.isConnected()) {

@@ -2,9 +2,11 @@ package com.lzx.musiclibrary.helper;
 
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.text.TextUtils;
 
 import com.lzx.musiclibrary.aidl.model.SongInfo;
-import com.lzx.musiclibrary.manager.QueueManager;
+import com.lzx.musiclibrary.playback.PlaybackManager;
+import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -124,21 +126,21 @@ public class QueueHelper {
     /**
      * 是否需要切歌
      */
-    public static boolean isNeedToSwitchMusic(QueueManager queueManager, List<SongInfo> list, int index) {
-        return isNeedToSwitchMusic(queueManager, list.get(index));
+    public static boolean isNeedToSwitchMusic(PlaybackManager manager, List<SongInfo> list, int index) {
+        return isNeedToSwitchMusic(manager, list.get(index));
     }
 
     /**
      * 是否需要切歌
      */
-    public static boolean isNeedToSwitchMusic(QueueManager queueManager, SongInfo info) {
-        SongInfo songInfo = queueManager.getCurrentMusic();
-        if (songInfo == null) {
+    public static boolean isNeedToSwitchMusic(PlaybackManager manager, SongInfo info) {
+        String mCurrentMediaId = manager.getCurrentMediaId();
+        LogUtil.i("mCurrentMediaId = " + mCurrentMediaId + " currMusicId = " + info.getSongId());
+        if (TextUtils.isEmpty(mCurrentMediaId)) {
             return true;
         } else {
-            String playingMusicId = songInfo.getSongId();
             String currMusicId = info.getSongId();
-            return !playingMusicId.equals(currMusicId);
+            return !mCurrentMediaId.equals(currMusicId);
         }
     }
 

@@ -9,10 +9,10 @@ import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.helper.QueueHelper;
-import com.lzx.musiclibrary.notification.MediaNotificationManager;
 import com.lzx.musiclibrary.manager.MediaSessionManager;
 import com.lzx.musiclibrary.manager.QueueManager;
 import com.lzx.musiclibrary.manager.TimerTaskManager;
+import com.lzx.musiclibrary.notification.MediaNotificationManager;
 import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.PlaybackManager;
 import com.lzx.musiclibrary.playback.player.Playback;
@@ -107,14 +107,8 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     }
 
     void playMusic(List<SongInfo> list, int index, boolean isJustPlay) {
-        //先播放再设置列表
-        if (mQueueManager.getCurrentQueueSize() == 0) {
-            mQueueManager.setCurrentQueue(list, index);
-        }
+        mQueueManager.setCurrentQueue(list, index);
         setCurrentQueueItem(list.get(index), isJustPlay);
-        if (mQueueManager.getCurrentQueueSize() != 0) {
-            mQueueManager.setCurrentQueue(list, index);
-        }
     }
 
     void playMusicByInfo(SongInfo info, boolean isJustPlay) {
@@ -145,7 +139,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         mPlaybackManager.handlePlayRequest();
     }
 
-    void stopMusic() {
+    public void stopMusic() {
         mPlaybackManager.handleStopRequest("");
     }
 
@@ -211,9 +205,8 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     }
 
     void pausePlayInMillis(long time) {
-        if (time == -1) {
-            mTimerTaskManager.cancelCountDownTask();
-        } else {
+        mTimerTaskManager.cancelCountDownTask();
+        if (time != -1) {
             mTimerTaskManager.starCountDownTask(time, 1000L, new TimerTaskManager.OnCountDownFinishListener() {
                 @Override
                 public void onFinish() {
@@ -225,7 +218,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
 
     private void setCurrentQueueItem(SongInfo info, boolean isJustPlay) {
         mQueueManager.setCurrentQueueItem(info.getSongId(), isJustPlay,
-                QueueHelper.isNeedToSwitchMusic(mQueueManager, info));
+                QueueHelper.isNeedToSwitchMusic(mPlaybackManager, info));
     }
 
     @Override
@@ -253,7 +246,6 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     public void onPlaybackSwitch(SongInfo info) {
         mNotifyMusicSwitch.notify(info);
         if (mNotificationManager != null) {
-            //  mNotificationCreater.updateModelDetail(info, mNotification);
             mNotificationManager.startNotification(info);
         }
     }
@@ -287,7 +279,19 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         }
     }
 
-    void releaseMediaSession() {
+    void updateFavorite(boolean isFavorite) {
+        if (mNotificationManager != null) {
+            mNotificationManager.updateFavorite(isFavorite);
+        }
+    }
+
+    void updateLyrics(boolean isChecked) {
+        if (mNotificationManager != null) {
+            mNotificationManager.updateLyrics(isChecked);
+        }
+    }
+
+    public void releaseMediaSession() {
         mMediaSessionManager.release();
         if (mNotificationManager != null) {
             mNotificationManager.stopNotification();
