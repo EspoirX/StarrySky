@@ -12,15 +12,8 @@ PS：
 
 
 #### Demo
-Demo 参考 https://github.com/lizixian18/NiceMusic
+Demo 参考 [NiceMusic](https://github.com/lizixian18/NiceMusic)
 
-#### 待完成功能
-1. 单首歌曲定时播放功能
-2. 全局的所有歌曲定时播放功能
-3. reset重置音乐信息功能
-4. 添加MediaPlayer播放器
-5. 通知栏的集成
-6. 其他功能的扩展
 
 #### 已完成功能(API)
 
@@ -364,6 +357,8 @@ MusicManager.MSG_BUFFERING        缓冲
 
 ```
 
+#### 通知栏集成
+通知栏集成详细见 [通知栏集成](https://github.com/lizixian18/MusicLibrary/blob/master/Notification_README.md)
 
 
 #### About me
