@@ -41,7 +41,12 @@ public class NotificationCreater implements Parcelable {
 
 不同手机的通知栏背景有的是白色背景，有的是黑色或者半透明的背景，所以需要两套的布局，分别对应着两种背景。lib 会自动判断背景颜色来选择布局。      
 自定义通知栏有两种 RemoteView ，一个是普通的 ContentView（下面称为`普通通知栏`），一个是 BigContentView（下面称为`大通知栏`） ,所以也需要两种布局。  
-所以加起来通知栏的布局有四个。
+所以加起来通知栏的布局有四个。 如下图所示：  
+白色背景大小布局通知栏:  
+<a href="art/light1.png"><img src="art/light1.png" width="25%"/></a>
+<a href="art/light1.png"><img src="art/light1.png" width="25%"/></a>
+<a href="art/light1.png"><img src="art/light1.png" width="25%"/></a>
+<a href="art/light1.png"><img src="art/light1.png" width="25%"/></a>
 
 #### 命名约定
 因为四个布局，所以约定有点多，请耐心操作。
@@ -72,15 +77,18 @@ id 命名：
 12. 歌名Text id 请命名为 txt_notifySongName
 13. 艺术家Text id 请命名为 txt_notifyArtistName
 
-如果你的通知栏中有上面说到的按钮或者封面，歌名和艺术家等元素，请将他们的控件 id 按约定命名，四个布局都一样，如果没有的话就不用管了。
+如果你的通知栏中有上面说到的按钮或者封面，歌名和艺术家等元素，请将他们的控件 id 按约定命名，  
+四个布局都一样，如果没有的话就不用管了。
 
 ```
 
 ```java
 资源命名：
 
-为了更好的UI效果，lib 中的通知栏上一首、下一首、播放、暂停、播放或暂停这五个按钮使用的资源是 selector，selector 里面就是你对应的 normal 和 pressed 图片了。  
-因为上一首和下一首这两个按钮还需要判断是否有上一首和是否有下一首，而且没有上一首和下一首的时候你可能需要不同的样式，例如置灰等，所以对这两个按钮的图片资源命名也有一些约定。
+为了更好的UI效果，lib 中的通知栏上一首、下一首、播放、暂停、播放或暂停这五个按钮使用的资源是 selector，  
+selector 里面就是你对应的 normal 和 pressed 图片了。    
+因为上一首和下一首这两个按钮还需要判断是否有上一首和是否有下一首，  
+而且没有上一首和下一首的时候你可能需要不同的样式，例如置灰等，所以对这两个按钮的图片资源命名也有一些约定。
 
 1.  白色背景时播放按钮 selector 请命名为 notify_btn_light_play_selector.xml
 2.  白色背景时暂停按钮 selector 请命名为 notify_btn_light_pause_selector.xml
@@ -124,8 +132,8 @@ id 命名：
 6. 桌面歌词
 7. 播放
 8. 暂停
-9. 停止
-10.下载
+9. 停止  
+10. 下载
 
 默认实现了 播放或者暂停、关闭通知栏、上一首、下一首的点击事件，其他需要自己实现，或者全部都自己实现，
 实现方法如下：
