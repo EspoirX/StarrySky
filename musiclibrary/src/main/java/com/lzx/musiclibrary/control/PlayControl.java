@@ -1,5 +1,6 @@
 package com.lzx.musiclibrary.control;
 
+import android.os.Bundle;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 
@@ -119,6 +120,7 @@ public class PlayControl extends IPlayControl.Stub {
                                     listener.onPlayerPause();
                                     break;
                                 case State.STATE_ENDED:
+                                case State.STATE_NONE:
                                     listener.onPlayCompletion();
                                     break;
                                 case State.STATE_ERROR:
@@ -312,6 +314,11 @@ public class PlayControl extends IPlayControl.Stub {
     @Override
     public void updateNotificationLyrics(boolean isChecked) throws RemoteException {
         mController.updateLyrics(isChecked);
+    }
+
+    @Override
+    public void updateNotificationContentIntent(Bundle bundle) throws RemoteException {
+        mController.updateContentIntent(bundle);
     }
 
     @Override

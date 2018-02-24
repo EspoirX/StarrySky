@@ -66,23 +66,19 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
     }
 
-    private final IntentFilter mAudioNoisyIntentFilter =
-            new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+    private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
-    private final BroadcastReceiver mAudioNoisyReceiver =
-            new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-                        if (isPlaying()) {
-                            Intent i = new Intent(context, MusicService.class);
-                            //   i.setAction(MusicService.ACTION_CMD);
-                            //  i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
-                            mContext.startService(i);
-                        }
-                    }
+    private final BroadcastReceiver mAudioNoisyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                if (isPlaying()) {
+                    Intent i = new Intent(context, MusicService.class);
+                    mContext.startService(i);
                 }
-            };
+            }
+        }
+    };
 
     /**
      * 释放服务使用的资源进行播放，这主要只是WiFi锁本地播放。 如果请求，ExoPlayer实例也被释放。
@@ -112,6 +108,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         mFocusAndLockManager.giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
+
     }
 
     @Override

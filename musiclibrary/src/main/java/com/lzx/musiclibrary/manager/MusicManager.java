@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -608,6 +609,17 @@ public class MusicManager implements IPlayControl {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void updateNotificationContentIntent(Bundle bundle)  {
+//        if (control != null) {
+//            try {
+//                control.updateNotificationContentIntent(bundle);
+//            } catch (RemoteException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     /**

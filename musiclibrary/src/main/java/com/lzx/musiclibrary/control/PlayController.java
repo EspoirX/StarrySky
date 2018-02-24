@@ -1,5 +1,6 @@
 package com.lzx.musiclibrary.control;
 
+import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -140,7 +141,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     }
 
     public void stopMusic() {
-        mPlaybackManager.handleStopRequest("");
+        mPlaybackManager.handleStopRequest(null);
     }
 
     void setPlayList(List<SongInfo> list) {
@@ -291,8 +292,17 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         }
     }
 
+    void updateContentIntent(Bundle bundle) {
+        if (mNotificationManager != null) {
+            mNotificationManager.updateContentIntent(bundle);
+        }
+    }
+
     public void releaseMediaSession() {
         mMediaSessionManager.release();
+    }
+
+    public void stopNotification() {
         if (mNotificationManager != null) {
             mNotificationManager.stopNotification();
         }

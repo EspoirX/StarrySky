@@ -37,7 +37,7 @@ public class PlayerReceiver extends BroadcastReceiver {
         switch (action) {
             case MediaNotificationManager.ACTION_CLOSE:
                 controller.stopMusic();
-                controller.releaseMediaSession();
+                controller.stopNotification();
                 break;
             case MediaNotificationManager.ACTION_PLAY_PAUSE:
                 if (controller.getState() == State.STATE_PLAYING) {

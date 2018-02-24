@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
@@ -74,8 +75,8 @@ public class MediaNotificationManager {
     //通知栏白色背景资源
     private static final String DRAWABLE_NOTIFY_BTN_LIGHT_PLAY_SELECTOR = "notify_btn_light_play_selector"; //白色背景时播放按钮selector
     private static final String DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR = "notify_btn_light_pause_selector";//白色背景时暂停按钮selector
-    private static final String DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE = "notify_btn_light_favorite_normal";//白色背景时喜欢按钮按下时的图片资源
-    private static final String DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS = "notify_btn_light_lyrics_normal";//白色背景时歌词按钮按下时的图片资源
+    private static final String DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE = "notify_btn_light_favorite_normal";//白色背景时喜欢按钮的图片资源
+    private static final String DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS = "notify_btn_light_lyrics_normal";//白色背景时歌词按钮的图片资源
     private static final String DRAWABLE_NOTIFY_BTN_LIGHT_NEXT_PRESSED = "notify_btn_light_next_pressed";   //白色背景时下一首按钮按下时的图片资源
     private static final String DRAWABLE_NOTIFY_BTN_LIGHT_NEXT_SELECTOR = "notify_btn_light_next_selector"; //白色背景时下一首按钮selector
     private static final String DRAWABLE_NOTIFY_BTN_LIGHT_PREV_PRESSED = "notify_btn_light_prev_pressed";   //白色背景时上一首按钮按下时的图片资源
@@ -104,6 +105,7 @@ public class MediaNotificationManager {
     private PendingIntent favoriteIntent;
     private PendingIntent lyricsIntent;
     private PendingIntent downloadIntent;
+    private PendingIntent contentIntent;
 
     private Resources res;
     private String packageName;
@@ -164,12 +166,7 @@ public class MediaNotificationManager {
         mSongInfo = songInfo;
         if (!mStarted) {
             if (mNotificationCreater != null && !TextUtils.isEmpty(mNotificationCreater.getTargetClass())) {
-                Class clazz = null;
-                try {
-                    clazz = Class.forName(mNotificationCreater.getTargetClass());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Class clazz = getTargetClass(mNotificationCreater.getTargetClass());
                 if (clazz == null) {
                     return;
                 }
@@ -179,7 +176,8 @@ public class MediaNotificationManager {
                 if (mRemoteView == null) {
                     return;
                 }
-                mNotification = createNotification(clazz, isDark);
+                contentIntent = createContentIntent(mSongInfo, null, clazz);
+                mNotification = createNotification(isDark);
                 if (mNotification != null) {
                     mService.startForeground(NOTIFICATION_ID, mNotification);
                     mStarted = true;
@@ -188,6 +186,19 @@ public class MediaNotificationManager {
         } else {
             updateModelDetail(mSongInfo);
         }
+    }
+
+    /**
+     * 得到目标界面 Class
+     */
+    private Class getTargetClass(String targetClass) {
+        Class clazz = null;
+        try {
+            clazz = Class.forName(targetClass);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return clazz;
     }
 
     /**
@@ -240,7 +251,9 @@ public class MediaNotificationManager {
     /**
      * 创建Notification
      */
-    private <T> Notification createNotification(Class<T> targetClass, boolean isDark) {
+    NotificationCompat.Builder notificationBuilder;
+
+    private Notification createNotification(boolean isDark) {
         int smallIconRes = getResourceId(DRAWABLE_ICON_NOTIFICATION, "drawable");
         String contentTitle = mSongInfo != null ? mSongInfo.getSongName() : mNotificationCreater.getContentTitle();
         String contentText = mSongInfo != null ? mSongInfo.getArtist() : mNotificationCreater.getContentText();
@@ -250,16 +263,17 @@ public class MediaNotificationManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
         }
-        final NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(mService, CHANNEL_ID);
+        notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
+
 
         notificationBuilder
                 .setSmallIcon(smallIconRes)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOnlyAlertOnce(true)
-                .setContentIntent(createContentIntent(mSongInfo, targetClass))
+                .setContentIntent(contentIntent)
                 .setContentTitle(contentTitle)
                 .setContentText(contentText);
+
         if (Build.VERSION.SDK_INT >= 16) {
             notificationBuilder.setPriority(2);
         }
@@ -537,6 +551,20 @@ public class MediaNotificationManager {
         }
     }
 
+    /**
+     * 更新 ContentIntent
+     */
+    public void updateContentIntent(Bundle bundle) {
+        if (mNotification != null && mNotificationCreater != null && !TextUtils.isEmpty(mNotificationCreater.getTargetClass())) {
+            Class clazz = getTargetClass(mNotificationCreater.getTargetClass());
+            if (clazz == null) {
+                return;
+            }
+            contentIntent = createContentIntent(mSongInfo, bundle, clazz);
+            startNotification(mSongInfo);
+        }
+    }
+
     private void setStartOrPausePendingIntent(PendingIntent pendingIntent) {
         startOrPauseIntent = pendingIntent == null ? getPendingIntent(ACTION_PLAY_PAUSE) : pendingIntent;
     }
@@ -583,12 +611,12 @@ public class MediaNotificationManager {
         return PendingIntent.getBroadcast(mService, 0, intent, 0);
     }
 
-    private <T> PendingIntent createContentIntent(SongInfo songInfo, Class<T> targetClass) {
+    private <T> PendingIntent createContentIntent(SongInfo songInfo, Bundle bundle, Class<T> targetClass) {
         Intent openUI = new Intent(mService, targetClass);
         openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         openUI.putExtra("notification_entry", ACTION_INTENT_CLICK);
         if (songInfo != null) {
-            openUI.putExtra("songInfo", songInfo);
+            openUI.putExtra("SongInfo", songInfo);
         }
         @SuppressLint("WrongConstant")
         PendingIntent pendingIntent = PendingIntent.getActivity(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
