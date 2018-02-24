@@ -3,13 +3,15 @@
 通知栏集成比较麻烦一点，如果你想使用集成好的通知栏，需要在初始化的时候这样做：
 
 ```java
-NotificationCreater creater = new NotificationCreater.Builder()
-                .setTargetClass("com.lzx.nicemusic.module.main.HomeActivity")
-                .build();
-MusicManager.get()
+if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
+    NotificationCreater creater = new NotificationCreater.Builder()
+            .setTargetClass("com.lzx.nicemusic.module.main.HomeActivity")
+            .build();
+    MusicManager.get()
             .setContext(this)
             .setNotificationCreater(creater)
             .init();
+}
 ```
 
 只有要添加 setNotificationCreater()，即可集成通知栏功能了(当然还有一些命名约定要做，下面会说到)。

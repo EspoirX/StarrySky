@@ -10,12 +10,12 @@
         <service
             android:name="com.lzx.musiclibrary.MusicService"
             android:exported="true"
-            android:process=":player"/>
+            android:process=":musicLibrary"/>
 
         <receiver
             android:name=".receiver.RemoteControlReceiver"
             android:exported="true"
-            android:process=":player">
+            android:process=":musicLibrary">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>
@@ -24,7 +24,7 @@
         <receiver
             android:name=".receiver.PlayerReceiver"
             android:exported="true"
-            android:process=":player">
+            android:process=":musicLibrary">
             <intent-filter>
                 <action android:name="com.lzx.nicemusic.close"/>
                 <action android:name="com.lzx.nicemusic.play_pause"/>

@@ -6,10 +6,10 @@
 集成了 MediaPlayer 和 ExoPlayer 两个播放器（默认 ExoPlayer ），可以随意选择。  
 有了它，你不用管什么播放器和相关的封装，只需要调用相关的方法即可实现音频播放功能。
 
+ 
 PS：
-1. 虽然写了aidl，但是因为还没有踩完多进程的坑，所以目前还没开多进程。
-2. 还在不断的完善中，所以暂时不提供依赖的使用方法，可以先Clone源码导入
-3. 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。
+- 还在不断的完善中，所以暂时不提供依赖的使用方法，可以先Clone源码导入
+- 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。
     
 
 #### Demo
@@ -19,13 +19,17 @@ PS：
 #### 文档
 1. 集成方法：
   ```java
-    通过 MusicManager 去调用 lib 中所有的 api ，静态方法可以直接调用，非静态方法需要通过 MusicManager.get() 去调用。
+    
     
     在 Application 中完成初始化，会自动开启音乐服务和初始化：
     
-    MusicManager.get().setContext(this).init();
+    if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
+        MusicManager.get().setContext(this).init();
+    }
     
-    其中，一定要调用 setContext 设置上下文，否则会报错。
+    其中，一定要调用 setContext 设置上下文，否则会报错。<br>
+    因为音乐服务是运行在 musicLibrary 进程里面的，多进程的情况下，Application 会创建多次，<br>
+    所以需要加上以上判断，在非 musicLibrary 进程里面初始化。
       
     初始化的时候还有一些参数可以配置：  
     
@@ -33,6 +37,7 @@ PS：
     setUseMediaPlayer(boolean isUseMediaPlayer) 是否使用 MediaPlayer
     setNotificationCreater(NotificationCreater creater) 通知栏配置
     
+    （通过 MusicManager 去调用 lib 中所有的 api ，静态方法可以直接调用，<br>非静态方法需要通过 MusicManager.get() 去调用。）
   ```
   
 2. Model字典
