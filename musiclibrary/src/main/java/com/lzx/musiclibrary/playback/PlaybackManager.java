@@ -6,6 +6,7 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.PlayMode;
@@ -27,6 +28,7 @@ public class PlaybackManager implements Playback.Callback {
     private PlayMode mPlayMode;
     //是否自动播放下一首
     private boolean isAutoPlayNext = true;
+    private String mCurrentMediaId;
 
     public PlaybackManager(Playback playback, QueueManager queueManager, PlayMode playMode, boolean isAutoPlayNext) {
         mPlayback = playback;
@@ -45,6 +47,7 @@ public class PlaybackManager implements Playback.Callback {
         return mPlayback;
     }
 
+
     public MediaSessionCompat.Callback getMediaSessionCallback() {
         return mMediaSessionCallback;
     }
@@ -55,8 +58,14 @@ public class PlaybackManager implements Playback.Callback {
     public void handlePlayRequest() {
         SongInfo currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
-            //通知切歌
-            notifyPlaybackSwitch(currentMusic);
+
+            String mediaId = currentMusic.getSongId();
+            boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
+            if (mediaHasChanged) {
+                mCurrentMediaId = mediaId;
+                notifyPlaybackSwitch(currentMusic);
+            }
+
             //播放
             mPlayback.play(currentMusic);
             //更新媒体信息

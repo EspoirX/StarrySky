@@ -16,6 +16,7 @@ import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.player.ExoPlayback;
 import com.lzx.musiclibrary.playback.player.MediaPlayback;
 import com.lzx.musiclibrary.playback.player.Playback;
+import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.List;
 
@@ -52,9 +53,9 @@ public class PlayControl extends IPlayControl.Stub {
                 .setAutoPlayNext(builder.isAutoPlayNext)
                 .setNotifyMusicSwitch(mNotifyMusicSwitch)
                 .setNotifyStatusChanged(mNotifyStatusChanged)
-                .setNotificationCreater(builder.notificationCreater)
                 .setPlayback(playback)
                 .setPlayMode(mPlayMode)
+                .setNotificationCreater(builder.notificationCreater)
                 .build();
     }
 
@@ -82,8 +83,6 @@ public class PlayControl extends IPlayControl.Stub {
             return this;
         }
 
-
-
         public Builder setNotificationCreater(NotificationCreater notificationCreater) {
             this.notificationCreater = notificationCreater;
             return this;
@@ -98,10 +97,9 @@ public class PlayControl extends IPlayControl.Stub {
 
         @Override
         public void notify(SongInfo info, int index, int status, String errorMsg) {
-            synchronized (NotifyStatusChange.class) {
+            synchronized (PlayControl.class) {
                 final int N = mRemoteCallbackList.beginBroadcast();
                 for (int i = 0; i < N; i++) {
-
                     IOnPlayerEventListener listener = mRemoteCallbackList.getBroadcastItem(i);
                     if (listener != null) {
                         try {
@@ -141,7 +139,7 @@ public class PlayControl extends IPlayControl.Stub {
 
         @Override
         public void notify(SongInfo info) {
-            synchronized (NotifyMusicSwitch.class) {
+            synchronized (PlayControl.class) {
                 final int N = mRemoteCallbackList.beginBroadcast();
                 for (int i = 0; i < N; i++) {
                     IOnPlayerEventListener listener = mRemoteCallbackList.getBroadcastItem(i);
@@ -307,6 +305,11 @@ public class PlayControl extends IPlayControl.Stub {
     }
 
     @Override
+    public void updateNotificationCreater(NotificationCreater creater) throws RemoteException {
+        mController.updateNotificationCreater(creater);
+    }
+
+    @Override
     public void updateNotificationFavorite(boolean isFavorite) throws RemoteException {
         mController.updateFavorite(isFavorite);
     }
@@ -330,4 +333,6 @@ public class PlayControl extends IPlayControl.Stub {
     public void unregisterPlayerEventListener(IOnPlayerEventListener listener) throws RemoteException {
         mRemoteCallbackList.unregister(listener);
     }
+
+
 }

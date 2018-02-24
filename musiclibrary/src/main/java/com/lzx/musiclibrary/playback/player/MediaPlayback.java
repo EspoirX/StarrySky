@@ -34,6 +34,7 @@ public class MediaPlayback implements Playback,
     private boolean mAudioNoisyReceiverRegistered;
     private boolean mExoPlayerNullIsStopped = false;
     private String mCurrentMediaId; //当前播放的媒体id
+    private SongInfo mCurrentMediaSongInfo;
 
     private MediaPlayer mMediaPlayer;
     private Callback mCallback;
@@ -171,6 +172,7 @@ public class MediaPlayback implements Playback,
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
         if (mediaHasChanged) {
             mCurrentMediaId = mediaId;
+            mCurrentMediaSongInfo = info;
         }
 
         if (mediaHasChanged || mMediaPlayer == null) {
@@ -243,6 +245,11 @@ public class MediaPlayback implements Playback,
     @Override
     public String getCurrentMediaId() {
         return mCurrentMediaId;
+    }
+
+    @Override
+    public SongInfo getCurrentMediaSongInfo() {
+        return mCurrentMediaSongInfo;
     }
 
     @Override

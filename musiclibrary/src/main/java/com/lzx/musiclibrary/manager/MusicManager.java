@@ -1,6 +1,6 @@
 package com.lzx.musiclibrary.manager;
 
-import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -20,8 +20,11 @@ import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.PlayStateObservable;
+import com.lzx.musiclibrary.utils.BaseUtil;
+import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.lang.ref.WeakReference;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -44,23 +47,29 @@ public class MusicManager implements IPlayControl {
     private Context mContext;
     private boolean isUseMediaPlayer = false;
     private boolean isAutoPlayNext = true;
+    private NotificationCreater mNotificationCreater;
 
     private IPlayControl control;
     private ClientHandler mClientHandler;
     private PlayStateObservable mStateObservable;
     private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
-    private NotificationCreater mNotificationCreater;
+
+    private static final byte[] sLock = new byte[0];
+
+    private static volatile MusicManager sInstance;
 
     public static MusicManager get() {
-        return SingletonHolder.sInstance;
+        if (sInstance == null) {
+            synchronized (sLock) {
+                if (sInstance == null) {
+                    sInstance = new MusicManager();
+                }
+            }
+        }
+        return sInstance;
     }
 
-    private static class SingletonHolder {
-        @SuppressLint("StaticFieldLeak")
-        private static final MusicManager sInstance = new MusicManager();
-    }
-
-    MusicManager() {
+    private MusicManager() {
         mClientHandler = new ClientHandler(this);
         mStateObservable = new PlayStateObservable();
     }
@@ -80,8 +89,8 @@ public class MusicManager implements IPlayControl {
         return this;
     }
 
-    public MusicManager setNotificationCreater(NotificationCreater notificationCreater) {
-        mNotificationCreater = notificationCreater;
+    public MusicManager setNotificationCreater(NotificationCreater creater){
+        mNotificationCreater = creater;
         return this;
     }
 
@@ -181,14 +190,16 @@ public class MusicManager implements IPlayControl {
         }
     };
 
-    private static class ClientHandler extends Handler {
 
+
+    private static class ClientHandler extends Handler {
         private final WeakReference<MusicManager> mWeakReference;
 
-        ClientHandler(MusicManager manager) {
+        ClientHandler(MusicManager musicManager) {
             super(Looper.getMainLooper());
-            mWeakReference = new WeakReference<>(manager);
+            mWeakReference = new WeakReference<>(musicManager);
         }
+
 
         @Override
         public void handleMessage(Message msg) {
@@ -196,7 +207,7 @@ public class MusicManager implements IPlayControl {
             switch (msg.what) {
                 case MSG_MUSIC_CHANGE:
                     SongInfo musicInfo = (SongInfo) msg.obj;
-                    manager.notifyPlayerEventChange(MSG_MUSIC_CHANGE, musicInfo, "", false);
+                      manager.notifyPlayerEventChange(MSG_MUSIC_CHANGE, musicInfo, "", false);
                     manager.mStateObservable.stateChangeNotifyObservers(MSG_MUSIC_CHANGE);
                     break;
                 case MSG_PLAYER_START:
@@ -249,7 +260,9 @@ public class MusicManager implements IPlayControl {
     }
 
     private void notifyPlayerEventChange(int msg, SongInfo info, String errorMsg, boolean isFinishBuffer) {
-        for (OnPlayerEventListener listener : mPlayerEventListeners) {
+        Iterator iterator = mPlayerEventListeners.iterator();
+        while (iterator.hasNext()) {
+            OnPlayerEventListener listener = (OnPlayerEventListener) iterator.next();
             switch (msg) {
                 case MSG_MUSIC_CHANGE:
                     listener.onMusicSwitch(info);
@@ -272,6 +285,8 @@ public class MusicManager implements IPlayControl {
             }
         }
     }
+
+
 
     @Override
     public void playMusic(List<SongInfo> list, int index, boolean isJustPlay) {
@@ -409,7 +424,7 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void deleteSongInfoOnPlayList(SongInfo info, boolean isNeedToPlayNext) throws RemoteException {
+    public void deleteSongInfoOnPlayList(SongInfo info, boolean isNeedToPlayNext) {
         if (control != null) {
             try {
                 control.deleteSongInfoOnPlayList(info, isNeedToPlayNext);
@@ -590,6 +605,17 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
+    public void updateNotificationCreater(NotificationCreater creater) {
+        if (control != null) {
+            try {
+                control.updateNotificationCreater(creater);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     public void updateNotificationFavorite(boolean isFavorite) {
         if (control != null) {
             try {
@@ -612,7 +638,7 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void updateNotificationContentIntent(Bundle bundle)  {
+    public void updateNotificationContentIntent(Bundle bundle) {
 //        if (control != null) {
 //            try {
 //                control.updateNotificationContentIntent(bundle);
@@ -672,6 +698,8 @@ public class MusicManager implements IPlayControl {
     public void unregisterPlayerEventListener(IOnPlayerEventListener listener) {
 
     }
+
+
 
     @Override
     public IBinder asBinder() {

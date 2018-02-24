@@ -64,6 +64,7 @@ public interface Playback {
 
     String getCurrentMediaId();
 
+    SongInfo getCurrentMediaSongInfo();
 
     interface Callback {
         /**

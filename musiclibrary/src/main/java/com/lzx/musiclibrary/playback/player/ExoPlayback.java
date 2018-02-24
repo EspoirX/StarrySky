@@ -48,11 +48,11 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     private boolean mPlayOnFocusGain;
     private boolean mAudioNoisyReceiverRegistered;
     private String mCurrentMediaId; //当前播放的媒体id
+    private SongInfo mCurrentMediaSongInfo;
 
     private SimpleExoPlayer mExoPlayer;
     private final ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
     private boolean mExoPlayerNullIsStopped = false;
-
 
     private FocusAndLockManager mFocusAndLockManager;
 
@@ -166,6 +166,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
 
     @Override
     public void play(SongInfo info) {
+
         mPlayOnFocusGain = true;
         mFocusAndLockManager.tryToGetAudioFocus();
         registerAudioNoisyReceiver();
@@ -173,6 +174,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
         if (mediaHasChanged) {
             mCurrentMediaId = mediaId;
+            mCurrentMediaSongInfo = info;
         }
 
         if (mediaHasChanged || mExoPlayer == null) {
@@ -237,6 +239,12 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     public String getCurrentMediaId() {
         return mCurrentMediaId;
     }
+
+    @Override
+    public SongInfo getCurrentMediaSongInfo() {
+        return mCurrentMediaSongInfo;
+    }
+
 
     @Override
     public void setCallback(Callback callback) {

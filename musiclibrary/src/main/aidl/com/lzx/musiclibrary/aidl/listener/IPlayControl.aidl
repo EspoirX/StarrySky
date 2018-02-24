@@ -2,6 +2,7 @@
 package com.lzx.musiclibrary.aidl.listener;
 
 import com.lzx.musiclibrary.aidl.model.SongInfo;
+import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.aidl.listener.IOnPlayerEventListener;
 
 interface IPlayControl {
@@ -84,6 +85,8 @@ interface IPlayControl {
     //初始化
     void reset();
 
+    void updateNotificationCreater(in NotificationCreater creater);
+
     void updateNotificationFavorite(boolean isFavorite);
 
     void updateNotificationLyrics(boolean isChecked);
@@ -93,4 +96,5 @@ interface IPlayControl {
     void registerPlayerEventListener(IOnPlayerEventListener listener);
 
     void unregisterPlayerEventListener(IOnPlayerEventListener listener);
+
 }

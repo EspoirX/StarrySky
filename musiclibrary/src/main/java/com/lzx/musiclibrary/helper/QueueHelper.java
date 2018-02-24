@@ -11,7 +11,6 @@ import com.lzx.musiclibrary.utils.LogUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by xian on 2018/1/22.
@@ -51,21 +50,21 @@ public class QueueHelper {
                 .build();
     }
 
-    public static List<MediaSessionCompat.QueueItem> getQueueItems(ConcurrentMap<String, SongInfo> musicListById) {
+    public static List<MediaSessionCompat.QueueItem> getQueueItems(List<SongInfo> list) {
         List<MediaMetadataCompat> result = new ArrayList<>();
-        Iterable<MediaMetadataCompat> musics = getMusics(musicListById);
+        Iterable<MediaMetadataCompat> musics = getMusics(list);
         for (MediaMetadataCompat metadata : musics) {
             result.add(metadata);
         }
         return convertToQueue(result);
     }
 
-    private static Iterable<MediaMetadataCompat> getMusics(ConcurrentMap<String, SongInfo> musicListById) {
-        if (musicListById.size() == 0) {
+    private static Iterable<MediaMetadataCompat> getMusics(List<SongInfo> list) {
+        if (list.size() == 0) {
             return Collections.emptyList();
         }
-        List<MediaMetadataCompat> compatArrayList = new ArrayList<>(musicListById.size());
-        for (SongInfo songInfo : musicListById.values()) {
+        List<MediaMetadataCompat> compatArrayList = new ArrayList<>(list.size());
+        for (SongInfo songInfo : list) {
             compatArrayList.add(getMediaMetadataCompat(songInfo));
         }
         return compatArrayList;
@@ -90,8 +89,15 @@ public class QueueHelper {
     }
 
 
-    public static SongInfo getMusicInfoById(ConcurrentMap<String, SongInfo> musicListById, String musicId) {
-        return musicListById.containsKey(musicId) ? musicListById.get(musicId) : null;
+    public static SongInfo getMusicInfoById(List<SongInfo> list, String musicId) {
+        SongInfo songInfo = null;
+        for (SongInfo info : list) {
+            if (info.getSongId().equals(musicId)) {
+                songInfo = info;
+                break;
+            }
+        }
+        return songInfo;
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.lzx.musiclibrary;
 
-import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
