@@ -2,7 +2,9 @@
 
 <a href="art/bg1.jpg"><img src="art/bg1.jpg" width="100%"/></a>
 
-一个比较完善的音乐播放封装库。有了它，你不用管什么播放器和相关的封装，只需要调用相关的方法即可实现音频播放功能。
+一个比较完善的音乐播放封装库。 
+集成了 MediaPlayer 和 ExoPlayer 两个播放器（默认 ExoPlayer ），可以随意选择。  
+有了它，你不用管什么播放器和相关的封装，只需要调用相关的方法即可实现音频播放功能。
 
 PS：
 1. 虽然写了aidl，但是因为还没有踩完多进程的坑，所以目前还没开多进程。
@@ -28,7 +30,8 @@ PS：
     初始化的时候还有一些参数可以配置：  
     
     setAutoPlayNext(boolean autoPlayNext) 是否在播放完当前歌曲后自动播放下一首
-    setNotificationCreater(NotificationCreater creater)  通知栏配置
+    setUseMediaPlayer(boolean isUseMediaPlayer) 是否使用 MediaPlayer
+    setNotificationCreater(NotificationCreater creater) 通知栏配置
     
   ```
   
