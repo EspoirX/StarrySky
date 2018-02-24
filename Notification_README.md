@@ -37,7 +37,7 @@ public class NotificationCreater implements Parcelable {
 2. contentTitle 和 contentText 对应着 Notification 的 contentTitle 和 contentText，如果不设置，默认值为歌曲的歌名和艺术家名。
 3. 后面的 PendingIntent 是通知栏里面一些按钮的点击处理 PendingIntent，lib 里面实现了 startOrPauseIntent，closeIntent，nextIntent 和 preIntent。其他需要自己 set 进去。具体用法下面会说到。
 
-### 一些约定
+#### 一些约定
 
 不同手机的通知栏背景有的是白色背景，有的是黑色或者半透明的背景，所以需要两套的布局，分别对应着两种背景。lib 会自动判断背景颜色来选择布局。      
 自定义通知栏有两种 RemoteView ，一个是普通的 ContentView（下面称为`普通通知栏`），一个是 BigContentView（下面称为`大通知栏`） ,所以也需要两种布局。  
