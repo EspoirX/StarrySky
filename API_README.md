@@ -52,12 +52,13 @@
  
 #### 通知栏相关API
 通知栏相关的API使用详见[通知栏集成](https://github.com/lizixian18/MusicLibrary/blob/master/Notification_README.md)中的介绍。
+
   | 指令        |    描述                                                    |  
   | :--------  | :---------------------------------------------------------| 
-  | updateNotificationFavorite(boolean isFavorite) | 更新通知栏中喜欢或收藏按钮的选中状态<br>参数：<br> isFavorite 是否喜欢或收藏<br>true为按钮变成选中状态，false为未选中状态|
-  | updateNotificationLyrics(boolean isChecked) | 更新通知栏中桌面歌词按钮的选中状态 <br>参数：<br> isChecked 是否选中<br>true为按钮变成选中状态，false为未选中状态|
-  | updateNotificationContentIntent(Bundle bundle, String targetClass) | 更新通知栏点击的时候传递的参数和转跳的界面 <br>参数：<br> bundle 点击通知栏转跳界面的时候传递的值<br>targetClass 转跳界面，不需要改变时传 null 即可|
-  | updateNotificationCreater(NotificationCreater creater) | 更新通知栏,这个方法实际上就是重新new一个Notification了 <br>参数：<br> creater 通知栏创建类,具体用法看`通知栏集成`|
+  | updateNotificationFavorite(boolean isFavorite) | 更新通知栏中喜欢或收藏按钮的选中状态<br>参数：<br> isFavorite 是否喜欢或收藏<br>true为按钮变成选中状态，false为未选中状态 |
+  | updateNotificationLyrics(boolean isChecked) | 更新通知栏中桌面歌词按钮的选中状态 <br>参数：<br> isChecked 是否选中<br>true为按钮变成选中状态，false为未选中状态 |
+  | updateNotificationContentIntent(Bundle bundle, String targetClass) | 更新通知栏点击的时候传递的参数和转跳的界面 <br>参数：<br> bundle 点击通知栏转跳界面的时候传递的值<br>targetClass 转跳界面，不需要改变时传 null 即可 |
+  | updateNotificationCreater(NotificationCreater creater) | 更新通知栏,这个方法实际上就是重新new一个Notification了 <br>参数：<br> creater 通知栏创建类,具体用法看`通知栏集成` |
 
 
 #### 监听器相关API
