@@ -186,7 +186,7 @@ NotificationCreater creater = new NotificationCreater.Builder()
 
 点击通知栏转跳到指定页面的时候，会默认传递当前的 SongInfo 信息。通过：
 ```java
-SongInfo mSongInfo = intent.getParcelableExtra("songInfo");
+SongInfo mSongInfo = intent.getParcelableExtra("SongInfo");
 ```
 来接收。
 

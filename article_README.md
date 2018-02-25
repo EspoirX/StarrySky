@@ -142,7 +142,7 @@ public void handleStopRequest(String withError) {
 NotificationCompat.Builder 里面 `setContentView` 的方法一共有两个，一个是 `setCustomContentView()`  
 一个是 `setCustomBigContentView()` 可知道区别就是大小的区别吧，对应的 RemoteView 也是两个：RemoteView 和 BigRemoteView
 
-而不同的手机，有的通知栏背景是白色的，有的是透明或者黑色的，这时候你就需要根据不同的背景显示不同的样式（除非你在布局里面写死背景色，但是那样真的很丑）  
+而不同的手机，有的通知栏背景是白色的，有的是透明或者黑色的（如魅族，小米等），这时候你就需要根据不同的背景显示不同的样式（除非你在布局里面写死背景色，但是那样真的很丑）  
 所以通知栏总共需要的布局有四个：
 1. 白色背景下 ContentView
 2. 白色背景下 BigContentView
