@@ -206,11 +206,10 @@ if (bundle != null) {
 ```
 
 `updateNotificationContentIntent(Bundle bundle, String targetClass)` 方法有两个参数：  
-第一个是 Bundle ，因为 Bundle 实现了 Parcelable 接口，所以可以用于 IPC 数据通信，因此把你需要传递的数据封装成一个 Bundle 即可。在接收数据的时候，会接收到一个名为 `bundleInfo`  
-的 Bundle 数据，然后再从 Bundle 里面获取你对应的数据即可。  
+第一个是 Bundle ，因为 Bundle 实现了 Parcelable 接口，所以可以用于 IPC 数据通信，因此把你需要传递的数据封装成一个 Bundle 即可。在接收数据的时候，会接收到一个名为 `bundleInfo` 的 Bundle 数据，然后再从 Bundle 里面获取你对应的数据即可。  
 第二个是 targetClass，targetClass 是你需要转跳的界面，跟初始化的时候那个 targetClass 是一样的，填的是完整路径。如果你想更改转跳的界面，则传递此参数，如果不需要，则传 null 即可。
 
-因为 `updateNotificationContentIntent` 这个方法的原来是更新 Notification 的 ContentIntent，所以当你调用此方法时，请确保通知栏已经被创建了，不然是没有效的。
+因为 `updateNotificationContentIntent` 这个方法的原理是更新 Notification 的 ContentIntent，所以当你调用此方法时，请确保通知栏已经被创建了，不然是没有效的。
 
 
 
