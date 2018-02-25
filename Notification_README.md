@@ -87,7 +87,7 @@ public class NotificationCreater implements Parcelable {
 | 艺术家TextView  | txt_notifyArtistName    |
 
  
-##### id 资源命名
+##### 资源命名
  
 为了更好的UI效果，lib 中的通知栏上一首、下一首、播放、暂停、播放或暂停这五个按钮使用的资源是 `selector`，`selector` 里面就是你对应的 normal 和 pressed 图片了。    
 因为上一首和下一首这两个按钮还需要判断是否有上一首和是否有下一首，而且没有上一首和下一首的时候你可能需要不同的样式，例如置灰等，所以对这两个按钮的图片资源命名也有一些约定。  
