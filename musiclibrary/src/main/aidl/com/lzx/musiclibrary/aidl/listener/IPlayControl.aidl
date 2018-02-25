@@ -91,7 +91,7 @@ interface IPlayControl {
 
     void updateNotificationLyrics(boolean isChecked);
 
-    void updateNotificationContentIntent(in Bundle bundle);
+    void updateNotificationContentIntent(in Bundle bundle, String targetClass);
 
     void registerPlayerEventListener(IOnPlayerEventListener listener);
 

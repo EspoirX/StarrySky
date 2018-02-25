@@ -18,15 +18,6 @@ import java.util.List;
 
 public class QueueHelper {
 
-//    public static List<SongInfo> fetchListWithMediaMetadata(List<SongInfo> list) {
-//        List<SongInfo> infos = new ArrayList<>();
-//        for (SongInfo info : list) {
-//            info.setMetadataCompat(getMediaMetadataCompat(info));
-//            infos.add(info);
-//        }
-//        return infos;
-//    }
-
     public static MediaMetadataCompat fetchInfoWithMediaMetadata(SongInfo info) {
         return getMediaMetadataCompat(info);
     }
@@ -141,7 +132,6 @@ public class QueueHelper {
      */
     public static boolean isNeedToSwitchMusic(PlaybackManager manager, SongInfo info) {
         String mCurrentMediaId = manager.getCurrentMediaId();
-        LogUtil.i("mCurrentMediaId = " + mCurrentMediaId + " currMusicId = " + info.getSongId());
         if (TextUtils.isEmpty(mCurrentMediaId)) {
             return true;
         } else {

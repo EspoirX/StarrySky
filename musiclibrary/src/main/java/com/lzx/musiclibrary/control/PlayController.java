@@ -299,9 +299,9 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         }
     }
 
-    void updateContentIntent(Bundle bundle) {
+    void updateContentIntent(Bundle bundle, String targetClass) {
         if (mNotificationManager != null) {
-            mNotificationManager.updateContentIntent(bundle);
+            mNotificationManager.updateContentIntent(bundle, targetClass);
         }
     }
 

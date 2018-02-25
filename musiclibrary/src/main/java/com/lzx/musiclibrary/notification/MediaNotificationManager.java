@@ -25,6 +25,7 @@ import com.lzx.musiclibrary.manager.MusicManager;
 import com.lzx.musiclibrary.playback.PlaybackManager;
 import com.lzx.musiclibrary.receiver.PlayerReceiver;
 import com.lzx.musiclibrary.utils.AlbumArtCache;
+import com.lzx.musiclibrary.utils.LogUtil;
 
 /**
  * @author lzx
@@ -265,7 +266,6 @@ public class MediaNotificationManager {
         }
         notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
 
-
         notificationBuilder
                 .setSmallIcon(smallIconRes)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -315,8 +315,14 @@ public class MediaNotificationManager {
      * 更新RemoteView
      */
     private void updateRemoteViewUI(Notification notification, int smallIconRes, boolean isDark) {
+        String artistName;
+        if (!TextUtils.isEmpty(mSongInfo.getAlbumInfo().getAlbumName())) {
+            artistName = mSongInfo.getArtist() + " - " + mSongInfo.getAlbumInfo().getAlbumName();
+        } else {
+            artistName = mSongInfo.getArtist();
+        }
         mRemoteView.setTextViewText(getResourceId(ID_TXT_NOTIFY_SONGNAME, "id"), mSongInfo.getSongName());
-        mRemoteView.setTextViewText(getResourceId(ID_TXT_NOTIFY_ARTISTNAME, "id"), mSongInfo.getArtist());
+        mRemoteView.setTextViewText(getResourceId(ID_TXT_NOTIFY_ARTISTNAME, "id"), artistName);
 
         mRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
                 getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR :
@@ -434,12 +440,7 @@ public class MediaNotificationManager {
     public void updateViewStateAtStart() {
         if (mNotification != null) {
             boolean isDark = NotificationColorUtils.isDarkNotificationBar(mService);
-            mRemoteView = createRemoteViews(isDark, false);
-            mBigRemoteView = createRemoteViews(isDark, true);
-            if (Build.VERSION.SDK_INT >= 16) {
-                mNotification.bigContentView = mBigRemoteView;
-            }
-            mNotification.contentView = mRemoteView;
+            updateRemoteViews(isDark);
             if (mRemoteView != null) {
                 mRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
                         getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR :
@@ -460,12 +461,7 @@ public class MediaNotificationManager {
     public void updateViewStateAtPause() {
         if (mNotification != null) {
             boolean isDark = NotificationColorUtils.isDarkNotificationBar(mService);
-            mRemoteView = createRemoteViews(isDark, false);
-            mBigRemoteView = createRemoteViews(isDark, true);
-            if (Build.VERSION.SDK_INT >= 16) {
-                mNotification.bigContentView = mBigRemoteView;
-            }
-            mNotification.contentView = mRemoteView;
+            updateRemoteViews(isDark);
             if (mRemoteView != null) {
                 mRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
                         getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_PLAY_SELECTOR :
@@ -486,12 +482,7 @@ public class MediaNotificationManager {
     private void updateModelDetail(SongInfo songInfo) {
         if (mNotification != null) {
             boolean isDark = NotificationColorUtils.isDarkNotificationBar(mService);
-            mRemoteView = createRemoteViews(isDark, false);
-            mBigRemoteView = createRemoteViews(isDark, true);
-            if (Build.VERSION.SDK_INT >= 16) {
-                mNotification.bigContentView = mBigRemoteView;
-            }
-            mNotification.contentView = mRemoteView;
+            updateRemoteViews(isDark);
             int smallIconRes = getResourceId(DRAWABLE_ICON_NOTIFICATION, "drawable");
             if (mRemoteView != null && songInfo != null) {
                 updateRemoteViewUI(mNotification, smallIconRes, isDark);
@@ -500,17 +491,24 @@ public class MediaNotificationManager {
     }
 
     /**
+     * 更新Notification的RemoteView
+     */
+    private void updateRemoteViews(boolean isDark) {
+        mRemoteView = createRemoteViews(isDark, false);
+        mBigRemoteView = createRemoteViews(isDark, true);
+        if (Build.VERSION.SDK_INT >= 16) {
+            mNotification.bigContentView = mBigRemoteView;
+        }
+        mNotification.contentView = mRemoteView;
+    }
+
+    /**
      * 喜欢按钮
      */
     public void updateFavorite(boolean isFavorite) {
         if (mNotification != null) {
             boolean isDark = NotificationColorUtils.isDarkNotificationBar(mService);
-            mRemoteView = createRemoteViews(isDark, false);
-            mBigRemoteView = createRemoteViews(isDark, true);
-            if (Build.VERSION.SDK_INT >= 16) {
-                mNotification.bigContentView = mBigRemoteView;
-            }
-            mNotification.contentView = mRemoteView;
+            updateRemoteViews(isDark);
             if (mRemoteView != null && mBigRemoteView != null) {
                 if (isFavorite) {
                     mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
@@ -531,12 +529,7 @@ public class MediaNotificationManager {
     public void updateLyrics(boolean isChecked) {
         if (mNotification != null) {
             boolean isDark = NotificationColorUtils.isDarkNotificationBar(mService);
-            mRemoteView = createRemoteViews(isDark, false);
-            mBigRemoteView = createRemoteViews(isDark, true);
-            if (Build.VERSION.SDK_INT >= 16) {
-                mNotification.bigContentView = mBigRemoteView;
-            }
-            mNotification.contentView = mRemoteView;
+            updateRemoteViews(isDark);
             if (mRemoteView != null && mBigRemoteView != null) {
                 if (isChecked) {
                     mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
@@ -554,14 +547,20 @@ public class MediaNotificationManager {
     /**
      * 更新 ContentIntent
      */
-    public void updateContentIntent(Bundle bundle) {
-        if (mNotification != null && mNotificationCreater != null && !TextUtils.isEmpty(mNotificationCreater.getTargetClass())) {
-            Class clazz = getTargetClass(mNotificationCreater.getTargetClass());
+    public void updateContentIntent(Bundle bundle, String targetClass) {
+        if (mNotification != null) {
+            Class clazz = null;
+            if (!TextUtils.isEmpty(targetClass)) {
+                clazz = getTargetClass(targetClass);
+            } else if (!TextUtils.isEmpty(mNotificationCreater.getTargetClass())) {
+                clazz = getTargetClass(mNotificationCreater.getTargetClass());
+            }
             if (clazz == null) {
                 return;
             }
             contentIntent = createContentIntent(mSongInfo, bundle, clazz);
-            startNotification(mSongInfo);
+            mNotification.contentIntent = contentIntent;
+            mNotificationManager.notify(NOTIFICATION_ID, mNotification);
         }
     }
 
@@ -616,7 +615,10 @@ public class MediaNotificationManager {
         openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         openUI.putExtra("notification_entry", ACTION_INTENT_CLICK);
         if (songInfo != null) {
-            openUI.putExtra("SongInfo", songInfo);
+            openUI.putExtra("songInfo", songInfo);
+        }
+        if (bundle != null) {
+            openUI.putExtra("bundleInfo", bundle);
         }
         @SuppressLint("WrongConstant")
         PendingIntent pendingIntent = PendingIntent.getActivity(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);

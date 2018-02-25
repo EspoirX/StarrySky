@@ -638,14 +638,14 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void updateNotificationContentIntent(Bundle bundle) {
-//        if (control != null) {
-//            try {
-//                control.updateNotificationContentIntent(bundle);
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
-//        }
+    public void updateNotificationContentIntent(Bundle bundle, String targetClass) {
+        if (control != null) {
+            try {
+                control.updateNotificationContentIntent(bundle,targetClass);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

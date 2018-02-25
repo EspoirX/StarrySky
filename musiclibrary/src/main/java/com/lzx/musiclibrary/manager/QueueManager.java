@@ -66,6 +66,7 @@ public class QueueManager {
         }
         mCurrentIndex = Math.max(index, 0);
         mPlayingQueue.clear();
+
         mPlayingQueue.addAll(newQueue);
 
         //通知播放列表更新了

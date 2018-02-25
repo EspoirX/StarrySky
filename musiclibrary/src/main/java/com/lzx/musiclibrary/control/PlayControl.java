@@ -320,8 +320,8 @@ public class PlayControl extends IPlayControl.Stub {
     }
 
     @Override
-    public void updateNotificationContentIntent(Bundle bundle) throws RemoteException {
-        mController.updateContentIntent(bundle);
+    public void updateNotificationContentIntent(Bundle bundle, String targetClass) throws RemoteException {
+        mController.updateContentIntent(bundle,targetClass);
     }
 
     @Override

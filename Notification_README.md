@@ -186,9 +186,34 @@ NotificationCreater creater = new NotificationCreater.Builder()
 
 点击通知栏转跳到指定页面的时候，会默认传递当前的 SongInfo 信息。通过：
 ```java
-SongInfo mSongInfo = intent.getParcelableExtra("SongInfo");
+SongInfo mSongInfo = intent.getParcelableExtra("songInfo");
 ```
-来接收。
+来接收。 会接收到一个名为 `songInfo` 的 SongInfo 音频信息。
+
+如果你想在点击通知栏的时候传递更多参数到指定的界面，则需要调用下面的方法更新 ContentIntent:
+```java
+Bundle bundle = new Bundle();
+bundle.putString("name", "我是新添加的参数");
+MusicManager.get().updateNotificationContentIntent(bundle, null);
+```
+
+然后在接收的时候这样：
+```java
+Bundle bundle = intent.getBundleExtra("bundleInfo");
+if (bundle != null) {
+    LogUtil.i("bundle = " + bundle.getString("name"));
+}
+```
+
+`updateNotificationContentIntent(Bundle bundle, String targetClass)` 方法有两个参数：  
+第一个是 Bundle ，因为 Bundle 实现了 Parcelable 接口，所以可以用于 IPC 数据通信，因此把你需要传递的数据封装成一个 Bundle 即可。在接收数据的时候，会接收到一个名为 `bundleInfo`  
+的 Bundle 数据，然后再从 Bundle 里面获取你对应的数据即可。  
+第二个是 targetClass，targetClass 是你需要转跳的界面，跟初始化的时候那个 targetClass 是一样的，填的是完整路径。如果你想更改转跳的界面，则传递此参数，如果不需要，则传 null 即可。
+
+因为 `updateNotificationContentIntent` 这个方法的原来是更新 Notification 的 ContentIntent，所以当你调用此方法时，请确保通知栏已经被创建了，不然是没有效的。
+
+
+
 
 如果你的通知栏中有喜欢或收藏按钮或者有是否显示桌面歌词按钮（类似网易云音乐），让按钮变成选中或者未选中状态，需要调用以下方法来更新UI：
 ```java
@@ -198,6 +223,8 @@ MusicManager.get().updateNotificationFavorite(boolean isFavorite);
 //更新是否显示桌面歌词UI为是否选中
 MusicManager.get().updateNotificationLyrics(boolean isChecked);
 ```
+
+
 
 
 具体 demo 见 [NiceMusic](https://github.com/lizixian18/NiceMusic) 
