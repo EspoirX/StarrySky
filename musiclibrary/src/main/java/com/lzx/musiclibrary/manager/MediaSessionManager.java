@@ -31,7 +31,6 @@ public class MediaSessionManager {
     }
 
     public void updateMetaData(MediaMetadataCompat metadataCompat) {
-
         mMediaSession.setMetadata(metadataCompat);
     }
 

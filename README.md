@@ -9,7 +9,7 @@
  
 PS：
 - 还在不断的完善中，所以暂时不提供依赖的使用方法，可以先Clone源码导入
-- 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。
+- 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。欢迎各位大佬指点指点。
     
 
 #### Demo
@@ -27,8 +27,8 @@ PS：
         MusicManager.get().setContext(this).init();
     }
     
-    其中，一定要调用 setContext 设置上下文，否则会报错。<br>
-    因为音乐服务是运行在 musicLibrary 进程里面的，多进程的情况下，Application 会创建多次，<br>
+    其中，一定要调用 setContext 设置上下文，否则会报错。 
+    因为音乐服务是运行在 musicLibrary 进程里面的，多进程的情况下，Application 会创建多次， 
     所以需要加上以上判断，在非 musicLibrary 进程里面初始化。
       
     初始化的时候还有一些参数可以配置：  
@@ -37,7 +37,8 @@ PS：
     setUseMediaPlayer(boolean isUseMediaPlayer) 是否使用 MediaPlayer
     setNotificationCreater(NotificationCreater creater) 通知栏配置
     
-    （通过 MusicManager 去调用 lib 中所有的 api ，静态方法可以直接调用，<br>非静态方法需要通过 MusicManager.get() 去调用。）
+    （通过 MusicManager 去调用 lib 中所有的 api ，静态方法可以直接调用，
+      非静态方法需要通过 MusicManager.get() 去调用。）
   ```
   
 2. Model字典
@@ -52,12 +53,19 @@ PS：
 
    详细见 [通知栏集成](https://github.com/lizixian18/MusicLibrary/blob/master/Notification_README.md)
 
+5. 代码实现以及原理
+  
+   详细见 [代码实现以及原理](https://github.com/lizixian18/MusicLibrary/blob/master/article_README.md)
+
+
+<br><br><br>
 
 #### About me
 An android developer in GuangZhou  
 简书：[http://www.jianshu.com/users/286f9ad9c417/latest_articles](http://www.jianshu.com/users/286f9ad9c417/latest_articles)   
 Email:386707112@qq.com  
 If you want to make friends with me, You can give me a Email and follow me。
+
 
 #### License
 ```

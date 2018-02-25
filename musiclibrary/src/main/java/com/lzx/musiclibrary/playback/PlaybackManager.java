@@ -181,6 +181,9 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
+    /**
+     * 通知切歌
+     */
     private void notifyPlaybackSwitch(SongInfo info) {
         if (mServiceCallback != null) {
             mServiceCallback.onPlaybackSwitch(info);
