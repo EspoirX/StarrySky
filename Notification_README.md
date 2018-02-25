@@ -53,76 +53,76 @@ public class NotificationCreater implements Parcelable {
 #### 命名约定
 因为四个布局，所以约定有点多，请耐心操作。
 
-```java
-布局命名：
-  
-1. 请把白色背景下`普通通知栏`布局文件命名为 view_notify_light_play.xml
-2. 请把白色背景下`大通知栏`布局文件命名为 view_notify_big_light_play.xml
-3. 请把黑色背景下`普通通知栏`布局文件命名为 view_notify_dark_play.xml
-4. 请把黑色背景下`大通知栏`布局文件命名为 view_notify_big_dark_play.xml
-```
+ 
+##### 布局命名
 
-```java
-id 命名：
-  
-1.  播放按钮 id  请命名为 img_notifyPlay
-2.  暂停按钮 id 请命名为 img_notifyPause
-3.  停止按钮 id 请命名为 img_notifyStop
-4.  播放或暂停按钮 id 请命名为 img_notifyPlayOrPause
-5.  下一首按钮 id 请命名为 img_notifyNext
-6.  上一首按钮 id 请命名为 img_notifyPre
-7.  关闭按钮 id 请命名为 img_notifyClose
-8.  喜欢或收藏按钮 id 请命名为 img_notifyFavorite
-9.  桌面歌词按钮 id 请命名为 img_notifyLyrics
-10. 下载按钮 id 请命名为 img_notifyDownload
-11. 封面图片 id 请命名为 img_notifyIcon
-12. 歌名Text id 请命名为 txt_notifySongName
-13. 艺术家Text id 请命名为 txt_notifyArtistName
+请将你的四个布局按下面规则命名。
 
-如果你的通知栏中有上面说到的按钮或者封面，歌名和艺术家等元素，请将他们的控件 id 按约定命名，  
-四个布局都一样，如果没有的话就不用管了。
+ | 通知栏背景色 | RemoteView 类型 | 命名  |
+ | :-------- | :--------   | :------   |
+ | 白色背景   | RemoteView    | view_notify_light_play.xml     |
+ | 白色背景   | BigRemoteView | view_notify_big_light_play.xml |
+ | 黑色背景   | RemoteView    | view_notify_dark_play.xml      |
+ | 黑色背景   | BigRemoteView | view_notify_big_dark_play.xml  |
+ 
+ 
+##### id 命名
 
-```
+如果你的布局中的控件有下面说到的按钮或者封面，歌名和艺术家等元素，请将他们的控件 id 按约定命名，四个布局都一样，如果没有的话就不用管了。
 
-```java
-资源命名：
+| 通知栏控件名称  |   命名  |
+| :--------     |   :----------   |
+| 播放按钮       | img_notifyPlay    |
+| 暂停按钮       | img_notifyPause    |
+| 停止按钮       | img_notifyStop    |
+| 播放或暂停按钮  | img_notifyPlayOrPause |
+| 下一首按钮     | img_notifyNext    |
+| 上一首按钮     | img_notifyPre    |
+| 关闭按钮       | img_notifyClose    |
+| 喜欢或收藏按钮  | img_notifyFavorite    |
+| 桌面歌词按钮    | img_notifyLyrics    |
+| 下载按钮       | img_notifyDownload    |
+| 封面图片       | img_notifyIcon    |
+| 歌名TextView   | txt_notifySongName    |
+| 艺术家TextView  | txt_notifyArtistName    |
 
-为了更好的UI效果，lib 中的通知栏上一首、下一首、播放、暂停、播放或暂停这五个按钮使用的资源是 selector，  
-selector 里面就是你对应的 normal 和 pressed 图片了。    
-因为上一首和下一首这两个按钮还需要判断是否有上一首和是否有下一首，  
-而且没有上一首和下一首的时候你可能需要不同的样式，例如置灰等，所以对这两个按钮的图片资源命名也有一些约定。
-
-1.  白色背景时播放按钮 selector 请命名为 notify_btn_light_play_selector.xml
-2.  白色背景时暂停按钮 selector 请命名为 notify_btn_light_pause_selector.xml
-3.  白色背景时下一首按钮 selector 请命名为 notify_btn_light_next_selector.xml
-4.  白色背景时上一首按钮 selector 请命名为 notify_btn_light_prev_selector.xml
-5.  白色背景时下一首按钮当没有下一首时的图片资源 请命名为 notify_btn_light_next_pressed
-6.  白色背景时上一首按钮当没有上一首时的图片资源 请命名为 notify_btn_light_prev_pressed
-7.  白色背景时喜欢或收藏按钮的图片资源 请命名为 notify_btn_light_favorite_normal
-8.  喜欢按钮被选中时的图片资源 请命名为 notify_btn_favorite_checked
-9.  白色背景时桌面歌词按钮的图片资源 请命名为 notify_btn_light_lyrics_normal
-10. 桌面歌词按钮选中时的图片资源 请命名为 notify_btn_lyrics_checked
-11. 黑色背景时播放按钮 selector 请命名为 notify_btn_dark_play_selector.xml
-12. 黑色背景时暂停按钮 selector 请命名为 notify_btn_dark_pause_selector.xml
-13. 黑色背景时下一首按钮 selector 请命名为 notify_btn_dark_next_selector.xml
-14. 黑色背景时上一首按钮 selector 请命名为 notify_btn_dark_prev_selector.xml
-15. 黑色背景时下一首按钮当没有下一首时的图片资源 请命名为 notify_btn_dark_next_pressed
-16. 黑色背景时上一首按钮当没有上一首时的图片资源 请命名为 notify_btn_dark_prev_pressed
-17. 黑色背景时喜欢或收藏按钮的图片资源 请命名为 notify_btn_dark_favorite_normal
-18. 黑色背景时桌面歌词按钮的图片资源 请命名为 notify_btn_dark_lyrics_normal
-19. 通知栏 smallIcon 图片资源  请命名为 icon_notification
-
-下载按钮暂时没什么规定，可以随便命名。
-
-同样的，如果你有相应的资源，请将他们按约定命名，没有就不用管。
-```
-
+ 
+##### id 资源命名
+ 
+为了更好的UI效果，lib 中的通知栏上一首、下一首、播放、暂停、播放或暂停这五个按钮使用的资源是 `selector`，`selector` 里面就是你对应的 normal 和 pressed 图片了。    
+因为上一首和下一首这两个按钮还需要判断是否有上一首和是否有下一首，而且没有上一首和下一首的时候你可能需要不同的样式，例如置灰等，所以对这两个按钮的图片资源命名也有一些约定。  
+同样的，如果你的布局中有相应的资源，请将他们按约定命名，没有就不用管。
+ 
+| 通知栏背景色  | 资源名称  |   命名  |
+| :-------- | :--------   | :------   |
+| 白色背景   | 播放按钮 selector | notify_btn_light_play_selector.xml | 
+| 白色背景   | 暂停按钮 selector | notify_btn_light_pause_selector.xml | 
+| 白色背景   | 下一首按钮 selector | notify_btn_light_prev_selector.xml | 
+| 白色背景   | 上一首按钮 selector | notify_btn_light_prev_selector.xml | 
+| 白色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_light_next_pressed | 
+| 白色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_light_prev_pressed | 
+| 白色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_light_favorite_normal | 
+| 白色背景   | 桌面歌词按钮的图片资源 | notify_btn_light_lyrics_normal | 
+| 黑色背景   | 播放按钮 selector | notify_btn_dark_play_selector.xml | 
+| 黑色背景   | 暂停按钮 selector | notify_btn_dark_pause_selector.xml | 
+| 黑色背景   | 下一首按钮 selector | notify_btn_dark_next_selector.xml | 
+| 黑色背景   | 上一首按钮 selector | notify_btn_dark_prev_selector.xml | 
+| 黑色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_dark_next_pressed | 
+| 黑色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_dark_prev_pressed | 
+| 黑色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_dark_favorite_normal | 
+| 黑色背景   | 桌面歌词按钮的图片资源 | notify_btn_dark_lyrics_normal | 
+| 黑白通用   | 喜欢按钮被选中时的图片资源 | notify_btn_favorite_checked | 
+| 黑白通用   | 桌面歌词按钮选中时的图片资源 | notify_btn_lyrics_checked | 
+| 黑白通用   | 通知栏 smallIcon 图片资源 | icon_notification | 
+| 黑白通用   | 下载按钮暂 | 暂时没什么规定，可以随便命名 | 
+ 
+ 
 如果除了上面说到的这么多按钮中没有包含你需要的，请提 issue，我会加上去。
 
-
-按约定创建好布局和资源后，你什么都不用做，通知栏已经集成好了。
+**按约定创建好布局和资源后，你什么都不用做，通知栏已经集成好了。**
 
 #### 点击事件
+
 下面来说说按钮对应的点击事件：
 
 点击事件是以广播的形式去执行的，目前支持的点击事件有上面 NotificationCreater 里面的 10 种：  
