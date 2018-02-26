@@ -46,7 +46,8 @@ public class NotificationCreater implements Parcelable {
 所以加起来通知栏的布局有四个。 如下图所示：  
 白色背景大小布局通知栏:  
 <a href="art/light2.png"><img src="art/light2.png" width="25%"/></a>
-<a href="art/light1.png"><img src="art/light1.png" width="25%"/></a>
+<a href="art/light1.png"><img src="art/light1.png" width="25%"/></a>  
+
 黑色背景大小布局通知栏:  
 (暂停没有找到手机...)
 
