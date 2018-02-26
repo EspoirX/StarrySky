@@ -21,4 +21,8 @@ public interface NotifyContract {
     interface NotifyMusicSwitch {
         void notify(SongInfo info);
     }
+
+    interface NotifyTimerTask {
+        void notifyTimerTasFinish();
+    }
 }

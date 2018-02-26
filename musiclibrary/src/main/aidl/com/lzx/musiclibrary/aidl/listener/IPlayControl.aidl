@@ -4,6 +4,7 @@ package com.lzx.musiclibrary.aidl.listener;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.aidl.listener.IOnPlayerEventListener;
+import com.lzx.musiclibrary.aidl.listener.IOnTimerTaskListener;
 
 interface IPlayControl {
 
@@ -85,16 +86,28 @@ interface IPlayControl {
     //初始化
     void reset();
 
+    //更新通知栏
     void updateNotificationCreater(in NotificationCreater creater);
 
+    //更新通知栏喜欢/收藏按钮选中状态
     void updateNotificationFavorite(boolean isFavorite);
 
+    //更新通知栏桌面歌词按钮选中状态
     void updateNotificationLyrics(boolean isChecked);
 
+    //更新通知栏ContentIntent
     void updateNotificationContentIntent(in Bundle bundle, String targetClass);
 
+    //注册一个播放状态监听器
     void registerPlayerEventListener(IOnPlayerEventListener listener);
 
+    //解注册一个播放状态监听器
     void unregisterPlayerEventListener(IOnPlayerEventListener listener);
+
+    //注册一个定时播放监听器
+    void registerTimerTaskListener(IOnTimerTaskListener listener);
+
+    //解注册一个定时播放监听器
+    void unregisterTimerTaskListener(IOnTimerTaskListener listener);
 
 }

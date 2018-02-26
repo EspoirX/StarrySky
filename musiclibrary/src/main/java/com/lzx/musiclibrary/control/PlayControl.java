@@ -6,6 +6,7 @@ import android.os.RemoteException;
 
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.listener.IOnPlayerEventListener;
+import com.lzx.musiclibrary.aidl.listener.IOnTimerTaskListener;
 import com.lzx.musiclibrary.aidl.listener.IPlayControl;
 import com.lzx.musiclibrary.aidl.listener.NotifyContract;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
@@ -16,7 +17,6 @@ import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.player.ExoPlayback;
 import com.lzx.musiclibrary.playback.player.MediaPlayback;
 import com.lzx.musiclibrary.playback.player.Playback;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.List;
 
@@ -34,9 +34,11 @@ public class PlayControl extends IPlayControl.Stub {
 
 
     private RemoteCallbackList<IOnPlayerEventListener> mRemoteCallbackList;
+    private RemoteCallbackList<IOnTimerTaskListener> mOnTimerTaskListenerList;
 
     private NotifyContract.NotifyStatusChanged mNotifyStatusChanged;
     private NotifyContract.NotifyMusicSwitch mNotifyMusicSwitch;
+    private NotifyContract.NotifyTimerTask mNotifyTimerTask;
 
 
     private PlayControl(Builder builder) {
@@ -44,7 +46,9 @@ public class PlayControl extends IPlayControl.Stub {
 
         mNotifyStatusChanged = new NotifyStatusChange();
         mNotifyMusicSwitch = new NotifyMusicSwitch();
+        mNotifyTimerTask = new NotifyTimerTask();
         mRemoteCallbackList = new RemoteCallbackList<>();
+        mOnTimerTaskListenerList = new RemoteCallbackList<>();
 
         mPlayMode = new PlayMode();
         playback = builder.isUseMediaPlayer ? new MediaPlayback(mService.getApplicationContext())
@@ -152,6 +156,27 @@ public class PlayControl extends IPlayControl.Stub {
                     }
                 }
                 mRemoteCallbackList.finishBroadcast();
+            }
+        }
+    }
+
+    private class NotifyTimerTask implements NotifyContract.NotifyTimerTask{
+
+        @Override
+        public void notifyTimerTasFinish() {
+            synchronized (PlayControl.class) {
+                final int N = mOnTimerTaskListenerList.beginBroadcast();
+                for (int i = 0; i < N; i++) {
+                    IOnTimerTaskListener listener = mOnTimerTaskListenerList.getBroadcastItem(i);
+                    if (listener != null) {
+                        try {
+                            listener.onTimerFinish();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                mOnTimerTaskListenerList.finishBroadcast();
             }
         }
     }
@@ -321,7 +346,7 @@ public class PlayControl extends IPlayControl.Stub {
 
     @Override
     public void updateNotificationContentIntent(Bundle bundle, String targetClass) throws RemoteException {
-        mController.updateContentIntent(bundle,targetClass);
+        mController.updateContentIntent(bundle, targetClass);
     }
 
     @Override
@@ -332,6 +357,16 @@ public class PlayControl extends IPlayControl.Stub {
     @Override
     public void unregisterPlayerEventListener(IOnPlayerEventListener listener) throws RemoteException {
         mRemoteCallbackList.unregister(listener);
+    }
+
+    @Override
+    public void registerTimerTaskListener(IOnTimerTaskListener listener) throws RemoteException {
+        mOnTimerTaskListenerList.register(listener);
+    }
+
+    @Override
+    public void unregisterTimerTaskListener(IOnTimerTaskListener listener) throws RemoteException {
+        mOnTimerTaskListenerList.unregister(listener);
     }
 
 

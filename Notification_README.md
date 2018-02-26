@@ -1,6 +1,6 @@
 ### 通知栏集成说明
 
-通知栏集成比较麻烦一点，如果你想使用集成好的通知栏，需要在初始化的时候这样做：
+如果你想使用集成好的通知栏，需要在初始化的时候这样做：
 
 ```java
 if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {

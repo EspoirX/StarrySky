@@ -60,6 +60,11 @@
   | updateNotificationContentIntent(Bundle bundle, String targetClass) | 更新通知栏点击的时候传递的参数和转跳的界面 <br>参数：<br> bundle 点击通知栏转跳界面的时候传递的值<br>targetClass 转跳界面，不需要改变时传 null 即可 |
   | updateNotificationCreater(NotificationCreater creater) | 更新通知栏,这个方法实际上就是重新new一个Notification了 <br>参数：<br> creater 通知栏创建类,具体用法看`通知栏集成` |
 
+#### 定时播放相关API
+| 指令        |    描述                                                    |  
+| :--------  | :---------------------------------------------------------|
+| pausePlayInMillis(long time) | 在 time 毫秒后暂停播放<br>参数：<br>time 定时时间，单位毫秒，如果想停止定时，传 -1 即可。<br> 此方法调用的时候马上就会开始计时，<br> 当定时结束后，如果有音频正在播放，则暂停播放，什么都不会做 |
+
 
 #### 监听器相关API
 | 指令        |    描述                                                    |  
@@ -70,6 +75,10 @@
 | addPlayerEventListener(OnPlayerEventListener listener) | 添加一个状态监听器 |
 | removePlayerEventListener(OnPlayerEventListener listener) | 移除一个状态监听器 |
 | clearPlayerEventListener() | 清除所有状态监听器 |
+| addTimerTaskEventListener(OnTimerTaskListener listener) | 添加一个定时播放监听器 |
+| removeTimerTaskEventListener(OnTimerTaskListener listener) | 移除一个定时播放监听器 |
+| clearTimerTaskEventListener() | 清除所有定时播放监听器 |
+
 
 
 #### 监听器使用说明
@@ -146,6 +155,37 @@ MusicManager.MSG_PLAY_COMPLETION  播放完成
 MusicManager.MSG_PLAYER_ERROR     播放失败
 MusicManager.MSG_BUFFERING        缓冲
 ```
+
+为了提高性能，监听器中没有实时获取当前进度的方法，进度的获取原则上只有当你需要的时候再开线程获取。lib 提供了`TimerTaskManager`去获取进度，使用方法如下：
+```java
+TimerTaskManager mTimerTaskManager = new TimerTaskManager();
+
+mTimerTaskManager.setUpdateProgressTask(new Runnable() {
+    @Override
+    public void run() {
+        updateProgress();
+    }
+});
+
+private void updateProgress() {
+    long progress = MusicManager.get().getProgress();
+    mSeekBar.setProgress((int) progress);
+}
+
+开始获取进度：
+mTimerTaskManager.scheduleSeekBarUpdate();
+
+暂停获取进度：
+mTimerTaskManager.stopSeekBarUpdate();
+
+回收资源：
+mTimerTaskManager.onRemoveUpdateProgressTask();
+```
+
+在开始播放的时候调用 `scheduleSeekBarUpdate` 方法开启线程去获取进度，这时候 Runnable 就会调用，当暂停播放的时候调用 `stopSeekBarUpdate` 方法暂停获取进度。最后不要忘记了在 `onDestroy()` 的时候调用 `onRemoveUpdateProgressTask` 回收资源。同理当你添加了监听器，记得在 `onDestroy()` 的时候移除它。
+
+
+
 
 
 

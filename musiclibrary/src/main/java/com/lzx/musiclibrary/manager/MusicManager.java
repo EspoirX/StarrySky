@@ -1,6 +1,5 @@
 package com.lzx.musiclibrary.manager;
 
-import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,14 +13,14 @@ import android.os.RemoteException;
 
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.listener.IOnPlayerEventListener;
+import com.lzx.musiclibrary.aidl.listener.IOnTimerTaskListener;
 import com.lzx.musiclibrary.aidl.listener.IPlayControl;
 import com.lzx.musiclibrary.aidl.listener.OnPlayerEventListener;
+import com.lzx.musiclibrary.aidl.listener.OnTimerTaskListener;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.PlayStateObservable;
-import com.lzx.musiclibrary.utils.BaseUtil;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
@@ -43,6 +42,7 @@ public class MusicManager implements IPlayControl {
     public static final int MSG_PLAY_COMPLETION = 3;
     public static final int MSG_PLAYER_ERROR = 4;
     public static final int MSG_BUFFERING = 5;
+    public static final int MSG_TIMER_FINISH = 6;
 
     private Context mContext;
     private boolean isUseMediaPlayer = false;
@@ -53,6 +53,7 @@ public class MusicManager implements IPlayControl {
     private ClientHandler mClientHandler;
     private PlayStateObservable mStateObservable;
     private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<OnTimerTaskListener> mOnTimerTaskListeners = new CopyOnWriteArrayList<>();
 
     private static final byte[] sLock = new byte[0];
 
@@ -89,7 +90,7 @@ public class MusicManager implements IPlayControl {
         return this;
     }
 
-    public MusicManager setNotificationCreater(NotificationCreater creater){
+    public MusicManager setNotificationCreater(NotificationCreater creater) {
         mNotificationCreater = creater;
         return this;
     }
@@ -119,6 +120,7 @@ public class MusicManager implements IPlayControl {
             control = IPlayControl.Stub.asInterface(iBinder);
             try {
                 control.registerPlayerEventListener(mOnPlayerEventListener);
+                control.registerTimerTaskListener(mOnTimerTaskListener);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -133,6 +135,7 @@ public class MusicManager implements IPlayControl {
         try {
             if (control != null && control.asBinder().isBinderAlive()) {
                 control.unregisterPlayerEventListener(mOnPlayerEventListener);
+                control.unregisterTimerTaskListener(mOnTimerTaskListener);
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -190,7 +193,12 @@ public class MusicManager implements IPlayControl {
         }
     };
 
-
+    private IOnTimerTaskListener mOnTimerTaskListener = new IOnTimerTaskListener.Stub() {
+        @Override
+        public void onTimerFinish() {
+            mClientHandler.obtainMessage(MSG_TIMER_FINISH).sendToTarget();
+        }
+    };
 
     private static class ClientHandler extends Handler {
         private final WeakReference<MusicManager> mWeakReference;
@@ -207,7 +215,7 @@ public class MusicManager implements IPlayControl {
             switch (msg.what) {
                 case MSG_MUSIC_CHANGE:
                     SongInfo musicInfo = (SongInfo) msg.obj;
-                      manager.notifyPlayerEventChange(MSG_MUSIC_CHANGE, musicInfo, "", false);
+                    manager.notifyPlayerEventChange(MSG_MUSIC_CHANGE, musicInfo, "", false);
                     manager.mStateObservable.stateChangeNotifyObservers(MSG_MUSIC_CHANGE);
                     break;
                 case MSG_PLAYER_START:
@@ -232,6 +240,9 @@ public class MusicManager implements IPlayControl {
                     manager.notifyPlayerEventChange(MSG_BUFFERING, null, "", isFinishBuffer);
                     manager.mStateObservable.stateChangeNotifyObservers(MSG_BUFFERING);
                     break;
+                case MSG_TIMER_FINISH:
+                    manager.notifyTimerTaskEventChange(MSG_TIMER_FINISH);
+                    break;
                 default:
                     super.handleMessage(msg);
                     break;
@@ -249,8 +260,12 @@ public class MusicManager implements IPlayControl {
 
     public void removePlayerEventListener(OnPlayerEventListener listener) {
         if (listener != null) {
-            if (mPlayerEventListeners.contains(listener)) {
-                mPlayerEventListeners.remove(listener);
+            Iterator iterator = mPlayerEventListeners.iterator();
+            while (iterator.hasNext()) {
+                OnPlayerEventListener playerEventListener = (OnPlayerEventListener) iterator.next();
+                if (playerEventListener == listener) {
+                    iterator.remove();
+                }
             }
         }
     }
@@ -259,10 +274,32 @@ public class MusicManager implements IPlayControl {
         mPlayerEventListeners.clear();
     }
 
+    public void addTimerTaskEventListener(OnTimerTaskListener listener) {
+        if (listener != null) {
+            if (!mOnTimerTaskListeners.contains(listener)) {
+                mOnTimerTaskListeners.add(listener);
+            }
+        }
+    }
+
+    public void removeTimerTaskEventListener(OnTimerTaskListener listener) {
+        if (listener != null) {
+            Iterator iterator = mOnTimerTaskListeners.iterator();
+            while (iterator.hasNext()) {
+                OnTimerTaskListener timerTaskListener = (OnTimerTaskListener) iterator.next();
+                if (timerTaskListener == listener) {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
+    public void clearTimerTaskEventListener() {
+        mOnTimerTaskListeners.clear();
+    }
+
     private void notifyPlayerEventChange(int msg, SongInfo info, String errorMsg, boolean isFinishBuffer) {
-        Iterator iterator = mPlayerEventListeners.iterator();
-        while (iterator.hasNext()) {
-            OnPlayerEventListener listener = (OnPlayerEventListener) iterator.next();
+        for (OnPlayerEventListener listener : mPlayerEventListeners) {
             switch (msg) {
                 case MSG_MUSIC_CHANGE:
                     listener.onMusicSwitch(info);
@@ -286,7 +323,13 @@ public class MusicManager implements IPlayControl {
         }
     }
 
-
+    private void notifyTimerTaskEventChange(int msg) {
+        for (OnTimerTaskListener listener : mOnTimerTaskListeners) {
+            if (msg == MSG_TIMER_FINISH) {
+                listener.onTimerFinish();
+            }
+        }
+    }
 
     @Override
     public void playMusic(List<SongInfo> list, int index, boolean isJustPlay) {
@@ -641,7 +684,7 @@ public class MusicManager implements IPlayControl {
     public void updateNotificationContentIntent(Bundle bundle, String targetClass) {
         if (control != null) {
             try {
-                control.updateNotificationContentIntent(bundle,targetClass);
+                control.updateNotificationContentIntent(bundle, targetClass);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -699,6 +742,15 @@ public class MusicManager implements IPlayControl {
 
     }
 
+    @Override
+    public void registerTimerTaskListener(IOnTimerTaskListener listener) throws RemoteException {
+
+    }
+
+    @Override
+    public void unregisterTimerTaskListener(IOnTimerTaskListener listener) throws RemoteException {
+
+    }
 
 
     @Override

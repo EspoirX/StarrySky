@@ -17,7 +17,6 @@ import com.lzx.musiclibrary.notification.MediaNotificationManager;
 import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.PlaybackManager;
 import com.lzx.musiclibrary.playback.player.Playback;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.List;
 
@@ -38,6 +37,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     private PlayMode mPlayMode;
     private NotifyContract.NotifyStatusChanged mNotifyStatusChanged;
     private NotifyContract.NotifyMusicSwitch mNotifyMusicSwitch;
+    private NotifyContract.NotifyTimerTask mNotifyTimerTask;
     private Playback mPlayback;
 
     private MediaNotificationManager mNotificationManager;
@@ -49,6 +49,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         this.mPlayback = builder.mPlayback;
         this.mNotifyStatusChanged = builder.mNotifyStatusChanged;
         this.mNotifyMusicSwitch = builder.mNotifyMusicSwitch;
+        this.mNotifyTimerTask = builder.notifyTimerTask;
 
         mTimerTaskManager = new TimerTaskManager();
         mQueueManager = new QueueManager(this, mPlayMode);
@@ -72,6 +73,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         private Playback mPlayback;
         private NotifyContract.NotifyStatusChanged mNotifyStatusChanged;
         private NotifyContract.NotifyMusicSwitch mNotifyMusicSwitch;
+        private NotifyContract.NotifyTimerTask notifyTimerTask;
         private boolean isAutoPlayNext;
         private NotificationCreater notificationCreater;
 
@@ -106,6 +108,11 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
 
         Builder setNotificationCreater(NotificationCreater notificationCreater) {
             this.notificationCreater = notificationCreater;
+            return this;
+        }
+
+        Builder setNotifyTimerTask(NotifyContract.NotifyTimerTask notifyTimerTask) {
+            notifyTimerTask = notifyTimerTask;
             return this;
         }
 
@@ -215,10 +222,18 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     void pausePlayInMillis(long time) {
         mTimerTaskManager.cancelCountDownTask();
         if (time != -1) {
-            mTimerTaskManager.starCountDownTask(time, 1000L, new TimerTaskManager.OnCountDownFinishListener() {
+            mTimerTaskManager.starCountDownTask(time, new TimerTaskManager.OnCountDownFinishListener() {
                 @Override
                 public void onFinish() {
-                    mPlaybackManager.handlePauseRequest();
+                    if (mPlaybackManager.getPlayback().getState() == State.STATE_PLAYING) {
+                        mPlaybackManager.handlePauseRequest();
+                        mNotifyTimerTask.notifyTimerTasFinish();
+                    }
+                }
+
+                @Override
+                public void onTick(long millisUntilFinished) {
+
                 }
             });
         }

@@ -1,7 +1,7 @@
 package com.lzx.musiclibrary.manager;
 
-import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.Looper;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,6 +19,8 @@ public class TimerTaskManager {
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
     private final Handler mHandler = new Handler();
+    private Handler mTimerHandler;
+    private Runnable mTimerRunnable;
     private final ScheduledExecutorService mExecutorService = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> mScheduleFuture;
     private Runnable mUpdateProgressTask;
@@ -67,43 +69,51 @@ public class TimerTaskManager {
     }
 
 
-    //    private final  Runnable mUpdateTimerTask = new Runnable() {
-//        @Override
-//        public void run() {
-//
-//        }
-//    };
-//
-
-    private CountDownTimer mCountDownTimer;
-
     /**
      * 开始倒计时
      */
-    public void starCountDownTask(long millisInFuture, long countDownInterval, final OnCountDownFinishListener listener) {
-        mCountDownTimer = new CountDownTimer(millisInFuture, countDownInterval) {
-            @Override
-            public void onTick(long millisUntilFinished) {
+    private long time = 0;
 
+    public void starCountDownTask(final long millisInFuture, final OnCountDownFinishListener listener) {
+        if (mTimerHandler == null) {
+            mTimerHandler = new Handler(Looper.getMainLooper());
+        }
+        if (millisInFuture != -1L && millisInFuture > 0L) {
+            if (mTimerRunnable == null) {
+                time = millisInFuture;
+                mTimerRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        time = time - 1000L;
+                        listener.onTick(time);
+                        if (time <= 0L) {
+                            listener.onFinish();
+                            cancelCountDownTask();
+                        } else {
+                            mTimerHandler.postDelayed(mTimerRunnable, 1000L);
+                        }
+                    }
+                };
             }
-
-            @Override
-            public void onFinish() {
-                listener.onFinish();
-            }
-        };
-        mCountDownTimer.start();
-    }
-
-    public interface OnCountDownFinishListener {
-        void onFinish();
+            mTimerHandler.postDelayed(mTimerRunnable, 1000L);
+        }
     }
 
     public void cancelCountDownTask() {
-        if (mCountDownTimer != null) {
-            mCountDownTimer.cancel();
-            mCountDownTimer = null;
+        if (mTimerHandler != null) {
+            mTimerHandler.removeCallbacksAndMessages(null);
+            mTimerHandler = null;
         }
+        if (mTimerRunnable != null) {
+            mTimerRunnable = null;
+        }
+    }
+
+
+    public interface OnCountDownFinishListener {
+        void onFinish();
+
+        void onTick(long millisUntilFinished);
     }
 
 
