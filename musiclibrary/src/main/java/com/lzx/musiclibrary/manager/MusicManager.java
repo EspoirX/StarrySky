@@ -23,7 +23,6 @@ import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.PlayStateObservable;
 
 import java.lang.ref.WeakReference;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -260,12 +259,8 @@ public class MusicManager implements IPlayControl {
 
     public void removePlayerEventListener(OnPlayerEventListener listener) {
         if (listener != null) {
-            Iterator iterator = mPlayerEventListeners.iterator();
-            while (iterator.hasNext()) {
-                OnPlayerEventListener playerEventListener = (OnPlayerEventListener) iterator.next();
-                if (playerEventListener == listener) {
-                    iterator.remove();
-                }
+            if (mPlayerEventListeners.contains(listener)) {
+                mPlayerEventListeners.remove(listener);
             }
         }
     }
@@ -284,12 +279,8 @@ public class MusicManager implements IPlayControl {
 
     public void removeTimerTaskEventListener(OnTimerTaskListener listener) {
         if (listener != null) {
-            Iterator iterator = mOnTimerTaskListeners.iterator();
-            while (iterator.hasNext()) {
-                OnTimerTaskListener timerTaskListener = (OnTimerTaskListener) iterator.next();
-                if (timerTaskListener == listener) {
-                    iterator.remove();
-                }
+            if (mOnTimerTaskListeners.contains(listener)) {
+                mOnTimerTaskListeners.remove(listener);
             }
         }
     }
