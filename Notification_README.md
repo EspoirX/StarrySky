@@ -49,7 +49,7 @@ public class NotificationCreater implements Parcelable {
 <a href="art/light1.png"><img src="art/light1.png" width="25%"/></a>  
 
 黑色背景大小布局通知栏:  
-(暂停没有找到手机，所以在模拟器上截了个图...)
+(暂停没有找到手机，所以在模拟器上截了个图...)  
 <a href="art/dark1.png"><img src="art/dark1.png" width="25%"/></a>
 
 #### 命名约定
