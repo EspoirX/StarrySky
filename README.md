@@ -8,13 +8,26 @@
 
  
 PS：
-- 还在不断的完善中，所以暂时不提供依赖的使用方法，可以先Clone源码导入Library。
 - 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。欢迎各位大佬指点指点。
     
 
 #### Demo
 具体应用 Demo 请参考 [NiceMusic](https://github.com/lizixian18/NiceMusic)
 
+#### 导入
+```java
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+        compile 'com.github.lizixian18:MusicLibrary:v1.2'
+}
+```
+[![](https://jitpack.io/v/lizixian18/MusicLibrary.svg)](https://jitpack.io/#lizixian18/MusicLibrary)
 
 #### 文档
 1. 集成方法：
