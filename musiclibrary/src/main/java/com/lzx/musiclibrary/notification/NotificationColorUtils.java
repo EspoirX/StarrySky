@@ -6,13 +6,12 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.graphics.ColorUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.TextView;
-
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -87,7 +86,8 @@ public class NotificationColorUtils {
                             mNotificationColorModel.setContentColor(COLOR_UNDEF);
                             mNotificationColorModel.setDarkNotificationBg(true);
                         } else {
-                            boolean isDark = !isTextColorSimilar(-16777216, notiTextColor);
+                            //!isTextColorSimilar(-16777216, notiTextColor);
+                            boolean isDark = ColorUtils.calculateLuminance(notiTextColor) > 0.5;
                             mNotificationColorModel.setDarkNotificationBg(isDark);
                         }
                     } catch (Exception var3) {
@@ -140,7 +140,7 @@ public class NotificationColorUtils {
         LinearLayout layout = new LinearLayout(context);
         layout.setLayoutParams(new LinearLayout.LayoutParams(-2, -2));
         ViewGroup viewGroup = (ViewGroup) notification.contentView.apply(context, layout);
-        getTextView(viewGroup,false);
+        getTextView(viewGroup, false);
         if (titleView == null) {
             return COLOR_UNDEF;
         } else {
