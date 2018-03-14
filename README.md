@@ -24,7 +24,7 @@ allprojects {
 }
 
 dependencies {
-        compile 'com.github.lizixian18:MusicLibrary:v1.2'
+      compile 'com.github.lizixian18:MusicLibrary:v1.2.1'
 }
 ```
 [![](https://jitpack.io/v/lizixian18/MusicLibrary.svg)](https://jitpack.io/#lizixian18/MusicLibrary)
@@ -70,6 +70,12 @@ dependencies {
   
    详细见 [代码实现以及原理](https://github.com/lizixian18/MusicLibrary/blob/master/article_README.md)
 
+
+#### 开发计划
+1. 集成系统通知栏
+2. 集成下载功能
+3. 集成保存播放进度功能
+4. 支持直播
 
 <br><br><br>
 
