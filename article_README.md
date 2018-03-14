@@ -150,6 +150,7 @@ NotificationCompat.Builder 里面 `setContentView` 的方法一共有两个，�
 第二个是色差判断的方法有误差，在某些手机上会出现判断错误。  
 对于第一个问题，解决方案是不创建默认的 Notification 。  
 第二个问题的解决方案是用到 support library v4 里面的 ColorUtils 这个工具类的 calculateLuminance 方法。  
+（这里要感谢 [SoloHo](https://github.com/kjsolo) 提供的帮助）    
 描述得很简单，具体可以见代码里面的 `MediaNotificationManager` 和 `NotificationColorUtils` 这两个类。
 
 
