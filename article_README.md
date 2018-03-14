@@ -143,12 +143,17 @@ NotificationCompat.Builder 里面 `setContentView` 的方法一共有两个，�
 一个是 `setCustomBigContentView()` 可知道区别就是大小的区别吧，对应的 RemoteView 也是两个：RemoteView 和 BigRemoteView
 
 而不同的手机，有的通知栏背景是白色的，有的是透明或者黑色的（如魅族，小米等），这时候你就需要根据不同的背景显示不同的样式（除非你在布局里面写死背景色，但是那样真的很丑）  
-所以通知栏总共需要的布局有四个：
-1. 白色背景下 ContentView
-2. 白色背景下 BigContentView
-3. 黑色背景下 ContentView
-4. 黑色背景下 BigContentView
+在如何判断通知栏背景色的方法上，网上能找到的基本有两种方法，第一种是给 TextView 设置 TextAppearance，让文字颜色跟随系统，但是这种方法只能判断文字，判断不了图片资源，第二种是
+创建一个默认的 Notification ，然后遍历 Notification 中的 contentView，找到里面对应的 TextView，获取其颜色，再根据色差原理判断是否是深色背景还是浅色背景。（这两种方法网上均能找到）  
+对于第二种方法，有两个缺陷：  
+第一个就是在 android 7.0 以后系统不会创建默认的 contentView，所以会导致空指针，可以看这个 issue ：[通知栏显示布局不正确](https://github.com/lizixian18/MusicLibrary/issues/2)  
+第二个是色差判断的方法有误差，在某些手机上会出现判断错误。  
+对于第一个问题，解决方案是不创建默认的 Notification 。  
+第二个问题的解决方案是用到 support library v4 里面的 ColorUtils 这个工具类的 calculateLuminance 方法。  
+描述得很简单，具体可以见代码里面的 `MediaNotificationManager` 和 `NotificationColorUtils` 这两个类。
 
+
+ 
 设置 ContentView 如下所示：
 ```java
 ...
@@ -192,9 +197,9 @@ private int getResourceId(String name, String className) {
 白色背景下ContentView的布局文件赋值给RemoteView：
 ```java
 RemoteViews remoteView = new RemoteViews(packageName, 
-                                         getResourceId("view_notify_light_play", "layout"));
+                                         getResourceId("view_notify_play", "layout"));
 ```
-只要你的布局文件命名为 `view_notify_light_play.xml` 就能正确获取了。  
+只要你的布局文件命名为 `view_notify_play.xml` 就能正确获取了。  
 所以不同的布局和不同的资源获取全部都是通过 `getResourceId` 方法获取。
 
 

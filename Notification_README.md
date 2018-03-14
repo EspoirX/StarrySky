@@ -41,31 +41,69 @@ public class NotificationCreater implements Parcelable {
 
 #### 一些约定
 
-不同手机的通知栏背景有的是白色背景，有的是黑色或者半透明的背景，所以需要两套的布局，分别对应着两种背景。lib 会自动判断背景颜色来选择布局。      
-自定义通知栏有两种 RemoteView ，一个是普通的 ContentView（下面称为`普通通知栏`），一个是 BigContentView（下面称为`大通知栏`） ,所以也需要两种布局。  
-所以加起来通知栏的布局有四个。 如下图所示：  
-白色背景大小布局通知栏:  
+不同的手机通知栏背景色有的是浅色背景，有的是深色背景，当自定义通知栏的时候，就需要根据不同的背景颜色来使用不同的资源文件。
+自定义通知栏有两种 RemoteView ，一个是普通的 ContentView ，一个是 BigContentView ,所以需要两个布局，而资源图片也需要两套，对应着不同的背景色。    
+ 
+ContentView 和 BigContentView 效果如下所示:    
 <a href="art/light2.png"><img src="art/light2.png" width="25%"/></a>
 <a href="art/light1.png"><img src="art/light1.png" width="25%"/></a>  
 
-黑色背景大小布局通知栏:  
-(暂停没有找到手机，所以在模拟器上截了个图...)  
-<a href="art/dark1.png"><img src="art/dark1.png" width="25%"/></a>
 
 #### 命名约定
-因为四个布局，所以约定有点多，请耐心操作。
-
  
 ##### 布局命名
 
-请将你的四个布局按下面规则命名。
+请将你的两个布局按下面规则命名。
 
- | 通知栏背景色 | RemoteView 类型 | 命名  |
- | :-------- | :--------   | :------   |
- | 白色背景   | RemoteView    | view_notify_light_play.xml     |
- | 白色背景   | BigRemoteView | view_notify_big_light_play.xml |
- | 黑色背景   | RemoteView    | view_notify_dark_play.xml      |
- | 黑色背景   | BigRemoteView | view_notify_big_dark_play.xml  |
+ | RemoteView 类型 | 命名  |
+ | :--------   | :------   |
+ | RemoteView    | view_notify_play.xml     |
+ | BigRemoteView | view_notify_big_play.xml |
+ 
+ **注意**  
+ 因为通知栏布局中的字体颜色是跟随系统的，所以请不要给布局文件中的 TextView 设置 textColor。如果是 title 的 TextView,请使用 ` style="@style/notification_title"` ,如果是 content
+ 的 TextView ,请使用 `@style/notification_info` ,这样颜色就会跟随系统了，例子：
+ 
+ ```xml
+<LinearLayout
+    android:id="@+id/ll_custom_button2"
+    android:layout_width="0.0dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_weight="1.0"
+    android:orientation="vertical"
+    android:paddingBottom="2.0dp"
+    android:paddingLeft="13.0dp"
+    android:paddingTop="2.0dp">
+
+    <TextView
+        android:id="@+id/txt_notifySongName"
+        style="@style/notification_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:lines="1"
+        android:singleLine="true"
+        android:text="Nice Music"
+        android:textSize="16sp"
+        android:textStyle="normal"/>
+
+    <TextView
+        android:id="@+id/txt_notifyArtistName"
+        style="@style/notification_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:ellipsize="end"
+        android:fadingEdge="horizontal"
+        android:lines="1"
+        android:singleLine="true"
+        android:text="听你所想"
+        android:textSize="13sp"/>
+</LinearLayout>
+ ```
+ 
+具体可以参考 [NiceMusic](https://github.com/lizixian18/NiceMusic) 
  
  
 ##### id 命名
@@ -97,26 +135,26 @@ public class NotificationCreater implements Parcelable {
  
 | 通知栏背景色  | 资源名称  |   命名  |
 | :-------- | :--------   | :------   |
-| 白色背景   | 播放按钮 selector | notify_btn_light_play_selector.xml | 
-| 白色背景   | 暂停按钮 selector | notify_btn_light_pause_selector.xml | 
-| 白色背景   | 下一首按钮 selector | notify_btn_light_prev_selector.xml | 
-| 白色背景   | 上一首按钮 selector | notify_btn_light_prev_selector.xml | 
-| 白色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_light_next_pressed | 
-| 白色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_light_prev_pressed | 
-| 白色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_light_favorite_normal | 
-| 白色背景   | 桌面歌词按钮的图片资源 | notify_btn_light_lyrics_normal | 
-| 黑色背景   | 播放按钮 selector | notify_btn_dark_play_selector.xml | 
-| 黑色背景   | 暂停按钮 selector | notify_btn_dark_pause_selector.xml | 
-| 黑色背景   | 下一首按钮 selector | notify_btn_dark_next_selector.xml | 
-| 黑色背景   | 上一首按钮 selector | notify_btn_dark_prev_selector.xml | 
-| 黑色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_dark_next_pressed | 
-| 黑色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_dark_prev_pressed | 
-| 黑色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_dark_favorite_normal | 
-| 黑色背景   | 桌面歌词按钮的图片资源 | notify_btn_dark_lyrics_normal | 
-| 黑白通用   | 喜欢按钮被选中时的图片资源 | notify_btn_favorite_checked | 
-| 黑白通用   | 桌面歌词按钮选中时的图片资源 | notify_btn_lyrics_checked | 
-| 黑白通用   | 通知栏 smallIcon 图片资源 | icon_notification | 
-| 黑白通用   | 下载按钮暂 | 暂时没什么规定，可以随便命名 | 
+| 浅色背景   | 播放按钮 selector | notify_btn_light_play_selector.xml | 
+| 浅色背景   | 暂停按钮 selector | notify_btn_light_pause_selector.xml | 
+| 浅色背景   | 下一首按钮 selector | notify_btn_light_prev_selector.xml | 
+| 浅色背景   | 上一首按钮 selector | notify_btn_light_prev_selector.xml | 
+| 浅色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_light_next_pressed | 
+| 浅色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_light_prev_pressed | 
+| 浅色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_light_favorite_normal | 
+| 浅色背景   | 桌面歌词按钮的图片资源 | notify_btn_light_lyrics_normal | 
+| 深色背景   | 播放按钮 selector | notify_btn_dark_play_selector.xml | 
+| 深色背景   | 暂停按钮 selector | notify_btn_dark_pause_selector.xml | 
+| 深色背景   | 下一首按钮 selector | notify_btn_dark_next_selector.xml | 
+| 深色背景   | 上一首按钮 selector | notify_btn_dark_prev_selector.xml | 
+| 深色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_dark_next_pressed | 
+| 深色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_dark_prev_pressed | 
+| 深色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_dark_favorite_normal | 
+| 深色背景   | 桌面歌词按钮的图片资源 | notify_btn_dark_lyrics_normal | 
+| 深白通用   | 喜欢按钮被选中时的图片资源 | notify_btn_favorite_checked | 
+| 深白通用   | 桌面歌词按钮选中时的图片资源 | notify_btn_lyrics_checked | 
+| 深白通用   | 通知栏 smallIcon 图片资源 | icon_notification | 
+| 深白通用   | 下载按钮暂 | 暂时没什么规定，可以随便命名 | 
  
  
 如果除了上面说到的这么多按钮中没有包含你需要的，请提 issue，我会加上去。
