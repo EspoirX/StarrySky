@@ -34,7 +34,7 @@ allprojects {
 }
 
 dependencies {
-      compile 'com.github.lizixian18:MusicLibrary:v1.2.2'
+      compile 'com.github.lizixian18:MusicLibrary:v1.2.3'
 }
 ```
 [![](https://jitpack.io/v/lizixian18/MusicLibrary.svg)](https://jitpack.io/#lizixian18/MusicLibrary)
