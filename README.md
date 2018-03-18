@@ -6,6 +6,16 @@
 集成了 MediaPlayer 和 ExoPlayer 两个播放器（默认 ExoPlayer ），可以随意选择。  
 有了它，你只需要简单初始化后调用相关的方法即可实现音频播放功能，从此摆脱麻烦的封装。
 
+### 目前功能：
+- 集成了 MediaPlayer 和 ExoPlayer 两个播放器
+- 集成了自定义通知栏和系统通知栏
+- 播放器该有的操作功能都有
+
+#### 开发计划
+1. 集成系统通知栏（已完成）
+2. 集成下载功能
+3. 集成保存播放进度功能
+4. 支持直播
  
 PS：
 - 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。欢迎各位大佬指点指点。
@@ -24,7 +34,7 @@ allprojects {
 }
 
 dependencies {
-      compile 'com.github.lizixian18:MusicLibrary:v1.2.1'
+      compile 'com.github.lizixian18:MusicLibrary:v1.2.2'
 }
 ```
 [![](https://jitpack.io/v/lizixian18/MusicLibrary.svg)](https://jitpack.io/#lizixian18/MusicLibrary)
@@ -71,11 +81,7 @@ dependencies {
    详细见 [代码实现以及原理](https://github.com/lizixian18/MusicLibrary/blob/master/article_README.md)
 
 
-#### 开发计划
-1. 集成系统通知栏
-2. 集成下载功能
-3. 集成保存播放进度功能
-4. 支持直播
+
 
 <br><br><br>
 
