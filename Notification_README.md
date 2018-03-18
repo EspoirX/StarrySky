@@ -14,7 +14,26 @@ if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
 }
 ```
 
-只有要添加 setNotificationCreater()，即可集成通知栏功能了(当然还有一些命名约定要做，下面会说到)。
+如果你想使用集成好的系统通知栏，只需要在 `NotificationCreater` 中添加 `setCreateSystemNotification(true)`
+
+```java
+if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
+    NotificationCreater creater = new NotificationCreater.Builder()
+            .setTargetClass("com.lzx.nicemusic.module.main.HomeActivity")
+            .setCreateSystemNotification(true)
+            .build();
+    MusicManager.get()
+            .setContext(this)
+            .setNotificationCreater(creater)
+            .init();
+}
+```
+
+只有要添加 setNotificationCreater()，即可集成通知栏功能了。
+
+### 自定义通知栏
+
+自定义通知栏对资源的 id 和资源 的命名有一些规定。 
 
 NotificationCreater 是一个配置通知栏一些属性的类，里面有一些属性：
 ```java
@@ -47,7 +66,6 @@ public class NotificationCreater implements Parcelable {
 ContentView 和 BigContentView 效果如下所示:    
 <a href="art/light2.png"><img src="art/light2.png" width="25%"/></a>
 <a href="art/light1.png"><img src="art/light1.png" width="25%"/></a>  
-
 
 #### 命名约定
  
@@ -253,7 +271,6 @@ if (bundle != null) {
 
 
 
-
 如果你的通知栏中有喜欢或收藏按钮或者有是否显示桌面歌词按钮（类似网易云音乐），让按钮变成选中或者未选中状态，需要调用以下方法来更新UI：
 ```java
 //更新喜欢或收藏按钮UI为是否选中
@@ -262,6 +279,15 @@ MusicManager.get().updateNotificationFavorite(boolean isFavorite);
 //更新是否显示桌面歌词UI为是否选中
 MusicManager.get().updateNotificationLyrics(boolean isChecked);
 ```
+
+
+### 系统通知栏
+
+系统通知栏只需要在初始化的时候把开关打开，就已经集成好了，在系统通知栏中，有三个按钮，分别是上一首下一首和播放/暂停
+这三个按钮的颜色是会跟随你项目中的主题颜色 `colorPrimary` 的改变而改变的。  
+
+同样的，跟自定义通知栏一样，点击系统通知栏的时候也会得到 `songInfo` 参数，你也可以通过 `updateNotificationContentIntent` 方法
+添加自己的参数，也可以自定义 action 自己控制按钮的点击操作。
 
 
 

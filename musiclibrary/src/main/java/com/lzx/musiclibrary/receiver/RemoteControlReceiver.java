@@ -27,13 +27,13 @@ public class RemoteControlReceiver extends BroadcastReceiver {
             case KeyEvent.KEYCODE_MEDIA_PAUSE:
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
             case KeyEvent.KEYCODE_HEADSETHOOK:
-                // MusicPlayService.startCommand(context, MusicAction.ACTION_MEDIA_PLAY_PAUSE);
+
                 break;
             case KeyEvent.KEYCODE_MEDIA_NEXT:
-                // MusicPlayService.startCommand(context, MusicAction.ACTION_MEDIA_NEXT);
+
                 break;
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                // MusicPlayService.startCommand(context, MusicAction.ACTION_MEDIA_PREVIOUS);
+
                 break;
             default:
                 break;

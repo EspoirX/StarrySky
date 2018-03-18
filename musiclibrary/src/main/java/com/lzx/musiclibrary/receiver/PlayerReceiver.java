@@ -9,7 +9,7 @@ import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.control.PlayControl;
 import com.lzx.musiclibrary.control.PlayController;
-import com.lzx.musiclibrary.notification.MediaNotificationManager;
+import com.lzx.musiclibrary.notification.IMediaNotification;
 
 /**
  * Created by xian on 2018/2/18.
@@ -35,21 +35,21 @@ public class PlayerReceiver extends BroadcastReceiver {
             return;
         }
         switch (action) {
-            case MediaNotificationManager.ACTION_CLOSE:
+            case IMediaNotification.ACTION_CLOSE:
                 controller.stopMusic();
                 controller.stopNotification();
                 break;
-            case MediaNotificationManager.ACTION_PLAY_PAUSE:
+            case IMediaNotification.ACTION_PLAY_PAUSE:
                 if (controller.getState() == State.STATE_PLAYING) {
                     controller.pauseMusic();
                 } else if (controller.getState() == State.STATE_PAUSED) {
                     controller.resumeMusic();
                 }
                 break;
-            case MediaNotificationManager.ACTION_PREV:
+            case IMediaNotification.ACTION_PREV:
                 controller.playPre();
                 break;
-            case MediaNotificationManager.ACTION_NEXT:
+            case IMediaNotification.ACTION_NEXT:
                 controller.playNext();
                 break;
             default:
