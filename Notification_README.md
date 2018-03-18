@@ -29,7 +29,7 @@ if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
 }
 ```
 
-只有要添加 setNotificationCreater()，即可集成通知栏功能了。
+只要添加 setNotificationCreater()，即可集成通知栏功能了。
 
 ### 自定义通知栏
 
