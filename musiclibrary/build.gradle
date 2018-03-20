@@ -24,8 +24,10 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:palette-v7:26.1.0'
     //exoplayer
     compile 'com.google.android.exoplayer:exoplayer:r2.5.0'
+
 }

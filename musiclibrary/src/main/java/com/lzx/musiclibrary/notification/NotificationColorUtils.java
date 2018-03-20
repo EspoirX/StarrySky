@@ -184,6 +184,10 @@ public class NotificationColorUtils {
         }
     }
 
+    private static boolean isDark(int notiTextColor) {
+        return ColorUtils.calculateLuminance(notiTextColor) < 0.5;
+    }
+
     private static boolean isTextColorSimilar(int baseColor, int color) {
         int simpleBaseColor = baseColor | -16777216;
         int simpleColor = color | -16777216;

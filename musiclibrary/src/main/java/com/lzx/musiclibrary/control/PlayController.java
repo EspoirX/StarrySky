@@ -13,8 +13,10 @@ import com.lzx.musiclibrary.helper.QueueHelper;
 import com.lzx.musiclibrary.manager.MediaSessionManager;
 import com.lzx.musiclibrary.manager.QueueManager;
 import com.lzx.musiclibrary.manager.TimerTaskManager;
-import com.lzx.musiclibrary.notification.MediaNotificationManager;
+import com.lzx.musiclibrary.notification.CustomNotification;
+import com.lzx.musiclibrary.notification.IMediaNotification;
 import com.lzx.musiclibrary.notification.NotificationCreater;
+import com.lzx.musiclibrary.notification.SystemNotification;
 import com.lzx.musiclibrary.playback.PlaybackManager;
 import com.lzx.musiclibrary.playback.player.Playback;
 
@@ -40,8 +42,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     private NotifyContract.NotifyTimerTask mNotifyTimerTask;
     private Playback mPlayback;
 
-    private MediaNotificationManager mNotificationManager;
-
+    private IMediaNotification mNotification;
 
     private PlayController(Builder builder) {
         this.mMusicService = builder.mMusicService;
@@ -63,7 +64,11 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
 
     void updateNotificationCreater(NotificationCreater creater) {
         if (creater != null) {
-            mNotificationManager = new MediaNotificationManager(mMusicService, creater, mPlaybackManager);
+            if (creater.isCreateSystemNotification()) {
+                mNotification = new SystemNotification(mMusicService, creater, mPlaybackManager);
+            } else {
+                mNotification = new CustomNotification(mMusicService, creater, mPlaybackManager);
+            }
         }
     }
 
@@ -112,7 +117,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         }
 
         Builder setNotifyTimerTask(NotifyContract.NotifyTimerTask notifyTimerTask) {
-            notifyTimerTask = notifyTimerTask;
+            this.notifyTimerTask = notifyTimerTask;
             return this;
         }
 
@@ -268,8 +273,8 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     @Override
     public void onPlaybackSwitch(SongInfo info) {
         mNotifyMusicSwitch.notify(info);
-        if (mNotificationManager != null) {
-            mNotificationManager.startNotification(info);
+        if (mNotification != null) {
+            mNotification.startNotification(info);
         }
     }
 
@@ -293,30 +298,30 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         //状态改变
         mNotifyStatusChanged.notify(mQueueManager.getCurrentMusic(), mQueueManager.getCurrentIndex(), state, null);
         mMediaSessionManager.setPlaybackState(newState);
-        if (mNotificationManager != null) {
+        if (mNotification != null) {
             if (state == State.STATE_PLAYING) {
-                mNotificationManager.updateViewStateAtStart();
+                mNotification.updateViewStateAtStart();
             } else if (state == State.STATE_PAUSED) {
-                mNotificationManager.updateViewStateAtPause();
+                mNotification.updateViewStateAtPause();
             }
         }
     }
 
     void updateFavorite(boolean isFavorite) {
-        if (mNotificationManager != null) {
-            mNotificationManager.updateFavorite(isFavorite);
+        if (mNotification != null) {
+            mNotification.updateFavorite(isFavorite);
         }
     }
 
     void updateLyrics(boolean isChecked) {
-        if (mNotificationManager != null) {
-            mNotificationManager.updateLyrics(isChecked);
+        if (mNotification != null) {
+            mNotification.updateLyrics(isChecked);
         }
     }
 
     void updateContentIntent(Bundle bundle, String targetClass) {
-        if (mNotificationManager != null) {
-            mNotificationManager.updateContentIntent(bundle, targetClass);
+        if (mNotification != null) {
+            mNotification.updateContentIntent(bundle, targetClass);
         }
     }
 
@@ -325,8 +330,8 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     }
 
     public void stopNotification() {
-        if (mNotificationManager != null) {
-            mNotificationManager.stopNotification();
+        if (mNotification != null) {
+            mNotification.stopNotification();
         }
     }
 }
