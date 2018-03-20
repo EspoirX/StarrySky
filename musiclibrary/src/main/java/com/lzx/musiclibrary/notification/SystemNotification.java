@@ -26,7 +26,6 @@ import com.lzx.musiclibrary.helper.ResourceHelper;
 import com.lzx.musiclibrary.playback.PlaybackManager;
 import com.lzx.musiclibrary.receiver.PlayerReceiver;
 import com.lzx.musiclibrary.utils.AlbumArtCache;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -85,25 +84,19 @@ public class SystemNotification implements IMediaNotification {
 
     @Override
     public void startNotification(SongInfo songInfo) {
-        try {
-            if (mSongInfo == null && songInfo == null) {
-                return;
-            }
-            if (songInfo != null) {
-                mSongInfo = songInfo;
-            }
-            if (!mStarted) {
-                mNotification = createNotification();
-                if (mNotification != null) {
-                    mService.startForeground(NOTIFICATION_ID, mNotification);
-                    mStarted = true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            LogUtil.i("e = " + e.getMessage());
+        if (mSongInfo == null && songInfo == null) {
+            return;
         }
-
+        if (songInfo != null) {
+            mSongInfo = songInfo;
+        }
+        if (!mStarted) {
+            mNotification = createNotification();
+            if (mNotification != null) {
+                mService.startForeground(NOTIFICATION_ID, mNotification);
+                mStarted = true;
+            }
+        }
     }
 
     @Override
