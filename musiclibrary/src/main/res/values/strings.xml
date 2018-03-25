@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">musicLibrary</string>
+    <string name="notification_channel">MUSIC_LIB_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for MUSIC_LIB</string>
+
+    <string name="stop_casting">Stop Casting</string>
+    <string name="label_pause">Pause</string>
+    <string name="label_play">Play</string>
+    <string name="label_previous">Previous</string>
+    <string name="label_next">Next</string>
+</resources>

@@ -1,0 +1,38 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.lzx.musiclibrary">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <application>
+        <service
+            android:name="com.lzx.musiclibrary.MusicService"
+            android:exported="true"
+            android:process=":musicLibrary"/>
+
+        <receiver
+            android:name=".receiver.RemoteControlReceiver"
+            android:exported="true"
+            android:process=":musicLibrary">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receiver.PlayerReceiver"
+            android:exported="true"
+            android:process=":musicLibrary">
+            <intent-filter>
+                <action android:name="com.lzx.nicemusic.close"/>
+                <action android:name="com.lzx.nicemusic.play_pause"/>
+                <action android:name="com.lzx.nicemusic.prev"/>
+                <action android:name="com.lzx.nicemusic.next"/>
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>
