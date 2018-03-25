@@ -10,12 +10,13 @@
 - 集成了 MediaPlayer 和 ExoPlayer 两个播放器
 - 集成了自定义通知栏和系统通知栏
 - 播放器该有的操作功能都有
+- 支持音频直播,支持多种流格式（DASH、Smooth Streaming、HLS、其他）(直播请不要使用 MediaPlayer)
 
 #### 开发计划
 1. 集成系统通知栏（已完成）
 2. 集成下载功能
 3. 集成保存播放进度功能
-4. 支持直播
+4. 支持直播（已完成）
  
 PS：
 - 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。欢迎各位大佬指点指点。
@@ -34,7 +35,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.2.4'
+     compile 'com.github.lizixian18:MusicLibrary:v1.2.5'
 }
 ```
 [![](https://jitpack.io/v/lizixian18/MusicLibrary.svg)](https://jitpack.io/#lizixian18/MusicLibrary)

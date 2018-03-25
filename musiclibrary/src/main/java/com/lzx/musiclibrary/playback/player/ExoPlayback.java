@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -20,11 +23,21 @@ import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MediaSourceEventListener;
 import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.source.dash.DashMediaSource;
+import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
+import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Util;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
@@ -57,13 +70,17 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     private FocusAndLockManager mFocusAndLockManager;
 
     private Callback mCallback;
-
     private Context mContext;
+    private DataSource.Factory mediaDataSourceFactory;
+    protected String userAgent;
+    private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
     public ExoPlayback(Context context) {
         Context applicationContext = context.getApplicationContext();
         this.mContext = applicationContext;
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
+        userAgent = Util.getUserAgent(mContext, "ExoPlayer");
+        mediaDataSourceFactory = buildDataSourceFactory(true);
     }
 
     private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -196,12 +213,10 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes);
 
-            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext, "musiclibrary"), null);
-
-            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-
-            MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(source), dataSourceFactory, extractorsFactory, null, null);
-
+            //DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext, "musiclibrary"), null);
+            //ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+            //MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(source), dataSourceFactory, extractorsFactory, null, null);
+            MediaSource mediaSource = buildMediaSource(Uri.parse(source),null, null, null);
 
             mExoPlayer.prepare(mediaSource);
 
@@ -209,6 +224,50 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         }
 
         configurePlayerState();
+    }
+
+    private MediaSource buildMediaSource(
+            Uri uri,
+            String overrideExtension,
+            @Nullable Handler handler,
+            @Nullable MediaSourceEventListener listener) {
+        @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(uri)
+                : Util.inferContentType("." + overrideExtension);
+        switch (type) {
+            case C.TYPE_DASH:
+                return new DashMediaSource.Factory(
+                        new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
+                        buildDataSourceFactory(false))
+                        .createMediaSource(uri, handler, listener);
+            case C.TYPE_SS:
+                return new SsMediaSource.Factory(
+                        new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
+                        buildDataSourceFactory(false))
+                        .createMediaSource(uri, handler, listener);
+            case C.TYPE_HLS:
+                return new HlsMediaSource.Factory(mediaDataSourceFactory)
+                        .createMediaSource(uri, handler, listener);
+            case C.TYPE_OTHER:
+                return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
+                        .createMediaSource(uri, handler, listener);
+            default: {
+                throw new IllegalStateException("Unsupported type: " + type);
+            }
+        }
+    }
+
+
+    private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter) {
+        return buildDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
+    }
+
+    private DataSource.Factory buildDataSourceFactory(TransferListener<? super DataSource> listener) {
+        return new DefaultDataSourceFactory(mContext, listener, buildHttpDataSourceFactory(listener));
+    }
+
+    private HttpDataSource.Factory buildHttpDataSourceFactory(
+            TransferListener<? super DataSource> listener) {
+        return new DefaultHttpDataSourceFactory(userAgent, listener);
     }
 
     @Override
@@ -314,8 +373,9 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
      */
     private final class ExoPlayerEventListener implements Player.EventListener {
 
+
         @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
 
         }
 
@@ -356,6 +416,11 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         }
 
         @Override
+        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+        }
+
+        @Override
         public void onPlayerError(ExoPlaybackException error) {
             final String what;
             switch (error.type) {
@@ -377,12 +442,18 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         }
 
         @Override
-        public void onPositionDiscontinuity() {
+        public void onPositionDiscontinuity(int reason) {
+
+        }
+
+
+        @Override
+        public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
 
         }
 
         @Override
-        public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+        public void onSeekProcessed() {
 
         }
     }
