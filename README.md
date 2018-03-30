@@ -10,7 +10,10 @@
 
 一个比较完善的音乐播放封装库，针对快速集成音频播放功能。  
 
-## Features
+[中文文档](https://github.com/lizixian18/MusicLibrary/blob/master/README-ZH.md)
+
+## 特点
+
 - Implement audio services based on IPC, reduce app memory peaks, and avoid OOM.
 - Integrating and calling APIs is very simple, and audio functions can be integrated in almost one sentence.
 - Provides rich API methods to easily implement various functions.
@@ -26,6 +29,7 @@
  
 
 ## Demo
+
 Specific application Demo Please refer to [NiceMusic](https://github.com/lizixian18/NiceMusic)
 
 ## Usage
@@ -63,7 +67,7 @@ if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
 
 （All the apis in lib are called by the MusicManager. The static methods can be called directly.Non-static methods need to be called via MusicManager.get() .） 
   
-3. Simple to use(play a song):
+3. Simple to use (play a song):
 
 ```java
 SongInfo songInfo = new SongInfo();
@@ -98,16 +102,15 @@ MusicManager.get().playMusicByInfo(songInfo);
    See details [Code implementation and principle](https://github.com/lizixian18/MusicLibrary/blob/master/readme/principle.md)
 
 
-
-
-<br><br><br>
+<br><br>
 
 PS：
 - If you have ideas or opinions and suggestions, please feel free to ask for an issue and like to have a star. Welcome everybody to give pointers.
 
-<br><br><br>
+<br><br>
 
-#### About me
+##  About me
+
 An android developer in GuangZhou  
 简书：[http://www.jianshu.com/users/286f9ad9c417/latest_articles](http://www.jianshu.com/users/286f9ad9c417/latest_articles)   
 Email:386707112@qq.com  
