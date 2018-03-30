@@ -1,6 +1,12 @@
-# MusicLibrary
+<a href="art/logo.jpg"><img src="art/logo.jpg" width="100%"/></a>
 
-<a href="art/bg1.jpg"><img src="art/bg1.jpg" width="100%"/></a>
+<p align="center">
+<a href="http://developer.android.com/index.html"><img src="https://img.shields.io/badge/platform-android-green.svg"></a>
+<a href="https://jitpack.io/#lizixian18/MusicLibrary"><img src="https://jitpack.io/v/lizixian18/MusicLibrary.svg"></a>
+<a href="http://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/license-MIT-green.svg"></a>
+</p>
+
+# MusicLibrary
 
 一个比较完善的音乐播放封装库。 
 集成了 MediaPlayer 和 ExoPlayer 两个播放器（默认 ExoPlayer ），可以随意选择。  
@@ -67,19 +73,19 @@ dependencies {
   
 2. Model字典
  
-   详细见 [Model字典说明](https://github.com/lizixian18/MusicLibrary/blob/master/Model_README.md)
+   详细见 [Model字典说明](https://github.com/lizixian18/MusicLibrary/blob/master/readme/model.md)
    
 3. 播放器API
    
-   详细见 [API说明](https://github.com/lizixian18/MusicLibrary/blob/master/API_README.md)
+   详细见 [API说明](https://github.com/lizixian18/MusicLibrary/blob/master/readme/api.md)
  
 4. 通知栏集成
 
-   详细见 [通知栏集成](https://github.com/lizixian18/MusicLibrary/blob/master/Notification_README.md)
+   详细见 [通知栏集成](https://github.com/lizixian18/MusicLibrary/blob/master/readme/notification.md)
 
 5. 代码实现以及原理
   
-   详细见 [代码实现以及原理](https://github.com/lizixian18/MusicLibrary/blob/master/article_README.md)
+   详细见 [代码实现以及原理](https://github.com/lizixian18/MusicLibrary/blob/master/readme/principle.md)
 
 
 
