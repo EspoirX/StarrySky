@@ -8,30 +8,30 @@
 
 # MusicLibrary
 
-一个比较完善的音乐播放封装库。 
-集成了 MediaPlayer 和 ExoPlayer 两个播放器（默认 ExoPlayer ），可以随意选择。  
-有了它，你只需要简单初始化后调用相关的方法即可实现音频播放功能，从此摆脱麻烦的封装。
+一个比较完善的音乐播放封装库，针对快速集成音频播放功能。  
 
-### 目前功能：
-- 集成了 MediaPlayer 和 ExoPlayer 两个播放器
-- 集成了自定义通知栏和系统通知栏
-- 播放器该有的操作功能都有
-- 支持音频直播,支持多种流格式（DASH、Smooth Streaming、HLS、其他）(直播请不要使用 MediaPlayer)
+## Features
+- Implement audio services based on IPC, reduce app memory peaks, and avoid OOM.
+- Integrating and calling APIs is very simple, and audio functions can be integrated in almost one sentence.
+- Provides rich API methods to easily implement various functions.
+- In one sentence, you can customize the notification bar and the system notification bar to customize the control of the notification bar.
+- Integrated MediaPlayer and ExoPlayer Players, Freely Switchable
+- Supports multiple audio formats and supports audio streaming.
 
-#### 开发计划
-1. 集成系统通知栏（已完成）
-2. 集成下载功能（已完成：想想GitHub上这么多优秀的下载框架，我为什么还要造轮子呢，这功能就交给那些框架吧）
-3. 集成保存播放进度功能
-4. 支持直播（已完成）
+## WorkPlan
+
+- 支持边听边存
+- 支持保存播放进度
+- 支持变速
  
-PS：
-- 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。欢迎各位大佬指点指点。
-    
 
-#### Demo
-具体应用 Demo 请参考 [NiceMusic](https://github.com/lizixian18/NiceMusic)
+## Demo
+Specific application Demo Please refer to [NiceMusic](https://github.com/lizixian18/NiceMusic)
 
-#### 导入
+## Usage
+
+1.Import library
+
 ```java
 allprojects {
     repositories {
@@ -44,51 +44,66 @@ dependencies {
      compile 'com.github.lizixian18:MusicLibrary:v1.2.5'
 }
 ```
-[![](https://jitpack.io/v/lizixian18/MusicLibrary.svg)](https://jitpack.io/#lizixian18/MusicLibrary)
 
-#### 文档
-1. 集成方法：
-  ```java
-    
-    
-    在 Application 中完成初始化，会自动开启音乐服务和初始化：
-    
-    if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
-        MusicManager.get().setContext(this).init();
-    }
-    
-    其中，一定要调用 setContext 设置上下文，否则会报错。 
-    因为音乐服务是运行在 musicLibrary 进程里面的，多进程的情况下，Application 会创建多次， 
-    所以需要加上以上判断，在非 musicLibrary 进程里面初始化。
-      
-    初始化的时候还有一些参数可以配置：  
-    
-    setAutoPlayNext(boolean autoPlayNext) 是否在播放完当前歌曲后自动播放下一首
-    setUseMediaPlayer(boolean isUseMediaPlayer) 是否使用 MediaPlayer
-    setNotificationCreater(NotificationCreater creater) 通知栏配置
-    
-    （通过 MusicManager 去调用 lib 中所有的 api ，静态方法可以直接调用，
-      非静态方法需要通过 MusicManager.get() 去调用。）
-  ```
+2. add MusicLibrary to your Application
+
+```java
+if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
+    MusicManager.get().setContext(this).init();
+}
+```
+**note**
+1. Be sure to call setContext to set the context, otherwise it will report an error. 
+2. Because the music service is running in the musicLibrary process, in the multi-process case, Application will create multiple times,Therefore, you need to add the above judgment to initialize in the non-musicLibrary process.
+3. There are some parameters that can be configured during initialization:
+
+- setAutoPlayNext(boolean autoPlayNext) Whether to play the next song automatically after playing the current song
+- setUseMediaPlayer(boolean isUseMediaPlayer) Whether to use MediaPlayer
+- setNotificationCreater(NotificationCreater creater) Notification bar configuration
+
+（All the apis in lib are called by the MusicManager. The static methods can be called directly.Non-static methods need to be called via MusicManager.get() .） 
   
-2. Model字典
- 
-   详细见 [Model字典说明](https://github.com/lizixian18/MusicLibrary/blob/master/readme/model.md)
-   
-3. 播放器API
-   
-   详细见 [API说明](https://github.com/lizixian18/MusicLibrary/blob/master/readme/api.md)
- 
-4. 通知栏集成
+3. Simple to use(play a song):
 
-   详细见 [通知栏集成](https://github.com/lizixian18/MusicLibrary/blob/master/readme/notification.md)
+```java
+SongInfo songInfo = new SongInfo();
+songInfo.setSongId("your song Id"); 
+songInfo.setSongUrl("your song url"); 
 
-5. 代码实现以及原理
+AlbumInfo albumInfo = new AlbumInfo();
+albumInfo.setAlbumName("your album name");
+albumInfo.setAlbumCover("your album cover");
+
+songInfo.setAlbumInfo(albumInfo);
+
+MusicManager.get().playMusicByInfo(songInfo);
+```
+
+## Wiki
+
+1. MusicLibrary Model 
+ 
+   See details [MusicLibrary Model Description](https://github.com/lizixian18/MusicLibrary/blob/master/readme/model.md)
+   
+2. MusicManager API
+   
+   See details [API Description](https://github.com/lizixian18/MusicLibrary/blob/master/readme/api.md)
+ 
+3. Notification bar integration
+
+   See details [Notification Description](https://github.com/lizixian18/MusicLibrary/blob/master/readme/notification.md)
+
+4. Code implementation and principle
   
-   详细见 [代码实现以及原理](https://github.com/lizixian18/MusicLibrary/blob/master/readme/principle.md)
+   See details [Code implementation and principle](https://github.com/lizixian18/MusicLibrary/blob/master/readme/principle.md)
 
 
 
+
+<br><br><br>
+
+PS：
+- If you have ideas or opinions and suggestions, please feel free to ask for an issue and like to have a star. Welcome everybody to give pointers.
 
 <br><br><br>
 
@@ -99,19 +114,28 @@ Email:386707112@qq.com
 If you want to make friends with me, You can give me a Email and follow me。
 
 
-#### License
+## License
+
 ```
-Copyright 2018 L_Xian   
+MIT License
 
-Licensed under the Apache License, Version 2.0 (the "License");  
-you may not use this file except in compliance with the License.  
-You may obtain a copy of the License at  
+Copyright (c) [2018] [lizixian]
 
-http://www.apache.org/licenses/LICENSE-2.0  
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-Unless required by applicable law or agreed to in writing, software  
-distributed under the License is distributed on an "AS IS" BASIS,  
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
-See the License for the specific language governing permissions and  
-limitations under the License.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
