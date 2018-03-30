@@ -12,7 +12,7 @@
 
 [中文文档](https://github.com/lizixian18/MusicLibrary/blob/master/README-ZH.md)
 
-## 特点
+## Features
 
 - Implement audio services based on IPC, reduce app memory peaks, and avoid OOM.
 - Integrating and calling APIs is very simple, and audio functions can be integrated in almost one sentence.
