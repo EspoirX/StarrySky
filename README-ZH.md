@@ -24,10 +24,10 @@
 
 ## 开发计划
 
-- 支持边听边存 <a href="#"><img src="https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg"></a>
-- 支持保存播放进度 <a href="#">https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg</a>
-- 支持变速 <a href="#"><img src="https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg"></a>
- 
+- 支持边听边存 [![](https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
+- 支持保存播放进度 [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
+- 支持变速 [![](https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
+
 
 ## 使用例子
 
@@ -46,7 +46,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.2.5'
+     compile 'com.github.lizixian18:MusicLibrary:v1.2.6'
 }
 ```
 
