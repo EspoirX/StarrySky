@@ -26,9 +26,9 @@
 
 ## WorkPlan
 
-- 支持边听边存
-- 支持保存播放进度
-- 支持变速
+- Supports Cache while playing [![](https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
+- Supports the playback progress [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
+- Supports variable speed [![](https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
  
 
 ## Demo
@@ -48,7 +48,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.2.5'
+     compile 'com.github.lizixian18:MusicLibrary:v1.2.6'
 }
 ```
 
