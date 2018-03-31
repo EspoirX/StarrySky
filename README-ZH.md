@@ -1,4 +1,4 @@
-<a href="art/logo.jpg"><img src="art/logo.jpg" width="100%"/></a>
+<a href="art/logo.jpg"><img src="art/logo.jpg" align="center"/></a>
 
 <p align="center">
 <a href="http://developer.android.com/index.html"><img src="https://img.shields.io/badge/platform-android-green.svg"></a>
