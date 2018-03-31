@@ -52,10 +52,17 @@ dependencies {
 2. add MusicLibrary to your Application
 
 ```java
-if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
-    MusicManager.get().setContext(this).init();
+public class NiceMusicApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
+            MusicManager.get().setContext(this).init();
+        }
+    }
 }
 ```
+
 **note**
 1. Be sure to call setContext to set the context, otherwise it will report an error. 
 2. Because the music service is running in the musicLibrary process, in the multi-process case, Application will create multiple times,Therefore, you need to add the above judgment to initialize in the non-musicLibrary process.
@@ -74,14 +81,10 @@ SongInfo songInfo = new SongInfo();
 songInfo.setSongId("your song Id"); 
 songInfo.setSongUrl("your song url"); 
 
-AlbumInfo albumInfo = new AlbumInfo();
-albumInfo.setAlbumName("your album name");
-albumInfo.setAlbumCover("your album cover");
-
-songInfo.setAlbumInfo(albumInfo);
-
 MusicManager.get().playMusicByInfo(songInfo);
 ```
+
+At least set songId and songUrl to play.
 
 ## Wiki
 

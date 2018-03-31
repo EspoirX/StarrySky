@@ -5,11 +5,11 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 
 import com.lzx.musiclibrary.MusicService;
-import com.lzx.musiclibrary.aidl.listener.IOnPlayerEventListener;
-import com.lzx.musiclibrary.aidl.listener.IOnTimerTaskListener;
-import com.lzx.musiclibrary.aidl.listener.IPlayControl;
 import com.lzx.musiclibrary.aidl.listener.NotifyContract;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
+import com.lzx.musiclibrary.aidl.source.IOnPlayerEventListener;
+import com.lzx.musiclibrary.aidl.source.IOnTimerTaskListener;
+import com.lzx.musiclibrary.aidl.source.IPlayControl;
 import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.helper.QueueHelper;

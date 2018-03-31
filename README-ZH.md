@@ -50,8 +50,14 @@ dependencies {
 2. 添加 MusicLibrary 到你的 Application 中
 
 ```java
-if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
-    MusicManager.get().setContext(this).init();
+public class NiceMusicApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
+            MusicManager.get().setContext(this).init();
+        }
+    }
 }
 ```
 
@@ -74,14 +80,11 @@ SongInfo songInfo = new SongInfo();
 songInfo.setSongId("your song Id"); 
 songInfo.setSongUrl("your song url"); 
 
-AlbumInfo albumInfo = new AlbumInfo();
-albumInfo.setAlbumName("your album name");
-albumInfo.setAlbumCover("your album cover");
-
-songInfo.setAlbumInfo(albumInfo);
-
 MusicManager.get().playMusicByInfo(songInfo);
 ```
+
+最少要设置 songId 和 songUrl 才能播放。
+
   
 ## 文档
   

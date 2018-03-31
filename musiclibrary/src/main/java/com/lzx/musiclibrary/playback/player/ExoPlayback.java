@@ -213,8 +213,10 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes);
 
-            //DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext, "musiclibrary"), null);
-            //ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext, "musiclibrary"), null);
+
+            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+
             //MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(source), dataSourceFactory, extractorsFactory, null, null);
             MediaSource mediaSource = buildMediaSource(Uri.parse(source),null, null, null);
 

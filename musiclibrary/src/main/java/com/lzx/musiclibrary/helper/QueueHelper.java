@@ -23,22 +23,23 @@ public class QueueHelper {
     }
 
     private static MediaMetadataCompat getMediaMetadataCompat(SongInfo info) {
-        if (info.getAlbumInfo() == null) {
-            throw new RuntimeException("albumInfo must not be null.");
-        }
-        return new MediaMetadataCompat.Builder()
+        MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
+        builder
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, info.getSongId())
                 .putString("__SOURCE__", info.getSongUrl())
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, info.getAlbumInfo().getAlbumName())
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, info.getArtist())
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, info.getDuration())
                 .putString(MediaMetadataCompat.METADATA_KEY_GENRE, info.getGenre())
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, info.getAlbumInfo().getAlbumCover())
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, info.getSongName())
                 .putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, info.getTrackNumber())
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, info.getSongCoverBitmap())
-                .putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, info.getAlbumInfo().getSongCount())
-                .build();
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, info.getSongCoverBitmap());
+        if (info.getAlbumInfo() != null) {
+            builder
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, info.getAlbumInfo().getAlbumName())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, info.getAlbumInfo().getAlbumCover())
+                    .putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, info.getAlbumInfo().getSongCount());
+        }
+        return builder.build();
     }
 
     public static List<MediaSessionCompat.QueueItem> getQueueItems(List<SongInfo> list) {
