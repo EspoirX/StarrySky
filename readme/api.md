@@ -38,6 +38,7 @@
  | getPlayList()| 得到当前播放列表,返回`List<SongInfo>`|
  | deleteSongInfoOnPlayList(SongInfo info,boolean isNeedToPlayNext)|从播放列表中删除一条信息 <br>参数：<br>info 需要删除的音乐信息<br>isNeedToPlayNext 删除后是否要播放接下来的下一首歌|
  | setCurrMusic(int index)|改变当前播放的音乐信息 <br>参数：<br>index 当前索引|
+ | getDuration() | 获取当前音频时长 |
  
  #### 静态方法API
   | 指令        |    描述                                                    |  
@@ -65,6 +66,17 @@
 | :--------  | :---------------------------------------------------------|
 | pausePlayInMillis(long time) | 在 time 毫秒后暂停播放<br>参数：<br>time 定时时间，单位毫秒，如果想停止定时，传 -1 即可。<br> 此方法调用的时候马上就会开始计时，<br> 当定时结束后，如果有音频正在播放，则暂停播放，什么都不会做 |
 
+#### 保存音频播放进度API
+音频进度保存在数据库里面，数据表有两个字段，分别是音频 ID 和 当前进度。相关
+API 由 `SongHistoryManager` 类去管理。
+
+| 指令        |    描述                                                    |  
+| :--------  | :---------------------------------------------------------|
+| saveSongHistory(String songId, int progress) |保存音频进度<br>参数：<br> songId 音频 Id<br>progress 当前进度|
+| findSongProgressById(String songId) | 根据音频 ID 获取保存的进度 <br>参数：<br>songId 音频 Id|
+| hasSongHistory(String songId) | 根据音频 ID 查找是否有对应的进度  <br>参数：<br>songId 音频 Id|
+| deleteSongProgressById(String songId) | 根据音频 ID 删除对应的进度记录 <br>参数：<br>songId 音频 Id|
+| clearAllSongProgress() | 清除所以进度记录|
 
 #### 监听器相关API
 | 指令        |    描述                                                    |  

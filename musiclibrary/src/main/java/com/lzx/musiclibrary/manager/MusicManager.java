@@ -481,6 +481,18 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
+    public int getDuration() throws RemoteException {
+        if (control != null) {
+            try {
+                return control.getDuration();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public void playNext() {
         if (control != null) {
             try {

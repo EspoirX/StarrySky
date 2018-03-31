@@ -160,7 +160,7 @@ public class PlayControl extends IPlayControl.Stub {
         }
     }
 
-    private class NotifyTimerTask implements NotifyContract.NotifyTimerTask{
+    private class NotifyTimerTask implements NotifyContract.NotifyTimerTask {
 
         @Override
         public void notifyTimerTasFinish() {
@@ -258,6 +258,11 @@ public class PlayControl extends IPlayControl.Stub {
     @Override
     public int getStatus() throws RemoteException {
         return mController.getState();
+    }
+
+    @Override
+    public int getDuration() throws RemoteException {
+        return mController.getDuration();
     }
 
     @Override

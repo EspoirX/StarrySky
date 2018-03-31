@@ -22,6 +22,7 @@
 - In one sentence, you can customize the notification bar and the system notification bar to customize the control of the notification bar.
 - Integrated MediaPlayer and ExoPlayer Players, Freely Switchable
 - Supports multiple audio formats and supports audio streaming.
+- Supports the playback progress
 
 ## WorkPlan
 

@@ -20,12 +20,13 @@
 - 用一句话，您可以自定义通知栏和系统通知栏来自定义通知栏的控件。
 - 集成MediaPlayer和ExoPlayer播放器，可自由切换
 - 支持多种音频格式并支持音频流。
+- 支持保存播放进度。
 
 ## 开发计划
 
-- 支持边听边存
-- 支持保存播放进度
-- 支持变速
+- 支持边听边存 <a href="#"><img src="https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg"></a>
+- 支持保存播放进度 <a href="#">https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg</a>
+- 支持变速 <a href="#"><img src="https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg"></a>
  
 
 ## 使用例子

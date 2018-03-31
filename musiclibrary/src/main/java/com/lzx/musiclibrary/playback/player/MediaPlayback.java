@@ -248,6 +248,11 @@ public class MediaPlayback implements Playback,
     }
 
     @Override
+    public int getDuration() {
+        return mMediaPlayer != null ? mMediaPlayer.getDuration() : 0;
+    }
+
+    @Override
     public SongInfo getCurrentMediaSongInfo() {
         return mCurrentMediaSongInfo;
     }

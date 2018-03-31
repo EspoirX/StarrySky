@@ -184,6 +184,10 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         return mPlaybackManager.getPlayback().getState();
     }
 
+    public int getDuration() {
+        return mPlaybackManager.getPlayback().getDuration();
+    }
+
     public void playNext() {
         mPlaybackManager.playNextOrPre(1);
     }

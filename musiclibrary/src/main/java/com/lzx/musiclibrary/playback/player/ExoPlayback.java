@@ -218,7 +218,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
 
             //MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(source), dataSourceFactory, extractorsFactory, null, null);
-            MediaSource mediaSource = buildMediaSource(Uri.parse(source),null, null, null);
+            MediaSource mediaSource = buildMediaSource(Uri.parse(source), null, null, null);
 
             mExoPlayer.prepare(mediaSource);
 
@@ -299,6 +299,11 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     @Override
     public String getCurrentMediaId() {
         return mCurrentMediaId;
+    }
+
+    @Override
+    public int getDuration() {
+        return mExoPlayer != null ? (int) mExoPlayer.getDuration() : 0;
     }
 
     @Override
