@@ -10,23 +10,25 @@
 
 # MusicLibrary
 
-一个比较完善的音乐播放封装库，针对快速集成音频播放功能。  
+一个丰富的音乐播放封装库，针对快速集成音频播放功能。  
 
 [中文文档](https://github.com/lizixian18/MusicLibrary/blob/master/README-ZH.md)
 
 ## Features
 
+- Easily play local and web audio.
 - Implement audio services based on IPC, reduce app memory peaks, and avoid OOM.
 - Integrating and calling APIs is very simple, and audio functions can be integrated in almost one sentence.
 - Provides rich API methods to easily implement various functions.
 - In one sentence, you can customize the notification bar and the system notification bar to customize the control of the notification bar.
 - Integrated MediaPlayer and ExoPlayer Players, Freely Switchable
-- Supports multiple audio formats and supports audio streaming.
+- Supports multiple audio formats and supports audio streaming(DASH, SmoothStreaming, HLS.).
 - Supports the playback progress
+- Supports Cache while playing，no network can play.
 
 ## WorkPlan
 
-- Supports Cache while playing [![](https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
+- Supports Cache while playing [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
 - Supports the playback progress [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
 - Supports variable speed [![](https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
  
@@ -48,7 +50,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.2.6'
+     compile 'com.github.lizixian18:MusicLibrary:v1.2.7'
 }
 ```
 
@@ -87,7 +89,7 @@ songInfo.setSongUrl("your song url");
 MusicManager.get().playMusicByInfo(songInfo);
 ```
 
-At least set songId and songUrl to play.
+At least set songId and songUrl to play.To play audio in the local audio or assets folder, or streaming audio such as m3u8, just use set the songUrl and songId as usual.
 
 ## Wiki
 

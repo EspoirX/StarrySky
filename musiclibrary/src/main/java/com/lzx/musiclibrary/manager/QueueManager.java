@@ -103,10 +103,10 @@ public class QueueManager {
     }
 
     public void deleteQueueItem(SongInfo info, boolean isNeedToPlayNext) {
-        if (mPlayingQueue.size() == 0  ) {
+        if (mPlayingQueue.size() == 0) {
             return;
         }
-        if (!mPlayingQueue.contains(info)  ) {
+        if (!mPlayingQueue.contains(info)) {
             return;
         }
         mPlayingQueue.remove(info);
@@ -253,6 +253,26 @@ public class QueueManager {
             case PlayMode.PLAY_IN_LIST_LOOP:
                 if (skipQueuePosition(amount)) {
                     info = getCurrentMusic();
+                }
+                break;
+            //顺序播放
+            case PlayMode.PLAY_IN_ORDER:
+                if (amount == 1) {
+                    if (mCurrentIndex != mPlayingQueue.size() - 1) {
+                        if (skipQueuePosition(amount)) {
+                            info = getCurrentMusic();
+                        }
+                    } else {
+                        info = null;
+                    }
+                } else if (amount == -1) {
+                    if (mCurrentIndex != 0) {
+                        if (skipQueuePosition(amount)) {
+                            info = getCurrentMusic();
+                        }
+                    } else {
+                        info = null;
+                    }
                 }
                 break;
             default:

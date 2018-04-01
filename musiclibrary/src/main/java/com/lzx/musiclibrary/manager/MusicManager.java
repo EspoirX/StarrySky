@@ -481,7 +481,7 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public int getDuration() throws RemoteException {
+    public int getDuration() {
         if (control != null) {
             try {
                 return control.getDuration();
@@ -644,6 +644,17 @@ public class MusicManager implements IPlayControl {
         if (control != null) {
             try {
                 control.reset();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void openCacheWhenPlaying(boolean isOpen)   {
+        if (control != null) {
+            try {
+                control.openCacheWhenPlaying(isOpen);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

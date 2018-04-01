@@ -8,7 +8,7 @@ import com.lzx.musiclibrary.utils.SPUtils;
  * Created by xian on 2018/1/28.
  */
 
-public class PlayMode  {
+public class PlayMode {
 
     //单曲循环
     public static final int PLAY_IN_SINGLE_LOOP = 1;
@@ -18,6 +18,9 @@ public class PlayMode  {
 
     //列表循环
     public static final int PLAY_IN_LIST_LOOP = 3;
+
+    //顺序播放
+    public static final int PLAY_IN_ORDER = 4;
 
     private int currPlayMode = PLAY_IN_LIST_LOOP;
 

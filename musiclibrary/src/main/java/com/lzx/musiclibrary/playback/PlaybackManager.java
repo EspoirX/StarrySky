@@ -175,6 +175,16 @@ public class PlaybackManager implements Playback.Callback {
                     handlePlayRequest();
                 }
                 break;
+            //顺序播放
+            case PlayMode.PLAY_IN_ORDER:
+                if (hasNextOrPre(amount)) {
+                    if (mQueueManager.skipQueuePosition(amount)) {
+                        handlePlayRequest();
+                    }
+                } else {
+                    handleStopRequest(null);
+                }
+                break;
             default:
                 handleStopRequest(null);
                 break;
@@ -187,8 +197,30 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
-    public boolean hasNextOrPre() {
-        return mQueueManager.getCurrentQueueSize() > 1;
+    public boolean hasNextOrPre(int amount) {
+        if (amount == 1) {
+            return hasNextSong();
+        } else {
+            return amount == -1 && hasPreSong();
+        }
+    }
+
+    public boolean hasNextSong() {
+        if (mPlayMode.getCurrPlayMode() == PlayMode.PLAY_IN_ORDER) {
+            int index = mQueueManager.getCurrentIndex();
+            return index != mQueueManager.getCurrentQueueSize() - 1;
+        } else {
+            return mQueueManager.getCurrentQueueSize() > 1;
+        }
+    }
+
+    public boolean hasPreSong() {
+        if (mPlayMode.getCurrPlayMode() == PlayMode.PLAY_IN_ORDER) {
+            int index = mQueueManager.getCurrentIndex();
+            return index != 0;
+        } else {
+            return mQueueManager.getCurrentQueueSize() > 1;
+        }
     }
 
     /**

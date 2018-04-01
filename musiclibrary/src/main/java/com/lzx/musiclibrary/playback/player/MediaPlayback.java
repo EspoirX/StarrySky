@@ -8,10 +8,13 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.text.TextUtils;
 
+import com.danikula.videocache.HttpProxyCacheServer;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
+import com.lzx.musiclibrary.utils.BaseUtil;
+import com.lzx.musiclibrary.utils.CacheUtils;
 
 import java.io.IOException;
 
@@ -30,6 +33,7 @@ public class MediaPlayback implements Playback,
         MediaPlayer.OnCompletionListener,
         MediaPlayer.OnErrorListener {
 
+    private boolean isOpenCacheWhenPlaying = false;
     private boolean mPlayOnFocusGain;
     private boolean mAudioNoisyReceiverRegistered;
     private boolean mExoPlayerNullIsStopped = false;
@@ -43,10 +47,16 @@ public class MediaPlayback implements Playback,
 
     private int mPlayState = State.STATE_NONE;
 
+    private HttpProxyCacheServer mProxyCacheServer;
+
     public MediaPlayback(Context context) {
         Context applicationContext = context.getApplicationContext();
         this.mContext = applicationContext;
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
+        mProxyCacheServer = new HttpProxyCacheServer.Builder(mContext)
+                .cacheDirectory(CacheUtils.getSongCacheDir())
+                .maxCacheSize(1024 * 1024 * 1024) //1G
+                .build();
     }
 
     private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -183,6 +193,23 @@ public class MediaPlayback implements Playback,
                 source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
             }
 
+            String playUrl;
+            if (BaseUtil.isOnLineSource(source)) {
+                if (isOpenCacheWhenPlaying) {
+                    playUrl = mProxyCacheServer.getProxyUrl(source);
+                } else {
+                    playUrl = source;
+                }
+            } else {
+                playUrl = source;
+            }
+            if (TextUtils.isEmpty(playUrl)){
+                if (mCallback != null) {
+                    mCallback.onError("song url is null");
+                }
+                return;
+            }
+
             if (mMediaPlayer == null) {
                 mMediaPlayer = new MediaPlayer();
                 //当装载流媒体完毕的时候回调
@@ -195,7 +222,7 @@ public class MediaPlayback implements Playback,
 
             try {
                 mMediaPlayer.reset();
-                mMediaPlayer.setDataSource(source);
+                mMediaPlayer.setDataSource(playUrl);
                 mMediaPlayer.prepareAsync();
                 mPlayState = State.STATE_BUFFERING;
                 if (mCallback != null) {
@@ -255,6 +282,11 @@ public class MediaPlayback implements Playback,
     @Override
     public SongInfo getCurrentMediaSongInfo() {
         return mCurrentMediaSongInfo;
+    }
+
+    @Override
+    public void openCacheWhenPlaying(boolean isOpen) {
+        isOpenCacheWhenPlaying = isOpen;
     }
 
     @Override

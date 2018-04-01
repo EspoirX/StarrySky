@@ -73,6 +73,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         }
     }
 
+
     public static class Builder {
         private MusicService mMusicService;
         private PlayMode mPlayMode;
@@ -197,11 +198,11 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     }
 
     boolean hasPre() {
-        return mPlaybackManager.hasNextOrPre();
+        return mPlaybackManager.hasPreSong();
     }
 
     boolean hasNext() {
-        return mPlaybackManager.hasNextOrPre();
+        return mPlaybackManager.hasNextSong();
     }
 
     SongInfo getPreMusic() {
@@ -252,6 +253,10 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     private void setCurrentQueueItem(SongInfo info, boolean isJustPlay) {
         mQueueManager.setCurrentQueueItem(info.getSongId(), isJustPlay,
                 QueueHelper.isNeedToSwitchMusic(mPlaybackManager, info));
+    }
+
+    public void openCacheWhenPlaying(boolean isOpen) {
+        mPlayback.openCacheWhenPlaying(isOpen);
     }
 
     @Override

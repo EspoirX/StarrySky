@@ -9,9 +9,12 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.danikula.videocache.HttpProxyCacheServer;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -43,6 +46,11 @@ import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
+import com.lzx.musiclibrary.utils.BaseUtil;
+import com.lzx.musiclibrary.utils.CacheUtils;
+import com.lzx.musiclibrary.utils.LogUtil;
+
+import java.io.File;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
@@ -57,7 +65,7 @@ import static com.lzx.musiclibrary.manager.FocusAndLockManager.VOLUME_NORMAL;
 
 public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChangeListener {
 
-
+    private boolean isOpenCacheWhenPlaying = false;
     private boolean mPlayOnFocusGain;
     private boolean mAudioNoisyReceiverRegistered;
     private String mCurrentMediaId; //当前播放的媒体id
@@ -75,13 +83,21 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     protected String userAgent;
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
+    private HttpProxyCacheServer mProxyCacheServer;
+
     public ExoPlayback(Context context) {
         Context applicationContext = context.getApplicationContext();
         this.mContext = applicationContext;
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
         userAgent = Util.getUserAgent(mContext, "ExoPlayer");
         mediaDataSourceFactory = buildDataSourceFactory(true);
+        mProxyCacheServer = new HttpProxyCacheServer.Builder(mContext)
+                .cacheDirectory(CacheUtils.getSongCacheDir())
+                .maxCacheSize(1024 * 1024 * 1024) //1G
+                .build();
+
     }
+
 
     private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
@@ -111,7 +127,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             mExoPlayerNullIsStopped = true;
             mPlayOnFocusGain = false;
         }
-
         mFocusAndLockManager.releaseWifiLock();
     }
 
@@ -183,7 +198,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
 
     @Override
     public void play(SongInfo info) {
-
         mPlayOnFocusGain = true;
         mFocusAndLockManager.tryToGetAudioFocus();
         registerAudioNoisyReceiver();
@@ -201,9 +215,37 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             if (source != null) {
                 source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
             }
+            if (TextUtils.isEmpty(source)) {
+                if (mCallback != null) {
+                    mCallback.onError("song url is null");
+                }
+                return;
+            }
+
+            Uri playUri;
+            if (BaseUtil.isOnLineSource(source)) {
+                String proxyUrl;
+                if (isOpenCacheWhenPlaying && (getMediaType(null, Uri.parse(source)) == C.TYPE_OTHER)) {
+                    proxyUrl = mProxyCacheServer.getProxyUrl(source);
+                } else {
+                    proxyUrl = source;
+                }
+                playUri = Uri.parse(proxyUrl);
+            } else {
+                playUri = BaseUtil.getLocalSourceUri(source);
+            }
+            if (playUri == null) {
+                if (mCallback != null) {
+                    mCallback.onError("song uri is null");
+                }
+                return;
+            }
+
+            LogUtil.i("isOpenCacheWhenPlaying = " + isOpenCacheWhenPlaying + " playUri = " + playUri.toString());
 
             if (mExoPlayer == null) {
-                mExoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, new DefaultTrackSelector(), new DefaultLoadControl());
+                mExoPlayer = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(mContext),
+                        new DefaultTrackSelector(), new DefaultLoadControl());
                 mExoPlayer.addListener(mEventListener);
             }
 
@@ -213,28 +255,22 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes);
 
-            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext, "musiclibrary"), null);
-
-            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-
-            //MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(source), dataSourceFactory, extractorsFactory, null, null);
-            MediaSource mediaSource = buildMediaSource(Uri.parse(source), null, null, null);
-
+            MediaSource mediaSource = buildMediaSource(playUri, null, null, null);
             mExoPlayer.prepare(mediaSource);
-
             mFocusAndLockManager.acquireWifiLock();
         }
-
         configurePlayerState();
     }
 
+    /**
+     * 构建不同的MediaSource
+     */
     private MediaSource buildMediaSource(
             Uri uri,
             String overrideExtension,
             @Nullable Handler handler,
             @Nullable MediaSourceEventListener listener) {
-        @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(uri)
-                : Util.inferContentType("." + overrideExtension);
+        @C.ContentType int type = getMediaType(overrideExtension, uri);
         switch (type) {
             case C.TYPE_DASH:
                 return new DashMediaSource.Factory(
@@ -258,6 +294,14 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         }
     }
 
+    /**
+     * 获取播放类型
+     */
+    private int getMediaType(String overrideExtension, Uri uri) {
+        @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(uri)
+                : Util.inferContentType("." + overrideExtension);
+        return type;
+    }
 
     private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter) {
         return buildDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
@@ -271,6 +315,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             TransferListener<? super DataSource> listener) {
         return new DefaultHttpDataSourceFactory(userAgent, listener);
     }
+
 
     @Override
     public void pause() {
@@ -311,6 +356,10 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         return mCurrentMediaSongInfo;
     }
 
+    @Override
+    public void openCacheWhenPlaying(boolean isOpen) {
+        isOpenCacheWhenPlaying = isOpen;
+    }
 
     @Override
     public void setCallback(Callback callback) {
@@ -318,12 +367,11 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     }
 
     /**
-     *       *根据音频焦点设置重新配置播放器并启动/重新启动。 这种方法
-     *       *启动/重新启动ExoPlayer的实例尊重当前的音频焦点状态。 所以，如果我们
-     *       *有焦点，会正常播放; 如果我们没有重点，它会离开玩家
-     *       *暂停或将其设置为低音量，具体取决于当前焦点允许的内容
-     *       *设置。
-     *      
+     * 根据音频焦点设置重新配置播放器并启动/重新启动。 这种方法
+     * 启动/重新启动ExoPlayer的实例尊重当前的音频焦点状态。 所以，如果我们
+     * 有焦点，会正常播放; 如果我们没有重点，它会离开玩家
+     * 暂停或将其设置为低音量，具体取决于当前焦点允许的内容
+     * 设置。    
      */
     private void configurePlayerState() {
         if (mFocusAndLockManager.getCurrentAudioFocusState() == AUDIO_NO_FOCUS_NO_DUCK) {
@@ -375,6 +423,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         }
     }
 
+
     /**
      * ExoPlayer事件监听器
      */
@@ -412,6 +461,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                     case Player.STATE_ENDED:
                         mCallback.onPlayCompletion();
                         mCallback.onPlaybackStatusChanged(State.STATE_ENDED);
+
                         break;
                 }
             }

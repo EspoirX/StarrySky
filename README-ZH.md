@@ -10,21 +10,23 @@
 
 # MusicLibrary
 
-一个比较完善的音乐播放封装库，针对快速集成音频播放功能。  
+一个丰富的音乐播放封装库，针对快速集成音频播放功能。  
 
 ## 特点
 
+- 轻松播放本地和网络音频
 - 基于IPC实现音频服务，减少应用内存峰值，避免OOM。
 - 集成和调用API非常简单，音频功能几乎可以集成到一个语句中。
 - 提供丰富的API方法来轻松实现各种功能。
 - 用一句话，您可以自定义通知栏和系统通知栏来自定义通知栏的控件。
 - 集成MediaPlayer和ExoPlayer播放器，可自由切换
-- 支持多种音频格式并支持音频流。
+- 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS.)。
 - 支持保存播放进度。
+- 支持边播边存功能，没网也能播。
 
 ## 开发计划
 
-- 支持边听边存 [![](https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
+- 支持边听边存 [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
 - 支持保存播放进度 [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
 - 支持变速 [![](https://img.shields.io/badge/goal%20progress-0%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
 
@@ -46,7 +48,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.2.6'
+     compile 'com.github.lizixian18:MusicLibrary:v1.2.7'
 }
 ```
 
@@ -86,7 +88,7 @@ songInfo.setSongUrl("your song url");
 MusicManager.get().playMusicByInfo(songInfo);
 ```
 
-最少要设置 songId 和 songUrl 才能播放。
+最少要设置 songId 和 songUrl 才能播放。若要播放本地音频或者 assets 文件夹下的音频，或者 m3u8 等流式音频，用法一样，只要设置对 songUrl 和 songId 就行。
 
   
 ## 文档

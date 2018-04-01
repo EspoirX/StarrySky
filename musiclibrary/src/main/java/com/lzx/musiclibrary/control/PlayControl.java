@@ -335,6 +335,11 @@ public class PlayControl extends IPlayControl.Stub {
     }
 
     @Override
+    public void openCacheWhenPlaying(boolean isOpen) throws RemoteException {
+        mController.openCacheWhenPlaying(isOpen);
+    }
+
+    @Override
     public void updateNotificationCreater(NotificationCreater creater) throws RemoteException {
         mController.updateNotificationCreater(creater);
     }

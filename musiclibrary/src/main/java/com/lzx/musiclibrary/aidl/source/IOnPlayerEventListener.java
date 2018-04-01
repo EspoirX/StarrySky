@@ -4,6 +4,8 @@
  */
 package com.lzx.musiclibrary.aidl.source;
 
+import com.lzx.musiclibrary.aidl.model.SongInfo;
+
 public interface IOnPlayerEventListener extends android.os.IInterface {
     /**
      * Local-side IPC implementation stub class.
@@ -47,9 +49,9 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
                 }
                 case TRANSACTION_onMusicSwitch: {
                     data.enforceInterface(DESCRIPTOR);
-                    com.lzx.musiclibrary.aidl.model.SongInfo _arg0;
+                    SongInfo _arg0;
                     if ((0 != data.readInt())) {
-                        _arg0 = com.lzx.musiclibrary.aidl.model.SongInfo.CREATOR.createFromParcel(data);
+                        _arg0 = SongInfo.CREATOR.createFromParcel(data);
                     } else {
                         _arg0 = null;
                     }
@@ -115,7 +117,7 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
              * 切换歌曲
              */
             @Override
-            public void onMusicSwitch(com.lzx.musiclibrary.aidl.model.SongInfo music) throws android.os.RemoteException {
+            public void onMusicSwitch(SongInfo music) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
@@ -227,7 +229,7 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
     /**
      * 切换歌曲
      */
-    public void onMusicSwitch(com.lzx.musiclibrary.aidl.model.SongInfo music) throws android.os.RemoteException;
+    public void onMusicSwitch(SongInfo music) throws android.os.RemoteException;
 
     /**
      * 继续播放

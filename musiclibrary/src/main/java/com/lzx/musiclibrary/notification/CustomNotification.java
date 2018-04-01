@@ -496,7 +496,7 @@ public class CustomNotification implements IMediaNotification {
                             DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS, "drawable"));
         }
 
-        if (mPlaybackManager.hasNextOrPre()) {
+        if (mPlaybackManager.hasNextSong() || mPlaybackManager.hasPreSong()) {
             disableNextBtn(true, isDark);
             disablePreBtn(true, isDark);
         } else {

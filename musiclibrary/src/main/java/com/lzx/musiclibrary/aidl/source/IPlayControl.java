@@ -6,6 +6,11 @@ package com.lzx.musiclibrary.aidl.source;
 
 import android.os.RemoteException;
 
+import com.lzx.musiclibrary.aidl.model.SongInfo;
+import com.lzx.musiclibrary.notification.NotificationCreater;
+
+import java.util.List;
+
 public interface IPlayControl extends android.os.IInterface {
     /**
      * Local-side IPC implementation stub class.
@@ -49,8 +54,8 @@ public interface IPlayControl extends android.os.IInterface {
                 }
                 case TRANSACTION_playMusic: {
                     data.enforceInterface(DESCRIPTOR);
-                    java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> _arg0;
-                    _arg0 = data.createTypedArrayList(com.lzx.musiclibrary.aidl.model.SongInfo.CREATOR);
+                    List<SongInfo> _arg0;
+                    _arg0 = data.createTypedArrayList(SongInfo.CREATOR);
                     int _arg1;
                     _arg1 = data.readInt();
                     boolean _arg2;
@@ -61,9 +66,9 @@ public interface IPlayControl extends android.os.IInterface {
                 }
                 case TRANSACTION_playMusicByInfo: {
                     data.enforceInterface(DESCRIPTOR);
-                    com.lzx.musiclibrary.aidl.model.SongInfo _arg0;
+                    SongInfo _arg0;
                     if ((0 != data.readInt())) {
-                        _arg0 = com.lzx.musiclibrary.aidl.model.SongInfo.CREATOR.createFromParcel(data);
+                        _arg0 = SongInfo.CREATOR.createFromParcel(data);
                     } else {
                         _arg0 = null;
                     }
@@ -118,16 +123,16 @@ public interface IPlayControl extends android.os.IInterface {
                 }
                 case TRANSACTION_setPlayList: {
                     data.enforceInterface(DESCRIPTOR);
-                    java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> _arg0;
-                    _arg0 = data.createTypedArrayList(com.lzx.musiclibrary.aidl.model.SongInfo.CREATOR);
+                    List<SongInfo> _arg0;
+                    _arg0 = data.createTypedArrayList(SongInfo.CREATOR);
                     this.setPlayList(_arg0);
                     reply.writeNoException();
                     return true;
                 }
                 case TRANSACTION_setPlayListWithIndex: {
                     data.enforceInterface(DESCRIPTOR);
-                    java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> _arg0;
-                    _arg0 = data.createTypedArrayList(com.lzx.musiclibrary.aidl.model.SongInfo.CREATOR);
+                    List<SongInfo> _arg0;
+                    _arg0 = data.createTypedArrayList(SongInfo.CREATOR);
                     int _arg1;
                     _arg1 = data.readInt();
                     this.setPlayListWithIndex(_arg0, _arg1);
@@ -136,16 +141,16 @@ public interface IPlayControl extends android.os.IInterface {
                 }
                 case TRANSACTION_getPlayList: {
                     data.enforceInterface(DESCRIPTOR);
-                    java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> _result = this.getPlayList();
+                    List<SongInfo> _result = this.getPlayList();
                     reply.writeNoException();
                     reply.writeTypedList(_result);
                     return true;
                 }
                 case TRANSACTION_deleteSongInfoOnPlayList: {
                     data.enforceInterface(DESCRIPTOR);
-                    com.lzx.musiclibrary.aidl.model.SongInfo _arg0;
+                    SongInfo _arg0;
                     if ((0 != data.readInt())) {
-                        _arg0 = com.lzx.musiclibrary.aidl.model.SongInfo.CREATOR.createFromParcel(data);
+                        _arg0 = SongInfo.CREATOR.createFromParcel(data);
                     } else {
                         _arg0 = null;
                     }
@@ -162,7 +167,7 @@ public interface IPlayControl extends android.os.IInterface {
                     reply.writeInt(_result);
                     return true;
                 }
-                case TRANSACTION_getDuration:{
+                case TRANSACTION_getDuration: {
                     data.enforceInterface(DESCRIPTOR);
                     int _result = this.getDuration();
                     reply.writeNoException();
@@ -197,7 +202,7 @@ public interface IPlayControl extends android.os.IInterface {
                 }
                 case TRANSACTION_getPreMusic: {
                     data.enforceInterface(DESCRIPTOR);
-                    com.lzx.musiclibrary.aidl.model.SongInfo _result = this.getPreMusic();
+                    SongInfo _result = this.getPreMusic();
                     reply.writeNoException();
                     if ((_result != null)) {
                         reply.writeInt(1);
@@ -209,7 +214,7 @@ public interface IPlayControl extends android.os.IInterface {
                 }
                 case TRANSACTION_getNextMusic: {
                     data.enforceInterface(DESCRIPTOR);
-                    com.lzx.musiclibrary.aidl.model.SongInfo _result = this.getNextMusic();
+                    SongInfo _result = this.getNextMusic();
                     reply.writeNoException();
                     if ((_result != null)) {
                         reply.writeInt(1);
@@ -221,7 +226,7 @@ public interface IPlayControl extends android.os.IInterface {
                 }
                 case TRANSACTION_getCurrPlayingMusic: {
                     data.enforceInterface(DESCRIPTOR);
-                    com.lzx.musiclibrary.aidl.model.SongInfo _result = this.getCurrPlayingMusic();
+                    SongInfo _result = this.getCurrPlayingMusic();
                     reply.writeNoException();
                     if ((_result != null)) {
                         reply.writeInt(1);
@@ -279,11 +284,19 @@ public interface IPlayControl extends android.os.IInterface {
                     reply.writeNoException();
                     return true;
                 }
+                case TRANSACTION_openCacheWhenPlaying: {
+                    data.enforceInterface(DESCRIPTOR);
+                    boolean _arg0;
+                    _arg0 = (0 != data.readInt());
+                    this.openCacheWhenPlaying(_arg0);
+                    reply.writeNoException();
+                    return true;
+                }
                 case TRANSACTION_updateNotificationCreater: {
                     data.enforceInterface(DESCRIPTOR);
-                    com.lzx.musiclibrary.notification.NotificationCreater _arg0;
+                    NotificationCreater _arg0;
                     if ((0 != data.readInt())) {
-                        _arg0 = com.lzx.musiclibrary.notification.NotificationCreater.CREATOR.createFromParcel(data);
+                        _arg0 = NotificationCreater.CREATOR.createFromParcel(data);
                     } else {
                         _arg0 = null;
                     }
@@ -377,7 +390,7 @@ public interface IPlayControl extends android.os.IInterface {
              * 播放，并设置播放列表
              */
             @Override
-            public void playMusic(java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> list, int index, boolean isJustPlay) throws android.os.RemoteException {
+            public void playMusic(List<SongInfo> list, int index, boolean isJustPlay) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
@@ -397,7 +410,7 @@ public interface IPlayControl extends android.os.IInterface {
              * 根据音乐信息播放
              */
             @Override
-            public void playMusicByInfo(com.lzx.musiclibrary.aidl.model.SongInfo info, boolean isJustPlay) throws android.os.RemoteException {
+            public void playMusicByInfo(SongInfo info, boolean isJustPlay) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
@@ -529,7 +542,7 @@ public interface IPlayControl extends android.os.IInterface {
              * 设置播放列表
              */
             @Override
-            public void setPlayList(java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> list) throws android.os.RemoteException {
+            public void setPlayList(List<SongInfo> list) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
@@ -547,7 +560,7 @@ public interface IPlayControl extends android.os.IInterface {
              * 设置播放列表
              */
             @Override
-            public void setPlayListWithIndex(java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> list, int index) throws android.os.RemoteException {
+            public void setPlayListWithIndex(List<SongInfo> list, int index) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
@@ -566,15 +579,15 @@ public interface IPlayControl extends android.os.IInterface {
              * 得到播放列表
              */
             @Override
-            public java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> getPlayList() throws android.os.RemoteException {
+            public List<SongInfo> getPlayList() throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
-                java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> _result;
+                List<SongInfo> _result;
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
                     mRemote.transact(Stub.TRANSACTION_getPlayList, _data, _reply, 0);
                     _reply.readException();
-                    _result = _reply.createTypedArrayList(com.lzx.musiclibrary.aidl.model.SongInfo.CREATOR);
+                    _result = _reply.createTypedArrayList(SongInfo.CREATOR);
                 } finally {
                     _reply.recycle();
                     _data.recycle();
@@ -586,7 +599,7 @@ public interface IPlayControl extends android.os.IInterface {
              * 从播放列表中删除一条信息
              */
             @Override
-            public void deleteSongInfoOnPlayList(com.lzx.musiclibrary.aidl.model.SongInfo info, boolean isNeedToPlayNext) throws android.os.RemoteException {
+            public void deleteSongInfoOnPlayList(SongInfo info, boolean isNeedToPlayNext) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
@@ -724,16 +737,16 @@ public interface IPlayControl extends android.os.IInterface {
              * 得到上一首信息
              */
             @Override
-            public com.lzx.musiclibrary.aidl.model.SongInfo getPreMusic() throws android.os.RemoteException {
+            public SongInfo getPreMusic() throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
-                com.lzx.musiclibrary.aidl.model.SongInfo _result;
+                SongInfo _result;
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
                     mRemote.transact(Stub.TRANSACTION_getPreMusic, _data, _reply, 0);
                     _reply.readException();
                     if ((0 != _reply.readInt())) {
-                        _result = com.lzx.musiclibrary.aidl.model.SongInfo.CREATOR.createFromParcel(_reply);
+                        _result = SongInfo.CREATOR.createFromParcel(_reply);
                     } else {
                         _result = null;
                     }
@@ -748,16 +761,16 @@ public interface IPlayControl extends android.os.IInterface {
              * 得到下一首信息
              */
             @Override
-            public com.lzx.musiclibrary.aidl.model.SongInfo getNextMusic() throws android.os.RemoteException {
+            public SongInfo getNextMusic() throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
-                com.lzx.musiclibrary.aidl.model.SongInfo _result;
+                SongInfo _result;
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
                     mRemote.transact(Stub.TRANSACTION_getNextMusic, _data, _reply, 0);
                     _reply.readException();
                     if ((0 != _reply.readInt())) {
-                        _result = com.lzx.musiclibrary.aidl.model.SongInfo.CREATOR.createFromParcel(_reply);
+                        _result = SongInfo.CREATOR.createFromParcel(_reply);
                     } else {
                         _result = null;
                     }
@@ -772,16 +785,16 @@ public interface IPlayControl extends android.os.IInterface {
              * 得到当前播放信息
              */
             @Override
-            public com.lzx.musiclibrary.aidl.model.SongInfo getCurrPlayingMusic() throws android.os.RemoteException {
+            public SongInfo getCurrPlayingMusic() throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
-                com.lzx.musiclibrary.aidl.model.SongInfo _result;
+                SongInfo _result;
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
                     mRemote.transact(Stub.TRANSACTION_getCurrPlayingMusic, _data, _reply, 0);
                     _reply.readException();
                     if ((0 != _reply.readInt())) {
-                        _result = com.lzx.musiclibrary.aidl.model.SongInfo.CREATOR.createFromParcel(_reply);
+                        _result = SongInfo.CREATOR.createFromParcel(_reply);
                     } else {
                         _result = null;
                     }
@@ -906,10 +919,28 @@ public interface IPlayControl extends android.os.IInterface {
             }
 
             /**
+             * 是否开启边播边存
+             */
+            @Override
+            public void openCacheWhenPlaying(boolean isOpen) throws RemoteException {
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeInt(((isOpen) ? (1) : (0)));
+                    mRemote.transact(Stub.TRANSACTION_openCacheWhenPlaying, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+            }
+
+            /**
              * 更新通知栏
              */
             @Override
-            public void updateNotificationCreater(com.lzx.musiclibrary.notification.NotificationCreater creater) throws android.os.RemoteException {
+            public void updateNotificationCreater(NotificationCreater creater) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
@@ -1088,116 +1119,120 @@ public interface IPlayControl extends android.os.IInterface {
         static final int TRANSACTION_getProgress = (android.os.IBinder.FIRST_CALL_TRANSACTION + 24);
         static final int TRANSACTION_seekTo = (android.os.IBinder.FIRST_CALL_TRANSACTION + 25);
         static final int TRANSACTION_reset = (android.os.IBinder.FIRST_CALL_TRANSACTION + 26);
-        static final int TRANSACTION_updateNotificationCreater = (android.os.IBinder.FIRST_CALL_TRANSACTION + 27);
-        static final int TRANSACTION_updateNotificationFavorite = (android.os.IBinder.FIRST_CALL_TRANSACTION + 28);
-        static final int TRANSACTION_updateNotificationLyrics = (android.os.IBinder.FIRST_CALL_TRANSACTION + 29);
-        static final int TRANSACTION_updateNotificationContentIntent = (android.os.IBinder.FIRST_CALL_TRANSACTION + 30);
-        static final int TRANSACTION_registerPlayerEventListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 31);
-        static final int TRANSACTION_unregisterPlayerEventListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 32);
-        static final int TRANSACTION_registerTimerTaskListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 33);
-        static final int TRANSACTION_unregisterTimerTaskListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 34);
+        static final int TRANSACTION_openCacheWhenPlaying = (android.os.IBinder.FIRST_CALL_TRANSACTION + 27);
+        static final int TRANSACTION_updateNotificationCreater = (android.os.IBinder.FIRST_CALL_TRANSACTION + 28);
+        static final int TRANSACTION_updateNotificationFavorite = (android.os.IBinder.FIRST_CALL_TRANSACTION + 29);
+        static final int TRANSACTION_updateNotificationLyrics = (android.os.IBinder.FIRST_CALL_TRANSACTION + 30);
+        static final int TRANSACTION_updateNotificationContentIntent = (android.os.IBinder.FIRST_CALL_TRANSACTION + 31);
+        static final int TRANSACTION_registerPlayerEventListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 32);
+        static final int TRANSACTION_unregisterPlayerEventListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 33);
+        static final int TRANSACTION_registerTimerTaskListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 34);
+        static final int TRANSACTION_unregisterTimerTaskListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 35);
     }
 
     //播放，并设置播放列表
-    public void playMusic(java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> list, int index, boolean isJustPlay) throws android.os.RemoteException;
+    void playMusic(List<SongInfo> list, int index, boolean isJustPlay) throws android.os.RemoteException;
 
     //根据音乐信息播放
-    public void playMusicByInfo(com.lzx.musiclibrary.aidl.model.SongInfo info, boolean isJustPlay) throws android.os.RemoteException;
+    void playMusicByInfo(SongInfo info, boolean isJustPlay) throws android.os.RemoteException;
 
     //根据索引播放
-    public void playMusicByIndex(int index, boolean isJustPlay) throws android.os.RemoteException;
+    void playMusicByIndex(int index, boolean isJustPlay) throws android.os.RemoteException;
 
     //设置定时时间
-    public void pausePlayInMillis(long time) throws android.os.RemoteException;
+    void pausePlayInMillis(long time) throws android.os.RemoteException;
 
-    public int getCurrPlayingIndex() throws android.os.RemoteException;
+    int getCurrPlayingIndex() throws android.os.RemoteException;
 
     //暂停
-    public void pauseMusic() throws android.os.RemoteException;
+    void pauseMusic() throws android.os.RemoteException;
 
     //继续
-    public void resumeMusic() throws android.os.RemoteException;
+    void resumeMusic() throws android.os.RemoteException;
 
     //停止音乐
-    public void stopMusic() throws android.os.RemoteException;
+    void stopMusic() throws android.os.RemoteException;
 
     //设置播放列表
-    public void setPlayList(java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> list) throws android.os.RemoteException;
+    void setPlayList(List<SongInfo> list) throws android.os.RemoteException;
 
     //设置播放列表
-    public void setPlayListWithIndex(java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> list, int index) throws android.os.RemoteException;
+    void setPlayListWithIndex(List<SongInfo> list, int index) throws android.os.RemoteException;
 
     //得到播放列表
-    public java.util.List<com.lzx.musiclibrary.aidl.model.SongInfo> getPlayList() throws android.os.RemoteException;
+    List<SongInfo> getPlayList() throws android.os.RemoteException;
 
     //从播放列表中删除一条信息
-    public void deleteSongInfoOnPlayList(com.lzx.musiclibrary.aidl.model.SongInfo info, boolean isNeedToPlayNext) throws android.os.RemoteException;
+    void deleteSongInfoOnPlayList(SongInfo info, boolean isNeedToPlayNext) throws android.os.RemoteException;
 
     //获取播放状态
-    public int getStatus() throws android.os.RemoteException;
+    int getStatus() throws android.os.RemoteException;
 
     //获取音乐时长
-    public int getDuration() throws android.os.RemoteException;
+    int getDuration() throws android.os.RemoteException;
 
     //播放下一首
-    public void playNext() throws android.os.RemoteException;
+    void playNext() throws android.os.RemoteException;
 
     //播放上一首
-    public void playPre() throws android.os.RemoteException;
+    void playPre() throws android.os.RemoteException;
 
     //是否有上一首
-    public boolean hasPre() throws android.os.RemoteException;
+    boolean hasPre() throws android.os.RemoteException;
 
     //是否有下一首
-    public boolean hasNext() throws android.os.RemoteException;
+    boolean hasNext() throws android.os.RemoteException;
 
     //得到上一首信息
-    public com.lzx.musiclibrary.aidl.model.SongInfo getPreMusic() throws android.os.RemoteException;
+    SongInfo getPreMusic() throws android.os.RemoteException;
 
     //得到下一首信息
-    public com.lzx.musiclibrary.aidl.model.SongInfo getNextMusic() throws android.os.RemoteException;
+    SongInfo getNextMusic() throws android.os.RemoteException;
 
     //得到当前播放信息
-    public com.lzx.musiclibrary.aidl.model.SongInfo getCurrPlayingMusic() throws android.os.RemoteException;
+    SongInfo getCurrPlayingMusic() throws android.os.RemoteException;
 
     //设置当前音乐信息
-    public void setCurrMusic(int index) throws android.os.RemoteException;
+    void setCurrMusic(int index) throws android.os.RemoteException;
 
     //设置播放模式
-    public void setPlayMode(int mode, boolean isSaveLocal) throws android.os.RemoteException;
+    void setPlayMode(int mode, boolean isSaveLocal) throws android.os.RemoteException;
 
-    public int getPlayMode(boolean isGetLocal) throws android.os.RemoteException;
+    int getPlayMode(boolean isGetLocal) throws android.os.RemoteException;
 
     //获取当前进度
-    public long getProgress() throws android.os.RemoteException;
+    long getProgress() throws android.os.RemoteException;
 
     //定位到指定位置
-    public void seekTo(int position) throws android.os.RemoteException;
+    void seekTo(int position) throws android.os.RemoteException;
 
     //初始化
-    public void reset() throws android.os.RemoteException;
+    void reset() throws android.os.RemoteException;
+
+    //是否开启边播边存
+    void openCacheWhenPlaying(boolean isOpen) throws android.os.RemoteException;
 
     //更新通知栏
-    public void updateNotificationCreater(com.lzx.musiclibrary.notification.NotificationCreater creater) throws android.os.RemoteException;
+    void updateNotificationCreater(NotificationCreater creater) throws android.os.RemoteException;
 
     //更新通知栏喜欢/收藏按钮选中状态
-    public void updateNotificationFavorite(boolean isFavorite) throws android.os.RemoteException;
+    void updateNotificationFavorite(boolean isFavorite) throws android.os.RemoteException;
 
     //更新通知栏桌面歌词按钮选中状态
-    public void updateNotificationLyrics(boolean isChecked) throws android.os.RemoteException;
+    void updateNotificationLyrics(boolean isChecked) throws android.os.RemoteException;
 
     //更新通知栏ContentIntent
-    public void updateNotificationContentIntent(android.os.Bundle bundle, java.lang.String targetClass) throws android.os.RemoteException;
+    void updateNotificationContentIntent(android.os.Bundle bundle, String targetClass) throws android.os.RemoteException;
 
     //注册一个播放状态监听器
-    public void registerPlayerEventListener(IOnPlayerEventListener listener) throws android.os.RemoteException;
+    void registerPlayerEventListener(IOnPlayerEventListener listener) throws android.os.RemoteException;
 
     //解注册一个播放状态监听器
-    public void unregisterPlayerEventListener(IOnPlayerEventListener listener) throws android.os.RemoteException;
+    void unregisterPlayerEventListener(IOnPlayerEventListener listener) throws android.os.RemoteException;
 
     //注册一个定时播放监听器
-    public void registerTimerTaskListener(IOnTimerTaskListener listener) throws android.os.RemoteException;
+    void registerTimerTaskListener(IOnTimerTaskListener listener) throws android.os.RemoteException;
 
     //解注册一个定时播放监听器
-    public void unregisterTimerTaskListener(IOnTimerTaskListener listener) throws android.os.RemoteException;
+    void unregisterTimerTaskListener(IOnTimerTaskListener listener) throws android.os.RemoteException;
 }

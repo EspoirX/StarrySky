@@ -68,6 +68,8 @@ public interface Playback {
 
     SongInfo getCurrentMediaSongInfo();
 
+    void openCacheWhenPlaying(boolean isOpen);
+
     interface Callback {
         /**
          * 当前音乐播放完毕
