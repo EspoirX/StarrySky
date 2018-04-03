@@ -1090,6 +1090,8 @@ public interface IPlayControl extends android.os.IInterface {
                     _data.recycle();
                 }
             }
+
+
         }
 
         static final int TRANSACTION_playMusic = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -1235,4 +1237,5 @@ public interface IPlayControl extends android.os.IInterface {
 
     //解注册一个定时播放监听器
     void unregisterTimerTaskListener(IOnTimerTaskListener listener) throws android.os.RemoteException;
+
 }

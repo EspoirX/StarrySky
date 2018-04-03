@@ -26,5 +26,4 @@ dependencies {
     compile 'com.google.android.exoplayer:exoplayer:2.7.1'
     //音视频缓存库
     compile 'com.danikula:videocache:2.7.0'
-
 }

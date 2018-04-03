@@ -9,9 +9,9 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.danikula.videocache.HttpProxyCacheServer;
+import com.danikula.videocache.file.FileNameGenerator;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -22,8 +22,6 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceEventListener;
@@ -44,13 +42,13 @@ import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Util;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
+import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
 import com.lzx.musiclibrary.utils.BaseUtil;
-import com.lzx.musiclibrary.utils.CacheUtils;
+import com.lzx.musiclibrary.cache.CacheUtils;
 import com.lzx.musiclibrary.utils.LogUtil;
-
-import java.io.File;
+import com.lzx.musiclibrary.cache.MusicMd5Generator;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
@@ -84,20 +82,22 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
     private HttpProxyCacheServer mProxyCacheServer;
+    private HttpProxyCacheServer.Builder builder;
 
-    public ExoPlayback(Context context) {
+
+    public ExoPlayback(Context context, CacheConfig cacheConfig) {
         Context applicationContext = context.getApplicationContext();
         this.mContext = applicationContext;
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
         userAgent = Util.getUserAgent(mContext, "ExoPlayer");
         mediaDataSourceFactory = buildDataSourceFactory(true);
-        mProxyCacheServer = new HttpProxyCacheServer.Builder(mContext)
-                .cacheDirectory(CacheUtils.getSongCacheDir())
-                .maxCacheSize(1024 * 1024 * 1024) //1G
-                .build();
 
+        builder = CacheUtils.createHttpProxyCacheServerBuilder(mContext, cacheConfig);
+        if (cacheConfig.isOpenCacheWhenPlaying()) {
+            isOpenCacheWhenPlaying = true;
+        }
+        mProxyCacheServer = builder.build();
     }
-
 
     private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
@@ -360,6 +360,8 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     public void openCacheWhenPlaying(boolean isOpen) {
         isOpenCacheWhenPlaying = isOpen;
     }
+
+
 
     @Override
     public void setCallback(Callback callback) {

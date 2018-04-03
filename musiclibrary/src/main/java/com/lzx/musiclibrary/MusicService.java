@@ -10,6 +10,7 @@ import android.os.RemoteException;
 import android.support.annotation.Nullable;
 
 import com.danikula.videocache.HttpProxyCacheServer;
+import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.control.PlayControl;
 import com.lzx.musiclibrary.notification.NotificationCreater;
 
@@ -38,11 +39,13 @@ public class MusicService extends Service {
         boolean isUseMediaPlayer = intent.getBooleanExtra("isUseMediaPlayer", false);
         boolean isAutoPlayNext = intent.getBooleanExtra("isAutoPlayNext", true);
         NotificationCreater notificationCreater = intent.getParcelableExtra("notificationCreater");
+        CacheConfig cacheConfig = intent.getParcelableExtra("cacheConfig");
         mBinder = new PlayControl
                 .Builder(this)
                 .setAutoPlayNext(isAutoPlayNext)
                 .setUseMediaPlayer(isUseMediaPlayer)
                 .setNotificationCreater(notificationCreater)
+                .setCacheConfig(cacheConfig)
                 .build();
         return mBinder;
     }

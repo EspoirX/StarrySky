@@ -9,12 +9,15 @@ import android.media.MediaPlayer;
 import android.text.TextUtils;
 
 import com.danikula.videocache.HttpProxyCacheServer;
+import com.danikula.videocache.file.FileNameGenerator;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
+import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
 import com.lzx.musiclibrary.utils.BaseUtil;
-import com.lzx.musiclibrary.utils.CacheUtils;
+import com.lzx.musiclibrary.cache.CacheUtils;
+import com.lzx.musiclibrary.cache.MusicMd5Generator;
 
 import java.io.IOException;
 
@@ -48,15 +51,18 @@ public class MediaPlayback implements Playback,
     private int mPlayState = State.STATE_NONE;
 
     private HttpProxyCacheServer mProxyCacheServer;
+    private HttpProxyCacheServer.Builder builder;
 
-    public MediaPlayback(Context context) {
+    public MediaPlayback(Context context, CacheConfig cacheConfig) {
         Context applicationContext = context.getApplicationContext();
         this.mContext = applicationContext;
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
-        mProxyCacheServer = new HttpProxyCacheServer.Builder(mContext)
-                .cacheDirectory(CacheUtils.getSongCacheDir())
-                .maxCacheSize(1024 * 1024 * 1024) //1G
-                .build();
+
+        builder = CacheUtils.createHttpProxyCacheServerBuilder(mContext, cacheConfig);
+        if (cacheConfig.isOpenCacheWhenPlaying()) {
+            isOpenCacheWhenPlaying = true;
+        }
+        mProxyCacheServer = builder.build();
     }
 
     private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -203,7 +209,7 @@ public class MediaPlayback implements Playback,
             } else {
                 playUrl = source;
             }
-            if (TextUtils.isEmpty(playUrl)){
+            if (TextUtils.isEmpty(playUrl)) {
                 if (mCallback != null) {
                     mCallback.onError("song url is null");
                 }
@@ -288,6 +294,8 @@ public class MediaPlayback implements Playback,
     public void openCacheWhenPlaying(boolean isOpen) {
         isOpenCacheWhenPlaying = isOpen;
     }
+
+
 
     @Override
     public void setCallback(Callback callback) {

@@ -7,6 +7,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.listener.NotifyContract;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
+import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.helper.QueueHelper;
