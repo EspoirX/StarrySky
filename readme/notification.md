@@ -1,6 +1,6 @@
 ### 通知栏集成说明
 
-如果你想使用集成好的通知栏，需要在初始化的时候这样做：
+如果你想使用自定义样式的通知栏，需要在初始化的时候这样做，然后在布局中配置对应 id 和命名：
 
 ```java
 if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
