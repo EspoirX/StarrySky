@@ -36,7 +36,7 @@ MusicManager.get()
 
 - maxCacheSize 最大总缓存大小，Kb 为单位，如果不设置默认为 1G，即 `1024 * 1024 * 1024`
 
-- maxCacheFilesCount 最大缓存文件数据，默认大小为 `512 * 1024 * 1024`
+- maxCacheFilesCount 最大缓存文件数量，默认大小为 `512 * 1024 * 1024`
 
 缓存文件的命名方式为 URL 的 MD5，文件名对后缀进行隐藏，以防止被其他 app 或系统扫描到，不支持自定义缓存文件名。
 
