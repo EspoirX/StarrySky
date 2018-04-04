@@ -50,7 +50,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.2.7'
+     compile 'com.github.lizixian18:MusicLibrary:v1.2.8'
 }
 ```
 
@@ -105,7 +105,11 @@ At least set songId and songUrl to play.To play audio in the local audio or asse
 
    See details [Notification Description](https://github.com/lizixian18/MusicLibrary/blob/master/readme/notification.md)
 
-4. Code implementation and principle
+4. Cache when playing configuration instructions
+ 
+   See details [Cache when playing Description](https://github.com/lizixian18/MusicLibrary/blob/master/readme/playcache.md)
+
+5. Code implementation and principle
   
    See details [Code implementation and principle](https://github.com/lizixian18/MusicLibrary/blob/master/readme/principle.md)
 

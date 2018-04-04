@@ -79,28 +79,6 @@ API 由 `SongHistoryManager` 类去管理。
 | clearAllSongProgress() | 清除所以进度记录|
 
 
-#### 边存边播相关API
-边存边播功能是基于 [AndroidVideoCache](https://github.com/danikula/AndroidVideoCache) 这个库实现的。作用如同这个库中的描述一样
-因为在流式传输过程中很多次下载视频是没有意义的！所以就有了边播边存功能。  
-说明：库中设置了缓存文件的总大小上限为 1G ，音频缓存默认存储在 MusicLibrary 文件夹下 song-cache 文件夹中，缓存文件以 MD5
-形式命名。边播边存功能只支持直接URL到媒体文件，它不支持任何流式技术，如 DASH，SmoothStreaming，HLS。本地音频同样也不会走边播边存功能。
-
-| 指令        |    描述                                                    |  
-| :--------  | :---------------------------------------------------------|
-| void openCacheWhenPlaying(boolean isOpen) | 边播边存功能开关 <br>参数：<br>isOpen 是否打开边播边存功能 |
-
-使用示例： `MusicManager.get().openCacheWhenPlaying(true);`
-
-开启之后，第一次播放的时候会自动缓存音频到本地，然后再播时就不会取网络，而是取缓存文件，从而实现了没网也能播的功能。
-
-工具类 `CacheUtils` 管理着本地音频文件，相关方法如下：
-
-| 指令        |    描述                                                    |  
-| :--------  | :---------------------------------------------------------|
-| getSongCacheDir() |获取本地缓存文件夹 File 对象 |
-| void cleanSongCacheDir() | 清除缓存文件 |
-| getStorageDirectoryPath() | 获取 SD 卡路径 |
-| setCachePath(String path) | 设置缓存文件夹 <br>参数：<br> path 路径，如：/musicLibrary/song-cache/ 最后那斜杠一定要写 |
 
 
 #### 监听器相关API

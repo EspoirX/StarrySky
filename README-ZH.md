@@ -48,7 +48,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.2.7'
+     compile 'com.github.lizixian18:MusicLibrary:v1.2.8'
 }
 ```
 
@@ -105,7 +105,11 @@ MusicManager.get().playMusicByInfo(songInfo);
 
    详细见 [通知栏集成](https://github.com/lizixian18/MusicLibrary/blob/master/readme/notification.md)
 
-4. 代码实现以及原理
+4. 边播边存配置说明
+
+   详细见 [配置边播边存功能](https://github.com/lizixian18/MusicLibrary/blob/master/readme/playcache.md)
+    
+5. 代码实现以及原理
   
    详细见 [代码实现以及原理](https://github.com/lizixian18/MusicLibrary/blob/master/readme/principle.md)
 
