@@ -39,6 +39,10 @@
  | deleteSongInfoOnPlayList(SongInfo info,boolean isNeedToPlayNext)|从播放列表中删除一条信息 <br>参数：<br>info 需要删除的音乐信息<br>isNeedToPlayNext 删除后是否要播放接下来的下一首歌|
  | setCurrMusic(int index)|改变当前播放的音乐信息 <br>参数：<br>index 当前索引|
  | getDuration() | 获取当前音频时长 |
+ | stopNotification() | 关闭通知栏 |
+ | reset()| 重置，该方法会停止音频，关闭通知栏并清除所有监听器，但不会结束音频服务 |
+ | unbindService | 解绑服务，该方法会解绑后台音频服务|
+ 
  
  #### 静态方法API
   | 指令        |    描述                                                    |  
