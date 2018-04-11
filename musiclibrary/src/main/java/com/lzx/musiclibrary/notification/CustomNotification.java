@@ -147,6 +147,7 @@ public class CustomNotification implements IMediaNotification {
                 contentIntent = createContentIntent(mSongInfo, null, clazz);
                 mNotification = createNotification();
                 if (mNotification != null) {
+
                     mService.startForeground(NOTIFICATION_ID, mNotification);
                     mStarted = true;
                 }

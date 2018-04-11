@@ -652,6 +652,9 @@ public class MusicManager implements IPlayControl {
         if (control != null) {
             try {
                 control.reset();
+                clearPlayerEventListener();
+                clearStateObservable();
+                clearTimerTaskEventListener();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -663,6 +666,17 @@ public class MusicManager implements IPlayControl {
         if (control != null) {
             try {
                 control.openCacheWhenPlaying(isOpen);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void stopNotification()   {
+        if (control != null) {
+            try {
+                control.stopNotification();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

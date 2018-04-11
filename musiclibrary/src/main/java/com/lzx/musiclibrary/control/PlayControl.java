@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 
-import com.danikula.videocache.ProxyCacheUtils;
-import com.danikula.videocache.file.FileNameGenerator;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.listener.NotifyContract;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
@@ -20,7 +18,6 @@ import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.player.ExoPlayback;
 import com.lzx.musiclibrary.playback.player.MediaPlayback;
 import com.lzx.musiclibrary.playback.player.Playback;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.List;
 
@@ -343,12 +340,18 @@ public class PlayControl extends IPlayControl.Stub {
 
     @Override
     public void reset() throws RemoteException {
-
+        mController.stopMusic();
+        mController.stopNotification();
     }
 
     @Override
     public void openCacheWhenPlaying(boolean isOpen) throws RemoteException {
         mController.openCacheWhenPlaying(isOpen);
+    }
+
+    @Override
+    public void stopNotification() {
+        mController.stopNotification();
     }
 
     @Override
@@ -390,8 +393,6 @@ public class PlayControl extends IPlayControl.Stub {
     public void unregisterTimerTaskListener(IOnTimerTaskListener listener) throws RemoteException {
         mOnTimerTaskListenerList.unregister(listener);
     }
-
-
 
 
 }
