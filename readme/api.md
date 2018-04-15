@@ -222,7 +222,7 @@ mTimerTaskManager.onRemoveUpdateProgressTask();
 
 第一点中的回调是音频加载回调，是 loading 的时候转菊花用到的，这个方法才是获取缓冲进度，你可以通过它设置 SeekBar 的 secondaryProgress
 用法跟获取当前进度一样，你可以参考 demo。特别说明的就是， 这个方法返回的大小范围是 0 到 音频的时长，即 
-0 < bufferedPosition < duration，而 SeekBar 的 secondaryProgress 方法的注释也写着范围是 0 到 getMax:
+0 < bufferedPosition < duration，而 SeekBar 的 secondaryProgress 方法的注释也写着范围是 0 到 getMax():
 ```java
 /**
      * <p>
@@ -248,7 +248,7 @@ mTimerTaskManager.onRemoveUpdateProgressTask();
  
 3. setPlaybackParameters 变速功能说明
 
-改方法可以设置音频播放的参数 speed 和 pitch，即音频和音调，从而达到变速功能。正常情况下 speed 和 pitch 的值是 1f，
+该方法可以设置音频播放的参数 speed 和 pitch，即速度和音调，从而达到变速功能。正常情况下 speed 和 pitch 的值是 1f，
 如果你传 1.1f 即变为 1.1 倍，1.2f 则 1.2 倍，如此类推。 当你需要改变音频和音调时，请确保参数都大于 0，否则会无效。 
 
 变速功能的实现没有依赖第三方插件，比如 ffmpeg 等，所以如果你使用的是 MediaPlayer 该功能只支持 Android M 及以上版本。
