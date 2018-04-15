@@ -71,11 +71,11 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
                     reply.writeNoException();
                     return true;
                 }
-                case TRANSACTION_onBuffering: {
+                case TRANSACTION_onAsyncLoading: {
                     data.enforceInterface(DESCRIPTOR);
                     boolean _arg0;
                     _arg0 = (0 != data.readInt());
-                    this.onBuffering(_arg0);
+                    this.onAsyncLoading(_arg0);
                     reply.writeNoException();
                     return true;
                 }
@@ -171,13 +171,13 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
             }
 
             @Override
-            public void onBuffering(boolean isFinishBuffer) throws android.os.RemoteException {
+            public void onAsyncLoading(boolean isFinishLoading) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
-                    _data.writeInt(((isFinishBuffer) ? (1) : (0)));
-                    mRemote.transact(Stub.TRANSACTION_onBuffering, _data, _reply, 0);
+                    _data.writeInt(((isFinishLoading) ? (1) : (0)));
+                    mRemote.transact(Stub.TRANSACTION_onAsyncLoading, _data, _reply, 0);
                     _reply.readException();
                 } finally {
                     _reply.recycle();
@@ -221,7 +221,7 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
         static final int TRANSACTION_onMusicSwitch = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
         static final int TRANSACTION_onPlayerStart = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
         static final int TRANSACTION_onPlayerPause = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
-        static final int TRANSACTION_onBuffering = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
+        static final int TRANSACTION_onAsyncLoading = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
         static final int TRANSACTION_onPlayCompletion = (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
         static final int TRANSACTION_onError = (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
     }
@@ -241,7 +241,7 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
      */
     public void onPlayerPause() throws android.os.RemoteException;
 
-    public void onBuffering(boolean isFinishBuffer) throws android.os.RemoteException;
+    public void onAsyncLoading(boolean isFinishLoading) throws android.os.RemoteException;
 
     /**
      * 播放完成

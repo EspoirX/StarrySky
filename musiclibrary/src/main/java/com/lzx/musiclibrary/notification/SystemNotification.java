@@ -269,7 +269,7 @@ public class SystemNotification implements IMediaNotification {
         String label;
         int icon;
         PendingIntent intent;
-        if (mPlaybackManager.getPlayback().getState() == State.STATE_PLAYING || mPlaybackManager.getPlayback().getState() == State.STATE_BUFFERING) {
+        if (mPlaybackManager.getPlayback().getState() == State.STATE_PLAYING || mPlaybackManager.getPlayback().getState() == State.STATE_ASYNC_LOADING) {
             label = mService.getString(R.string.label_pause);
             icon = R.drawable.uamp_ic_pause_white_24dp;
             intent = startOrPauseIntent;

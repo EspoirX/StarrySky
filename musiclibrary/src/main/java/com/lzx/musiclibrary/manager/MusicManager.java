@@ -10,7 +10,9 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
+import android.text.TextUtils;
 
+import com.danikula.videocache.ProxyCacheUtils;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.listener.OnPlayerEventListener;
 import com.lzx.musiclibrary.aidl.listener.OnTimerTaskListener;
@@ -19,10 +21,12 @@ import com.lzx.musiclibrary.aidl.source.IOnPlayerEventListener;
 import com.lzx.musiclibrary.aidl.source.IOnTimerTaskListener;
 import com.lzx.musiclibrary.aidl.source.IPlayControl;
 import com.lzx.musiclibrary.cache.CacheConfig;
+import com.lzx.musiclibrary.cache.CacheUtils;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.PlayStateObservable;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Observer;
@@ -47,6 +51,7 @@ public class MusicManager implements IPlayControl {
     private Context mContext;
     private boolean isUseMediaPlayer = false;
     private boolean isAutoPlayNext = true;
+    private boolean isOpenCacheWhenPlaying = false;
     private NotificationCreater mNotificationCreater;
     private CacheConfig mCacheConfig;
 
@@ -97,7 +102,10 @@ public class MusicManager implements IPlayControl {
     }
 
     public MusicManager setCacheConfig(CacheConfig cacheConfig) {
-        mCacheConfig = cacheConfig;
+        if (cacheConfig != null) {
+            isOpenCacheWhenPlaying = cacheConfig.isOpenCacheWhenPlaying();
+            mCacheConfig = cacheConfig;
+        }
         return this;
     }
 
@@ -195,8 +203,8 @@ public class MusicManager implements IPlayControl {
         }
 
         @Override
-        public void onBuffering(boolean isFinishBuffer) {
-            mClientHandler.obtainMessage(MSG_BUFFERING, isFinishBuffer).sendToTarget();
+        public void onAsyncLoading(boolean isFinishLoading) throws RemoteException {
+            mClientHandler.obtainMessage(MSG_BUFFERING, isFinishLoading).sendToTarget();
         }
     };
 
@@ -243,8 +251,8 @@ public class MusicManager implements IPlayControl {
                     manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAYER_ERROR);
                     break;
                 case MSG_BUFFERING:
-                    boolean isFinishBuffer = (boolean) msg.obj;
-                    manager.notifyPlayerEventChange(MSG_BUFFERING, null, "", isFinishBuffer);
+                    boolean isFinishLoading = (boolean) msg.obj;
+                    manager.notifyPlayerEventChange(MSG_BUFFERING, null, "", isFinishLoading);
                     manager.mStateObservable.stateChangeNotifyObservers(MSG_BUFFERING);
                     break;
                 case MSG_TIMER_FINISH:
@@ -316,7 +324,7 @@ public class MusicManager implements IPlayControl {
                     listener.onError(errorMsg);
                     break;
                 case MSG_BUFFERING:
-                    listener.onBuffering(isFinishBuffer);
+                    listener.onAsyncLoading(isFinishBuffer);
                     break;
             }
         }
@@ -665,6 +673,7 @@ public class MusicManager implements IPlayControl {
     public void openCacheWhenPlaying(boolean isOpen) {
         if (control != null) {
             try {
+                isOpenCacheWhenPlaying = isOpen;
                 control.openCacheWhenPlaying(isOpen);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -673,7 +682,7 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void stopNotification()   {
+    public void stopNotification() {
         if (control != null) {
             try {
                 control.stopNotification();
@@ -681,6 +690,31 @@ public class MusicManager implements IPlayControl {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void setPlaybackParameters(float speed, float pitch) throws RemoteException {
+        if (control != null) {
+            try {
+                if (speed > 0 && pitch > 0) {
+                    control.setPlaybackParameters(speed, pitch);
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public long getBufferedPosition() {
+        if (control != null) {
+            try {
+                return control.getBufferedPosition();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -768,6 +802,50 @@ public class MusicManager implements IPlayControl {
         return isCurrMusicIsPlayingMusic(currMusic) && isPaused();
     }
 
+    /**
+     * 是否有缓存
+     */
+    public boolean isFullyCached(String songUrl) {
+        if (TextUtils.isEmpty(songUrl)) {
+            throw new NullPointerException("song Url can't be null!");
+        }
+        File file = getCacheFile(songUrl);
+        return file != null && file.exists();
+    }
+
+    /**
+     * 获取缓存文件File对象
+     */
+    public File getCacheFile(String songUrl) {
+        if (mCacheConfig != null && isOpenCacheWhenPlaying) {
+            String cacheDir = !TextUtils.isEmpty(mCacheConfig.getCachePath())
+                    ? mCacheConfig.getCachePath()
+                    : CacheUtils.getDefaultSongCacheDir().getAbsolutePath();
+            String fileName = ProxyCacheUtils.computeMD5(songUrl);
+            return new File(cacheDir, fileName);
+        } else {
+            if (isOpenCacheWhenPlaying) {
+                String cacheDir = CacheUtils.getDefaultSongCacheDir().getAbsolutePath();
+                String fileName = ProxyCacheUtils.computeMD5(songUrl);
+                return new File(cacheDir, fileName);
+            } else {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * 获取缓存文件大小
+     */
+    public long getCachedSize(String songUrl) {
+        if (isFullyCached(songUrl)) {
+            File file = getCacheFile(songUrl);
+            return file != null ? file.length() : 0;
+        } else {
+            return 0;
+        }
+    }
+
     @Override
     public void registerPlayerEventListener(IOnPlayerEventListener listener) {
         //Do nothing
@@ -790,6 +868,7 @@ public class MusicManager implements IPlayControl {
 
     @Override
     public IBinder asBinder() {
+        //Do nothing
         return null;
     }
 

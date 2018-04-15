@@ -120,11 +120,11 @@ public class PlayControl extends IPlayControl.Stub {
                                 case State.STATE_IDLE:
                                     listener.onPlayCompletion();
                                     break;
-                                case State.STATE_BUFFERING:
-                                    listener.onBuffering(true);
+                                case State.STATE_ASYNC_LOADING:
+                                    listener.onAsyncLoading(true);
                                     break;
                                 case State.STATE_PLAYING:
-                                    listener.onBuffering(false);
+                                    listener.onAsyncLoading(false);
                                     listener.onPlayerStart();
                                     break;
                                 case State.STATE_PAUSED:
@@ -352,6 +352,16 @@ public class PlayControl extends IPlayControl.Stub {
     @Override
     public void stopNotification() {
         mController.stopNotification();
+    }
+
+    @Override
+    public void setPlaybackParameters(float speed, float pitch) throws RemoteException {
+        mController.setPlaybackParameters(speed, pitch);
+    }
+
+    @Override
+    public long getBufferedPosition() throws RemoteException {
+        return mController.getBufferedPosition();
     }
 
     @Override

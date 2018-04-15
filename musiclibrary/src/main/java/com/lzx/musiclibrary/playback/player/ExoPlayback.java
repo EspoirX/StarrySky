@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.danikula.videocache.HttpProxyCacheServer;
-import com.danikula.videocache.file.FileNameGenerator;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -43,12 +42,11 @@ import com.google.android.exoplayer2.util.Util;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.cache.CacheConfig;
+import com.lzx.musiclibrary.cache.CacheUtils;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
 import com.lzx.musiclibrary.utils.BaseUtil;
-import com.lzx.musiclibrary.cache.CacheUtils;
 import com.lzx.musiclibrary.utils.LogUtil;
-import com.lzx.musiclibrary.cache.MusicMd5Generator;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
@@ -93,7 +91,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
         builder = CacheUtils.createHttpProxyCacheServerBuilder(mContext, cacheConfig);
-        if (cacheConfig.isOpenCacheWhenPlaying()) {
+        if (cacheConfig != null && cacheConfig.isOpenCacheWhenPlaying()) {
             isOpenCacheWhenPlaying = true;
         }
         mProxyCacheServer = builder.build();
@@ -119,7 +117,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
      * @param releasePlayer 指示播放器是否也应该被释放
      */
     private void releaseResources(boolean releasePlayer) {
-        // Stops and releases player (if requested and available).
         if (releasePlayer && mExoPlayer != null) {
             mExoPlayer.release();
             mExoPlayer.removeListener(mEventListener);
@@ -163,7 +160,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                     state = State.STATE_IDLE;
                     break;
                 case Player.STATE_BUFFERING:
-                    state = State.STATE_BUFFERING;
+                    state = State.STATE_ASYNC_LOADING;
                     break;
                 case Player.STATE_READY:
                     state = mExoPlayer.getPlayWhenReady() ? State.STATE_PLAYING : State.STATE_PAUSED;
@@ -189,6 +186,22 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     @Override
     public long getCurrentStreamPosition() {
         return mExoPlayer != null ? mExoPlayer.getCurrentPosition() : 0;
+    }
+
+    @Override
+    public long getBufferedPosition() {
+        long bufferedPosition = mExoPlayer != null ? mExoPlayer.getBufferedPosition() : 0;
+        long duration = mExoPlayer != null ? mExoPlayer.getDuration() : 0;
+        bufferedPosition = bufferedPosition * 2;
+        if (bufferedPosition > duration) {
+            bufferedPosition = duration;
+        }
+        if (isOpenCacheWhenPlaying && mCurrentMediaSongInfo != null) {
+            boolean fullyCached = mProxyCacheServer.isCached(mCurrentMediaSongInfo.getSongUrl());
+            return fullyCached ? duration : bufferedPosition;
+        } else {
+            return bufferedPosition;
+        }
     }
 
     @Override
@@ -227,6 +240,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                 String proxyUrl;
                 if (isOpenCacheWhenPlaying && (getMediaType(null, Uri.parse(source)) == C.TYPE_OTHER)) {
                     proxyUrl = mProxyCacheServer.getProxyUrl(source);
+
                 } else {
                     proxyUrl = source;
                 }
@@ -319,11 +333,9 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
 
     @Override
     public void pause() {
-        // Pause player and cancel the 'foreground service' state.
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
         }
-        // While paused, retain the player instance, but give up audio focus.
         releaseResources(false);
         unregisterAudioNoisyReceiver();
     }
@@ -333,6 +345,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         if (mExoPlayer != null) {
             registerAudioNoisyReceiver();
             mExoPlayer.seekTo(position);
+
         }
     }
 
@@ -361,6 +374,12 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         isOpenCacheWhenPlaying = isOpen;
     }
 
+    @Override
+    public void setPlaybackParameters(float speed, float pitch) {
+        if (mExoPlayer != null) {
+            mExoPlayer.setPlaybackParameters(new PlaybackParameters(speed, pitch));
+        }
+    }
 
 
     @Override
@@ -377,20 +396,16 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
      */
     private void configurePlayerState() {
         if (mFocusAndLockManager.getCurrentAudioFocusState() == AUDIO_NO_FOCUS_NO_DUCK) {
-            // We don't have audio focus and can't duck, so we have to pause
             pause();
-
         } else {
             registerAudioNoisyReceiver();
 
             if (mFocusAndLockManager.getCurrentAudioFocusState() == AUDIO_NO_FOCUS_CAN_DUCK) {
-                // We're permitted to play, but only if we 'duck', ie: play softly
                 mExoPlayer.setVolume(VOLUME_DUCK);
             } else {
                 mExoPlayer.setVolume(VOLUME_NORMAL);
             }
 
-            // If we were playing when we lost focus, we need to resume playing.
             if (mPlayOnFocusGain) {
                 mExoPlayer.setPlayWhenReady(true);
                 mPlayOnFocusGain = false;
@@ -420,7 +435,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     @Override
     public void onAudioFocusChange() {
         if (mExoPlayer != null) {
-            // Update the player state based on the change
             configurePlayerState();
         }
     }
@@ -455,7 +469,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                         mCallback.onPlaybackStatusChanged(State.STATE_IDLE);
                         break;
                     case Player.STATE_BUFFERING:
-                        mCallback.onPlaybackStatusChanged(State.STATE_BUFFERING);
+                        mCallback.onPlaybackStatusChanged(State.STATE_ASYNC_LOADING);
                         break;
                     case Player.STATE_READY:
                         mCallback.onPlaybackStatusChanged(playWhenReady ? State.STATE_PLAYING : State.STATE_PAUSED);

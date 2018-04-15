@@ -350,6 +350,14 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
+    public long getBufferedPosition() {
+        long position = 0;
+        if (mPlayback != null && mPlayback.isConnected()) {
+            position = mPlayback.getBufferedPosition();
+        }
+        return position;
+    }
+
     /**
      * 媒体操作
      */
@@ -429,21 +437,6 @@ public class PlaybackManager implements Playback.Callback {
         @Override
         public void onPlayFromSearch(final String query, final Bundle extras) {
             mPlayback.setState(PlaybackStateCompat.STATE_CONNECTING);
-//            mMusicProvider.retrieveMediaAsync(new MusicProvider.Callback() {
-//                @Override
-//                public void onMusicCatalogReady(boolean success) {
-//                    if (!success) {
-//                        updatePlaybackState("Could not load catalog");
-//                    }
-//                    boolean successSearch = mQueueManager.setQueueFromSearch(query, extras);
-//                    if (successSearch) {
-//                        handlePlayRequest();
-//                        mQueueManager.updateMetadata();
-//                    } else {
-//                        updatePlaybackState("Could not find music");
-//                    }
-//                }
-//            });
         }
     }
 

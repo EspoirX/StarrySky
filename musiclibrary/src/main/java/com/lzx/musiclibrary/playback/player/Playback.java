@@ -1,6 +1,5 @@
 package com.lzx.musiclibrary.playback.player;
 
-import com.danikula.videocache.file.FileNameGenerator;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 
 /**
@@ -51,6 +50,12 @@ public interface Playback {
     long getCurrentStreamPosition();
 
     /**
+     * 获取缓冲进度
+     * @return
+     */
+    long getBufferedPosition();
+
+    /**
      * Queries the underlying stream and update the internal last known stream position.
      */
     void updateLastKnownStreamPosition();
@@ -71,7 +76,7 @@ public interface Playback {
 
     void openCacheWhenPlaying(boolean isOpen);
 
-
+    void setPlaybackParameters(float speed, float pitch);
 
     interface Callback {
         /**

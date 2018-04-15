@@ -7,7 +7,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.listener.NotifyContract;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
-import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.helper.QueueHelper;
@@ -20,7 +19,6 @@ import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.notification.SystemNotification;
 import com.lzx.musiclibrary.playback.PlaybackManager;
 import com.lzx.musiclibrary.playback.player.Playback;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.List;
 
@@ -73,7 +71,6 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
             }
         }
     }
-
 
     public static class Builder {
         private MusicService mMusicService;
@@ -227,6 +224,10 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         return mPlaybackManager.getCurrentPosition();
     }
 
+    public long getBufferedPosition() {
+        return mPlaybackManager.getBufferedPosition();
+    }
+
     void seekTo(int position) {
         mPlaybackManager.getPlayback().seekTo(position);
     }
@@ -258,6 +259,10 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
 
     public void openCacheWhenPlaying(boolean isOpen) {
         mPlayback.openCacheWhenPlaying(isOpen);
+    }
+
+    void setPlaybackParameters(float speed, float pitch) {
+        mPlayback.setPlaybackParameters(speed, pitch);
     }
 
     @Override

@@ -18,5 +18,5 @@ public interface OnPlayerEventListener {
 
     void onError(String errorMsg);
 
-    void onBuffering(boolean isFinishBuffer);
+    void onAsyncLoading(boolean isFinishLoading);
 }

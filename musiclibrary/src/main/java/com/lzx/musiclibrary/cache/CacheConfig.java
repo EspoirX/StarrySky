@@ -21,6 +21,13 @@ public class CacheConfig implements Parcelable {
         this.maxCacheFilesCount = builder.maxCacheFilesCount;
     }
 
+    public static CacheConfig DEFAULT = new CacheConfig.Builder()
+            .setCachePath("/musicLibrary/song-cache/")
+            .setMaxCacheFilesCount(512 * 1024 * 1024)
+            .setMaxCacheSize(1024 * 1024 * 1024)
+            .setOpenCacheWhenPlaying(false)
+            .build();
+
     public static class Builder {
         private boolean openCacheWhenPlaying = false;
         private String cachePath;
@@ -52,7 +59,6 @@ public class CacheConfig implements Parcelable {
         }
     }
 
-
     public String getCachePath() {
         return cachePath;
     }
@@ -81,7 +87,6 @@ public class CacheConfig implements Parcelable {
         dest.writeInt(this.maxCacheSize);
         dest.writeInt(this.maxCacheFilesCount);
     }
-
 
     protected CacheConfig(Parcel in) {
         this.openCacheWhenPlaying = in.readByte() != 0;
