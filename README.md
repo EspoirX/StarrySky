@@ -10,7 +10,7 @@
 
 # MusicLibrary
 
-一个丰富的音乐播放封装库，针对快速集成音频播放功能。  
+一个丰富的音乐播放封装库，针对快速集成音频播放功能，你值得拥有。 
 
 [中文文档](https://github.com/lizixian18/MusicLibrary/blob/master/README-ZH.md)
 
@@ -25,6 +25,7 @@
 - Supports multiple audio formats and supports audio streaming(DASH, SmoothStreaming, HLS.).
 - Supports the playback progress
 - Supports Cache while playing，no network can play.
+- Supports changing the playing speed and changing the playing pitch.
 
 ## WorkPlan
 
