@@ -42,7 +42,10 @@
  | stopNotification() | 关闭通知栏 |
  | reset()| 重置，该方法会停止音频，关闭通知栏并清除所有监听器，但不会结束音频服务 |
  | unbindService | 解绑服务，该方法会解绑后台音频服务|
+ | getBufferedPosition()| 获取当前缓冲进度 |
+ | setPlaybackParameters(float speed, float pitch)|设置播放速度和播放音调 <br>参数：<br>speed 播放速度<br>pitch 播放音调|
  
+ *获取当前缓冲进度和设置播放速度和播放音调后面有特别说明，请耐心看完*
  
  #### 静态方法API
   | 指令        |    描述                                                    |  
@@ -119,6 +122,9 @@ public interface OnPlayerEventListener {
 
     //isFinishBuffer true为缓冲完成，false为还没缓冲完成,缓冲的过程既是加载音乐的异步过程
     void onBuffering(boolean isFinishBuffer);
+    
+    //API变更：从v1.3.0开始，onBuffering(boolean isFinishBuffer) 回调变为 onAsyncLoading(boolean isFinishLoading) 
+    //说明请继续往后看
 }
 ```
 
@@ -203,6 +209,50 @@ mTimerTaskManager.onRemoveUpdateProgressTask();
 
 在开始播放的时候调用 `scheduleSeekBarUpdate` 方法开启线程去获取进度，这时候 Runnable 就会调用，当暂停播放的时候调用 `stopSeekBarUpdate` 方法暂停获取进度。最后不要忘记了在 `onDestroy()` 的时候调用 `onRemoveUpdateProgressTask` 回收资源。同理当你添加了监听器，记得在 `onDestroy()` 的时候移除它。
 
+#### 部分API特别说明
+
+1. API变更说明
+
+从 v1.3.0 开始，监听器中 onBuffering(boolean isFinishBuffer) 回调变为 onAsyncLoading(boolean isFinishLoading) 
+原因是 onBuffering 这个方法名有歧义，容易理解为音频缓冲的回调，所以改为 onAsyncLoading。这个回调的意思音频异步加载的过程，
+即开始加载音频前 isFinishLoading 为 false，音频加载好后 isFinishLoading 为 true，觉得难懂的话可以通俗的理解为
+加载音频的时候转菊花的过程。
+
+2. getBufferedPosition() 获取当前缓冲进度说明
+
+第一点中的回调是音频加载回调，是 loading 的时候转菊花用到的，这个方法才是获取缓冲进度，你可以通过它设置 SeekBar 的 secondaryProgress
+用法跟获取当前进度一样，你可以参考 demo。特别说明的就是， 这个方法返回的大小范围是 0 到 音频的时长，即 
+0 < bufferedPosition < duration，而 SeekBar 的 secondaryProgress 方法的注释也写着范围是 0 到 getMax:
+```java
+/**
+     * <p>
+     * Set the current secondary progress to the specified value. Does not do
+     * anything if the progress bar is in indeterminate mode.
+     * </p>
+     *
+     * @param secondaryProgress the new secondary progress, between 0 and {@link #getMax()}
+     * @see #setIndeterminate(boolean)
+     * @see #isIndeterminate()
+     * @see #getSecondaryProgress()
+     * @see #incrementSecondaryProgressBy(int)
+     */
+    @android.view.RemotableViewMethod
+    public synchronized void setSecondaryProgress(int secondaryProgress) {
+       ...
+    }
+```
+
+所以 SeekBar 在 setMax 的时候就比较重要了，最好是设置成音频的时长，否则如果设置成 100 的话，你需要自己再按比例转换一次。  
+如果你开启了边播边存功能，在有缓存的情况下该方法会直接返回音频时长。
+
+ 
+3. setPlaybackParameters 变速功能说明
+
+改方法可以设置音频播放的参数 speed 和 pitch，即音频和音调，从而达到变速功能。正常情况下 speed 和 pitch 的值是 1f，
+如果你传 1.1f 即变为 1.1 倍，1.2f 则 1.2 倍，如此类推。 当你需要改变音频和音调时，请确保参数都大于 0，否则会无效。 
+
+变速功能的实现没有依赖第三方插件，比如 ffmpeg 等，所以如果你使用的是 MediaPlayer 该功能只支持 Android M 及以上版本。
+如果你使用的是 ExoPlayer ，目前测试到支持的最低版本是 Android 4.4（因为找不到比4.4还低的手机了，模拟器也创建不了）
 
 
 

@@ -30,7 +30,9 @@
 
 - Supports Cache while playing [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
 - Supports the playback progress [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
- 
+- Supports changing the playing speed and changing the playing pitch  [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
+
+All current development plans have been completed. If you encounter any problems in use, welcome to feedback.
 
 ## Demo
 
@@ -49,7 +51,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.2.9'
+     compile 'com.github.lizixian18:MusicLibrary:v1.3.0'
 }
 ```
 

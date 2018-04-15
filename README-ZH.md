@@ -23,12 +23,15 @@
 - 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS.)。
 - 支持保存播放进度。
 - 支持边播边存功能，没网也能播。
+- 支持改变播放速度和改变播放音调
 
 ## 开发计划
 
 - 支持边听边存 [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
 - 支持保存播放进度 [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
+- 支持改变播放速度和改变播放音调 [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
 
+目前所有开发计划已经完成，如果在使用中遇到任何问题，欢迎反馈。
 
 ## 使用例子
 
@@ -47,7 +50,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.2.9'
+     compile 'com.github.lizixian18:MusicLibrary:v1.3.0'
 }
 ```
 

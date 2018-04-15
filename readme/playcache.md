@@ -44,3 +44,17 @@ MusicManager.get()
 当功能开启之后，第一次播放的时候会自动缓存网络音频到本地，然后再播时就不会取网络资源，而是取缓存文件，从而实现了没网也能播的功能。
 
 **边播边存功能不支持本地音频，不支持任何流式音频，库中会自动过滤，用户无需做任何操作**
+
+`MusicManager` 中提供了三个方法来获取缓存文件相关信息：
+
+- isFullyCached(String songUrl)  根据音频地址判断这个音频是否有缓存
+- getCacheFile(String songUrl)   根据音频地址获取缓存文件的File对象
+- getCachedSize(String songUrl)  根据音频地址获取缓存文件的大小
+
+getCacheFile 和 getCachedSize 方法是在 isFullyCached 方法的基础上实现的，即如果没有缓存文件，则 getCacheFile 会
+返回一个 null 对象，getCachedSize 返回大小是 0。isFullyCached 方法的前提是开启了边播边存功能，即如果没有开启边播
+边存功能，isFullyCached 返回 false。
+
+<br>
+<br>
+<br>
