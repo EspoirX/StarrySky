@@ -33,7 +33,6 @@ public class PlayControl extends IPlayControl.Stub {
     private PlayController mController;
     private Playback playback;
 
-
     private RemoteCallbackList<IOnPlayerEventListener> mRemoteCallbackList;
     private RemoteCallbackList<IOnTimerTaskListener> mOnTimerTaskListenerList;
 
@@ -60,6 +59,7 @@ public class PlayControl extends IPlayControl.Stub {
                 .setAutoPlayNext(builder.isAutoPlayNext)
                 .setNotifyMusicSwitch(mNotifyMusicSwitch)
                 .setNotifyStatusChanged(mNotifyStatusChanged)
+                .setNotifyTimerTask(mNotifyTimerTask)
                 .setPlayback(playback)
                 .setPlayMode(mPlayMode)
                 .setNotificationCreater(builder.notificationCreater)

@@ -219,7 +219,6 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         mQueueManager.setCurrentMusic(index);
     }
 
-
     long getProgress() {
         return mPlaybackManager.getCurrentPosition();
     }
