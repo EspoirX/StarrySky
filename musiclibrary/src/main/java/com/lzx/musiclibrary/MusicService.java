@@ -1,7 +1,6 @@
 package com.lzx.musiclibrary;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
@@ -9,11 +8,9 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 
-import com.danikula.videocache.HttpProxyCacheServer;
 import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.control.PlayControl;
 import com.lzx.musiclibrary.notification.NotificationCreater;
-
 
 import java.lang.ref.WeakReference;
 
@@ -38,12 +35,14 @@ public class MusicService extends Service {
     public IBinder onBind(Intent intent) {
         boolean isUseMediaPlayer = intent.getBooleanExtra("isUseMediaPlayer", false);
         boolean isAutoPlayNext = intent.getBooleanExtra("isAutoPlayNext", true);
+        boolean isGiveUpAudioFocusManager = intent.getBooleanExtra("isGiveUpAudioFocusManager", false);
         NotificationCreater notificationCreater = intent.getParcelableExtra("notificationCreater");
         CacheConfig cacheConfig = intent.getParcelableExtra("cacheConfig");
         mBinder = new PlayControl
                 .Builder(this)
                 .setAutoPlayNext(isAutoPlayNext)
                 .setUseMediaPlayer(isUseMediaPlayer)
+                .setGiveUpAudioFocusManager(isGiveUpAudioFocusManager)
                 .setNotificationCreater(notificationCreater)
                 .setCacheConfig(cacheConfig)
                 .build();

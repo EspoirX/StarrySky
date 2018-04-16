@@ -55,7 +55,7 @@ public class MediaPlayback implements Playback,
     private HttpProxyCacheServer mProxyCacheServer;
     private HttpProxyCacheServer.Builder builder;
 
-    public MediaPlayback(Context context, CacheConfig cacheConfig) {
+    public MediaPlayback(Context context, CacheConfig cacheConfig,boolean isGiveUpAudioFocusManager) {
         Context applicationContext = context.getApplicationContext();
         this.mContext = applicationContext;
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);

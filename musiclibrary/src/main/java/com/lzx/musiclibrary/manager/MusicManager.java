@@ -52,6 +52,8 @@ public class MusicManager implements IPlayControl {
     private boolean isUseMediaPlayer = false;
     private boolean isAutoPlayNext = true;
     private boolean isOpenCacheWhenPlaying = false;
+    private boolean isGiveUpAudioFocusManager = false;
+
     private NotificationCreater mNotificationCreater;
     private CacheConfig mCacheConfig;
 
@@ -101,6 +103,11 @@ public class MusicManager implements IPlayControl {
         return this;
     }
 
+    public MusicManager giveUpAudioFocusManager() {
+        isGiveUpAudioFocusManager = true;
+        return this;
+    }
+
     public MusicManager setCacheConfig(CacheConfig cacheConfig) {
         if (cacheConfig != null) {
             isOpenCacheWhenPlaying = cacheConfig.isOpenCacheWhenPlaying();
@@ -121,6 +128,7 @@ public class MusicManager implements IPlayControl {
         Intent intent = new Intent(mContext, MusicService.class);
         intent.putExtra("isUseMediaPlayer", isUseMediaPlayer);
         intent.putExtra("isAutoPlayNext", isAutoPlayNext);
+        intent.putExtra("isGiveUpAudioFocusManager", isGiveUpAudioFocusManager);
         intent.putExtra("notificationCreater", mNotificationCreater);
         intent.putExtra("cacheConfig", mCacheConfig);
         if (isStartService) {

@@ -52,8 +52,8 @@ public class PlayControl extends IPlayControl.Stub {
 
         mPlayMode = new PlayMode();
         playback = builder.isUseMediaPlayer
-                ? new MediaPlayback(mService.getApplicationContext(), builder.cacheConfig)
-                : new ExoPlayback(mService.getApplicationContext(), builder.cacheConfig);
+                ? new MediaPlayback(mService.getApplicationContext(), builder.cacheConfig, builder.isGiveUpAudioFocusManager)
+                : new ExoPlayback(mService.getApplicationContext(), builder.cacheConfig, builder.isGiveUpAudioFocusManager);
 
         mController = new PlayController.Builder(mService)
                 .setAutoPlayNext(builder.isAutoPlayNext)
@@ -74,6 +74,7 @@ public class PlayControl extends IPlayControl.Stub {
         private MusicService mMusicService;
         private boolean isUseMediaPlayer = false;
         private boolean isAutoPlayNext = true;
+        private boolean isGiveUpAudioFocusManager = false;
         private NotificationCreater notificationCreater;
         private CacheConfig cacheConfig;
 
@@ -98,6 +99,11 @@ public class PlayControl extends IPlayControl.Stub {
 
         public Builder setCacheConfig(CacheConfig cacheConfig) {
             this.cacheConfig = cacheConfig;
+            return this;
+        }
+
+        public Builder setGiveUpAudioFocusManager(boolean giveUpAudioFocusManager) {
+            isGiveUpAudioFocusManager = giveUpAudioFocusManager;
             return this;
         }
 
