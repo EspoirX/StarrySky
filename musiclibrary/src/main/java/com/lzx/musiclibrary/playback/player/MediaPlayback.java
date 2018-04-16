@@ -44,7 +44,7 @@ public class MediaPlayback implements Playback,
     private String mCurrentMediaId; //当前播放的媒体id
     private long currbufferedPosition = 0;
     private SongInfo mCurrentMediaSongInfo;
-
+    private boolean isGiveUpAudioFocusManager = false;
     private MediaPlayer mMediaPlayer;
     private Callback mCallback;
     private Context mContext;
@@ -55,11 +55,11 @@ public class MediaPlayback implements Playback,
     private HttpProxyCacheServer mProxyCacheServer;
     private HttpProxyCacheServer.Builder builder;
 
-    public MediaPlayback(Context context, CacheConfig cacheConfig,boolean isGiveUpAudioFocusManager) {
+    public MediaPlayback(Context context, CacheConfig cacheConfig, boolean isGiveUpAudioFocusManager) {
         Context applicationContext = context.getApplicationContext();
         this.mContext = applicationContext;
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
-
+        this.isGiveUpAudioFocusManager = isGiveUpAudioFocusManager;
         builder = CacheUtils.createHttpProxyCacheServerBuilder(mContext, cacheConfig);
         if (cacheConfig != null && cacheConfig.isOpenCacheWhenPlaying()) {
             isOpenCacheWhenPlaying = true;
@@ -110,13 +110,17 @@ public class MediaPlayback implements Playback,
 
     private void configurePlayerState() {
         if (mFocusAndLockManager.getCurrentAudioFocusState() == AUDIO_NO_FOCUS_NO_DUCK) {
-            pause();
+            if (!isGiveUpAudioFocusManager) {
+                pause();
+            }
         } else {
             registerAudioNoisyReceiver();
-            if (mFocusAndLockManager.getCurrentAudioFocusState() == AUDIO_NO_FOCUS_CAN_DUCK) {
-                mMediaPlayer.setVolume(VOLUME_DUCK, VOLUME_DUCK);
-            } else {
-                mMediaPlayer.setVolume(VOLUME_NORMAL, VOLUME_NORMAL);
+            if (!isGiveUpAudioFocusManager) {
+                if (mFocusAndLockManager.getCurrentAudioFocusState() == AUDIO_NO_FOCUS_CAN_DUCK) {
+                    mMediaPlayer.setVolume(VOLUME_DUCK, VOLUME_DUCK);
+                } else {
+                    mMediaPlayer.setVolume(VOLUME_NORMAL, VOLUME_NORMAL);
+                }
             }
             if (mPlayOnFocusGain) {
                 mMediaPlayer.start();
