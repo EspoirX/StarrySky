@@ -72,6 +72,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         }
     }
 
+
     public static class Builder {
         private MusicService mMusicService;
         private PlayMode mPlayMode;
@@ -262,6 +263,10 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
 
     void setPlaybackParameters(float speed, float pitch) {
         mPlayback.setPlaybackParameters(speed, pitch);
+    }
+
+    public void setVolume(float audioVolume) {
+        mPlayback.setVolume(audioVolume);
     }
 
     @Override

@@ -51,7 +51,6 @@ public interface Playback {
 
     /**
      * 获取缓冲进度
-     * @return
      */
     long getBufferedPosition();
 
@@ -74,9 +73,20 @@ public interface Playback {
 
     SongInfo getCurrentMediaSongInfo();
 
+    /**
+     * 是否打开边播边存
+     */
     void openCacheWhenPlaying(boolean isOpen);
 
+    /**
+     * 变速
+     */
     void setPlaybackParameters(float speed, float pitch);
+
+    /**
+     * 设置音量
+     */
+    void setVolume(float audioVolume);
 
     interface Callback {
         /**

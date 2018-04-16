@@ -365,6 +365,11 @@ public class PlayControl extends IPlayControl.Stub {
     }
 
     @Override
+    public void setVolume(float audioVolume) throws RemoteException {
+        mController.setVolume(audioVolume);
+    }
+
+    @Override
     public void updateNotificationCreater(NotificationCreater creater) throws RemoteException {
         mController.updateNotificationCreater(creater);
     }

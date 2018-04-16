@@ -313,6 +313,13 @@ public class MediaPlayback implements Playback,
         }
     }
 
+    @Override
+    public void setVolume(float audioVolume) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setVolume(audioVolume, audioVolume);
+        }
+    }
+
 
     @Override
     public void setCallback(Callback callback) {

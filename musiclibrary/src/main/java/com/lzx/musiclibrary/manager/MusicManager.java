@@ -718,6 +718,23 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
+    public void setVolume(float audioVolume) {
+        if (control != null) {
+            try {
+                if (audioVolume < 0) {
+                    audioVolume = 0;
+                }
+                if (audioVolume > 1) {
+                    audioVolume = 1;
+                }
+                control.setVolume(audioVolume);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     public void updateNotificationCreater(NotificationCreater creater) {
         if (control != null) {
             try {

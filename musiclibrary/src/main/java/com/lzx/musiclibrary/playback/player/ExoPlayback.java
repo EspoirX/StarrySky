@@ -381,6 +381,13 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         }
     }
 
+    @Override
+    public void setVolume(float audioVolume) {
+        if (mExoPlayer != null) {
+            mExoPlayer.setVolume(audioVolume);
+        }
+    }
+
 
     @Override
     public void setCallback(Callback callback) {
