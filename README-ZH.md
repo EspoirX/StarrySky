@@ -80,6 +80,8 @@ public class NiceMusicApplication extends Application {
 - setAutoPlayNext(boolean autoPlayNext) 是否在播放完当前歌曲后自动播放下一首
 - setUseMediaPlayer(boolean isUseMediaPlayer) 是否使用 MediaPlayer
 - setNotificationCreater(NotificationCreater creater) 通知栏配置
+- setCacheConfig(cacheConfig) 边播边存配置
+- giveUpAudioFocusManager() 放弃音频焦点管理，放弃后，多个音频一起会混播
  
 （通过 MusicManager 去调用 lib 中所有的 api ，静态方法可以直接调用，非静态方法需要通过 MusicManager.get() 去调用。）
   

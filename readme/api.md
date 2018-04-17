@@ -44,6 +44,7 @@
  | unbindService | 解绑服务，该方法会解绑后台音频服务|
  | getBufferedPosition()| 获取当前缓冲进度 |
  | setPlaybackParameters(float speed, float pitch)|设置播放速度和播放音调 <br>参数：<br>speed 播放速度<br>pitch 播放音调|
+ | setVolume(float audioVolume) | 设置播放音量 <br>参数：<br>audioVolume 播放音量,范围: 0f ~ 1f|
  
  *获取当前缓冲进度和设置播放速度和播放音调后面有特别说明，请耐心看完*
  

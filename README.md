@@ -82,6 +82,8 @@ public class NiceMusicApplication extends Application {
 - setAutoPlayNext(boolean autoPlayNext) Whether to play the next song automatically after playing the current song
 - setUseMediaPlayer(boolean isUseMediaPlayer) Whether to use MediaPlayer
 - setNotificationCreater(NotificationCreater creater) Notification bar configuration
+- setCacheConfig(cacheConfig) Cache when playing configuration
+- giveUpAudioFocusManager() Give up audio focus management, after give up, multiple audio will be mixed together
 
 （All the apis in lib are called by the MusicManager. The static methods can be called directly.Non-static methods need to be called via MusicManager.get() .） 
   
