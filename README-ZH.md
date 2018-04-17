@@ -54,7 +54,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.3.0'
+     compile 'com.github.lizixian18:MusicLibrary:v1.3.1'
 }
 ```
 
