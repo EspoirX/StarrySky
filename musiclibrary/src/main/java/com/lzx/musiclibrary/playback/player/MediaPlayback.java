@@ -177,7 +177,6 @@ public class MediaPlayback implements Playback,
 
     @Override
     public long getBufferedPosition() {
-        LogUtil.i("currbufferedPosition = " + currbufferedPosition);
         return currbufferedPosition;
     }
 
@@ -202,7 +201,7 @@ public class MediaPlayback implements Playback,
             releaseResources(false); // release everything except the player
 
             String source = info.getSongUrl();
-            if (source != null) {
+            if (source != null && BaseUtil.isOnLineSource(source)) {
                 source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
             }
 

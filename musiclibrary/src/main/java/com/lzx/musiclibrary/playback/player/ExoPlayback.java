@@ -225,7 +225,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             releaseResources(false); // release everything except the player
 
             String source = info.getSongUrl();
-            if (source != null) {
+            if (source != null && BaseUtil.isOnLineSource(source)) {
                 source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
             }
             if (TextUtils.isEmpty(source)) {
