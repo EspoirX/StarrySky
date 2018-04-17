@@ -407,12 +407,10 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             }
         } else {
             registerAudioNoisyReceiver();
-            if (!isGiveUpAudioFocusManager) {
-                if (mFocusAndLockManager.getCurrentAudioFocusState() == AUDIO_NO_FOCUS_CAN_DUCK) {
-                    mExoPlayer.setVolume(VOLUME_DUCK);
-                } else {
-                    mExoPlayer.setVolume(VOLUME_NORMAL);
-                }
+            if (mFocusAndLockManager.getCurrentAudioFocusState() == AUDIO_NO_FOCUS_CAN_DUCK) {
+                mExoPlayer.setVolume(VOLUME_DUCK);
+            } else {
+                mExoPlayer.setVolume(VOLUME_NORMAL);
             }
             if (mPlayOnFocusGain) {
                 mExoPlayer.setPlayWhenReady(true);

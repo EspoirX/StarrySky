@@ -115,12 +115,10 @@ public class MediaPlayback implements Playback,
             }
         } else {
             registerAudioNoisyReceiver();
-            if (!isGiveUpAudioFocusManager) {
-                if (mFocusAndLockManager.getCurrentAudioFocusState() == AUDIO_NO_FOCUS_CAN_DUCK) {
-                    mMediaPlayer.setVolume(VOLUME_DUCK, VOLUME_DUCK);
-                } else {
-                    mMediaPlayer.setVolume(VOLUME_NORMAL, VOLUME_NORMAL);
-                }
+            if (mFocusAndLockManager.getCurrentAudioFocusState() == AUDIO_NO_FOCUS_CAN_DUCK) {
+                mMediaPlayer.setVolume(VOLUME_DUCK, VOLUME_DUCK);
+            } else {
+                mMediaPlayer.setVolume(VOLUME_NORMAL, VOLUME_NORMAL);
             }
             if (mPlayOnFocusGain) {
                 mMediaPlayer.start();

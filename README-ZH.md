@@ -25,6 +25,10 @@
 - 支持边播边存功能，没网也能播。
 - 支持改变播放速度和改变播放音调
 
+## 版本更新记录
+
+详细见 [版本更新记录](https://github.com/lizixian18/MusicLibrary/blob/master/readme/version.md)
+
 ## 开发计划
 
 - 支持边听边存 [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)

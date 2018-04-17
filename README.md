@@ -27,6 +27,10 @@
 - Supports Cache while playing，no network can play.
 - Supports changing the playing speed and changing the playing pitch.
 
+## Version update record
+
+ See details [Version update record](https://github.com/lizixian18/MusicLibrary/blob/master/readme/version.md)
+
 ## WorkPlan
 
 - Supports Cache while playing [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
