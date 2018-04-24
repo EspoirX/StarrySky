@@ -70,7 +70,7 @@ public class PlaybackManager implements Playback.Callback {
             mPlayback.play(currentMusic);
             //更新媒体信息
             mQueueManager.updateMetadata();
-            updatePlaybackState(null);
+            //updatePlaybackState(null);
         }
     }
 
@@ -80,7 +80,7 @@ public class PlaybackManager implements Playback.Callback {
     public void handlePauseRequest() {
         if (mPlayback.isPlaying()) {
             mPlayback.pause();
-            updatePlaybackState(null);
+            //updatePlaybackState(null);
         }
     }
 
