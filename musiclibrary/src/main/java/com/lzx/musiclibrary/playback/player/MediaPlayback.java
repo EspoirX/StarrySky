@@ -344,7 +344,7 @@ public class MediaPlayback implements Playback,
     public void onCompletion(MediaPlayer mp) {
         if (mCallback != null) {
             mCallback.onPlayCompletion();
-            mCallback.onPlaybackStatusChanged(State.STATE_ENDED);
+            //mCallback.onPlaybackStatusChanged(State.STATE_ENDED);
         }
     }
 

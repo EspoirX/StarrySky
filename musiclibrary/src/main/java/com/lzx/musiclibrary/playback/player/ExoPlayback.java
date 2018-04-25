@@ -482,8 +482,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                         break;
                     case Player.STATE_ENDED:
                         mCallback.onPlayCompletion();
-                        mCallback.onPlaybackStatusChanged(State.STATE_ENDED);
-
+                        // mCallback.onPlaybackStatusChanged(State.STATE_ENDED);
                         break;
                 }
             }
