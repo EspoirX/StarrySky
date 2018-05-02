@@ -47,6 +47,7 @@ public class MusicManager implements IPlayControl {
     public static final int MSG_PLAYER_ERROR = 4;
     public static final int MSG_BUFFERING = 5;
     public static final int MSG_TIMER_FINISH = 6;
+    public static final int MSG_PLAYER_STOP = 7;
 
     private Context mContext;
     private boolean isUseMediaPlayer = false;
@@ -206,6 +207,11 @@ public class MusicManager implements IPlayControl {
         }
 
         @Override
+        public void onPlayerStop() {
+            mClientHandler.obtainMessage(MSG_PLAYER_STOP).sendToTarget();
+        }
+
+        @Override
         public void onError(String errorMsg) {
             mClientHandler.obtainMessage(MSG_PLAYER_ERROR, errorMsg).sendToTarget();
         }
@@ -265,6 +271,10 @@ public class MusicManager implements IPlayControl {
                     break;
                 case MSG_TIMER_FINISH:
                     manager.notifyTimerTaskEventChange(MSG_TIMER_FINISH);
+                    break;
+                case MSG_PLAYER_STOP:
+                    manager.notifyPlayerEventChange(MSG_PLAYER_STOP, null, null, false);
+                    manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAYER_STOP);
                     break;
                 default:
                     super.handleMessage(msg);
@@ -333,6 +343,9 @@ public class MusicManager implements IPlayControl {
                     break;
                 case MSG_BUFFERING:
                     listener.onAsyncLoading(isFinishBuffer);
+                    break;
+                case MSG_PLAYER_STOP:
+                    listener.onPlayerStop();
                     break;
             }
         }

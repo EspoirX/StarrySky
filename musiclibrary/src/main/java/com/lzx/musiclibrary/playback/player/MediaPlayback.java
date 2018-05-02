@@ -141,7 +141,7 @@ public class MediaPlayback implements Playback,
         mFocusAndLockManager.giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
-        mPlayState = State.STATE_ENDED;
+        mPlayState = State.STATE_STOP;
     }
 
     @Override

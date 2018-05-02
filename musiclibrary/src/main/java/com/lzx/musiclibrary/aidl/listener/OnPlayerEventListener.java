@@ -16,6 +16,8 @@ public interface OnPlayerEventListener {
 
     void onPlayCompletion();
 
+    void onPlayerStop();
+
     void onError(String errorMsg);
 
     void onAsyncLoading(boolean isFinishLoading);

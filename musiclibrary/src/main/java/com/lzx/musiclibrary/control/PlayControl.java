@@ -140,6 +140,9 @@ public class PlayControl extends IPlayControl.Stub {
                                 case State.STATE_NONE:
                                     listener.onPlayCompletion();
                                     break;
+                                case State.STATE_STOP:
+                                    listener.onPlayerStop();
+                                    break;
                                 case State.STATE_ERROR:
                                     listener.onError("");
                                     break;

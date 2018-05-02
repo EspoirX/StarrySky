@@ -4,6 +4,8 @@
  */
 package com.lzx.musiclibrary.aidl.source;
 
+import android.os.RemoteException;
+
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 
 public interface IOnPlayerEventListener extends android.os.IInterface {
@@ -82,6 +84,12 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
                 case TRANSACTION_onPlayCompletion: {
                     data.enforceInterface(DESCRIPTOR);
                     this.onPlayCompletion();
+                    reply.writeNoException();
+                    return true;
+                }
+                case TRANSACTION_onPlayerStop:{
+                    data.enforceInterface(DESCRIPTOR);
+                    this.onPlayerStop();
                     reply.writeNoException();
                     return true;
                 }
@@ -203,6 +211,20 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
             }
 
             @Override
+            public void onPlayerStop() throws RemoteException {
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_onPlayerStop, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+            }
+
+            @Override
             public void onError(java.lang.String errorMsg) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -223,30 +245,33 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
         static final int TRANSACTION_onPlayerPause = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
         static final int TRANSACTION_onAsyncLoading = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
         static final int TRANSACTION_onPlayCompletion = (android.os.IBinder.FIRST_CALL_TRANSACTION + 4);
-        static final int TRANSACTION_onError = (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
+        static final int TRANSACTION_onPlayerStop = (android.os.IBinder.FIRST_CALL_TRANSACTION + 5);
+        static final int TRANSACTION_onError = (android.os.IBinder.FIRST_CALL_TRANSACTION + 6);
     }
 
     /**
      * 切换歌曲
      */
-    public void onMusicSwitch(SongInfo music) throws android.os.RemoteException;
+    void onMusicSwitch(SongInfo music) throws android.os.RemoteException;
 
     /**
      * 继续播放
      */
-    public void onPlayerStart() throws android.os.RemoteException;
+    void onPlayerStart() throws android.os.RemoteException;
 
     /**
      * 暂停播放
      */
-    public void onPlayerPause() throws android.os.RemoteException;
+    void onPlayerPause() throws android.os.RemoteException;
 
-    public void onAsyncLoading(boolean isFinishLoading) throws android.os.RemoteException;
+    void onAsyncLoading(boolean isFinishLoading) throws android.os.RemoteException;
 
     /**
      * 播放完成
      */
-    public void onPlayCompletion() throws android.os.RemoteException;
+    void onPlayCompletion() throws android.os.RemoteException;
 
-    public void onError(java.lang.String errorMsg) throws android.os.RemoteException;
+    void onPlayerStop() throws android.os.RemoteException;
+
+    void onError(java.lang.String errorMsg) throws android.os.RemoteException;
 }

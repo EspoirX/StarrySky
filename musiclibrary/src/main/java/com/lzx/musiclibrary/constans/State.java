@@ -13,4 +13,5 @@ public class State {
     public final static int STATE_ENDED = 5;
     public final static int STATE_NONE = 6;
     public final static int STATE_ERROR = 7;
+    public final static int STATE_STOP = 8;
 }

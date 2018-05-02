@@ -153,7 +153,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         //STATE_ENDED     已经完成播放媒体。
         int state = State.STATE_NONE;
         if (mExoPlayer == null) {
-            state = /*mExoPlayerNullIsStopped ?   : */State.STATE_NONE;
+            state = mExoPlayerNullIsStopped ? State.STATE_STOP : State.STATE_NONE;
         } else {
             switch (mExoPlayer.getPlaybackState()) {
                 case Player.STATE_IDLE:
@@ -415,6 +415,9 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             if (mPlayOnFocusGain) {
                 mExoPlayer.setPlayWhenReady(true);
                 mPlayOnFocusGain = false;
+            }
+            if (mExoPlayerNullIsStopped){
+                mExoPlayerNullIsStopped = false;
             }
         }
     }
