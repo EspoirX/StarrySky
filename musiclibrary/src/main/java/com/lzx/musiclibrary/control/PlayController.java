@@ -232,6 +232,10 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         mPlaybackManager.getPlayback().seekTo(position);
     }
 
+    public int getAudioSessionId() {
+        return mPlaybackManager.getAudioSessionId();
+    }
+
     void pausePlayInMillis(long time) {
         mTimerTaskManager.cancelCountDownTask();
         if (time != -1) {

@@ -265,7 +265,6 @@ public class PlaybackManager implements Playback.Callback {
                 .setActions(getAvailableActions());
 
         //获取播放状态
-        //int state = mPlayback.getState();
         int state = mPlayback.getState();
         //如果是播放失败
         if (error != null) {
@@ -307,10 +306,12 @@ public class PlaybackManager implements Playback.Callback {
         } else {
             actions |= PlaybackStateCompat.ACTION_PLAY;
         }
-
         return actions;
     }
 
+    public int getAudioSessionId(){
+        return mPlayback.getAudioSessionId();
+    }
 
     public void switchToPlayback(Playback playback, boolean resumePlaying) {
         if (playback == null) {

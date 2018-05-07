@@ -46,7 +46,6 @@ import com.lzx.musiclibrary.cache.CacheUtils;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
 import com.lzx.musiclibrary.utils.BaseUtil;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
@@ -255,7 +254,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                 return;
             }
 
-            LogUtil.i("isOpenCacheWhenPlaying = " + isOpenCacheWhenPlaying + " playUri = " + playUri.toString());
+            //LogUtil.i("isOpenCacheWhenPlaying = " + isOpenCacheWhenPlaying + " playUri = " + playUri.toString());
 
             if (mExoPlayer == null) {
                 mExoPlayer = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(mContext),
@@ -389,6 +388,14 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     }
 
     @Override
+    public int getAudioSessionId() {
+        if (mExoPlayer!=null){
+            return mExoPlayer.getAudioSessionId();
+        }
+        return 0;
+    }
+
+    @Override
     public void setCallback(Callback callback) {
         this.mCallback = callback;
     }
@@ -416,7 +423,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                 mExoPlayer.setPlayWhenReady(true);
                 mPlayOnFocusGain = false;
             }
-            if (mExoPlayerNullIsStopped){
+            if (mExoPlayerNullIsStopped) {
                 mExoPlayerNullIsStopped = false;
             }
         }

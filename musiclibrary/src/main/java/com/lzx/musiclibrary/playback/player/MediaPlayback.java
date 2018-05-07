@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
+import android.media.audiofx.Visualizer;
 import android.os.Build;
 import android.text.TextUtils;
 
@@ -18,7 +19,6 @@ import com.lzx.musiclibrary.cache.CacheUtils;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
 import com.lzx.musiclibrary.utils.BaseUtil;
-import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.io.IOException;
 
@@ -54,6 +54,8 @@ public class MediaPlayback implements Playback,
 
     private HttpProxyCacheServer mProxyCacheServer;
     private HttpProxyCacheServer.Builder builder;
+
+
 
     public MediaPlayback(Context context, CacheConfig cacheConfig, boolean isGiveUpAudioFocusManager) {
         Context applicationContext = context.getApplicationContext();
@@ -222,7 +224,7 @@ public class MediaPlayback implements Playback,
                 return;
             }
 
-            LogUtil.i("isOpenCacheWhenPlaying = " + isOpenCacheWhenPlaying + " playUri = " + playUrl);
+            //LogUtil.i("isOpenCacheWhenPlaying = " + isOpenCacheWhenPlaying + " playUri = " + playUrl);
 
             if (mMediaPlayer == null) {
                 mMediaPlayer = new MediaPlayer();
@@ -319,6 +321,14 @@ public class MediaPlayback implements Playback,
         if (mMediaPlayer != null) {
             mMediaPlayer.setVolume(audioVolume, audioVolume);
         }
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        if (mMediaPlayer != null) {
+            return mMediaPlayer.getAudioSessionId();
+        }
+        return 0;
     }
 
 

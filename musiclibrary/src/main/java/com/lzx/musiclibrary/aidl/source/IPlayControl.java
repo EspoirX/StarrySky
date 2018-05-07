@@ -397,6 +397,13 @@ public interface IPlayControl extends android.os.IInterface {
                     reply.writeNoException();
                     return true;
                 }
+                case TRANSACTION_getAudioSessionId:{
+                    data.enforceInterface(DESCRIPTOR);
+                    int _result = this.getAudioSessionId();
+                    reply.writeNoException();
+                    reply.writeInt(_result);
+                    return true;
+                }
             }
             return super.onTransact(code, data, reply, flags);
         }
@@ -1193,6 +1200,23 @@ public interface IPlayControl extends android.os.IInterface {
                 }
             }
 
+            @Override
+            public int getAudioSessionId() throws RemoteException {
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_getAudioSessionId, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+            }
+
 
         }
 
@@ -1236,6 +1260,7 @@ public interface IPlayControl extends android.os.IInterface {
         static final int TRANSACTION_unregisterPlayerEventListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 37);
         static final int TRANSACTION_registerTimerTaskListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 38);
         static final int TRANSACTION_unregisterTimerTaskListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 39);
+        static final int TRANSACTION_getAudioSessionId = (android.os.IBinder.FIRST_CALL_TRANSACTION + 40);
     }
 
     //播放，并设置播放列表
@@ -1356,4 +1381,6 @@ public interface IPlayControl extends android.os.IInterface {
     //解注册一个定时播放监听器
     void unregisterTimerTaskListener(IOnTimerTaskListener listener) throws android.os.RemoteException;
 
+    //获取音频SessionId
+    int getAudioSessionId() throws android.os.RemoteException;
 }

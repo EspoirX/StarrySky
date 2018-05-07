@@ -884,6 +884,39 @@ public class MusicManager implements IPlayControl {
         }
     }
 
+//    private Visualizer mVisualizer;
+//
+//    private void getVisualizer() {
+//        int audioSessionId = getAudioSessionId();
+//        if (audioSessionId != 0) {
+//            mVisualizer = new Visualizer(audioSessionId);
+//            mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+//            mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+//                @Override
+//                public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
+//
+//                }
+//
+//                @Override
+//                public void onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) {
+//
+//                }
+//            }, Visualizer.getMaxCaptureRate() / 2, true, false);
+//        }
+//    }
+
+    @Override
+    public int getAudioSessionId() {
+        if (control != null) {
+            try {
+                return control.getAudioSessionId();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
     @Override
     public void registerPlayerEventListener(IOnPlayerEventListener listener) {
         //Do nothing
@@ -903,6 +936,7 @@ public class MusicManager implements IPlayControl {
     public void unregisterTimerTaskListener(IOnTimerTaskListener listener) throws RemoteException {
         //Do nothing
     }
+
 
     @Override
     public IBinder asBinder() {

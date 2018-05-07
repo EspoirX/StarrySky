@@ -418,5 +418,10 @@ public class PlayControl extends IPlayControl.Stub {
         mOnTimerTaskListenerList.unregister(listener);
     }
 
+    @Override
+    public int getAudioSessionId() throws RemoteException {
+        return mController.getAudioSessionId();
+    }
+
 
 }

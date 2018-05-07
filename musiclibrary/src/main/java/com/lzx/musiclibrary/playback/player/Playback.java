@@ -88,6 +88,8 @@ public interface Playback {
      */
     void setVolume(float audioVolume);
 
+    int getAudioSessionId();
+
     interface Callback {
         /**
          * 当前音乐播放完毕
