@@ -28,6 +28,7 @@ import com.lzx.musiclibrary.playback.PlayStateObservable;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -681,6 +682,7 @@ public class MusicManager implements IPlayControl {
         if (control != null) {
             try {
                 control.reset();
+                setPlayList(new ArrayList<SongInfo>());
                 clearPlayerEventListener();
                 clearStateObservable();
                 clearTimerTaskEventListener();
