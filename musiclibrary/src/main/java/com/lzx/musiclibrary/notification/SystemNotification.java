@@ -228,7 +228,7 @@ public class SystemNotification implements IMediaNotification {
                             .setShowCancelButton(true)
                             .setCancelButtonIntent(stopIntent)
                     )
-                    .setDeleteIntent(closeIntent) //当用户点击”Clear All Notifications”按钮区删除所有的通知的时候，这个被设置的Intent被执行
+                    //.setDeleteIntent(closeIntent) //当用户点击”Clear All Notifications”按钮区删除所有的通知的时候，这个被设置的Intent被执行
                     .setColor(cacheColor)
                     .setColorized(true)
                     .setSmallIcon(R.drawable.icon_notification)
