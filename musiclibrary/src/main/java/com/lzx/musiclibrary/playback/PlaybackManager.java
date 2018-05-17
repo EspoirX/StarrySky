@@ -13,6 +13,9 @@ import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.QueueManager;
 import com.lzx.musiclibrary.playback.player.Playback;
+import com.lzx.musiclibrary.utils.SPUtils;
+
+import static com.lzx.musiclibrary.control.PlayController.KEY_PLAY_MODE_IS_SAVE_LOCAL;
 
 
 /**
@@ -27,8 +30,9 @@ public class PlaybackManager implements Playback.Callback {
     private MediaSessionCallback mMediaSessionCallback;
     private PlayMode mPlayMode;
     //是否自动播放下一首
-    private boolean isAutoPlayNext = true;
+    private boolean isAutoPlayNext;
     private String mCurrentMediaId;
+    private int currPlayMode;
 
     public PlaybackManager(Playback playback, QueueManager queueManager, PlayMode playMode, boolean isAutoPlayNext) {
         mPlayback = playback;
@@ -37,6 +41,8 @@ public class PlaybackManager implements Playback.Callback {
         this.isAutoPlayNext = isAutoPlayNext;
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayMode = playMode;
+        boolean isPlayModeSaveLocal = (boolean) SPUtils.get(mQueueManager.getContext(), KEY_PLAY_MODE_IS_SAVE_LOCAL, false);
+        currPlayMode = isPlayModeSaveLocal ? mPlayMode.getCurrPlayMode(mQueueManager.getContext()) : mPlayMode.getCurrPlayMode();
     }
 
     public void setServiceCallback(PlaybackServiceCallback serviceCallback) {
@@ -51,6 +57,7 @@ public class PlaybackManager implements Playback.Callback {
     public MediaSessionCompat.Callback getMediaSessionCallback() {
         return mMediaSessionCallback;
     }
+
 
     /**
      * 播放
@@ -148,7 +155,7 @@ public class PlaybackManager implements Playback.Callback {
      * @param amount 负数为上一首，正数为下一首
      */
     public void playNextOrPre(int amount) {
-        switch (mPlayMode.getCurrPlayMode()) {
+        switch (currPlayMode) {
             //单曲循环
             case PlayMode.PLAY_IN_SINGLE_LOOP:
                 if (mQueueManager.skipQueuePosition(0)) {
@@ -161,15 +168,7 @@ public class PlaybackManager implements Playback.Callback {
                 break;
             //随机播放
             case PlayMode.PLAY_IN_RANDOM:
-                //0到size-1的随机数
-                int random = (int) (Math.random() * mQueueManager.getCurrentQueueSize() - 1);
-                if (mQueueManager.skipQueuePosition(random)) {
-                    handlePlayRequest();
-                } else {
-                    handleStopRequest(null);
-                }
-                break;
-            //列表循环
+                //列表循环
             case PlayMode.PLAY_IN_LIST_LOOP:
                 if (mQueueManager.skipQueuePosition(amount)) {
                     handlePlayRequest();
@@ -206,7 +205,7 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     public boolean hasNextSong() {
-        if (mPlayMode.getCurrPlayMode() == PlayMode.PLAY_IN_ORDER) {
+        if (currPlayMode == PlayMode.PLAY_IN_ORDER) {
             int index = mQueueManager.getCurrentIndex();
             return index != mQueueManager.getCurrentQueueSize() - 1;
         } else {
@@ -215,7 +214,7 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     public boolean hasPreSong() {
-        if (mPlayMode.getCurrPlayMode() == PlayMode.PLAY_IN_ORDER) {
+        if (currPlayMode == PlayMode.PLAY_IN_ORDER) {
             int index = mQueueManager.getCurrentIndex();
             return index != 0;
         } else {
@@ -309,7 +308,7 @@ public class PlaybackManager implements Playback.Callback {
         return actions;
     }
 
-    public int getAudioSessionId(){
+    public int getAudioSessionId() {
         return mPlayback.getAudioSessionId();
     }
 

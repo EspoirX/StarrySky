@@ -19,6 +19,7 @@ import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.notification.SystemNotification;
 import com.lzx.musiclibrary.playback.PlaybackManager;
 import com.lzx.musiclibrary.playback.player.Playback;
+import com.lzx.musiclibrary.utils.SPUtils;
 
 import java.util.List;
 
@@ -31,6 +32,7 @@ import java.util.List;
 
 public class PlayController implements QueueManager.MetadataUpdateListener, PlaybackManager.PlaybackServiceCallback {
 
+    public static String KEY_PLAY_MODE_IS_SAVE_LOCAL = "KEY_PLAY_MODE_IS_SAVE_LOCAL";
     private MusicService mMusicService;
     private QueueManager mQueueManager;
     private PlaybackManager mPlaybackManager;
@@ -46,14 +48,14 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
 
     private PlayController(Builder builder) {
         this.mMusicService = builder.mMusicService;
-        this.mPlayMode = builder.mPlayMode;
         this.mPlayback = builder.mPlayback;
         this.mNotifyStatusChanged = builder.mNotifyStatusChanged;
         this.mNotifyMusicSwitch = builder.mNotifyMusicSwitch;
         this.mNotifyTimerTask = builder.notifyTimerTask;
 
+        mPlayMode = new PlayMode();
         mTimerTaskManager = new TimerTaskManager();
-        mQueueManager = new QueueManager(this, mPlayMode);
+        mQueueManager = new QueueManager(mMusicService.getApplicationContext(), this, mPlayMode);
         mPlaybackManager = new PlaybackManager(mPlayback, mQueueManager, mPlayMode, builder.isAutoPlayNext);
         mPlaybackManager.setServiceCallback(this);
         mMediaSessionManager = new MediaSessionManager(this.mMusicService.getApplicationContext(), mPlaybackManager);
@@ -72,10 +74,8 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         }
     }
 
-
     public static class Builder {
         private MusicService mMusicService;
-        private PlayMode mPlayMode;
         private Playback mPlayback;
         private NotifyContract.NotifyStatusChanged mNotifyStatusChanged;
         private NotifyContract.NotifyMusicSwitch mNotifyMusicSwitch;
@@ -87,10 +87,6 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
             mMusicService = mService;
         }
 
-        Builder setPlayMode(PlayMode playMode) {
-            mPlayMode = playMode;
-            return this;
-        }
 
         Builder setPlayback(Playback playback) {
             mPlayback = playback;
@@ -124,6 +120,24 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
 
         public PlayController build() {
             return new PlayController(this);
+        }
+    }
+
+    public void setPlayMode(int mode, boolean isSaveLocal) {
+        SPUtils.put(mMusicService.getApplicationContext(), KEY_PLAY_MODE_IS_SAVE_LOCAL, isSaveLocal);
+        if (isSaveLocal) {
+            mPlayMode.setCurrPlayMode(mMusicService, mode);
+        } else {
+            mPlayMode.setCurrPlayMode(mode);
+        }
+        mQueueManager.updatePlayModel(mPlayMode);
+    }
+
+    public int getPlayMode(boolean isGetLocal) {
+        if (isGetLocal) {
+            return mPlayMode.getCurrPlayMode(mMusicService.getApplicationContext());
+        } else {
+            return mPlayMode.getCurrPlayMode();
         }
     }
 

@@ -10,7 +10,8 @@ import android.os.Parcelable;
 
 public class NotificationCreater implements Parcelable {
 
-    private boolean isCreateSystemNotification = false;
+    private boolean isCreateSystemNotification;
+    private boolean isNotificationCanClearBySystemBtn;
     private String targetClass;
     private String contentTitle;
     private String contentText;
@@ -27,6 +28,7 @@ public class NotificationCreater implements Parcelable {
 
     private NotificationCreater(Builder builder) {
         this.isCreateSystemNotification = builder.isCreateSystemNotification;
+        this.isNotificationCanClearBySystemBtn = builder.isNotificationCanClearBySystemBtn;
         this.targetClass = builder.targetClass;
         this.contentTitle = builder.contentTitle;
         this.contentText = builder.contentText;
@@ -44,6 +46,7 @@ public class NotificationCreater implements Parcelable {
 
     public static class Builder {
         private boolean isCreateSystemNotification = false;
+        private boolean isNotificationCanClearBySystemBtn = false;
         private String targetClass;
         private String contentTitle;
         private String contentText;
@@ -128,6 +131,11 @@ public class NotificationCreater implements Parcelable {
             return this;
         }
 
+        public Builder setNotificationCanClearBySystemBtn(boolean notificationCanClearBySystemBtn) {
+            this.isNotificationCanClearBySystemBtn = notificationCanClearBySystemBtn;
+            return this;
+        }
+
         public NotificationCreater build() {
             return new NotificationCreater(this);
         }
@@ -135,6 +143,10 @@ public class NotificationCreater implements Parcelable {
 
     public boolean isCreateSystemNotification() {
         return isCreateSystemNotification;
+    }
+
+    public boolean isNotificationCanClearBySystemBtn() {
+        return isNotificationCanClearBySystemBtn;
     }
 
     public String getTargetClass() {
@@ -197,6 +209,7 @@ public class NotificationCreater implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte(this.isCreateSystemNotification ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isNotificationCanClearBySystemBtn ? (byte) 1 : (byte) 0);
         dest.writeString(this.targetClass);
         dest.writeString(this.contentTitle);
         dest.writeString(this.contentText);
@@ -214,6 +227,7 @@ public class NotificationCreater implements Parcelable {
 
     protected NotificationCreater(Parcel in) {
         this.isCreateSystemNotification = in.readByte() != 0;
+        this.isNotificationCanClearBySystemBtn = in.readByte() != 0;
         this.targetClass = in.readString();
         this.contentTitle = in.readString();
         this.contentText = in.readString();

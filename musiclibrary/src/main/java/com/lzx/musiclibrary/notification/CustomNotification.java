@@ -147,7 +147,6 @@ public class CustomNotification implements IMediaNotification {
                 contentIntent = createContentIntent(mSongInfo, null, clazz);
                 mNotification = createNotification();
                 if (mNotification != null) {
-
                     mService.startForeground(NOTIFICATION_ID, mNotification);
                     mStarted = true;
                 }
@@ -203,6 +202,10 @@ public class CustomNotification implements IMediaNotification {
     @Override
     public void updateViewStateAtPause() {
         if (mNotification != null) {
+            if (mNotificationCreater != null && mNotificationCreater.isNotificationCanClearBySystemBtn()) {
+                mService.stopForeground(false);
+                mStarted = false;
+            }
             boolean isDark = NotificationColorUtils.isDarkNotificationBar(mService, mNotification);
             updateRemoteViews();
             if (mRemoteView != null) {
@@ -402,7 +405,6 @@ public class CustomNotification implements IMediaNotification {
             }
         }
 
-        // changeTextColor(mRemoteView,mBigRemoteView,notification); 暂时不需要
         updateRemoteViewUI(notification, smallIconRes);
 
         return notification;

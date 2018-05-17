@@ -71,12 +71,8 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        try {
-            mBinder.stopMusic();
-            mBinder.releaseMediaSession();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        mBinder.stopMusic();
+        mBinder.releaseMediaSession();
     }
 
     private static class DelayedStopHandler extends Handler {

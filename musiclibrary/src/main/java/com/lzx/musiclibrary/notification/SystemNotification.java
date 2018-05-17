@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 
 import com.lzx.musiclibrary.MusicService;
@@ -57,9 +56,6 @@ public class SystemNotification implements IMediaNotification {
     private Notification mNotification;
     private NotificationCompat.Builder notificationBuilder;
     private PlaybackManager mPlaybackManager;
-    private int mNotificationColor;
-
-    private Map<Bitmap, Integer> notificationColorCache = new HashMap<>();
 
     public SystemNotification(MusicService musicService, NotificationCreater creater, PlaybackManager playbackManager) {
         mService = musicService;
@@ -68,7 +64,6 @@ public class SystemNotification implements IMediaNotification {
         mNotificationManager = (NotificationManager) mService.getSystemService(Service.NOTIFICATION_SERVICE);
         packageName = mService.getApplicationContext().getPackageName();
         res = mService.getApplicationContext().getResources();
-        mNotificationColor = ResourceHelper.getThemeColor(mService, R.attr.colorPrimary, Color.DKGRAY);
 
         setStopIntent(creater.getStopIntent());
         setNextPendingIntent(creater.getNextIntent());
@@ -103,7 +98,6 @@ public class SystemNotification implements IMediaNotification {
             e.printStackTrace();
             LogUtil.i("e = " + e.getMessage());
         }
-
     }
 
     @Override
@@ -192,16 +186,6 @@ public class SystemNotification implements IMediaNotification {
                     art = BitmapFactory.decodeResource(res, R.drawable.icon_notification);
                 }
             }
-
-            int cacheColor;
-            if (notificationColorCache.get(art) != null) {
-                cacheColor = notificationColorCache.get(art);
-                if (cacheColor == 0) {
-                    cacheColor = mNotificationColor;
-                }
-            } else {
-                cacheColor = mNotificationColor;
-            }
             String contentTitle = mSongInfo != null ? mSongInfo.getSongName() : mNotificationCreater.getContentTitle();
             String contentText = mSongInfo != null ? mSongInfo.getArtist() : mNotificationCreater.getContentText();
             //创建NotificationChannel
@@ -228,12 +212,11 @@ public class SystemNotification implements IMediaNotification {
                             .setShowCancelButton(true)
                             .setCancelButtonIntent(stopIntent)
                     )
-                    //.setDeleteIntent(closeIntent) //当用户点击”Clear All Notifications”按钮区删除所有的通知的时候，这个被设置的Intent被执行
-                    .setColor(cacheColor)
-                    .setColorized(true)
+                    .setDeleteIntent(closeIntent) //当用户点击”Clear All Notifications”按钮区删除所有的通知的时候，这个被设置的Intent被执行
                     .setSmallIcon(R.drawable.icon_notification)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setOnlyAlertOnce(true)
+                    .setColorized(true)
                     .setContentIntent(contentIntent)
                     .setContentTitle(contentTitle)
                     .setContentText(contentText)
@@ -316,26 +299,12 @@ public class SystemNotification implements IMediaNotification {
             public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
                 if (!TextUtils.isEmpty(mSongInfo.getSongCover()) && mSongInfo.getSongCover().equals(artUrl)) {
                     builder.setLargeIcon(bitmap);
-                    //获取图片主调颜色
-                    fetchPictureColor(bitmap, builder);
-                }
-            }
-        });
-    }
-
-    private void fetchPictureColor(final Bitmap bitmap, final NotificationCompat.Builder builder) {
-        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-            @Override
-            public void onGenerated(Palette palette) {
-                Palette.Swatch swatch = palette.getMutedSwatch();
-                if (swatch != null) {
-                    notificationColorCache.put(bitmap, swatch.getRgb());
-                    builder.setColor(swatch.getRgb());
                     mNotificationManager.notify(NOTIFICATION_ID, builder.build());
                 }
             }
         });
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private void createNotificationChannel() {
@@ -379,6 +348,7 @@ public class SystemNotification implements IMediaNotification {
     private void setStartOrPausePendingIntent(PendingIntent pendingIntent) {
         startOrPauseIntent = pendingIntent == null ? getPendingIntent(ACTION_PLAY_PAUSE) : pendingIntent;
     }
+
 
     private PendingIntent getPendingIntent(String action) {
         Intent intent = new Intent(action);

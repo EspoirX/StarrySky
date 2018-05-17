@@ -51,15 +51,10 @@ public class MusicManager implements IPlayControl {
     public static final int MSG_PLAYER_STOP = 7;
 
     private Context mContext;
-    private boolean isUseMediaPlayer = false;
-    private boolean isAutoPlayNext = true;
     private boolean isOpenCacheWhenPlaying = false;
-    private boolean isGiveUpAudioFocusManager = false;
-
-    private NotificationCreater mNotificationCreater;
-    private CacheConfig mCacheConfig;
-
     private IPlayControl control;
+    private ServiceConnection mServiceConnection;
+    private CacheConfig mCacheConfig;
     private ClientHandler mClientHandler;
     private PlayStateObservable mStateObservable;
     private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
@@ -85,76 +80,25 @@ public class MusicManager implements IPlayControl {
         mStateObservable = new PlayStateObservable();
     }
 
-    public MusicManager setContext(Context context) {
-        mContext = context.getApplicationContext();
-        return this;
-    }
-
-    public MusicManager setUseMediaPlayer(boolean isUseMediaPlayer) {
-        this.isUseMediaPlayer = isUseMediaPlayer;
-        return this;
-    }
-
-    public MusicManager setAutoPlayNext(boolean autoPlayNext) {
-        isAutoPlayNext = autoPlayNext;
-        return this;
-    }
-
-    public MusicManager setNotificationCreater(NotificationCreater creater) {
-        mNotificationCreater = creater;
-        return this;
-    }
-
-    public MusicManager giveUpAudioFocusManager() {
-        isGiveUpAudioFocusManager = true;
-        return this;
-    }
-
-    public MusicManager setCacheConfig(CacheConfig cacheConfig) {
-        if (cacheConfig != null) {
-            isOpenCacheWhenPlaying = cacheConfig.isOpenCacheWhenPlaying();
-            mCacheConfig = cacheConfig;
+    void attachPlayControl(Context context, IPlayControl control) {
+        this.mContext = context;
+        this.control = control;
+        try {
+            control.registerPlayerEventListener(mOnPlayerEventListener);
+            control.registerTimerTaskListener(mOnTimerTaskListener);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
-        return this;
     }
 
-    public void init() {
-        init(true);
+    void attachServiceConnection(ServiceConnection serviceConnection) {
+        this.mServiceConnection = serviceConnection;
     }
 
-    public void bindService() {
-        init(false);
+    void attachMusicLibraryBuilder(MusicLibrary.Builder builder) {
+        this.mCacheConfig = builder.getCacheConfig();
+        isOpenCacheWhenPlaying = mCacheConfig.isOpenCacheWhenPlaying();
     }
-
-    private void init(boolean isStartService) {
-        Intent intent = new Intent(mContext, MusicService.class);
-        intent.putExtra("isUseMediaPlayer", isUseMediaPlayer);
-        intent.putExtra("isAutoPlayNext", isAutoPlayNext);
-        intent.putExtra("isGiveUpAudioFocusManager", isGiveUpAudioFocusManager);
-        intent.putExtra("notificationCreater", mNotificationCreater);
-        intent.putExtra("cacheConfig", mCacheConfig);
-        if (isStartService) {
-            mContext.startService(intent);
-        }
-        mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            control = IPlayControl.Stub.asInterface(iBinder);
-            try {
-                control.registerPlayerEventListener(mOnPlayerEventListener);
-                control.registerTimerTaskListener(mOnTimerTaskListener);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-        }
-    };
 
     public void unbindService() {
         try {
@@ -237,7 +181,6 @@ public class MusicManager implements IPlayControl {
             super(Looper.getMainLooper());
             mWeakReference = new WeakReference<>(musicManager);
         }
-
 
         @Override
         public void handleMessage(Message msg) {
@@ -885,27 +828,6 @@ public class MusicManager implements IPlayControl {
             return 0;
         }
     }
-
-//    private Visualizer mVisualizer;
-//
-//    private void getVisualizer() {
-//        int audioSessionId = getAudioSessionId();
-//        if (audioSessionId != 0) {
-//            mVisualizer = new Visualizer(audioSessionId);
-//            mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-//            mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
-//                @Override
-//                public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
-//
-//                }
-//
-//                @Override
-//                public void onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) {
-//
-//                }
-//            }, Visualizer.getMaxCaptureRate() / 2, true, false);
-//        }
-//    }
 
     @Override
     public int getAudioSessionId() {

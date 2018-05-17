@@ -21,7 +21,6 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:palette-v7:26.1.0'
     //ExoPlayer
     compile 'com.google.android.exoplayer:exoplayer:2.7.1'
     //音视频缓存库

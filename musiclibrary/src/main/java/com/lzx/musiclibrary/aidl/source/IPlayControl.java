@@ -397,7 +397,7 @@ public interface IPlayControl extends android.os.IInterface {
                     reply.writeNoException();
                     return true;
                 }
-                case TRANSACTION_getAudioSessionId:{
+                case TRANSACTION_getAudioSessionId: {
                     data.enforceInterface(DESCRIPTOR);
                     int _result = this.getAudioSessionId();
                     reply.writeNoException();
@@ -1216,8 +1216,6 @@ public interface IPlayControl extends android.os.IInterface {
                 }
                 return _result;
             }
-
-
         }
 
         static final int TRANSACTION_playMusic = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);

@@ -9,8 +9,8 @@ import android.net.wifi.WifiManager;
  */
 
 public class FocusAndLockManager {
-    private final AudioManager mAudioManager;
-    private final WifiManager.WifiLock mWifiLock;
+    private AudioManager mAudioManager;
+    private WifiManager.WifiLock mWifiLock;
 
     public static final float VOLUME_DUCK = 0.2f;
     public static final float VOLUME_NORMAL = 1.0f;
@@ -30,6 +30,10 @@ public class FocusAndLockManager {
         this.mWifiLock = ((WifiManager) applicationContext.getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "uAmp_lock");
         this.mListener = listener;
+    }
+
+    public FocusAndLockManager(Context context) {
+        new FocusAndLockManager(context, null);
     }
 
     public void giveUpAudioFocus() {
