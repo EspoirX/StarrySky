@@ -7,8 +7,8 @@ import android.os.Parcelable;
 /**
  * 统一音乐信息
  *
- * @author lzx
- * @date 2018/1/17
+ *  lzx
+ *  2018/1/17
  */
 
 public class SongInfo implements Parcelable {

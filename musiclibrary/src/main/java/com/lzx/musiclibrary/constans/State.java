@@ -1,8 +1,8 @@
 package com.lzx.musiclibrary.constans;
 
 /**
- * @author lzx
- * @date 2018/2/3
+ *  lzx
+ *  2018/2/3
  */
 
 public class State {

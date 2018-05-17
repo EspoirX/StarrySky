@@ -5,8 +5,8 @@ import android.os.Parcelable;
 
 /**
  * 其他信息
- * @author lzx
- * @date 2018/2/11
+ *  lzx
+ *  2018/2/11
  */
 
 public class TempInfo implements Parcelable {

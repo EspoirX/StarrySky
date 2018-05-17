@@ -78,8 +78,6 @@ public class QueueManager {
 
     /**
      * 获取播放列表
-     *
-     * @return
      */
     public List<SongInfo> getPlayingQueue() {
         return isPlayRandomModel ? mNormalOrderQueue : mPlayingQueue;
@@ -87,8 +85,6 @@ public class QueueManager {
 
     /**
      * 获取当前索引
-     *
-     * @return
      */
     public int getCurrentIndex() {
         return mCurrentIndex;
@@ -207,7 +203,6 @@ public class QueueManager {
      * 转跳到指定位置
      *
      * @param amount 维度
-     * @return
      */
     public boolean skipQueuePosition(int amount) {
         int index = mCurrentIndex + amount;
@@ -245,7 +240,6 @@ public class QueueManager {
      * 设置当前的音乐item，用于播放
      *
      * @param musicId 音乐id
-     * @return
      */
     public void setCurrentQueueItem(String musicId, boolean isJustPlay, boolean isSwitchMusic) {
         int index = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, musicId);

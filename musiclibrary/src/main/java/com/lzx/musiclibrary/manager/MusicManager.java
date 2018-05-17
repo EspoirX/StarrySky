@@ -35,8 +35,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
- * @author lzx
- * @date 2018/1/22
+ *  lzx
+ *  2018/1/22
  */
 
 public class MusicManager implements IPlayControl {

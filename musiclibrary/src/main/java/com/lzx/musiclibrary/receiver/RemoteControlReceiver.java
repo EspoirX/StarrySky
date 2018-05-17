@@ -9,8 +9,8 @@ import android.view.KeyEvent;
 /**
  * 耳机线控，仅在5.0以下有效，5.0以上被{@link MediaSessionCompat}接管。
  *
- * @author lzx
- * @date 2018/2/11
+ *  lzx
+ *  2018/2/11
  */
 
 public class RemoteControlReceiver extends BroadcastReceiver {

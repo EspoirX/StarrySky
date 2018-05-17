@@ -5,8 +5,8 @@ import android.os.Parcelable;
 
 /**
  * 专辑信息
- * @author lzx
- * @date 2018/2/11
+ * lzx
+ * 2018/2/11
  */
 
 public class AlbumInfo implements Parcelable {

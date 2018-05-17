@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * 定时任务
  *
- * @author lzx
- * @date 2018/2/1
+ *  lzx
+ *  2018/2/1
  */
 public class TimerTaskManager {
 

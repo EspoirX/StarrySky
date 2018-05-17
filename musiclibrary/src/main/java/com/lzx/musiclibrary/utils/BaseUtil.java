@@ -13,8 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author lzx
- * @date 2018/2/24
+ *  lzx
+ *  2018/2/24
  */
 
 public class BaseUtil {

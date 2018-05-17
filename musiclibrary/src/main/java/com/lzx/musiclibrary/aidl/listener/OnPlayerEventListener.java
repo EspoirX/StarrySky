@@ -3,8 +3,8 @@ package com.lzx.musiclibrary.aidl.listener;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 
 /**
- * @author lzx
- * @date 2018/2/3
+ * lzx
+ * 2018/2/3
  */
 
 public interface OnPlayerEventListener {

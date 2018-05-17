@@ -29,12 +29,19 @@ allprojects {
             name 'Google'
         }
     }
+    tasks.withType(JavaCompile) {    //设置全局编码
+        options.encoding = "UTF-8"
+    }
+    tasks.withType(Javadoc) {  //设置文档编码
+        options {
+            encoding "UTF-8"
+            charSet 'UTF-8'
+            links "http://docs.oracle.com/javase/7/docs/api"
+        }
+    }
 }
 
-tasks.withType(Javadoc) {
-    options.addStringOption('Xdoclint:none', '-quiet')
-    options.addStringOption('encoding', 'UTF-8')
-}
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir

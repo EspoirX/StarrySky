@@ -3,8 +3,8 @@ package com.lzx.musiclibrary.playback;
 import java.util.Observable;
 
 /**
- * @author lzx
- * @date 2018/2/8
+ * lzx
+ * 2018/2/8
  */
 
 public class PlayStateObservable extends Observable {

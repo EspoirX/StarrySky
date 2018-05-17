@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
-apply plugin: 'maven'
+
 
 android {
     compileSdkVersion 26
@@ -24,13 +24,15 @@ android {
     }
 
     publish{
+        repoName = 'MusicLibrary'
         userOrg = 'lizixian'
-        groupId = 'com.lzx.musiclibrary'
-        artifactId = 'musiclibrary'
+        groupId = 'com.lzx'
+        artifactId = 'MusicLibrary'
         version = '1.3.3'
         description = 'a rich music player package library'
         website = "https://github.com/lizixian18/MusicLibrary"
     }
+
 
 }
 

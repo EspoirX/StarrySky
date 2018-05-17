@@ -87,7 +87,7 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
                     reply.writeNoException();
                     return true;
                 }
-                case TRANSACTION_onPlayerStop:{
+                case TRANSACTION_onPlayerStop: {
                     data.enforceInterface(DESCRIPTOR);
                     this.onPlayerStop();
                     reply.writeNoException();

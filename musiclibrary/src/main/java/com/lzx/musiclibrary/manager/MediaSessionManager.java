@@ -12,8 +12,8 @@ import com.lzx.musiclibrary.receiver.RemoteControlReceiver;
 import java.util.List;
 
 /**
- * @author lzx
- * @date 2018/2/11
+ *  lzx
+ *  2018/2/11
  */
 
 public class MediaSessionManager {

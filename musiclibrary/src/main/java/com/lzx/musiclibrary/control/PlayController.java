@@ -26,8 +26,8 @@ import java.util.List;
 /**
  * 运行在Remote端
  *
- * @author lzx
- * @date 2018/2/8
+ *  lzx
+ *  2018/2/8
  */
 
 public class PlayController implements QueueManager.MetadataUpdateListener, PlaybackManager.PlaybackServiceCallback {
