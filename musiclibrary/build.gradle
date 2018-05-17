@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.lizixian18'
+apply plugin: 'com.novoda.bintray-release'
+
 
 android {
     compileSdkVersion 26
@@ -18,6 +18,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    publish{
+        userOrg = 'lizixian'
+        groupId = 'com.lzx.musiclibrary'
+        artifactId = 'musiclibrary'
+        version = '1.3.3'
+        description = 'a rich music player package library'
+        website = "https://github.com/lizixian18/MusicLibrary"
+    }
+
 }
 
 dependencies {
