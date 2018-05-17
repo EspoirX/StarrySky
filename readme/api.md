@@ -45,6 +45,7 @@
  | getBufferedPosition()| 获取当前缓冲进度 |
  | setPlaybackParameters(float speed, float pitch)|设置播放速度和播放音调 <br>参数：<br>speed 播放速度<br>pitch 播放音调|
  | setVolume(float audioVolume) | 设置播放音量 <br>参数：<br>audioVolume 播放音量,范围: 0f ~ 1f|
+ | int getAudioSessionId() | 获取音频 audioSessionId，用于获取音频频谱等操作 |
  
  *获取当前缓冲进度和设置播放速度和播放音调后面有特别说明，请耐心看完*
  
@@ -106,7 +107,7 @@ API 由 `SongHistoryManager` 类去管理。
 
 #### 监听器使用说明
 
-一个监听器有六个方法，分别回调六种状态。分别为切歌，开始播放，暂停播放，播放完成，播放出错和缓冲,如下：
+一个监听器有七个方法，分别回调六种状态。分别为切歌，开始播放，暂停播放，播放完成，播放停止，播放出错和缓冲,如下：
 ```java
 public interface OnPlayerEventListener {
     //music 切歌信息
@@ -115,6 +116,8 @@ public interface OnPlayerEventListener {
     void onPlayerStart();
 
     void onPlayerPause();
+
+    void onPlayerStop();
 
     void onPlayCompletion();
     
@@ -177,6 +180,7 @@ MusicManager.get().addStateObservable(mAdapter);
 MusicManager.MSG_MUSIC_CHANGE     切歌
 MusicManager.MSG_PLAYER_START     开始
 MusicManager.MSG_PLAYER_PAUSE     暂停
+MusicManager.MSG_PLAYER_STOP      播放停止
 MusicManager.MSG_PLAY_COMPLETION  播放完成
 MusicManager.MSG_PLAYER_ERROR     播放失败
 MusicManager.MSG_BUFFERING        缓冲

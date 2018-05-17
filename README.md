@@ -56,7 +56,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.3.2'
+     compile 'com.github.lizixian18:MusicLibrary:v1.3.3'
 }
 ```
 
@@ -68,16 +68,17 @@ public class NiceMusicApplication extends Application {
     @Override
     public void onCreate() {
         if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
-            MusicManager.get().setContext(this).init();
+             MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
+                               .build();
+             musicLibrary.init();
         }
     }
 }
 ```
 
 **note**
-1. Be sure to call setContext to set the context, otherwise it will report an error. 
-2. Because the music service is running in the musicLibrary process, in the multi-process case, Application will create multiple times,Therefore, you need to add the above judgment to initialize in the non-musicLibrary process.
-3. There are some parameters that can be configured during initialization:
+1. Because the music service is running in the musicLibrary process, in the multi-process case, Application will create multiple times,Therefore, you need to add the above judgment to initialize in the non-musicLibrary process.
+2. There are some parameters that can be configured during initialization:
 
 - setAutoPlayNext(boolean autoPlayNext) Whether to play the next song automatically after playing the current song
 - setUseMediaPlayer(boolean isUseMediaPlayer) Whether to use MediaPlayer
@@ -85,8 +86,7 @@ public class NiceMusicApplication extends Application {
 - setCacheConfig(cacheConfig) Cache when playing configuration
 - giveUpAudioFocusManager() Give up audio focus management, after give up, multiple audio will be mixed together
 
-（All the apis in lib are called by the MusicManager. The static methods can be called directly.Non-static methods need to be called via MusicManager.get() .） 
-  
+
 3. Simple to use (play a song):
 
 ```java

@@ -1,5 +1,16 @@
 ### 版本更新记录
 
+#### v1.3.3
+- 初始化操作与 MusicManager 分离，初始化以及相关配置由 MusicLibrary 类完成
+- 优化了随机播放算法，之前的随机播放是简单的由 Math.random() 去完成的，这样的做法很多情况下都会随机到同一首音频，造成不好的体验
+新的随机算法是伪随机，做法是通过 shuffle 洗牌算法将播放列表打乱然后顺序播放。
+- 通知栏配置新增加了 isNotificationCanClearBySystemBtn 字段，该字段的作用是在使用自定义通知栏的时候，暂停播放时可以点击清除按钮清除通知栏，
+具体看 [Issues#20](https://github.com/lizixian18/MusicLibrary/issues/20) 的描述。
+- 新增 getAudioSessionId() API，如果需要获取音频频谱之类的操作，你就需要它了
+- 新增音频回调 onPlayerStop()，之前播放完成和播放停止都会回调 onPlayCompletion()，现在分离了
+- 完善和修复了一些bug
+
+
 #### v1.3.2 
 - 修复了播放和暂停回调会回调两次的 Bug
 - 修复了播放完成回调会回调两次的 Bug

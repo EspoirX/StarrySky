@@ -38,6 +38,8 @@ if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
 NotificationCreater 是一个配置通知栏一些属性的类，里面有一些属性：
 ```java
 public class NotificationCreater implements Parcelable {
+    private boolean isCreateSystemNotification;
+    private boolean isNotificationCanClearBySystemBtn;
     private String targetClass;
     private String contentTitle;
     private String contentText;
@@ -57,6 +59,10 @@ public class NotificationCreater implements Parcelable {
 1. targetClass 一定要设置，他是你点击通知栏后转跳的界面，填的是完整路径。
 2. contentTitle 和 contentText 对应着 Notification 的 contentTitle 和 contentText，如果不设置，默认值为歌曲的歌名和艺术家名。
 3. 后面的 PendingIntent 是通知栏里面一些按钮的点击处理 PendingIntent，lib 里面实现了 startOrPauseIntent，closeIntent，nextIntent 和 preIntent。其他需要自己 set 进去。具体用法下面会说到。
+4. isCreateSystemNotification 为是否使用系统通知栏，如果使用则传 true ，不传或 false 为使用自定义通知栏
+5. isNotificationCanClearBySystemBtn 字段的作用是在使用自定义通知栏的时候，暂停播放时可以点击清除按钮清除通知栏，
+具体看 [Issues#20](https://github.com/lizixian18/MusicLibrary/issues/20) 的描述。
+
 
 #### 一些约定
 

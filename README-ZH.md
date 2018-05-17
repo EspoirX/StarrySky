@@ -54,7 +54,7 @@ allprojects {
 }
 
 dependencies {
-     compile 'com.github.lizixian18:MusicLibrary:v1.3.2'
+     compile 'com.github.lizixian18:MusicLibrary:v1.3.3'
 }
 ```
 
@@ -66,25 +66,24 @@ public class NiceMusicApplication extends Application {
     @Override
     public void onCreate() {
         if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
-            MusicManager.get().setContext(this).init();
+            MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
+                              .build();
+            musicLibrary.init();
         }
     }
 }
 ```
 
 **说明**
-1. 一定要调用 setContext 设置上下文，否则会报错。 
-2. 因为音乐服务是运行在 musicLibrary 进程里面的，多进程的情况下，Application 会创建多次，所以需要加上以上判断，在非 musicLibrary 进程里面初始化。
-3. 初始化的时候还有一些参数可以配置：  
+1. 因为音乐服务是运行在 musicLibrary 进程里面的，多进程的情况下，Application 会创建多次，所以需要加上以上判断，在非 musicLibrary 进程里面初始化。
+2. 初始化的时候还有一些参数可以配置：
 
 - setAutoPlayNext(boolean autoPlayNext) 是否在播放完当前歌曲后自动播放下一首
 - setUseMediaPlayer(boolean isUseMediaPlayer) 是否使用 MediaPlayer
 - setNotificationCreater(NotificationCreater creater) 通知栏配置
 - setCacheConfig(cacheConfig) 边播边存配置
 - giveUpAudioFocusManager() 放弃音频焦点管理，放弃后，多个音频一起会混播
- 
-（通过 MusicManager 去调用 lib 中所有的 api ，静态方法可以直接调用，非静态方法需要通过 MusicManager.get() 去调用。）
-  
+
 
 3. 简单应用 (播放一首音乐):
 
