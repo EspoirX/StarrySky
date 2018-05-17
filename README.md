@@ -48,13 +48,6 @@ Specific application Demo Please refer to [NiceMusic](https://github.com/lizixia
 1.Import library
 
 ```java
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://dl.bintray.com/lizixian/MusicLibrary' }
-    }
-}
-
 dependencies {
     implementation 'com.lzx:MusicLibrary:1.3.3'
 }

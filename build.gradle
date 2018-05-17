@@ -39,6 +39,9 @@ allprojects {
             links "http://docs.oracle.com/javase/7/docs/api"
         }
     }
+    task javadoc(type: Javadoc) {
+        failOnError false
+    }
 }
 
 
