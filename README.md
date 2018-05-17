@@ -51,12 +51,12 @@ Specific application Demo Please refer to [NiceMusic](https://github.com/lizixia
 allprojects {
     repositories {
         ...
-        maven { url 'https://jitpack.io' }
+        maven { url 'https://dl.bintray.com/lizixian/MusicLibrary' }
     }
 }
 
 dependencies {
-     implementation 'com.github.lizixian18:MusicLibrary:v1.3.2'
+    implementation 'com.lzx:MusicLibrary:1.3.3'
 }
 ```
 
