@@ -54,7 +54,7 @@ allprojects {
 }
 
 dependencies {
-     implementation 'com.github.lizixian18:MusicLibrary:v1.3.3'
+     implementation 'com.github.lizixian18:MusicLibrary:v1.3.2'
 }
 ```
 
