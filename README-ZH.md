@@ -4,7 +4,7 @@
 
 <p align="center">
 <a href="http://developer.android.com/index.html"><img src="https://img.shields.io/badge/platform-android-green.svg"></a>
-<a href="https://jitpack.io/#lizixian18/MusicLibrary"><img src="https://jitpack.io/v/lizixian18/MusicLibrary.svg"></a>
+[ ![Download](https://api.bintray.com/packages/lizixian/MusicLibrary/MusicLibrary/images/download.svg) ](https://bintray.com/lizixian/MusicLibrary/MusicLibrary/_latestVersion)
 <a href="http://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/license-MIT-green.svg"></a>
 </p>
 
