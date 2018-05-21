@@ -28,21 +28,19 @@ android {
         userOrg = 'lizixian'
         groupId = 'com.lzx'
         artifactId = 'MusicLibrary'
-        version = '1.3.3'
+        version = '1.3.3-RC'
         description = 'a rich music player package library'
         website = "https://github.com/lizixian18/MusicLibrary"
     }
-
-
 }
 
 
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    provided 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
     //ExoPlayer
-    provided 'com.google.android.exoplayer:exoplayer:2.7.1'
+    implementation 'com.google.android.exoplayer:exoplayer:2.7.1'
     //音视频缓存库
-    provided 'com.danikula:videocache:2.7.0'
+    implementation 'com.danikula:videocache:2.7.0'
 }

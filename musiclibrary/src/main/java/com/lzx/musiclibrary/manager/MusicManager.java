@@ -35,8 +35,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
- *  lzx
- *  2018/1/22
+ * lzx
+ * 2018/1/22
  */
 
 public class MusicManager implements IPlayControl {
@@ -97,7 +97,9 @@ public class MusicManager implements IPlayControl {
 
     void attachMusicLibraryBuilder(MusicLibrary.Builder builder) {
         this.mCacheConfig = builder.getCacheConfig();
-        isOpenCacheWhenPlaying = mCacheConfig.isOpenCacheWhenPlaying();
+        if (mCacheConfig != null) {
+            isOpenCacheWhenPlaying = mCacheConfig.isOpenCacheWhenPlaying();
+        }
     }
 
     public void unbindService() {
