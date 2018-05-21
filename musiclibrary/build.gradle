@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 133
-        versionName "1.3.3"
+        versionCode 134
+        versionName "1.3.4"
     }
 
     buildTypes {
@@ -28,7 +28,7 @@ android {
         userOrg = 'lizixian'
         groupId = 'com.lzx'
         artifactId = 'MusicLibrary'
-        version = '1.3.3-RC'
+        version = '1.3.4'
         description = 'a rich music player package library'
         website = "https://github.com/lizixian18/MusicLibrary"
     }
@@ -37,10 +37,10 @@ android {
 
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:26.1.0'
     //ExoPlayer
-    implementation 'com.google.android.exoplayer:exoplayer:2.7.1'
+    compile 'com.google.android.exoplayer:exoplayer:2.7.1'
     //音视频缓存库
-    implementation 'com.danikula:videocache:2.7.0'
+    compile 'com.danikula:videocache:2.7.0'
 }

@@ -46,10 +46,37 @@
 1.导入library
 
 ```java
+allprojects {
+    repositories {
+        maven{url 'https://dl.bintray.com/lizixian/MusicLibrary'}
+    }
+}
+
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.3'
+    implementation 'com.lzx:MusicLibrary:1.3.4'
 }
 ```
+
+如果你的 appcompat-v7 包使用的是 27+，那么需要额外引用 support-media-compat 例如：
+
+```java
+  implementation 'com.android.support:support-media-compat:27.1.1'
+```
+
+v1.3.2 以及以下版本的引用方式是这样的：
+```java
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+       compile 'com.github.lizixian18:MusicLibrary:vX.X.X'
+}
+```
+
 
 2. 添加 MusicLibrary 到你的 Application 中
 

@@ -48,8 +48,34 @@ Specific application Demo Please refer to [NiceMusic](https://github.com/lizixia
 1.Import library
 
 ```java
+allprojects {
+    repositories {
+        maven{url 'https://dl.bintray.com/lizixian/MusicLibrary'}
+    }
+}
+
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.3'
+    implementation 'com.lzx:MusicLibrary:1.3.4'
+}
+```
+
+If your appcompat-v7 package is using 27+, then you need an extra reference to support-media-compat. For example:
+
+```java
+  implementation 'com.android.support:support-media-compat:27.1.1'
+```
+
+The v1.3.2 and the following versions are quoted like this:
+```java
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+       compile 'com.github.lizixian18:MusicLibrary:vX.X.X'
 }
 ```
 
