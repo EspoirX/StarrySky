@@ -109,7 +109,7 @@ public class PlaybackManager implements Playback.Callback {
             handlePlayRequest();
         } else {
             int state = mPlayback.getState();
-            if (state == State.STATE_IDLE || state == State.STATE_NONE) {
+            if (state == State.STATE_IDLE  ) {
                 handlePlayRequest();
             } else if (state == State.STATE_PLAYING) {
                 if (!isSwitchMusic) {

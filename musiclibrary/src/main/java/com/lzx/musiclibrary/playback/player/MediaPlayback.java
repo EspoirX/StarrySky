@@ -50,11 +50,10 @@ public class MediaPlayback implements Playback,
     private Context mContext;
     private FocusAndLockManager mFocusAndLockManager;
 
-    private int mPlayState = State.STATE_NONE;
+    private int mPlayState = State.STATE_IDLE;
 
     private HttpProxyCacheServer mProxyCacheServer;
     private HttpProxyCacheServer.Builder builder;
-
 
 
     public MediaPlayback(Context context, CacheConfig cacheConfig, boolean isGiveUpAudioFocusManager) {
@@ -155,7 +154,7 @@ public class MediaPlayback implements Playback,
     public int getState() {
         int state;
         if (mMediaPlayer == null) {
-            state = State.STATE_NONE;
+            state = State.STATE_IDLE;
         } else {
             state = mPlayState;
         }

@@ -136,7 +136,6 @@ public class PlayControl extends IPlayControl.Stub {
                                     listener.onPlayerPause();
                                     break;
                                 case State.STATE_ENDED:
-                                case State.STATE_NONE:
                                     listener.onPlayCompletion();
                                     break;
                                 case State.STATE_STOP:

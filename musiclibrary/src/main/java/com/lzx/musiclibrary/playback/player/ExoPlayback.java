@@ -150,9 +150,9 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         //STATE_BUFFERING 无法立即从当前位置进行播放
         //STATE_READY     可以从当前位置立即进行播放。 如果  {@link #getPlayWhenReady（）}为true，立即播放，否则暂停。
         //STATE_ENDED     已经完成播放媒体。
-        int state = State.STATE_NONE;
+        int state = State.STATE_IDLE;
         if (mExoPlayer == null) {
-            state = mExoPlayerNullIsStopped ? State.STATE_STOP : State.STATE_NONE;
+            state = mExoPlayerNullIsStopped ? State.STATE_STOP : State.STATE_IDLE;
         } else {
             switch (mExoPlayer.getPlaybackState()) {
                 case Player.STATE_IDLE:

@@ -769,8 +769,7 @@ public class MusicManager implements IPlayControl {
     }
 
     public static boolean isIdea() {
-        return MusicManager.get().getStatus() == State.STATE_NONE ||
-                MusicManager.get().getStatus() == State.STATE_IDLE;
+        return MusicManager.get().getStatus() == State.STATE_IDLE;
     }
 
     /**
