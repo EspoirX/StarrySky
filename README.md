@@ -29,15 +29,11 @@
 
 ## Version update record
 
- See details [Version update record](https://github.com/lizixian18/MusicLibrary/blob/master/readme/version.md)
+See details [Version update record](https://github.com/lizixian18/MusicLibrary/blob/master/readme/version.md)
 
-## WorkPlan
+## project status
 
-- Supports Cache while playing [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
-- Supports the playback progress [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
-- Supports changing the playing speed and changing the playing pitch  [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
-
-All current development plans have been completed. If you encounter any problems in use, welcome to feedback.
+The project is basically stable and has been used in multiple projects. The current status is to repair the bugs found and to satisfy the requirements raised in the issues. If you encounter any problems in use, welcome feedback.
 
 ## Demo
 
@@ -55,14 +51,14 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.4'
+    implementation 'com.lzx:MusicLibrary:1.3.5'
 }
 ```
 
 If your appcompat-v7 package is using 27+, then you need an extra reference to support-media-compat. For example:
 
 ```java
-  implementation 'com.android.support:support-media-compat:27.1.1'
+implementation 'com.android.support:support-media-compat:27.1.1'
 ```
 
 The v1.3.2 and the following versions are quoted like this:
@@ -97,6 +93,7 @@ public class NiceMusicApplication extends Application {
 
 **note**
 1. Because the music service is running in the musicLibrary process, in the multi-process case, Application will create multiple times,Therefore, you need to add the above judgment to initialize in the non-musicLibrary process.
+If your project contains more than two processes, the judgment mode needs to be changed and changed to be initialized under your main process.
 2. There are some parameters that can be configured during initialization:
 
 - setAutoPlayNext(boolean autoPlayNext) Whether to play the next song automatically after playing the current song

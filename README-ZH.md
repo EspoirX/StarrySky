@@ -29,13 +29,9 @@
 
 详细见 [版本更新记录](https://github.com/lizixian18/MusicLibrary/blob/master/readme/version.md)
 
-## 开发计划
+## 项目状态
 
-- 支持边听边存 [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
-- 支持保存播放进度 [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
-- 支持改变播放速度和改变播放音调 [![](https://img.shields.io/badge/goal%20progress-100%25-brightgreen.svg)](https://github.com/lizixian18/MusicLibrary)
-
-目前所有开发计划已经完成，如果在使用中遇到任何问题，欢迎反馈。
+本项目基本稳定，并已经在多个项目中使用，目前状态为修复发现的 Bug 以及对在 issues 中提出的需求尽量满足，如果在使用中遇到任何问题，欢迎反馈。
 
 ## 使用例子
 
@@ -53,14 +49,14 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.4'
+    implementation 'com.lzx:MusicLibrary:1.3.5'
 }
 ```
 
 如果你的 appcompat-v7 包使用的是 27+，那么需要额外引用 support-media-compat 例如：
 
 ```java
-  implementation 'com.android.support:support-media-compat:27.1.1'
+implementation 'com.android.support:support-media-compat:27.1.1'
 ```
 
 v1.3.2 以及以下版本的引用方式是这样的：
@@ -96,6 +92,7 @@ public class NiceMusicApplication extends Application {
 
 **说明**
 1. 因为音乐服务是运行在 musicLibrary 进程里面的，多进程的情况下，Application 会创建多次，所以需要加上以上判断，在非 musicLibrary 进程里面初始化。
+如果你的项目中包含两个以上的进程，则判断方式需要改改，改成在你的主进程下初始化即可。
 2. 初始化的时候还有一些参数可以配置：
 
 - setAutoPlayNext(boolean autoPlayNext) 是否在播放完当前歌曲后自动播放下一首
