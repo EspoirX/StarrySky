@@ -569,34 +569,26 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void setPlayMode(int mode, boolean isSaveLocal) {
+    public void setPlayMode(int mode) {
         if (control != null) {
             try {
-                control.setPlayMode(mode, isSaveLocal);
+                control.setPlayMode(mode);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void setPlayMode(int mode) {
-        setPlayMode(mode, false);
-    }
-
     @Override
-    public int getPlayMode(boolean isGetLocal) {
+    public int getPlayMode() {
         if (control != null) {
             try {
-                return control.getPlayMode(isGetLocal);
+                return control.getPlayMode();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }
         return 0;
-    }
-
-    public int getPlayMode() {
-        return getPlayMode(false);
     }
 
     @Override

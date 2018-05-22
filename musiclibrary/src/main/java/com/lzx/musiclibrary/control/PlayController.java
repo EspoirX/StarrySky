@@ -25,14 +25,13 @@ import java.util.List;
 
 /**
  * 运行在Remote端
- *
- *  lzx
- *  2018/2/8
+ * <p>
+ * lzx
+ * 2018/2/8
  */
 
 public class PlayController implements QueueManager.MetadataUpdateListener, PlaybackManager.PlaybackServiceCallback {
 
-    public static String KEY_PLAY_MODE_IS_SAVE_LOCAL = "KEY_PLAY_MODE_IS_SAVE_LOCAL";
     private MusicService mMusicService;
     private QueueManager mQueueManager;
     private PlaybackManager mPlaybackManager;
@@ -123,22 +122,13 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         }
     }
 
-    public void setPlayMode(int mode, boolean isSaveLocal) {
-        SPUtils.put(mMusicService.getApplicationContext(), KEY_PLAY_MODE_IS_SAVE_LOCAL, isSaveLocal);
-        if (isSaveLocal) {
-            mPlayMode.setCurrPlayMode(mMusicService, mode);
-        } else {
-            mPlayMode.setCurrPlayMode(mode);
-        }
+    public void setPlayMode(int mode) {
+        mPlayMode.setCurrPlayMode(mMusicService, mode);
         mQueueManager.updatePlayModel(mPlayMode);
     }
 
-    public int getPlayMode(boolean isGetLocal) {
-        if (isGetLocal) {
-            return mPlayMode.getCurrPlayMode(mMusicService.getApplicationContext());
-        } else {
-            return mPlayMode.getCurrPlayMode();
-        }
+    public int getPlayMode() {
+        return mPlayMode.getCurrPlayMode(mMusicService);
     }
 
     void playMusic(List<SongInfo> list, int index, boolean isJustPlay) {

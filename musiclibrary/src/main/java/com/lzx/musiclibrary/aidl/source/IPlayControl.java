@@ -248,17 +248,13 @@ public interface IPlayControl extends android.os.IInterface {
                     data.enforceInterface(DESCRIPTOR);
                     int _arg0;
                     _arg0 = data.readInt();
-                    boolean _arg1;
-                    _arg1 = (0 != data.readInt());
-                    this.setPlayMode(_arg0, _arg1);
+                    this.setPlayMode(_arg0);
                     reply.writeNoException();
                     return true;
                 }
                 case TRANSACTION_getPlayMode: {
                     data.enforceInterface(DESCRIPTOR);
-                    boolean _arg0;
-                    _arg0 = (0 != data.readInt());
-                    int _result = this.getPlayMode(_arg0);
+                    int _result = this.getPlayMode();
                     reply.writeNoException();
                     reply.writeInt(_result);
                     return true;
@@ -865,13 +861,12 @@ public interface IPlayControl extends android.os.IInterface {
              * 设置播放模式
              */
             @Override
-            public void setPlayMode(int mode, boolean isSaveLocal) throws android.os.RemoteException {
+            public void setPlayMode(int mode) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
                     _data.writeInt(mode);
-                    _data.writeInt(((isSaveLocal) ? (1) : (0)));
                     mRemote.transact(Stub.TRANSACTION_setPlayMode, _data, _reply, 0);
                     _reply.readException();
                 } finally {
@@ -884,13 +879,12 @@ public interface IPlayControl extends android.os.IInterface {
              * 获取播放模式
              */
             @Override
-            public int getPlayMode(boolean isGetLocal) throws android.os.RemoteException {
+            public int getPlayMode() throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 int _result;
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
-                    _data.writeInt(((isGetLocal) ? (1) : (0)));
                     mRemote.transact(Stub.TRANSACTION_getPlayMode, _data, _reply, 0);
                     _reply.readException();
                     _result = _reply.readInt();
@@ -1327,9 +1321,9 @@ public interface IPlayControl extends android.os.IInterface {
     void setCurrMusic(int index) throws android.os.RemoteException;
 
     //设置播放模式
-    void setPlayMode(int mode, boolean isSaveLocal) throws android.os.RemoteException;
+    void setPlayMode(int mode) throws android.os.RemoteException;
 
-    int getPlayMode(boolean isGetLocal) throws android.os.RemoteException;
+    int getPlayMode() throws android.os.RemoteException;
 
     //获取当前进度
     long getProgress() throws android.os.RemoteException;

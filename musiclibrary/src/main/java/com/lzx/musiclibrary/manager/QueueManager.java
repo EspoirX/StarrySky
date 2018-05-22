@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.lzx.musiclibrary.control.PlayController.KEY_PLAY_MODE_IS_SAVE_LOCAL;
 
 /**
  * Created by xian on 2018/1/20.
@@ -51,12 +50,7 @@ public class QueueManager {
     }
 
     private void setUpRandomQueue() {
-        boolean isPlayModeSaveLocal = (boolean) SPUtils.get(mContext, KEY_PLAY_MODE_IS_SAVE_LOCAL, false);
-        if (isPlayModeSaveLocal) {
-            isPlayRandomModel = mPlayMode.getCurrPlayMode(mContext) == PlayMode.PLAY_IN_RANDOM;
-        } else {
-            isPlayRandomModel = mPlayMode.getCurrPlayMode() == PlayMode.PLAY_IN_RANDOM;
-        }
+        isPlayRandomModel = mPlayMode.getCurrPlayMode(mContext) == PlayMode.PLAY_IN_RANDOM;
         if (isPlayRandomModel) {
             mNormalOrderQueue.clear();
             mNormalOrderQueue.addAll(mPlayingQueue);
@@ -205,19 +199,23 @@ public class QueueManager {
      * @param amount 维度
      */
     public boolean skipQueuePosition(int amount) {
-        int index = mCurrentIndex + amount;
-        if (index < 0) {
-            // 在第一首歌曲之前向后跳，让你在第一首歌曲上
-            index = 0;
-        } else {
-            //当在最后一首歌时点下一首将返回第一首个
-            index %= mPlayingQueue.size();
-        }
-        if (!QueueHelper.isIndexPlayable(index, mPlayingQueue)) {
+        if (mPlayingQueue.size() == 0) {
             return false;
+        } else {
+            int index = mCurrentIndex + amount;
+            if (index < 0) {
+                // 在第一首歌曲之前向后跳，让你在第一首歌曲上
+                index = 0;
+            } else {
+                //当在最后一首歌时点下一首将返回第一首个
+                index %= mPlayingQueue.size();
+            }
+            if (!QueueHelper.isIndexPlayable(index, mPlayingQueue)) {
+                return false;
+            }
+            mCurrentIndex = index;
+            return true;
         }
-        mCurrentIndex = index;
-        return true;
     }
 
     /**
@@ -277,9 +275,7 @@ public class QueueManager {
     private SongInfo getNextOrPreMusicInfo(int amount) {
         SongInfo info = null;
         SongInfo songInfo = mPlayingQueue.get(mCurrentIndex + amount);
-        boolean isPlayModeSaveLocal = (boolean) SPUtils.get(mContext, KEY_PLAY_MODE_IS_SAVE_LOCAL, false);
-        int playMode = isPlayModeSaveLocal ? mPlayMode.getCurrPlayMode(mContext) : mPlayMode.getCurrPlayMode();
-        switch (playMode) {
+        switch (mPlayMode.getCurrPlayMode(mContext)) {
             //单曲循环
             case PlayMode.PLAY_IN_SINGLE_LOOP:
                 info = getCurrentMusic();

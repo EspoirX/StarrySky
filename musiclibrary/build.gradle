@@ -23,7 +23,7 @@ android {
         abortOnError false
     }
 
-    publish{
+    publish {
         repoName = 'MusicLibrary'
         userOrg = 'lizixian'
         groupId = 'com.lzx'

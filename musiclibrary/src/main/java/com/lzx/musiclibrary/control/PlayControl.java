@@ -322,13 +322,13 @@ public class PlayControl extends IPlayControl.Stub {
     }
 
     @Override
-    public void setPlayMode(int mode, boolean isSaveLocal) {
-        mController.setPlayMode(mode, isSaveLocal);
+    public void setPlayMode(int mode) {
+        mController.setPlayMode(mode);
     }
 
     @Override
-    public int getPlayMode(boolean isGetLocal) {
-        return mController.getPlayMode(isGetLocal);
+    public int getPlayMode() {
+        return mController.getPlayMode();
     }
 
     @Override
