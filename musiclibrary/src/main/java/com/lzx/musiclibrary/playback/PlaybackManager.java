@@ -15,7 +15,6 @@ import com.lzx.musiclibrary.manager.QueueManager;
 import com.lzx.musiclibrary.playback.player.Playback;
 
 
-
 /**
  * Created by xian on 2018/1/20.
  */
@@ -104,7 +103,7 @@ public class PlaybackManager implements Playback.Callback {
             handlePlayRequest();
         } else {
             int state = mPlayback.getState();
-            if (state == State.STATE_IDLE  ) {
+            if (state == State.STATE_IDLE) {
                 handlePlayRequest();
             } else if (state == State.STATE_PLAYING) {
                 if (!isSwitchMusic) {
@@ -112,7 +111,7 @@ public class PlaybackManager implements Playback.Callback {
                 } else {
                     handlePlayRequest();
                 }
-            } else if (state == State.STATE_PAUSED) {
+            } else if (state == State.STATE_PAUSED || state == State.STATE_STOP) {
                 handlePlayRequest();
             }
         }
