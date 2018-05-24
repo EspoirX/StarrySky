@@ -111,7 +111,9 @@ public class PlaybackManager implements Playback.Callback {
                 } else {
                     handlePlayRequest();
                 }
-            } else if (state == State.STATE_PAUSED || state == State.STATE_STOP) {
+            } else if (state == State.STATE_PAUSED) {
+                handlePlayRequest();
+            }else if (state == State.STATE_STOP){
                 handlePlayRequest();
             }
         }
