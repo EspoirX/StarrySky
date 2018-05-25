@@ -76,6 +76,7 @@ public class BaseUtil {
 
     /**
      * 判断是网络地址还是本地地址（不知道这样准不准确）
+     * @param source
      */
     public static boolean isOnLineSource(String source) {
         return (source.toLowerCase().startsWith("http://")

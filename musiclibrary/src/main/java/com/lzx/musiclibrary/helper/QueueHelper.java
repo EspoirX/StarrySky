@@ -94,6 +94,9 @@ public class QueueHelper {
 
     /**
      * 判断index是否合法
+     * @param index
+     * @param queue
+     * @return 是否合法
      */
     public static boolean isIndexPlayable(int index, List<SongInfo> queue) {
         return (queue != null && index >= 0 && index < queue.size());
@@ -123,6 +126,10 @@ public class QueueHelper {
 
     /**
      * 是否需要切歌
+     * @param index
+     * @param list
+     * @param manager
+     * @return 是否需要切歌
      */
     public static boolean isNeedToSwitchMusic(PlaybackManager manager, List<SongInfo> list, int index) {
         return isNeedToSwitchMusic(manager, list.get(index));
@@ -130,6 +137,9 @@ public class QueueHelper {
 
     /**
      * 是否需要切歌
+     * @param manager
+     * @param info
+     * @return 是否需要切歌
      */
     public static boolean isNeedToSwitchMusic(PlaybackManager manager, SongInfo info) {
         String mCurrentMediaId = manager.getCurrentMediaId();

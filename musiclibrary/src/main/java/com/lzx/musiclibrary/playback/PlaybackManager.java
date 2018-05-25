@@ -97,6 +97,9 @@ public class PlaybackManager implements Playback.Callback {
 
     /**
      * 播放/暂停/切歌
+     *
+     * @param isJustPlay
+     * @param isSwitchMusic
      */
     public void handlePlayPauseRequest(boolean isJustPlay, boolean isSwitchMusic) {
         if (isJustPlay) {
@@ -113,7 +116,7 @@ public class PlaybackManager implements Playback.Callback {
                 }
             } else if (state == State.STATE_PAUSED) {
                 handlePlayRequest();
-            }else if (state == State.STATE_STOP){
+            } else if (state == State.STATE_STOP) {
                 handlePlayRequest();
             }
         }
@@ -122,7 +125,7 @@ public class PlaybackManager implements Playback.Callback {
     /**
      * 获取当前进度
      *
-     * @return
+     * @return long
      */
     public long getCurrentPosition() {
         long position = 0;
@@ -245,6 +248,8 @@ public class PlaybackManager implements Playback.Callback {
 
     /**
      * 获取当前媒体id
+     *
+     * @return id
      */
     public String getCurrentMediaId() {
         return mPlayback.getCurrentMediaId();
@@ -429,6 +434,9 @@ public class PlaybackManager implements Playback.Callback {
          * Since this method runs on the main thread, most apps with non-trivial metadata
          * should defer the actual search to another thread (for example, by using
          * an {@link AsyncTask} as we do here).
+         *
+         * @param extras
+         * @param query
          **/
         @Override
         public void onPlayFromSearch(final String query, final Bundle extras) {

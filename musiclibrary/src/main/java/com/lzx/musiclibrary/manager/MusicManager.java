@@ -740,6 +740,8 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 判断当前的音乐是不是正在播放的音乐
+     * @param currMusic
+     * @return 判断当前的音乐是不是正在播放的音乐
      */
     public static boolean isCurrMusicIsPlayingMusic(SongInfo currMusic) {
         SongInfo playingMusic = MusicManager.get().getCurrPlayingMusic();
@@ -748,6 +750,7 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 是否在暂停
+     * @return 是否暂停
      */
     public static boolean isPaused() {
         return MusicManager.get().getStatus() == State.STATE_PAUSED;
@@ -755,6 +758,7 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 是否正在播放
+     * @return 是否正在播放
      */
     public static boolean isPlaying() {
         return MusicManager.get().getStatus() == State.STATE_PLAYING;
@@ -766,6 +770,8 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 当前的音乐是否在播放
+     * @param currMusic
+     * @return 当前的音乐是否在播放
      */
     public static boolean isCurrMusicIsPlaying(SongInfo currMusic) {
         return isCurrMusicIsPlayingMusic(currMusic) && isPlaying();
@@ -773,6 +779,8 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 当前音乐是否在暂停
+     * @param currMusic
+     * @return 当前音乐是否在暂停
      */
     public static boolean isCurrMusicIsPaused(SongInfo currMusic) {
         return isCurrMusicIsPlayingMusic(currMusic) && isPaused();
@@ -780,6 +788,8 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 是否有缓存
+     * @param songUrl
+     * @return 是否有缓存
      */
     public boolean isFullyCached(String songUrl) {
         if (TextUtils.isEmpty(songUrl)) {
@@ -791,6 +801,8 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 获取缓存文件File对象
+     * @param songUrl
+     * @return 获取缓存文件File对象
      */
     public File getCacheFile(String songUrl) {
         if (mCacheConfig != null && isOpenCacheWhenPlaying) {
@@ -812,6 +824,8 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 获取缓存文件大小
+     * @param songUrl
+     * @return 获取缓存文件大小
      */
     public long getCachedSize(String songUrl) {
         if (isFullyCached(songUrl)) {

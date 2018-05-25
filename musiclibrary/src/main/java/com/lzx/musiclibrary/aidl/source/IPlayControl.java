@@ -28,6 +28,8 @@ public interface IPlayControl extends android.os.IInterface {
         /**
          * Cast an IBinder object into an IPlayControl interface,
          * generating a proxy if needed.
+         * @param obj
+         * @return IPlayControl
          */
         public static IPlayControl asInterface(android.os.IBinder obj) {
             if ((obj == null)) {
@@ -422,6 +424,9 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 播放，并设置播放列表
+             * @param list
+             * @param index
+             * @param isJustPlay
              */
             @Override
             public void playMusic(List<SongInfo> list, int index, boolean isJustPlay) throws android.os.RemoteException {
@@ -442,6 +447,8 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 根据音乐信息播放
+             * @param info
+             * @param isJustPlay
              */
             @Override
             public void playMusicByInfo(SongInfo info, boolean isJustPlay) throws android.os.RemoteException {
@@ -466,6 +473,8 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 根据索引播放
+             * @param index
+             * @param isJustPlay
              */
             @Override
             public void playMusicByIndex(int index, boolean isJustPlay) throws android.os.RemoteException {
@@ -485,6 +494,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置定时时间
+             * @param time
              */
             @Override
             public void pausePlayInMillis(long time) throws android.os.RemoteException {
@@ -503,6 +513,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 得到当前播放索引
+             * @return index
              */
             @Override
             public int getCurrPlayingIndex() throws android.os.RemoteException {
@@ -574,6 +585,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置播放列表
+             * @param list
              */
             @Override
             public void setPlayList(List<SongInfo> list) throws android.os.RemoteException {
@@ -592,6 +604,8 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置播放列表
+             * @param list
+             * @param index
              */
             @Override
             public void setPlayListWithIndex(List<SongInfo> list, int index) throws android.os.RemoteException {
@@ -611,6 +625,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 得到播放列表
+             * @return list
              */
             @Override
             public List<SongInfo> getPlayList() throws android.os.RemoteException {
@@ -631,6 +646,8 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 从播放列表中删除一条信息
+             * @param info
+             * @param isNeedToPlayNext
              */
             @Override
             public void deleteSongInfoOnPlayList(SongInfo info, boolean isNeedToPlayNext) throws android.os.RemoteException {
@@ -655,6 +672,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 获取播放状态
+             * @return int
              */
             @Override
             public int getStatus() throws android.os.RemoteException {
@@ -675,6 +693,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 获取音频时长
+             * @return int
              */
             @Override
             public int getDuration() throws RemoteException {
@@ -729,6 +748,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 是否有上一首
+             * @return boolean
              */
             @Override
             public boolean hasPre() throws android.os.RemoteException {
@@ -749,6 +769,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 是否有下一首
+             * @return boolean
              */
             @Override
             public boolean hasNext() throws android.os.RemoteException {
@@ -769,6 +790,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 得到上一首信息
+             * @return info
              */
             @Override
             public SongInfo getPreMusic() throws android.os.RemoteException {
@@ -793,6 +815,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 得到下一首信息
+             * @return info
              */
             @Override
             public SongInfo getNextMusic() throws android.os.RemoteException {
@@ -817,6 +840,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 得到当前播放信息
+             * @return info
              */
             @Override
             public SongInfo getCurrPlayingMusic() throws android.os.RemoteException {
@@ -841,6 +865,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置当前音乐信息
+             * @param index
              */
             @Override
             public void setCurrMusic(int index) throws android.os.RemoteException {
@@ -859,6 +884,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置播放模式
+             * @param mode
              */
             @Override
             public void setPlayMode(int mode) throws android.os.RemoteException {
@@ -877,6 +903,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 获取播放模式
+             * @return int
              */
             @Override
             public int getPlayMode() throws android.os.RemoteException {
@@ -897,6 +924,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 获取当前进度
+             * @return long
              */
             @Override
             public long getProgress() throws android.os.RemoteException {
@@ -917,6 +945,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 定位到指定位置
+             * @param position
              */
             @Override
             public void seekTo(int position) throws android.os.RemoteException {
@@ -952,6 +981,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 是否开启边播边存
+             * @param isOpen
              */
             @Override
             public void openCacheWhenPlaying(boolean isOpen) throws RemoteException {
@@ -987,6 +1017,8 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 变速
+             * @param speed
+             * @param pitch
              */
             @Override
             public void setPlaybackParameters(float speed, float pitch) throws RemoteException {
@@ -1023,6 +1055,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置音量
+             * @param audioVolume
              */
             @Override
             public void setVolume(float audioVolume) throws RemoteException {
@@ -1041,6 +1074,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 更新通知栏
+             * @param creater
              */
             @Override
             public void updateNotificationCreater(NotificationCreater creater) throws android.os.RemoteException {
@@ -1064,6 +1098,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 更新通知栏喜欢/收藏按钮选中状态
+             * @param isFavorite
              */
             @Override
             public void updateNotificationFavorite(boolean isFavorite) throws android.os.RemoteException {
@@ -1082,6 +1117,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 更新通知栏桌面歌词按钮选中状态
+             * @param isChecked
              */
             @Override
             public void updateNotificationLyrics(boolean isChecked) throws android.os.RemoteException {
@@ -1100,6 +1136,8 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 更新通知栏ContentIntent
+             * @param bundle
+             * @param targetClass
              */
             @Override
             public void updateNotificationContentIntent(android.os.Bundle bundle, java.lang.String targetClass) throws android.os.RemoteException {
@@ -1124,6 +1162,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 注册一个播放状态监听器
+             * @param listener
              */
             @Override
             public void registerPlayerEventListener(IOnPlayerEventListener listener) throws android.os.RemoteException {
@@ -1142,6 +1181,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 解注册一个播放状态监听器
+             * @param listener
              */
             @Override
             public void unregisterPlayerEventListener(IOnPlayerEventListener listener) throws android.os.RemoteException {
@@ -1160,6 +1200,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 注册一个定时播放监听器
+             * @param listener
              */
             @Override
             public void registerTimerTaskListener(IOnTimerTaskListener listener) throws android.os.RemoteException {
@@ -1178,6 +1219,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 解注册一个定时播放监听器
+             * @param listener
              */
             @Override
             public void unregisterTimerTaskListener(IOnTimerTaskListener listener) throws android.os.RemoteException {

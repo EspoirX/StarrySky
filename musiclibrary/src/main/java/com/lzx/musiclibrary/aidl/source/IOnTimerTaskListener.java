@@ -22,6 +22,8 @@ public interface IOnTimerTaskListener extends android.os.IInterface {
         /**
          * Cast an IBinder object into an IOnTimerTaskListener interface,
          * generating a proxy if needed.
+         * @param obj
+         * @return IOnTimerTaskListener
          */
         public static IOnTimerTaskListener asInterface(android.os.IBinder obj) {
             if ((obj == null)) {
