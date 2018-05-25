@@ -90,7 +90,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
         userAgent = Util.getUserAgent(mContext, "ExoPlayer");
         mediaDataSourceFactory = buildDataSourceFactory(true);
-        mediaDataSourceFactory = buildDataSourceFactory(true);
+        rtmpDataSourceFactory = new RtmpDataSourceFactory();
         builder = CacheUtils.createHttpProxyCacheServerBuilder(mContext, cacheConfig);
         if (cacheConfig != null && cacheConfig.isOpenCacheWhenPlaying()) {
             isOpenCacheWhenPlaying = true;
