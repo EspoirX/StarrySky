@@ -22,7 +22,7 @@
 - Provides rich API methods to easily implement various functions.
 - In one sentence, you can customize the notification bar and the system notification bar to customize the control of the notification bar.
 - Integrated MediaPlayer and ExoPlayer Players, Freely Switchable
-- Supports multiple audio formats and supports audio streaming(DASH, SmoothStreaming, HLS.).
+- Supports multiple audio formats and supports audio streaming(DASH, SmoothStreaming, HLS，rmpt.).
 - Supports the playback progress
 - Supports Cache while playing，no network can play.
 - Supports changing the playing speed and changing the playing pitch.
@@ -33,7 +33,7 @@ See details [Version update record](https://github.com/lizixian18/MusicLibrary/b
 
 ## project status
 
-The project is basically stable and has been used in multiple projects. The current status is to repair the bugs found and to satisfy the requirements raised in the issues. If you encounter any problems in use, welcome feedback.
+The project is basically stable and has been practically used in a number of commercial projects. The current status is to repair the bugs found and to satisfy the requirements raised in the issues. If you encounter any problems in use, welcome feedback.
 
 ## Demo
 
@@ -51,7 +51,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.5.2'
+    implementation 'com.lzx:MusicLibrary:1.3.6'
 }
 ```
 

@@ -20,7 +20,7 @@
 - 提供丰富的API方法来轻松实现各种功能。
 - 用一句话，您可以自定义通知栏和系统通知栏来自定义通知栏的控件。
 - 集成MediaPlayer和ExoPlayer播放器，可自由切换
-- 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS.)。
+- 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS，rmpt.)。
 - 支持保存播放进度。
 - 支持边播边存功能，没网也能播。
 - 支持改变播放速度和改变播放音调
@@ -31,7 +31,7 @@
 
 ## 项目状态
 
-本项目基本稳定，并已经在多个项目中使用，目前状态为修复发现的 Bug 以及对在 issues 中提出的需求尽量满足，如果在使用中遇到任何问题，欢迎反馈。
+本项目基本稳定，并已经在多个商业项目中实践使用，目前状态为修复发现的 Bug 以及对在 issues 中提出的需求尽量满足，如果在使用中遇到任何问题，欢迎反馈。
 
 ## 使用例子
 
@@ -49,7 +49,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.5.2'
+    implementation 'com.lzx:MusicLibrary:1.3.6'
 }
 ```
 
