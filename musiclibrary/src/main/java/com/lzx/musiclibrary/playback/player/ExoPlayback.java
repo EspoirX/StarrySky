@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
+import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceEventListener;
@@ -75,6 +76,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     private Callback mCallback;
     private Context mContext;
     private DataSource.Factory mediaDataSourceFactory;
+    private RtmpDataSourceFactory rtmpDataSourceFactory;
     protected String userAgent;
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
@@ -88,7 +90,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
         userAgent = Util.getUserAgent(mContext, "ExoPlayer");
         mediaDataSourceFactory = buildDataSourceFactory(true);
-
+        mediaDataSourceFactory = buildDataSourceFactory(true);
         builder = CacheUtils.createHttpProxyCacheServerBuilder(mContext, cacheConfig);
         if (cacheConfig != null && cacheConfig.isOpenCacheWhenPlaying()) {
             isOpenCacheWhenPlaying = true;
@@ -238,8 +240,8 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             if (BaseUtil.isOnLineSource(source)) {
                 String proxyUrl;
                 if (isOpenCacheWhenPlaying && (getMediaType(null, Uri.parse(source)) == C.TYPE_OTHER)) {
-                    proxyUrl = mProxyCacheServer.getProxyUrl(source);
-
+                    boolean isRtmpSource = source.toLowerCase().startsWith("rtmp://");
+                    proxyUrl = isRtmpSource ? source : mProxyCacheServer.getProxyUrl(source);
                 } else {
                     proxyUrl = source;
                 }
@@ -299,7 +301,8 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                 return new HlsMediaSource.Factory(mediaDataSourceFactory)
                         .createMediaSource(uri, handler, listener);
             case C.TYPE_OTHER:
-                return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
+                boolean isRtmpSource = uri.toString().toLowerCase().startsWith("rtmp://");
+                return new ExtractorMediaSource.Factory(isRtmpSource ? rtmpDataSourceFactory :mediaDataSourceFactory)
                         .createMediaSource(uri, handler, listener);
             default: {
                 throw new IllegalStateException("Unsupported type: " + type);
@@ -389,7 +392,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
 
     @Override
     public int getAudioSessionId() {
-        if (mExoPlayer!=null){
+        if (mExoPlayer != null) {
             return mExoPlayer.getAudioSessionId();
         }
         return 0;

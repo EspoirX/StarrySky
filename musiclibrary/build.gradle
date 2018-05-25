@@ -41,6 +41,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.1.0'
     //ExoPlayer
     compile 'com.google.android.exoplayer:exoplayer:2.7.1'
+    compile 'com.google.android.exoplayer:extension-rtmp:2.7.1'
     //音视频缓存库
     compile 'com.danikula:videocache:2.7.0'
 }

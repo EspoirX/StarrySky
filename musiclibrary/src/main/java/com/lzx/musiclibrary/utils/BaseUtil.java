@@ -78,8 +78,12 @@ public class BaseUtil {
      * 判断是网络地址还是本地地址（不知道这样准不准确）
      */
     public static boolean isOnLineSource(String source) {
-        return (source.startsWith("http://") || source.startsWith("https://")) && !source.startsWith("file:///");
+        return (source.toLowerCase().startsWith("http://")
+                || source.toLowerCase().startsWith("https://"))
+                || source.toLowerCase().startsWith("rtmp://")
+                && !source.toLowerCase().startsWith("file:///");
     }
+
 
     /**
      * 获取本地文件Uri
