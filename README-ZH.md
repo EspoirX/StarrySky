@@ -20,7 +20,7 @@
 - 提供丰富的API方法来轻松实现各种功能。
 - 用一句话，您可以自定义通知栏和系统通知栏来自定义通知栏的控件。
 - 集成MediaPlayer和ExoPlayer播放器，可自由切换
-- 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS，rmpt.)。
+- 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS，rtmp.)。
 - 支持保存播放进度。
 - 支持边播边存功能，没网也能播。
 - 支持改变播放速度和改变播放音调

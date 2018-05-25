@@ -22,7 +22,7 @@
 - Provides rich API methods to easily implement various functions.
 - In one sentence, you can customize the notification bar and the system notification bar to customize the control of the notification bar.
 - Integrated MediaPlayer and ExoPlayer Players, Freely Switchable
-- Supports multiple audio formats and supports audio streaming(DASH, SmoothStreaming, HLS，rmpt.).
+- Supports multiple audio formats and supports audio streaming(DASH, SmoothStreaming, HLS，rtmp.).
 - Supports the playback progress
 - Supports Cache while playing，no network can play.
 - Supports changing the playing speed and changing the playing pitch.
