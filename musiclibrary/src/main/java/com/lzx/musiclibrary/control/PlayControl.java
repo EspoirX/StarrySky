@@ -142,7 +142,7 @@ public class PlayControl extends IPlayControl.Stub {
                                     listener.onPlayerStop();
                                     break;
                                 case State.STATE_ERROR:
-                                    listener.onError("");
+                                    listener.onError(errorMsg);
                                     break;
                             }
                         } catch (RemoteException e) {
