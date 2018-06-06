@@ -282,13 +282,13 @@ public class SystemNotification implements IMediaNotification {
             mService.stopForeground(true);
             return;
         }
-        if (mPlaybackManager.getPlayback().getState() == State.STATE_PLAYING && mPlaybackManager.getCurrentPosition() >= 0) {
-            builder.setWhen(System.currentTimeMillis() - mPlaybackManager.getCurrentPosition())
-                    .setShowWhen(true)
-                    .setUsesChronometer(true);
-        } else {
-            builder.setWhen(0).setShowWhen(false).setUsesChronometer(false);
-        }
+//        if (mPlaybackManager.getPlayback().getState() == State.STATE_PLAYING && mPlaybackManager.getCurrentPosition() >= 0) {
+//            builder.setWhen(System.currentTimeMillis() - mPlaybackManager.getCurrentPosition())
+//                    .setShowWhen(true)
+//                    .setUsesChronometer(true);
+//        } else {
+//            builder.setWhen(0).setShowWhen(false).setUsesChronometer(false);
+//        }
 
         builder.setOngoing(mPlaybackManager.getPlayback().getState() == State.STATE_PLAYING);
     }
