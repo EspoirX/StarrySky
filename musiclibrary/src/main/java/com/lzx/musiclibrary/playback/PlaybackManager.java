@@ -118,7 +118,7 @@ public class PlaybackManager implements Playback.Callback {
                 handlePlayRequest();
             } else if (state == State.STATE_STOP) {
                 handlePlayRequest();
-            }else if (state == State.STATE_ENDED) {
+            } else if (state == State.STATE_ENDED) {
                 handlePlayRequest();
             }
         }
@@ -171,6 +171,9 @@ public class PlaybackManager implements Playback.Callback {
             case PlayMode.PLAY_IN_RANDOM:
                 //列表循环
             case PlayMode.PLAY_IN_LIST_LOOP:
+                if (mQueueManager.getCurrentQueueSize() == 1) {
+                    handleStopRequest(null);
+                }
                 if (mQueueManager.skipQueuePosition(amount)) {
                     handlePlayRequest();
                 }
