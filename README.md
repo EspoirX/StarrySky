@@ -51,7 +51,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.6'
+    implementation 'com.lzx:MusicLibrary:1.3.7'
 }
 ```
 
@@ -61,19 +61,6 @@ If your appcompat-v7 package is using 27+, then you need an extra reference to s
 implementation 'com.android.support:support-media-compat:27.1.1'
 ```
 
-The v1.3.2 and the following versions are quoted like this:
-```java
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-
-dependencies {
-       compile 'com.github.lizixian18:MusicLibrary:vX.X.X'
-}
-```
 
 2. add MusicLibrary to your Application
 

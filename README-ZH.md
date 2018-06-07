@@ -49,7 +49,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.6'
+    implementation 'com.lzx:MusicLibrary:1.3.7'
 }
 ```
 
@@ -57,20 +57,6 @@ dependencies {
 
 ```java
 implementation 'com.android.support:support-media-compat:27.1.1'
-```
-
-v1.3.2 以及以下版本的引用方式是这样的：
-```java
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-
-dependencies {
-       compile 'com.github.lizixian18:MusicLibrary:vX.X.X'
-}
 ```
 
 
