@@ -21,6 +21,7 @@ import com.lzx.musiclibrary.playback.PlayStateObservable;
 
 public class MusicLibrary {
 
+    public static boolean isInitLibrary = false;
     private Context mContext;
     private boolean isUseMediaPlayer;
     private boolean isAutoPlayNext;
@@ -114,6 +115,9 @@ public class MusicLibrary {
     }
 
     private void init(boolean isStartService) {
+        if (isInitLibrary) {
+            return;
+        }
         Intent intent = new Intent(mContext, MusicService.class);
         intent.putExtra("isUseMediaPlayer", isUseMediaPlayer);
         intent.putExtra("isAutoPlayNext", isAutoPlayNext);
@@ -123,7 +127,7 @@ public class MusicLibrary {
         if (isStartService) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 mContext.startForegroundService(intent);
-            }else {
+            } else {
                 mContext.startService(intent);
             }
         }
@@ -137,10 +141,12 @@ public class MusicLibrary {
             MusicManager.get().attachPlayControl(mContext, control);
             MusicManager.get().attachServiceConnection(this);
             MusicManager.get().attachMusicLibraryBuilder(mBuilder);
+            isInitLibrary = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
+            isInitLibrary = false;
         }
     };
 }

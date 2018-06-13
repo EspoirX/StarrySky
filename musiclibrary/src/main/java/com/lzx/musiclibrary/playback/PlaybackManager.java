@@ -188,6 +188,10 @@ public class PlaybackManager implements Playback.Callback {
                     handleStopRequest(null);
                 }
                 break;
+            //倒叙播放
+            case PlayMode.PLAY_IN_FLASHBACK:
+
+                break;
             default:
                 handleStopRequest(null);
                 break;

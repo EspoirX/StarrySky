@@ -112,6 +112,7 @@ public class MusicManager implements IPlayControl {
             e.printStackTrace();
         }
         mContext.unbindService(mServiceConnection);
+        MusicLibrary.isInitLibrary = false;
     }
 
     public void addStateObservable(Observer o) {
@@ -653,7 +654,7 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void setPlaybackParameters(float speed, float pitch){
+    public void setPlaybackParameters(float speed, float pitch) {
         if (control != null) {
             try {
                 if (speed > 0 && pitch > 0) {
@@ -740,6 +741,7 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 判断当前的音乐是不是正在播放的音乐
+     *
      * @param currMusic
      * @return 判断当前的音乐是不是正在播放的音乐
      */
@@ -750,6 +752,7 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 是否在暂停
+     *
      * @return 是否暂停
      */
     public static boolean isPaused() {
@@ -758,6 +761,7 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 是否正在播放
+     *
      * @return 是否正在播放
      */
     public static boolean isPlaying() {
@@ -770,6 +774,7 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 当前的音乐是否在播放
+     *
      * @param currMusic
      * @return 当前的音乐是否在播放
      */
@@ -779,6 +784,7 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 当前音乐是否在暂停
+     *
      * @param currMusic
      * @return 当前音乐是否在暂停
      */
@@ -788,6 +794,7 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 是否有缓存
+     *
      * @param songUrl
      * @return 是否有缓存
      */
@@ -801,6 +808,7 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 获取缓存文件File对象
+     *
      * @param songUrl
      * @return 获取缓存文件File对象
      */
@@ -824,6 +832,7 @@ public class MusicManager implements IPlayControl {
 
     /**
      * 获取缓存文件大小
+     *
      * @param songUrl
      * @return 获取缓存文件大小
      */
@@ -849,7 +858,7 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public float getPlaybackSpeed()  {
+    public float getPlaybackSpeed() {
         if (control != null) {
             try {
                 return control.getPlaybackSpeed();
@@ -861,7 +870,7 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public float getPlaybackPitch()   {
+    public float getPlaybackPitch() {
         if (control != null) {
             try {
                 return control.getPlaybackPitch();
@@ -883,12 +892,12 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void registerTimerTaskListener(IOnTimerTaskListener listener)  {
+    public void registerTimerTaskListener(IOnTimerTaskListener listener) {
         //Do nothing
     }
 
     @Override
-    public void unregisterTimerTaskListener(IOnTimerTaskListener listener)  {
+    public void unregisterTimerTaskListener(IOnTimerTaskListener listener) {
         //Do nothing
     }
 

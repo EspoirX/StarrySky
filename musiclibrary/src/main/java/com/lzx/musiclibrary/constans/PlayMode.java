@@ -24,6 +24,9 @@ public class PlayMode {
     //顺序播放
     public static final int PLAY_IN_ORDER = 4;
 
+    //倒叙播放
+    public static final int PLAY_IN_FLASHBACK = 5;
+
     private int currPlayMode = PLAY_IN_LIST_LOOP;
 
     public int getCurrPlayMode(Context context) {
