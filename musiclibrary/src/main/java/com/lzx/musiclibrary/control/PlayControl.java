@@ -416,4 +416,14 @@ public class PlayControl extends IPlayControl.Stub {
     public int getAudioSessionId() {
         return mController.getAudioSessionId();
     }
+
+    @Override
+    public float getPlaybackSpeed() {
+        return mController.getPlaybackSpeed();
+    }
+
+    @Override
+    public float getPlaybackPitch() {
+        return mController.getPlaybackPitch();
+    }
 }

@@ -653,7 +653,7 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void setPlaybackParameters(float speed, float pitch) throws RemoteException {
+    public void setPlaybackParameters(float speed, float pitch){
         if (control != null) {
             try {
                 if (speed > 0 && pitch > 0) {
@@ -849,6 +849,30 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
+    public float getPlaybackSpeed()  {
+        if (control != null) {
+            try {
+                return control.getPlaybackSpeed();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public float getPlaybackPitch()   {
+        if (control != null) {
+            try {
+                return control.getPlaybackPitch();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public void registerPlayerEventListener(IOnPlayerEventListener listener) {
         //Do nothing
     }
@@ -859,12 +883,12 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
-    public void registerTimerTaskListener(IOnTimerTaskListener listener) throws RemoteException {
+    public void registerTimerTaskListener(IOnTimerTaskListener listener)  {
         //Do nothing
     }
 
     @Override
-    public void unregisterTimerTaskListener(IOnTimerTaskListener listener) throws RemoteException {
+    public void unregisterTimerTaskListener(IOnTimerTaskListener listener)  {
         //Do nothing
     }
 

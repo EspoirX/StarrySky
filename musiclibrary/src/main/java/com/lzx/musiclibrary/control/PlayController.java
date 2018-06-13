@@ -23,6 +23,9 @@ import com.lzx.musiclibrary.utils.SPUtils;
 
 import java.util.List;
 
+import static com.lzx.musiclibrary.constans.Constans.play_back_pitch;
+import static com.lzx.musiclibrary.constans.Constans.play_back_speed;
+
 /**
  * 运行在Remote端
  * <p>
@@ -240,6 +243,16 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
         return mPlaybackManager.getAudioSessionId();
     }
 
+
+    public float getPlaybackSpeed()   {
+        return mPlayback.getPlaybackSpeed();
+    }
+
+
+    public float getPlaybackPitch()   {
+        return mPlayback.getPlaybackPitch();
+    }
+
     void pausePlayInMillis(long time) {
         mTimerTaskManager.cancelCountDownTask();
         if (time != -1) {
@@ -270,6 +283,8 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     }
 
     void setPlaybackParameters(float speed, float pitch) {
+        SPUtils.put(mMusicService.getApplicationContext(), play_back_speed, speed);
+        SPUtils.put(mMusicService.getApplicationContext(), play_back_pitch, pitch);
         mPlayback.setPlaybackParameters(speed, pitch);
     }
 

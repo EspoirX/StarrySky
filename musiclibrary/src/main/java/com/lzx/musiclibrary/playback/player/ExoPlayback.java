@@ -44,12 +44,16 @@ import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.cache.CacheUtils;
+import com.lzx.musiclibrary.constans.Constans;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
 import com.lzx.musiclibrary.utils.BaseUtil;
+import com.lzx.musiclibrary.utils.SPUtils;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
+import static com.lzx.musiclibrary.constans.Constans.play_back_pitch;
+import static com.lzx.musiclibrary.constans.Constans.play_back_speed;
 import static com.lzx.musiclibrary.manager.FocusAndLockManager.AUDIO_NO_FOCUS_CAN_DUCK;
 import static com.lzx.musiclibrary.manager.FocusAndLockManager.AUDIO_NO_FOCUS_NO_DUCK;
 import static com.lzx.musiclibrary.manager.FocusAndLockManager.VOLUME_DUCK;
@@ -262,6 +266,8 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                 mExoPlayer = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(mContext),
                         new DefaultTrackSelector(), new DefaultLoadControl());
                 mExoPlayer.addListener(mEventListener);
+
+                changePlaybackParameters();
             }
 
             final AudioAttributes audioAttributes = new AudioAttributes.Builder()
@@ -275,6 +281,16 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             mFocusAndLockManager.acquireWifiLock();
         }
         configurePlayerState();
+    }
+
+    private void changePlaybackParameters() {
+        float spSpeed = (float) SPUtils.get(mContext, play_back_speed, 1f);
+        float spPitch = (float) SPUtils.get(mContext, play_back_pitch, 1f);
+        float currSpeed = mExoPlayer.getPlaybackParameters().speed;
+        float currPitch = mExoPlayer.getPlaybackParameters().pitch;
+        if (spSpeed != currSpeed || spPitch != currPitch) {
+            setPlaybackParameters(spSpeed, spPitch);
+        }
     }
 
     /**
@@ -302,7 +318,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                         .createMediaSource(uri, handler, listener);
             case C.TYPE_OTHER:
                 boolean isRtmpSource = uri.toString().toLowerCase().startsWith("rtmp://");
-                return new ExtractorMediaSource.Factory(isRtmpSource ? rtmpDataSourceFactory :mediaDataSourceFactory)
+                return new ExtractorMediaSource.Factory(isRtmpSource ? rtmpDataSourceFactory : mediaDataSourceFactory)
                         .createMediaSource(uri, handler, listener);
             default: {
                 throw new IllegalStateException("Unsupported type: " + type);
@@ -331,7 +347,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             TransferListener<? super DataSource> listener) {
         return new DefaultHttpDataSourceFactory(userAgent, listener);
     }
-
 
     @Override
     public void pause() {
@@ -396,6 +411,24 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             return mExoPlayer.getAudioSessionId();
         }
         return 0;
+    }
+
+    @Override
+    public float getPlaybackSpeed() {
+        if (mExoPlayer != null) {
+            return mExoPlayer.getPlaybackParameters().speed;
+        } else {
+            return (float) SPUtils.get(mContext, play_back_speed, 1f);
+        }
+    }
+
+    @Override
+    public float getPlaybackPitch() {
+        if (mExoPlayer != null) {
+            return mExoPlayer.getPlaybackParameters().pitch;
+        } else {
+            return (float) SPUtils.get(mContext, play_back_pitch, 1f);
+        }
     }
 
     @Override

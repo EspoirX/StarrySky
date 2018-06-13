@@ -28,6 +28,7 @@ public interface IPlayControl extends android.os.IInterface {
         /**
          * Cast an IBinder object into an IPlayControl interface,
          * generating a proxy if needed.
+         *
          * @param obj
          * @return IPlayControl
          */
@@ -402,6 +403,20 @@ public interface IPlayControl extends android.os.IInterface {
                     reply.writeInt(_result);
                     return true;
                 }
+                case TRANSACTION_getPlaybackSpeed: {
+                    data.enforceInterface(DESCRIPTOR);
+                    float _result = this.getPlaybackSpeed();
+                    reply.writeNoException();
+                    reply.writeFloat(_result);
+                    return true;
+                }
+                case TRANSACTION_getPlaybackPitch:{
+                    data.enforceInterface(DESCRIPTOR);
+                    float _result = this.getPlaybackPitch();
+                    reply.writeNoException();
+                    reply.writeFloat(_result);
+                    return true;
+                }
             }
             return super.onTransact(code, data, reply, flags);
         }
@@ -424,6 +439,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 播放，并设置播放列表
+             *
              * @param list
              * @param index
              * @param isJustPlay
@@ -447,6 +463,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 根据音乐信息播放
+             *
              * @param info
              * @param isJustPlay
              */
@@ -473,6 +490,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 根据索引播放
+             *
              * @param index
              * @param isJustPlay
              */
@@ -494,6 +512,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置定时时间
+             *
              * @param time
              */
             @Override
@@ -513,6 +532,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 得到当前播放索引
+             *
              * @return index
              */
             @Override
@@ -585,6 +605,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置播放列表
+             *
              * @param list
              */
             @Override
@@ -604,6 +625,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置播放列表
+             *
              * @param list
              * @param index
              */
@@ -625,6 +647,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 得到播放列表
+             *
              * @return list
              */
             @Override
@@ -646,6 +669,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 从播放列表中删除一条信息
+             *
              * @param info
              * @param isNeedToPlayNext
              */
@@ -672,6 +696,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 获取播放状态
+             *
              * @return int
              */
             @Override
@@ -693,6 +718,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 获取音频时长
+             *
              * @return int
              */
             @Override
@@ -748,6 +774,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 是否有上一首
+             *
              * @return boolean
              */
             @Override
@@ -769,6 +796,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 是否有下一首
+             *
              * @return boolean
              */
             @Override
@@ -790,6 +818,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 得到上一首信息
+             *
              * @return info
              */
             @Override
@@ -815,6 +844,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 得到下一首信息
+             *
              * @return info
              */
             @Override
@@ -840,6 +870,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 得到当前播放信息
+             *
              * @return info
              */
             @Override
@@ -865,6 +896,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置当前音乐信息
+             *
              * @param index
              */
             @Override
@@ -884,6 +916,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置播放模式
+             *
              * @param mode
              */
             @Override
@@ -903,6 +936,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 获取播放模式
+             *
              * @return int
              */
             @Override
@@ -924,6 +958,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 获取当前进度
+             *
              * @return long
              */
             @Override
@@ -945,6 +980,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 定位到指定位置
+             *
              * @param position
              */
             @Override
@@ -981,6 +1017,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 是否开启边播边存
+             *
              * @param isOpen
              */
             @Override
@@ -1017,6 +1054,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 变速
+             *
              * @param speed
              * @param pitch
              */
@@ -1055,6 +1093,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 设置音量
+             *
              * @param audioVolume
              */
             @Override
@@ -1074,6 +1113,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 更新通知栏
+             *
              * @param creater
              */
             @Override
@@ -1098,6 +1138,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 更新通知栏喜欢/收藏按钮选中状态
+             *
              * @param isFavorite
              */
             @Override
@@ -1117,6 +1158,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 更新通知栏桌面歌词按钮选中状态
+             *
              * @param isChecked
              */
             @Override
@@ -1136,6 +1178,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 更新通知栏ContentIntent
+             *
              * @param bundle
              * @param targetClass
              */
@@ -1162,6 +1205,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 注册一个播放状态监听器
+             *
              * @param listener
              */
             @Override
@@ -1181,6 +1225,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 解注册一个播放状态监听器
+             *
              * @param listener
              */
             @Override
@@ -1200,6 +1245,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 注册一个定时播放监听器
+             *
              * @param listener
              */
             @Override
@@ -1219,6 +1265,7 @@ public interface IPlayControl extends android.os.IInterface {
 
             /**
              * 解注册一个定时播放监听器
+             *
              * @param listener
              */
             @Override
@@ -1246,6 +1293,40 @@ public interface IPlayControl extends android.os.IInterface {
                     mRemote.transact(Stub.TRANSACTION_getAudioSessionId, _data, _reply, 0);
                     _reply.readException();
                     _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+            }
+
+            @Override
+            public float getPlaybackSpeed() throws RemoteException {
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                float _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_getPlaybackSpeed, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readFloat();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+            }
+
+            @Override
+            public float getPlaybackPitch() throws RemoteException {
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                float _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_getPlaybackPitch, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readFloat();
                 } finally {
                     _reply.recycle();
                     _data.recycle();
@@ -1295,6 +1376,8 @@ public interface IPlayControl extends android.os.IInterface {
         static final int TRANSACTION_registerTimerTaskListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 38);
         static final int TRANSACTION_unregisterTimerTaskListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + 39);
         static final int TRANSACTION_getAudioSessionId = (android.os.IBinder.FIRST_CALL_TRANSACTION + 40);
+        static final int TRANSACTION_getPlaybackSpeed = (android.os.IBinder.FIRST_CALL_TRANSACTION + 41);
+        static final int TRANSACTION_getPlaybackPitch = (android.os.IBinder.FIRST_CALL_TRANSACTION + 42);
     }
 
     //播放，并设置播放列表
@@ -1417,4 +1500,10 @@ public interface IPlayControl extends android.os.IInterface {
 
     //获取音频SessionId
     int getAudioSessionId() throws android.os.RemoteException;
+
+    //获取播放速度
+    float getPlaybackSpeed() throws android.os.RemoteException;
+
+    //获取播放音调
+    float getPlaybackPitch() throws android.os.RemoteException;
 }
