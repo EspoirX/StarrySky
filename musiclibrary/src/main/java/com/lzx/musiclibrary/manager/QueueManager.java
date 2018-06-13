@@ -291,10 +291,9 @@ public class QueueManager {
             case PlayMode.PLAY_IN_SINGLE_LOOP:
                 info = getCurrentMusic();
                 break;
-            //随机播放
-            case PlayMode.PLAY_IN_RANDOM:
-                //列表循环
-            case PlayMode.PLAY_IN_LIST_LOOP:
+            case PlayMode.PLAY_IN_RANDOM:     //随机播放
+            case PlayMode.PLAY_IN_FLASHBACK:  //倒叙播放
+            case PlayMode.PLAY_IN_LIST_LOOP:  //列表循环
                 info = songInfo == null ? getCurrentMusic() : songInfo;
                 break;
             //顺序播放

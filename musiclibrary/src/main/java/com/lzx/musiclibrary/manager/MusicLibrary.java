@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v4.content.ContextCompat;
 
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.source.IPlayControl;
@@ -125,11 +126,7 @@ public class MusicLibrary {
         intent.putExtra("notificationCreater", mNotificationCreater);
         intent.putExtra("cacheConfig", mCacheConfig);
         if (isStartService) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                mContext.startForegroundService(intent);
-            } else {
-                mContext.startService(intent);
-            }
+            ContextCompat.startForegroundService(mContext, intent);
         }
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }

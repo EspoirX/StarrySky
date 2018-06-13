@@ -146,7 +146,8 @@ public class PlaybackManager implements Playback.Callback {
             mServiceCallback.onPlaybackCompletion();
         }
         if (isAutoPlayNext) {
-            playNextOrPre(1);
+            int playModel = mPlayMode.getCurrPlayMode(mQueueManager.getContext());
+            playNextOrPre(playModel == PlayMode.PLAY_IN_FLASHBACK ? -1 : 1, playModel);
         }
     }
 
@@ -156,7 +157,12 @@ public class PlaybackManager implements Playback.Callback {
      * @param amount 负数为上一首，正数为下一首
      */
     public void playNextOrPre(int amount) {
-        switch (mPlayMode.getCurrPlayMode(mQueueManager.getContext())) {
+        int playModel = mPlayMode.getCurrPlayMode(mQueueManager.getContext());
+        playNextOrPre(amount, playModel);
+    }
+
+    public void playNextOrPre(int amount, int playModel) {
+        switch (playModel) {
             //单曲循环
             case PlayMode.PLAY_IN_SINGLE_LOOP:
                 if (mQueueManager.skipQueuePosition(0)) {
@@ -167,10 +173,9 @@ public class PlaybackManager implements Playback.Callback {
                     handleStopRequest(null);
                 }
                 break;
-            //随机播放
-            case PlayMode.PLAY_IN_RANDOM:
-                //列表循环
-            case PlayMode.PLAY_IN_LIST_LOOP:
+            case PlayMode.PLAY_IN_RANDOM:     //随机播放
+            case PlayMode.PLAY_IN_FLASHBACK:  //倒叙播放
+            case PlayMode.PLAY_IN_LIST_LOOP:  //列表循环
                 if (mQueueManager.getCurrentQueueSize() == 1) {
                     handleStopRequest(null);
                 }
@@ -188,10 +193,7 @@ public class PlaybackManager implements Playback.Callback {
                     handleStopRequest(null);
                 }
                 break;
-            //倒叙播放
-            case PlayMode.PLAY_IN_FLASHBACK:
 
-                break;
             default:
                 handleStopRequest(null);
                 break;

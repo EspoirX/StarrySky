@@ -1,12 +1,15 @@
 package com.lzx.musiclibrary;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 
 import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.control.PlayControl;
@@ -28,6 +31,10 @@ public class MusicService extends Service {
     public void onCreate() {
         super.onCreate();
         mService = this;
+        if (Build.VERSION.SDK_INT >= 26) {
+            int NOTIFICATION_ID = (int) (System.currentTimeMillis() % 10000);
+            startForeground(NOTIFICATION_ID, new Notification.Builder(this).build());
+        }
     }
 
     @Nullable
