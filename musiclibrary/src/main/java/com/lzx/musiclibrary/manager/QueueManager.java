@@ -209,8 +209,13 @@ public class QueueManager {
         } else {
             int index = mCurrentIndex + amount;
             if (index < 0) {
-                // 在第一首歌曲之前向后跳，让你在第一首歌曲上
-                index = 0;
+                // 在第一首歌曲是上一首，让你在第一首歌曲上
+                int playModel = mPlayMode.getCurrPlayMode(mContext);
+                if (playModel == PlayMode.PLAY_IN_FLASHBACK || playModel == PlayMode.PLAY_IN_LIST_LOOP) { //如果是倒序或者列表循环，则回去最后一首
+                    index = mPlayingQueue.size() - 1;
+                } else {
+                    index = 0;
+                }
             } else {
                 //当在最后一首歌时点下一首将返回第一首个
                 index %= mPlayingQueue.size();
@@ -269,6 +274,7 @@ public class QueueManager {
 
     /**
      * 得到上一首音乐信息
+     *
      * @return SongInfo
      */
     public SongInfo getPreMusicInfo() {
@@ -277,6 +283,7 @@ public class QueueManager {
 
     /**
      * 得到下一首音乐信息
+     *
      * @return SongInfo
      */
     public SongInfo getNextMusicInfo() {
