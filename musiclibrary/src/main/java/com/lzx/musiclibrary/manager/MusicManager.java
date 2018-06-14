@@ -165,7 +165,7 @@ public class MusicManager implements IPlayControl {
         }
 
         @Override
-        public void onAsyncLoading(boolean isFinishLoading) throws RemoteException {
+        public void onAsyncLoading(boolean isFinishLoading) {
             mClientHandler.obtainMessage(MSG_BUFFERING, isFinishLoading).sendToTarget();
         }
     };
