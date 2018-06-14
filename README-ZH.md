@@ -49,7 +49,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.7'
+    implementation 'com.lzx:MusicLibrary:1.3.8'
 }
 ```
 
@@ -67,7 +67,7 @@ public class NiceMusicApplication extends Application {
 
     @Override
     public void onCreate() {
-        if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
+        if (BaseUtil.getCurProcessName(this).equals("your package name")) {
             MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
                               .build();
             musicLibrary.init();
@@ -76,9 +76,9 @@ public class NiceMusicApplication extends Application {
 }
 ```
 
-**说明**
-1. 因为音乐服务是运行在 musicLibrary 进程里面的，多进程的情况下，Application 会创建多次，所以需要加上以上判断，在非 musicLibrary 进程里面初始化。
-如果你的项目中包含两个以上的进程，则判断方式需要改改，改成在你的主进程下初始化即可。
+**初始化说明**
+1. 因为音乐服务是运行在 musicLibrary 进程里面的，多进程的情况下，Application 会创建多次，所以在初始化的时候需要加上以上的判断，
+在你的主进程下初始化。
 2. 初始化的时候还有一些参数可以配置：
 
 - setAutoPlayNext(boolean autoPlayNext) 是否在播放完当前歌曲后自动播放下一首
@@ -87,6 +87,10 @@ public class NiceMusicApplication extends Application {
 - setCacheConfig(cacheConfig) 边播边存配置
 - giveUpAudioFocusManager() 放弃音频焦点管理，放弃后，多个音频一起会混播
 
+
+**其他说明**
+如果你是使用 System.exit(0); 方法来退出 APP 的，那么可能需要再调用 ActivityManager#killBackgroundProcesses 方法来
+杀掉音频进程，不然可能会报一个崩溃，所以尽量别这么干吧。
 
 3. 简单应用 (播放一首音乐):
 

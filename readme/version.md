@@ -1,5 +1,14 @@
 ### 版本更新记录
 
+#### v1.3.8
+- 修复在还没创建播放器实例的情况下调用变速功能无效的 Bug
+- 修复8.0系统中调用 startForegroundService 方法启动服务，在一定时间内不调用 startForeground 就会报 ANR 的 Bug
+- 添加倒序播放播放模式 PlayMode.PLAY_IN_FLASHBACK 设置后当前音频播完后会往上一首播
+- 添加获取当前播放速度 API getPlaybackSpeed()
+- 添加获取当前播放音调 API getPlaybackPitch()
+- 添加了初始化判断，如果初始化过就不会再初始化
+
+
 #### v1.3.7
 - 修复列表循环情况下只有一首歌的时候播完不会继续播的 Bug
 - 修复 8.0 系统启动服务的问题

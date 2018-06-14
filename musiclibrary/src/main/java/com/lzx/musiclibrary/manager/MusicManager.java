@@ -1,5 +1,6 @@
 package com.lzx.musiclibrary.manager;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;

@@ -51,7 +51,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.7'
+    implementation 'com.lzx:MusicLibrary:1.3.8'
 }
 ```
 
@@ -69,18 +69,17 @@ public class NiceMusicApplication extends Application {
 
     @Override
     public void onCreate() {
-        if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
-             MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
-                               .build();
-             musicLibrary.init();
+        if (BaseUtil.getCurProcessName(this).equals("your package name")) {
+            MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
+                              .build();
+            musicLibrary.init();
         }
     }
 }
 ```
 
 **note**
-1. Because the music service is running in the musicLibrary process, in the multi-process case, Application will create multiple times,Therefore, you need to add the above judgment to initialize in the non-musicLibrary process.
-If your project contains more than two processes, the judgment mode needs to be changed and changed to be initialized under your main process.
+1. Because the music service is running in the musicLibrary process, in the multi-process case, Application will create multiple times, so you need to add the above judgment in the initialization, initialized in your main process.
 2. There are some parameters that can be configured during initialization:
 
 - setAutoPlayNext(boolean autoPlayNext) Whether to play the next song automatically after playing the current song
@@ -89,6 +88,9 @@ If your project contains more than two processes, the judgment mode needs to be 
 - setCacheConfig(cacheConfig) Cache when playing configuration
 - giveUpAudioFocusManager() Give up audio focus management, after give up, multiple audio will be mixed together
 
+**other instructions**
+If you use the System.exit(0); method to exit the APP, you may need to call the ActivityManager#killBackgroundProcesses method again.
+Kill the audio process, otherwise it may report a crash, so try not to do it.
 
 3. Simple to use (play a song):
 
