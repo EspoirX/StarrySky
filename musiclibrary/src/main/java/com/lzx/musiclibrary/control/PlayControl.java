@@ -11,7 +11,6 @@ import com.lzx.musiclibrary.aidl.source.IOnPlayerEventListener;
 import com.lzx.musiclibrary.aidl.source.IOnTimerTaskListener;
 import com.lzx.musiclibrary.aidl.source.IPlayControl;
 import com.lzx.musiclibrary.cache.CacheConfig;
-import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.helper.QueueHelper;
 import com.lzx.musiclibrary.notification.NotificationCreater;
@@ -126,10 +125,10 @@ public class PlayControl extends IPlayControl.Stub {
                                     listener.onPlayCompletion();
                                     break;
                                 case State.STATE_ASYNC_LOADING:
-                                    listener.onAsyncLoading(true);
+                                    listener.onAsyncLoading(false);
                                     break;
                                 case State.STATE_PLAYING:
-                                    listener.onAsyncLoading(false);
+                                    listener.onAsyncLoading(true);
                                     listener.onPlayerStart();
                                     break;
                                 case State.STATE_PAUSED:

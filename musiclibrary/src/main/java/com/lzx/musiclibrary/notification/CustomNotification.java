@@ -473,7 +473,7 @@ public class CustomNotification implements IMediaNotification {
     private void updateRemoteViewUI(Notification notification, int smallIconRes) {
         boolean isDark = NotificationColorUtils.isDarkNotificationBar(mService, notification);
         String artistName;
-        if (!TextUtils.isEmpty(mSongInfo.getAlbumInfo().getAlbumName())) {
+        if (mSongInfo.getAlbumInfo() != null && !TextUtils.isEmpty(mSongInfo.getAlbumInfo().getAlbumName())) {
             artistName = mSongInfo.getArtist() + " - " + mSongInfo.getAlbumInfo().getAlbumName();
         } else {
             artistName = mSongInfo.getArtist();
