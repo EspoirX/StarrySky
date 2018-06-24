@@ -38,7 +38,7 @@ public class PlayControl extends IPlayControl.Stub {
     private NotifyContract.NotifyStatusChanged mNotifyStatusChanged;
     private NotifyContract.NotifyMusicSwitch mNotifyMusicSwitch;
     private NotifyContract.NotifyTimerTask mNotifyTimerTask;
-
+    private boolean isAsyncLoading = false;
 
     private PlayControl(Builder builder) {
         mService = builder.mMusicService;
@@ -125,13 +125,19 @@ public class PlayControl extends IPlayControl.Stub {
                                     listener.onPlayCompletion();
                                     break;
                                 case State.STATE_ASYNC_LOADING:
+                                    isAsyncLoading = true;
                                     listener.onAsyncLoading(false);
                                     break;
                                 case State.STATE_PLAYING:
+                                    isAsyncLoading = false;
                                     listener.onAsyncLoading(true);
                                     listener.onPlayerStart();
                                     break;
                                 case State.STATE_PAUSED:
+                                    if (isAsyncLoading) {
+                                        listener.onAsyncLoading(true);
+                                        isAsyncLoading = false;
+                                    }
                                     listener.onPlayerPause();
                                     break;
                                 case State.STATE_ENDED:

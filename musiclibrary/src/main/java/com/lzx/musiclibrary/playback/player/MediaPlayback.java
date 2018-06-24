@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
-import android.media.audiofx.Visualizer;
 import android.os.Build;
 import android.text.TextUtils;
 
@@ -19,6 +18,7 @@ import com.lzx.musiclibrary.cache.CacheUtils;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
 import com.lzx.musiclibrary.utils.BaseUtil;
+import com.lzx.musiclibrary.utils.LogUtil;
 import com.lzx.musiclibrary.utils.SPUtils;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class MediaPlayback implements Playback,
         FocusAndLockManager.AudioFocusChangeListener,
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnCompletionListener,
-        MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
+        MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnSeekCompleteListener {
 
     private boolean isOpenCacheWhenPlaying = false;
     private boolean mPlayOnFocusGain;
@@ -237,6 +237,7 @@ public class MediaPlayback implements Playback,
                 //当播放中发生错误的时候回调
                 mMediaPlayer.setOnErrorListener(this);
                 mMediaPlayer.setOnBufferingUpdateListener(this);
+                mMediaPlayer.setOnSeekCompleteListener(this);
 
                 changePlaybackParameters();
             }
@@ -408,5 +409,11 @@ public class MediaPlayback implements Playback,
         } else {
             currbufferedPosition = percent * getDuration();
         }
+    }
+
+    @Override
+    public void onSeekComplete(MediaPlayer mediaPlayer) {
+       //TODO
+        LogUtil.i("-------------------onSeekComplete------------------");
     }
 }

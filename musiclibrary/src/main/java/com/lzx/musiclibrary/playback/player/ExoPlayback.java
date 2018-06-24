@@ -44,7 +44,6 @@ import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.cache.CacheUtils;
-import com.lzx.musiclibrary.constans.Constans;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
 import com.lzx.musiclibrary.utils.BaseUtil;
@@ -266,7 +265,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                 mExoPlayer = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(mContext),
                         new DefaultTrackSelector(), new DefaultLoadControl());
                 mExoPlayer.addListener(mEventListener);
-
                 changePlaybackParameters();
             }
 
