@@ -200,6 +200,24 @@ public class PlayControl extends IPlayControl.Stub {
                 mOnTimerTaskListenerList.finishBroadcast();
             }
         }
+
+        @Override
+        public void onTimerTick(long millisUntilFinished, long totalTime) {
+            synchronized (PlayControl.class) {
+                final int N = mOnTimerTaskListenerList.beginBroadcast();
+                for (int i = 0; i < N; i++) {
+                    IOnTimerTaskListener listener = mOnTimerTaskListenerList.getBroadcastItem(i);
+                    if (listener != null) {
+                        try {
+                            listener.onTimerTick(millisUntilFinished, totalTime);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                mOnTimerTaskListenerList.finishBroadcast();
+            }
+        }
     }
 
     public Playback getPlayback() {

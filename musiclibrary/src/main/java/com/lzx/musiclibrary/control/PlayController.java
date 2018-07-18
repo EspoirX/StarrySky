@@ -244,16 +244,16 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
     }
 
 
-    public float getPlaybackSpeed()   {
+    public float getPlaybackSpeed() {
         return mPlayback.getPlaybackSpeed();
     }
 
 
-    public float getPlaybackPitch()   {
+    public float getPlaybackPitch() {
         return mPlayback.getPlaybackPitch();
     }
 
-    void pausePlayInMillis(long time) {
+    void pausePlayInMillis(final long time) {
         mTimerTaskManager.cancelCountDownTask();
         if (time != -1) {
             mTimerTaskManager.starCountDownTask(time, new TimerTaskManager.OnCountDownFinishListener() {
@@ -267,7 +267,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
 
                 @Override
                 public void onTick(long millisUntilFinished) {
-
+                    mNotifyTimerTask.onTimerTick(millisUntilFinished, time);
                 }
             });
         }

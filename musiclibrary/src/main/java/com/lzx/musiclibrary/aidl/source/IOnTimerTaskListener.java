@@ -5,6 +5,8 @@
 package com.lzx.musiclibrary.aidl.source;
 // Declare any non-default types here with import statements
 
+import android.os.RemoteException;
+
 public interface IOnTimerTaskListener extends android.os.IInterface {
     /**
      * Local-side IPC implementation stub class.
@@ -22,6 +24,7 @@ public interface IOnTimerTaskListener extends android.os.IInterface {
         /**
          * Cast an IBinder object into an IOnTimerTaskListener interface,
          * generating a proxy if needed.
+         *
          * @param obj
          * @return IOnTimerTaskListener
          */
@@ -51,6 +54,14 @@ public interface IOnTimerTaskListener extends android.os.IInterface {
                 case TRANSACTION_onTimerFinish: {
                     data.enforceInterface(DESCRIPTOR);
                     this.onTimerFinish();
+                    reply.writeNoException();
+                    return true;
+                }
+                case TRANSACTION_onTimerTick: {
+                    data.enforceInterface(DESCRIPTOR);
+                    long _arg0 = data.readLong();
+                    long _arg1 = data.readLong();
+                    this.onTimerTick(_arg0, _arg1);
                     reply.writeNoException();
                     return true;
                 }
@@ -87,10 +98,29 @@ public interface IOnTimerTaskListener extends android.os.IInterface {
                     _data.recycle();
                 }
             }
+
+            @Override
+            public void onTimerTick(long millisUntilFinished, long totalTime) throws RemoteException {
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeLong(millisUntilFinished);
+                    _data.writeLong(totalTime);
+                    mRemote.transact(Stub.TRANSACTION_onTimerTick, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+            }
         }
 
         static final int TRANSACTION_onTimerFinish = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
+        static final int TRANSACTION_onTimerTick = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
     }
 
-    public void onTimerFinish() throws android.os.RemoteException;
+    void onTimerFinish() throws android.os.RemoteException;
+
+    void onTimerTick(long millisUntilFinished, long totalTime) throws android.os.RemoteException;
 }

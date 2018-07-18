@@ -24,5 +24,7 @@ public interface NotifyContract {
 
     interface NotifyTimerTask {
         void notifyTimerTasFinish();
+
+        void onTimerTick(long millisUntilFinished, long totalTime);
     }
 }

@@ -1,9 +1,6 @@
 package com.lzx.musiclibrary.manager;
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +11,6 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 
 import com.danikula.videocache.ProxyCacheUtils;
-import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.listener.OnPlayerEventListener;
 import com.lzx.musiclibrary.aidl.listener.OnTimerTaskListener;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
@@ -49,7 +45,8 @@ public class MusicManager implements IPlayControl {
     public static final int MSG_PLAYER_ERROR = 4;
     public static final int MSG_BUFFERING = 5;
     public static final int MSG_TIMER_FINISH = 6;
-    public static final int MSG_PLAYER_STOP = 7;
+    public static final int MSG_TIMER_TICK = 7;
+    public static final int MSG_PLAYER_STOP = 8;
 
     private Context mContext;
     private boolean isOpenCacheWhenPlaying = false;
@@ -176,6 +173,17 @@ public class MusicManager implements IPlayControl {
         public void onTimerFinish() {
             mClientHandler.obtainMessage(MSG_TIMER_FINISH).sendToTarget();
         }
+
+        @Override
+        public void onTimerTick(long millisUntilFinished, long totalTime) {
+            Bundle bundle = new Bundle();
+            bundle.putLong("millisUntilFinished", millisUntilFinished);
+            bundle.putLong("totalTime", totalTime);
+            Message message = Message.obtain();
+            message.setData(bundle);
+            message.what = MSG_TIMER_TICK;
+            mClientHandler.sendMessage(message);
+        }
     };
 
     private static class ClientHandler extends Handler {
@@ -218,7 +226,13 @@ public class MusicManager implements IPlayControl {
                     manager.mStateObservable.stateChangeNotifyObservers(MSG_BUFFERING);
                     break;
                 case MSG_TIMER_FINISH:
-                    manager.notifyTimerTaskEventChange(MSG_TIMER_FINISH);
+                    manager.notifyTimerTaskEventChange(MSG_TIMER_FINISH, -1, -1);
+                    break;
+                case MSG_TIMER_TICK:
+                    Bundle bundle = msg.getData();
+                    long millisUntilFinished = bundle.getLong("millisUntilFinished");
+                    long totalTime = bundle.getLong("totalTime");
+                    manager.notifyTimerTaskEventChange(MSG_TIMER_TICK, millisUntilFinished, totalTime);
                     break;
                 case MSG_PLAYER_STOP:
                     manager.notifyPlayerEventChange(MSG_PLAYER_STOP, null, null, false);
@@ -299,10 +313,12 @@ public class MusicManager implements IPlayControl {
         }
     }
 
-    private void notifyTimerTaskEventChange(int msg) {
+    private void notifyTimerTaskEventChange(int msg, long millisUntilFinished, long totalTime) {
         for (OnTimerTaskListener listener : mOnTimerTaskListeners) {
             if (msg == MSG_TIMER_FINISH) {
                 listener.onTimerFinish();
+            } else if (msg == MSG_TIMER_TICK) {
+                listener.onTimerTick(millisUntilFinished, totalTime);
             }
         }
     }

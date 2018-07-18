@@ -7,4 +7,6 @@ package com.lzx.musiclibrary.aidl.listener;
 
 public interface OnTimerTaskListener {
     void onTimerFinish();
+
+    void onTimerTick(long millisUntilFinished,long totalTime);
 }
