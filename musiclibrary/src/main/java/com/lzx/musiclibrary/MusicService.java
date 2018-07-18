@@ -7,9 +7,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteException;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 
 import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.control.PlayControl;
@@ -78,8 +76,10 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mBinder.stopMusic();
-        mBinder.releaseMediaSession();
+        if (mBinder != null) {
+            mBinder.stopMusic();
+            mBinder.releaseMediaSession();
+        }
     }
 
     private static class DelayedStopHandler extends Handler {

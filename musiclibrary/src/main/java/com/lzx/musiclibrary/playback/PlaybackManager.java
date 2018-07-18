@@ -58,15 +58,13 @@ public class PlaybackManager implements Playback.Callback {
      */
     public void handlePlayRequest() {
         SongInfo currentMusic = mQueueManager.getCurrentMusic();
-        if (currentMusic != null) {
-
+        if (currentMusic != null && mPlayback.getState() != State.STATE_ASYNC_LOADING) {
             String mediaId = currentMusic.getSongId();
             boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
             if (mediaHasChanged) {
                 mCurrentMediaId = mediaId;
                 notifyPlaybackSwitch(currentMusic);
             }
-
             //播放
             mPlayback.play(currentMusic);
             //更新媒体信息
