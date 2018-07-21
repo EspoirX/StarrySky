@@ -25,7 +25,7 @@
  | seekTo(int position) | 定位到指定位置<br>参数：<br>position 具体的位置 |
  | setPlayMode(int mode) | 设置播放模式<br>参数：<br> mode 播放模式，取值为`PlayMode`中的下列之一:<br>PlayMode.PLAY_IN_SINGLE_LOOP 单曲循环<br>PlayMode.PLAY_IN_RANDOM 随机播放<br>PlayMode.PLAY_IN_LIST_LOOP 列表循环<br>PlayMode.PLAY_IN_ORDER 顺序播放<br>PlayMode.PLAY_IN_FLASHBACK 倒序播放 |
  | getPlayMode() | 得到播放模式，默认是列表循环 |
- | getStatus() | 得到播放状态 ，返回值为`State`中的下列之一: <br>State.STATE_IDLE 空闲<br>State.STATE_BUFFERING 正在缓冲<br>State.STATE_PLAYING 正在播放<br>State.STATE_PAUSED 暂停<br>State.STATE_ENDED 播放结束<br>State.STATE_ERROR 播放出错|
+ | getStatus() | 得到播放状态 ，返回值为`State`中的下列之一: <br>State.STATE_IDLE 空闲<br>State.STATE_ASYNC_LOADING 正在缓冲<br>State.STATE_PLAYING 正在播放<br>State.STATE_PAUSED 暂停<br>State.STATE_ENDED 播放结束<br>State.STATE_ERROR 播放出错|
  | getCurrPlayingIndex()|得到当前播放索引|
  | getPreMusic()|得到基于当前播放音乐的上一首音乐信息，返回 `SongInfo`|
  | getNextMusic()|得到基于当前播放音乐的下一首音乐信息，返回 `SongInfo`|

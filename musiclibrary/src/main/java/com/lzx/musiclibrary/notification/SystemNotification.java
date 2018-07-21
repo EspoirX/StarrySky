@@ -122,6 +122,10 @@ public class SystemNotification implements IMediaNotification {
 
     @Override
     public void updateViewStateAtPause() {
+        if (mNotificationCreater != null && mNotificationCreater.isNotificationCanClearBySystemBtn()) {
+            mService.stopForeground(false);
+            mStarted = false;
+        }
         mNotification = createNotification();
         if (mNotification != null) {
             mNotificationManager.notify(NOTIFICATION_ID, mNotification);
@@ -291,14 +295,16 @@ public class SystemNotification implements IMediaNotification {
             mService.stopForeground(true);
             return;
         }
-//        if (mPlaybackManager.getPlayback().getState() == State.STATE_PLAYING && mPlaybackManager.getCurrentPosition() >= 0) {
-//            builder.setWhen(System.currentTimeMillis() - mPlaybackManager.getCurrentPosition())
-//                    .setShowWhen(true)
-//                    .setUsesChronometer(true);
-//        } else {
-//            builder.setWhen(0).setShowWhen(false).setUsesChronometer(false);
-//        }
-
+        //通知栏时间
+        if (mNotificationCreater != null && mNotificationCreater.isSystemNotificationShowTime()) {
+            if (mPlaybackManager.getPlayback().getState() == State.STATE_PLAYING && mPlaybackManager.getCurrentPosition() >= 0) {
+                builder.setWhen(System.currentTimeMillis() - mPlaybackManager.getCurrentPosition())
+                        .setShowWhen(true)
+                        .setUsesChronometer(true);
+            } else {
+                builder.setWhen(0).setShowWhen(false).setUsesChronometer(false);
+            }
+        }
         builder.setOngoing(mPlaybackManager.getPlayback().getState() == State.STATE_PLAYING);
     }
 
