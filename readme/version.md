@@ -1,5 +1,14 @@
 ### 版本更新记录
 
+#### v1.3.9
+- 定时播放添加倒计时进度回调
+- 通知栏 PendingIntent 转跳时添加 getActivity,getService,getBroadcast 选择，在配置的时候通过 setPendingIntentMode 方法
+设置，值在 PendingIntentMode 类中选择
+- 系统通知栏添加是否显示时间开关，在配置的时候通过 setSystemNotificationShowTime 方法设置
+- 系统通知栏跟自定义通知栏一样添加了暂停时可滑动清除功能
+- 在歌曲还在缓冲的时候播放其他歌曲不会有效，修复了Issues#42:快速切换歌曲导致列表选中歌曲与所播放的歌曲不一致 的问题
+
+
 #### v1.3.8
 - 修复在还没创建播放器实例的情况下调用变速功能无效的 Bug
 - 修复8.0系统中调用 startForegroundService 方法启动服务，在一定时间内不调用 startForeground 就会报 ANR 的 Bug

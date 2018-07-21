@@ -51,7 +51,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.3.8'
+    implementation 'com.lzx:MusicLibrary:1.3.9'
 }
 ```
 
