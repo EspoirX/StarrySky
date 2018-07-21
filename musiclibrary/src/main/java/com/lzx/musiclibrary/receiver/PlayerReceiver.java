@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.control.PlayControl;
-import com.lzx.musiclibrary.control.PlayController;
+import com.lzx.musiclibrary.control.PlayControlImpl;
 import com.lzx.musiclibrary.notification.IMediaNotification;
 
 /**
@@ -30,7 +30,7 @@ public class PlayerReceiver extends BroadcastReceiver {
         if (binder == null) {
             return;
         }
-        PlayController controller = binder.getController();
+        PlayControlImpl controller = binder.getController();
         if (controller == null) {
             return;
         }

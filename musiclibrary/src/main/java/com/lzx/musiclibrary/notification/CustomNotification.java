@@ -434,8 +434,23 @@ public class CustomNotification implements IMediaNotification {
         if (bundle != null) {
             openUI.putExtra("bundleInfo", bundle);
         }
+
         @SuppressLint("WrongConstant")
-        PendingIntent pendingIntent = PendingIntent.getActivity(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent;
+        switch (mNotificationCreater.getPendingIntentMode()) {
+            case PendingIntentMode.MODE_ACTIVITY:
+                pendingIntent = PendingIntent.getActivity(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
+                break;
+            case PendingIntentMode.MODE_BROADCAST:
+                pendingIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
+                break;
+            case PendingIntentMode.MODE_SERVICE:
+                pendingIntent = PendingIntent.getService(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
+                break;
+            default:
+                pendingIntent = PendingIntent.getActivity(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
+                break;
+        }
         return pendingIntent;
     }
 

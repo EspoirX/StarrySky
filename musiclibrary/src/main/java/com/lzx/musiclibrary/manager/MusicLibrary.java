@@ -4,17 +4,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.support.v4.content.ContextCompat;
 
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.source.IPlayControl;
 import com.lzx.musiclibrary.cache.CacheConfig;
-import com.lzx.musiclibrary.control.PlayController;
 import com.lzx.musiclibrary.notification.NotificationCreater;
-import com.lzx.musiclibrary.playback.PlayStateObservable;
 
 /**
  * Created by xian on 2018/5/15.

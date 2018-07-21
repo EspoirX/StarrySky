@@ -29,7 +29,7 @@ public class PlayControl extends IPlayControl.Stub {
 
     private MusicService mService;
 
-    private PlayController mController;
+    private PlayControlImpl mController;
     private Playback playback;
 
     private RemoteCallbackList<IOnPlayerEventListener> mRemoteCallbackList;
@@ -54,7 +54,7 @@ public class PlayControl extends IPlayControl.Stub {
                 ? new MediaPlayback(mService.getApplicationContext(), builder.cacheConfig, builder.isGiveUpAudioFocusManager)
                 : new ExoPlayback(mService.getApplicationContext(), builder.cacheConfig, builder.isGiveUpAudioFocusManager);
 
-        mController = new PlayController.Builder(mService)
+        mController = new PlayControlImpl.Builder(mService)
                 .setAutoPlayNext(builder.isAutoPlayNext)
                 .setNotifyMusicSwitch(mNotifyMusicSwitch)
                 .setNotifyStatusChanged(mNotifyStatusChanged)
@@ -64,7 +64,7 @@ public class PlayControl extends IPlayControl.Stub {
                 .build();
     }
 
-    public PlayController getController() {
+    public PlayControlImpl getController() {
         return mController;
     }
 

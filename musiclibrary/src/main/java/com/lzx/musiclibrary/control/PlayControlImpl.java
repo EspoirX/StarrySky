@@ -33,7 +33,7 @@ import static com.lzx.musiclibrary.constans.Constans.play_back_speed;
  * 2018/2/8
  */
 
-public class PlayController implements QueueManager.MetadataUpdateListener, PlaybackManager.PlaybackServiceCallback {
+public class PlayControlImpl implements QueueManager.MetadataUpdateListener, PlaybackManager.PlaybackServiceCallback {
 
     private MusicService mMusicService;
     private QueueManager mQueueManager;
@@ -48,7 +48,7 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
 
     private IMediaNotification mNotification;
 
-    private PlayController(Builder builder) {
+    private PlayControlImpl(Builder builder) {
         this.mMusicService = builder.mMusicService;
         this.mPlayback = builder.mPlayback;
         this.mNotifyStatusChanged = builder.mNotifyStatusChanged;
@@ -120,8 +120,8 @@ public class PlayController implements QueueManager.MetadataUpdateListener, Play
             return this;
         }
 
-        public PlayController build() {
-            return new PlayController(this);
+        public PlayControlImpl build() {
+            return new PlayControlImpl(this);
         }
     }
 

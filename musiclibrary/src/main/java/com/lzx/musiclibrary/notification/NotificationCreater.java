@@ -10,6 +10,7 @@ import android.os.Parcelable;
 
 public class NotificationCreater implements Parcelable {
 
+
     private boolean isCreateSystemNotification;
     private boolean isNotificationCanClearBySystemBtn;
     private String targetClass;
@@ -25,6 +26,7 @@ public class NotificationCreater implements Parcelable {
     private PendingIntent pauseIntent;
     private PendingIntent stopIntent;
     private PendingIntent downloadIntent;
+    private int pendingIntentMode = PendingIntentMode.MODE_ACTIVITY;
 
     private NotificationCreater(Builder builder) {
         this.isCreateSystemNotification = builder.isCreateSystemNotification;
@@ -42,6 +44,7 @@ public class NotificationCreater implements Parcelable {
         this.pauseIntent = builder.pauseIntent;
         this.stopIntent = builder.stopIntent;
         this.downloadIntent = builder.downloadIntent;
+        this.pendingIntentMode = builder.pendingIntentMode;
     }
 
     public static class Builder {
@@ -60,6 +63,7 @@ public class NotificationCreater implements Parcelable {
         private PendingIntent pauseIntent;
         private PendingIntent stopIntent;
         private PendingIntent downloadIntent;
+        private int pendingIntentMode;
 
         public Builder setCreateSystemNotification(boolean createSystemNotification) {
             isCreateSystemNotification = createSystemNotification;
@@ -136,6 +140,11 @@ public class NotificationCreater implements Parcelable {
             return this;
         }
 
+        public Builder setPendingIntentMode(int pendingIntentMode) {
+            this.pendingIntentMode = pendingIntentMode;
+            return this;
+        }
+
         public NotificationCreater build() {
             return new NotificationCreater(this);
         }
@@ -201,6 +210,10 @@ public class NotificationCreater implements Parcelable {
         return downloadIntent;
     }
 
+    public int getPendingIntentMode() {
+        return pendingIntentMode;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -223,6 +236,7 @@ public class NotificationCreater implements Parcelable {
         dest.writeParcelable(this.pauseIntent, flags);
         dest.writeParcelable(this.stopIntent, flags);
         dest.writeParcelable(this.downloadIntent, flags);
+        dest.writeInt(this.pendingIntentMode);
     }
 
     protected NotificationCreater(Parcel in) {
@@ -241,6 +255,7 @@ public class NotificationCreater implements Parcelable {
         this.pauseIntent = in.readParcelable(PendingIntent.class.getClassLoader());
         this.stopIntent = in.readParcelable(PendingIntent.class.getClassLoader());
         this.downloadIntent = in.readParcelable(PendingIntent.class.getClassLoader());
+        this.pendingIntentMode = in.readInt();
     }
 
     public static final Parcelable.Creator<NotificationCreater> CREATOR = new Parcelable.Creator<NotificationCreater>() {
