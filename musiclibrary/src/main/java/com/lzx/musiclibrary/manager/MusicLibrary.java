@@ -18,6 +18,7 @@ import com.lzx.musiclibrary.notification.NotificationCreater;
 
 public class MusicLibrary {
 
+    public static String ACTION_MUSICLIBRARY_INIT_FINISH = "ACTION_MUSICLIBRARY_INIT_FINISH";//服务初始化成功action
     public static boolean isInitLibrary = false;
     private Context mContext;
     private boolean isUseMediaPlayer;
@@ -135,6 +136,8 @@ public class MusicLibrary {
             MusicManager.get().attachServiceConnection(this);
             MusicManager.get().attachMusicLibraryBuilder(mBuilder);
             isInitLibrary = true;
+            //发送一个广播，可通过接受它来知道服务初始化成功
+            mContext.sendBroadcast(new Intent(ACTION_MUSICLIBRARY_INIT_FINISH));
         }
 
         @Override
