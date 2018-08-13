@@ -85,6 +85,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
 
     private HttpProxyCacheServer mProxyCacheServer;
     private HttpProxyCacheServer.Builder builder;
+    private long mErrorProgress = 0;
 
     public ExoPlayback(Context context, CacheConfig cacheConfig, boolean isGiveUpAudioFocusManager) {
         Context applicationContext = context.getApplicationContext();
@@ -460,6 +461,10 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             if (mExoPlayerNullIsStopped) {
                 mExoPlayerNullIsStopped = false;
             }
+            if (mErrorProgress != 0) {
+                seekTo(mErrorProgress);
+                mErrorProgress = 0;
+            }
         }
     }
 
@@ -544,6 +549,8 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
+            mCurrentMediaId = "";
+            mErrorProgress = getCurrentStreamPosition();
             final String what;
             switch (error.type) {
                 case ExoPlaybackException.TYPE_SOURCE:
