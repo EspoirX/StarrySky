@@ -899,6 +899,17 @@ public class MusicManager implements IPlayControl {
     }
 
     @Override
+    public void switchSongQueue(boolean isAudition) {
+        if (control != null) {
+            try {
+                control.switchSongQueue(isAudition);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     public void registerPlayerEventListener(IOnPlayerEventListener listener) {
         //Do nothing
     }

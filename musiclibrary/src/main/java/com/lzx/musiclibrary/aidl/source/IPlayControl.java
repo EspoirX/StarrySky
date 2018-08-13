@@ -410,11 +410,19 @@ public interface IPlayControl extends android.os.IInterface {
                     reply.writeFloat(_result);
                     return true;
                 }
-                case TRANSACTION_getPlaybackPitch:{
+                case TRANSACTION_getPlaybackPitch: {
                     data.enforceInterface(DESCRIPTOR);
                     float _result = this.getPlaybackPitch();
                     reply.writeNoException();
                     reply.writeFloat(_result);
+                    return true;
+                }
+                case TRANSACTION_switchSongQueue:{
+                    data.enforceInterface(DESCRIPTOR);
+                    boolean _arg0;
+                    _arg0 = (0 != data.readInt());
+                    this.switchSongQueue(_arg0);
+                    reply.writeNoException();
                     return true;
                 }
             }
@@ -1333,6 +1341,26 @@ public interface IPlayControl extends android.os.IInterface {
                 }
                 return _result;
             }
+
+            /**
+             * 切换播放列表
+             * @param isAudition 是否是试听
+             * @throws RemoteException
+             */
+            @Override
+            public void switchSongQueue(boolean isAudition) throws RemoteException {
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeInt(((isAudition) ? (1) : (0)));
+                    mRemote.transact(Stub.TRANSACTION_switchSongQueue, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+            }
         }
 
         static final int TRANSACTION_playMusic = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
@@ -1378,6 +1406,7 @@ public interface IPlayControl extends android.os.IInterface {
         static final int TRANSACTION_getAudioSessionId = (android.os.IBinder.FIRST_CALL_TRANSACTION + 40);
         static final int TRANSACTION_getPlaybackSpeed = (android.os.IBinder.FIRST_CALL_TRANSACTION + 41);
         static final int TRANSACTION_getPlaybackPitch = (android.os.IBinder.FIRST_CALL_TRANSACTION + 42);
+        static final int TRANSACTION_switchSongQueue = (android.os.IBinder.FIRST_CALL_TRANSACTION + 43);
     }
 
     //播放，并设置播放列表
@@ -1506,4 +1535,7 @@ public interface IPlayControl extends android.os.IInterface {
 
     //获取播放音调
     float getPlaybackPitch() throws android.os.RemoteException;
+
+    //切换播放列表，是否试听
+    void switchSongQueue(boolean isAudition) throws android.os.RemoteException;
 }

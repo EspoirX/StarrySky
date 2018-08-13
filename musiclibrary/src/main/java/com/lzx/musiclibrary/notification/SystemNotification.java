@@ -160,21 +160,18 @@ public class SystemNotification implements IMediaNotification {
             } else if (!TextUtils.isEmpty(mNotificationCreater.getTargetClass())) {
                 clazz = getTargetClass(mNotificationCreater.getTargetClass());
             }
-            if (clazz == null) {
-                return;
+            if (clazz != null) {
+                contentIntent = createContentIntent(mSongInfo, bundle, clazz);
+                mNotification.contentIntent = contentIntent;
+                mNotificationManager.notify(NOTIFICATION_ID, mNotification);
             }
-            contentIntent = createContentIntent(mSongInfo, bundle, clazz);
-            mNotification.contentIntent = contentIntent;
-            mNotificationManager.notify(NOTIFICATION_ID, mNotification);
         }
     }
 
     private Notification createNotification() {
         if (mNotificationCreater != null && !TextUtils.isEmpty(mNotificationCreater.getTargetClass())) {
             Class clazz = getTargetClass(mNotificationCreater.getTargetClass());
-            if (clazz == null) {
-                return null;
-            }
+
             String fetchArtUrl = null;
             Bitmap art = null;
             if (!TextUtils.isEmpty(mSongInfo.getSongCover())) {
@@ -203,7 +200,9 @@ public class SystemNotification implements IMediaNotification {
                     mService.getString(R.string.label_next),
                     nextIntent);
             //创建contentIntent
-            contentIntent = createContentIntent(mSongInfo, null, clazz);
+            if (clazz != null) {
+                contentIntent = createContentIntent(mSongInfo, null, clazz);
+            }
             //构建Builder
             notificationBuilder
                     .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
@@ -216,11 +215,12 @@ public class SystemNotification implements IMediaNotification {
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setOnlyAlertOnce(true)
                     .setColorized(true)
-                    .setContentIntent(contentIntent)
                     .setContentTitle(contentTitle)
                     .setContentText(contentText)
                     .setLargeIcon(art);
-
+            if (contentIntent != null) {
+                notificationBuilder.setContentIntent(contentIntent);
+            }
             setNotificationPlaybackState(notificationBuilder);
             //异步加载图片
             if (fetchArtUrl != null) {
@@ -283,7 +283,9 @@ public class SystemNotification implements IMediaNotification {
     private Class getTargetClass(String targetClass) {
         Class clazz = null;
         try {
-            clazz = Class.forName(targetClass);
+            if (!TextUtils.isEmpty(targetClass)) {
+                clazz = Class.forName(targetClass);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

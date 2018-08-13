@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NavUtils;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
@@ -135,16 +136,14 @@ public class CustomNotification implements IMediaNotification {
         if (!mStarted) {
             if (mNotificationCreater != null && !TextUtils.isEmpty(mNotificationCreater.getTargetClass())) {
                 Class clazz = getTargetClass(mNotificationCreater.getTargetClass());
-                if (clazz == null) {
-                    return;
-                }
-
                 mRemoteView = createRemoteViews(false);
                 mBigRemoteView = createRemoteViews(true);
                 if (mRemoteView == null) {
                     return;
                 }
-                contentIntent = createContentIntent(mSongInfo, null, clazz);
+                if (clazz != null) {
+                    contentIntent = createContentIntent(mSongInfo, null, clazz);
+                }
                 mNotification = createNotification();
                 if (mNotification != null) {
                     mService.startForeground(NOTIFICATION_ID, mNotification);
@@ -242,12 +241,11 @@ public class CustomNotification implements IMediaNotification {
             } else if (!TextUtils.isEmpty(mNotificationCreater.getTargetClass())) {
                 clazz = getTargetClass(mNotificationCreater.getTargetClass());
             }
-            if (clazz == null) {
-                return;
+            if (clazz != null) {
+                contentIntent = createContentIntent(mSongInfo, bundle, clazz);
+                mNotification.contentIntent = contentIntent;
+                mNotificationManager.notify(NOTIFICATION_ID, mNotification);
             }
-            contentIntent = createContentIntent(mSongInfo, bundle, clazz);
-            mNotification.contentIntent = contentIntent;
-            mNotificationManager.notify(NOTIFICATION_ID, mNotification);
         }
     }
 
@@ -313,7 +311,9 @@ public class CustomNotification implements IMediaNotification {
     private Class getTargetClass(String targetClass) {
         Class clazz = null;
         try {
-            clazz = Class.forName(targetClass);
+            if (!TextUtils.isEmpty(targetClass)) {
+                clazz = Class.forName(targetClass);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -377,9 +377,12 @@ public class CustomNotification implements IMediaNotification {
                 .setSmallIcon(smallIconRes)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOnlyAlertOnce(true)
-                .setContentIntent(contentIntent)
                 .setContentTitle(contentTitle)
                 .setContentText(contentText);
+
+        if (contentIntent != null) {
+            notificationBuilder.setContentIntent(contentIntent);
+        }
 
         if (Build.VERSION.SDK_INT >= 16) {
             notificationBuilder.setPriority(2);

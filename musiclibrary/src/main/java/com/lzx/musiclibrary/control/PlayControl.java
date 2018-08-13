@@ -449,4 +449,9 @@ public class PlayControl extends IPlayControl.Stub {
     public float getPlaybackPitch() {
         return mController.getPlaybackPitch();
     }
+
+    @Override
+    public void switchSongQueue(boolean isAudition)    {
+        mController.switchSongQueue(isAudition);
+    }
 }
