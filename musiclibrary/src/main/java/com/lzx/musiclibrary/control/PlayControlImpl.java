@@ -345,7 +345,7 @@ public class PlayControlImpl implements QueueManager.MetadataUpdateListener, Pla
         if (mNotification != null) {
             if (state == State.STATE_PLAYING) {
                 mNotification.updateViewStateAtStart();
-            } else if (state == State.STATE_PAUSED) {
+            } else {
                 mNotification.updateViewStateAtPause();
             }
         }
