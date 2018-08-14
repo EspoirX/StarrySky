@@ -125,9 +125,9 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         if (releasePlayer && mExoPlayer != null) {
             mExoPlayer.release();
             mExoPlayer.removeListener(mEventListener);
-            mExoPlayer = null;
             mExoPlayerNullIsStopped = true;
             mPlayOnFocusGain = false;
+            mExoPlayer = null;
         }
         mFocusAndLockManager.releaseWifiLock();
     }
@@ -142,7 +142,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         mFocusAndLockManager.giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
-
     }
 
     @Override
@@ -361,7 +360,11 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         if (mExoPlayer != null) {
             registerAudioNoisyReceiver();
             mExoPlayer.seekTo(position);
-
+        }else {
+            if (mCurrentMediaSongInfo!=null){
+                play(mCurrentMediaSongInfo);
+                mExoPlayer.seekTo(position);
+            }
         }
     }
 

@@ -1,6 +1,5 @@
 package com.lzx.musiclibrary;
 
-import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -28,12 +27,12 @@ public class MusicService extends Service {
     private static MusicService mService;
     private NotificationManager mNotificationManager;
 
-    @SuppressLint("WrongConstant")
+
     @Override
     public void onCreate() {
         super.onCreate();
         mService = this;
-        this.mNotificationManager = (NotificationManager) getSystemService("notification");
+        this.mNotificationManager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = new NotificationChannel("com.lzx.musiclibrary", "播放通知栏", 4);
             channel.enableLights(false);
