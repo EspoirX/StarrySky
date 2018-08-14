@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
-import com.lzx.musiclibrary.manager.queue.QueueManager;
+import com.lzx.musiclibrary.manager.QueueManager;
 import com.lzx.musiclibrary.playback.player.Playback;
 
 

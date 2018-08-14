@@ -11,7 +11,7 @@ import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.helper.QueueHelper;
 import com.lzx.musiclibrary.manager.MediaSessionManager;
-import com.lzx.musiclibrary.manager.queue.QueueManager;
+import com.lzx.musiclibrary.manager.QueueManager;
 import com.lzx.musiclibrary.manager.TimerTaskManager;
 import com.lzx.musiclibrary.notification.CustomNotification;
 import com.lzx.musiclibrary.notification.IMediaNotification;
@@ -76,9 +76,6 @@ public class PlayControlImpl implements QueueManager.MetadataUpdateListener, Pla
         }
     }
 
-    public void switchSongQueue(boolean isAudition) {
-        mQueueManager.switchSongQueue(isAudition);
-    }
 
     public static class Builder {
         private MusicService mMusicService;

@@ -1,4 +1,4 @@
-package com.lzx.musiclibrary.manager.queue;
+package com.lzx.musiclibrary.manager;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,21 +13,24 @@ import com.lzx.musiclibrary.utils.AlbumArtCache;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Queue;
 
-public class AuditionSongQueue implements SongQueue {
 
-    private List<SongInfo> mAuditionQueue; //试听列表
+/**
+ * Created by xian on 2018/1/20.
+ */
 
+public class QueueManager {
+
+    private List<SongInfo> mPlayingQueue;
     private int mCurrentIndex;
-    private SongQueue.MetadataUpdateListener mListener;
+    private MetadataUpdateListener mListener;
     private PlayMode mPlayMode;
     private List<SongInfo> mNormalOrderQueue;
     private boolean isPlayRandomModel = false;
     private Context mContext;
 
-    public AuditionSongQueue(Context context, SongQueue.MetadataUpdateListener listener, PlayMode playMode) {
-        mAuditionQueue = Collections.synchronizedList(new ArrayList<SongInfo>());
+    public QueueManager(Context context, MetadataUpdateListener listener, PlayMode playMode) {
+        mPlayingQueue = Collections.synchronizedList(new ArrayList<SongInfo>());
         mNormalOrderQueue = Collections.synchronizedList(new ArrayList<SongInfo>());
         mCurrentIndex = 0;
         mListener = listener;
@@ -35,105 +38,121 @@ public class AuditionSongQueue implements SongQueue {
         mContext = context;
     }
 
-    @Override
     public Context getContext() {
         return mContext;
     }
 
-    @Override
     public void updatePlayModel(PlayMode playModel) {
         this.mPlayMode = playModel;
         setUpRandomQueue();
     }
 
-    @Override
-    public void setUpRandomQueue() {
+    private void setUpRandomQueue() {
         isPlayRandomModel = mPlayMode.getCurrPlayMode(mContext) == PlayMode.PLAY_IN_RANDOM;
         if (isPlayRandomModel) {
             mNormalOrderQueue.clear();
-            mNormalOrderQueue.addAll(mAuditionQueue);
-            Collections.shuffle(mAuditionQueue); //洗牌算法打乱顺序
+            mNormalOrderQueue.addAll(mPlayingQueue);
+            Collections.shuffle(mPlayingQueue); //洗牌算法打乱顺序
         } else {
             if (mNormalOrderQueue.size() != 0) {
                 SongInfo songInfo = getCurrentMusic();
-                mAuditionQueue.clear();
-                mAuditionQueue.addAll(mNormalOrderQueue);
-                mCurrentIndex = QueueHelper.getMusicIndexOnQueue(mAuditionQueue, songInfo.getSongId());
+                mPlayingQueue.clear();
+                mPlayingQueue.addAll(mNormalOrderQueue);
+                mCurrentIndex = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, songInfo.getSongId());
                 mNormalOrderQueue.clear();
             }
         }
     }
 
-    @Override
-    public void setListener(SongQueue.MetadataUpdateListener listener) {
+    public void setListener(MetadataUpdateListener listener) {
         mListener = listener;
     }
 
-    @Override
+    /**
+     * 获取播放列表
+     *
+     * @return list
+     */
     public List<SongInfo> getPlayingQueue() {
-        return isPlayRandomModel ? mNormalOrderQueue : mAuditionQueue;
+        return isPlayRandomModel ? mNormalOrderQueue : mPlayingQueue;
     }
 
-    @Override
+    /**
+     * 获取当前索引
+     *
+     * @return index
+     */
     public int getCurrentIndex() {
         return mCurrentIndex;
     }
 
-    @Override
+    /**
+     * 设置当前的播放列表
+     *
+     * @param newQueue     整个队列
+     * @param currentIndex 当前第几首
+     */
     public void setCurrentQueue(List<SongInfo> newQueue, int currentIndex) {
         int index = 0;
         if (currentIndex != -1) {
             index = currentIndex;
         }
         mCurrentIndex = Math.max(index, 0);
-        mAuditionQueue.clear();
-        mAuditionQueue.addAll(newQueue);
+        mPlayingQueue.clear();
+        mPlayingQueue.addAll(newQueue);
 
         setUpRandomQueue();
 
         //通知播放列表更新了
-        List<MediaSessionCompat.QueueItem> queueItems = QueueHelper.getQueueItems(mAuditionQueue);
+        List<MediaSessionCompat.QueueItem> queueItems = QueueHelper.getQueueItems(mPlayingQueue);
         if (mListener != null) {
-            mListener.onQueueUpdated(queueItems, mAuditionQueue);
+            mListener.onQueueUpdated(queueItems, mPlayingQueue);
         }
     }
 
-    @Override
+    /**
+     * 设置当前的播放列表 默认第一首
+     *
+     * @param newQueue 整个队列
+     */
     public void setCurrentQueue(List<SongInfo> newQueue) {
         setCurrentQueue(newQueue, -1);
     }
 
-    @Override
+    /**
+     * 添加一个音乐信息到队列中
+     *
+     * @param info 音乐信息
+     */
     public void addQueueItem(SongInfo info) {
-        if (mAuditionQueue.contains(info)) {
+        if (mPlayingQueue.contains(info)) {
             return;
         }
-        mAuditionQueue.add(info);
+        mPlayingQueue.add(info);
 
         setUpRandomQueue();
 
         //通知播放列表更新了
-        List<MediaSessionCompat.QueueItem> queueItems = QueueHelper.getQueueItems(mAuditionQueue);
+        List<MediaSessionCompat.QueueItem> queueItems = QueueHelper.getQueueItems(mPlayingQueue);
         if (mListener != null) {
-            mListener.onQueueUpdated(queueItems, mAuditionQueue);
+            mListener.onQueueUpdated(queueItems, mPlayingQueue);
         }
     }
 
-    @Override
     public void deleteQueueItem(SongInfo info, boolean isNeedToPlayNext) {
-        if (mAuditionQueue.size() == 0) {
+        if (mPlayingQueue.size() == 0) {
             return;
         }
-        if (!mAuditionQueue.contains(info)) {
+        if (!mPlayingQueue.contains(info)) {
             return;
         }
-        mAuditionQueue.remove(info);
+        mPlayingQueue.remove(info);
 
         setUpRandomQueue();
 
-        List<MediaSessionCompat.QueueItem> queueItems = QueueHelper.getQueueItems(mAuditionQueue);
+        List<MediaSessionCompat.QueueItem> queueItems = QueueHelper.getQueueItems(mPlayingQueue);
         if (mListener != null) {
-            mListener.onQueueUpdated(queueItems, mAuditionQueue);
+            mListener.onQueueUpdated(queueItems, mPlayingQueue);
             //播放下一首
             if (isNeedToPlayNext) {
                 mListener.onCurrentQueueIndexUpdated(mCurrentIndex, false, true);
@@ -141,37 +160,49 @@ public class AuditionSongQueue implements SongQueue {
         }
     }
 
-    @Override
+    /**
+     * 得到列表长度
+     *
+     * @return 队列长度
+     */
     public int getCurrentQueueSize() {
-        if (mAuditionQueue == null) {
+        if (mPlayingQueue == null) {
             return 0;
         }
-        return mAuditionQueue.size();
+        return mPlayingQueue.size();
     }
 
-    @Override
+    /**
+     * 得到当前播放的音乐信息
+     *
+     * @return 音乐信息
+     */
     public SongInfo getCurrentMusic() {
-        if (!QueueHelper.isIndexPlayable(mCurrentIndex, mAuditionQueue)) {
+        if (!QueueHelper.isIndexPlayable(mCurrentIndex, mPlayingQueue)) {
             return null;
         } else {
-            return mAuditionQueue.get(mCurrentIndex);
+            return mPlayingQueue.get(mCurrentIndex);
         }
     }
 
-    @Override
     public void setCurrentMusic(int currentIndex) {
-        if (mAuditionQueue.size() == 0) {
+        if (mPlayingQueue.size() == 0) {
             return;
         }
-        if (!QueueHelper.isIndexPlayable(currentIndex, mAuditionQueue)) {
+        if (!QueueHelper.isIndexPlayable(currentIndex, mPlayingQueue)) {
             return;
         }
         this.mCurrentIndex = currentIndex;
     }
 
-    @Override
+    /**
+     * 转跳到指定位置
+     *
+     * @param amount 维度
+     * @return boolean
+     */
     public boolean skipQueuePosition(int amount) {
-        if (mAuditionQueue.size() == 0) {
+        if (mPlayingQueue.size() == 0) {
             return false;
         } else {
             int index = mCurrentIndex + amount;
@@ -179,15 +210,15 @@ public class AuditionSongQueue implements SongQueue {
                 // 在第一首歌曲是上一首，让你在第一首歌曲上
                 int playModel = mPlayMode.getCurrPlayMode(mContext);
                 if (playModel == PlayMode.PLAY_IN_FLASHBACK || playModel == PlayMode.PLAY_IN_LIST_LOOP) { //如果是倒序或者列表循环，则回去最后一首
-                    index = mAuditionQueue.size() - 1;
+                    index = mPlayingQueue.size() - 1;
                 } else {
                     index = 0;
                 }
             } else {
                 //当在最后一首歌时点下一首将返回第一首个
-                index %= mAuditionQueue.size();
+                index %= mPlayingQueue.size();
             }
-            if (!QueueHelper.isIndexPlayable(index, mAuditionQueue)) {
+            if (!QueueHelper.isIndexPlayable(index, mPlayingQueue)) {
                 return false;
             }
             mCurrentIndex = index;
@@ -195,26 +226,43 @@ public class AuditionSongQueue implements SongQueue {
         }
     }
 
-    @Override
+    /**
+     * 更新音乐艺术家信息
+     *
+     * @param musicId
+     * @param bitmap
+     */
     public void updateSongCoverBitmap(String musicId, Bitmap bitmap) {
-        SongInfo musicInfo = QueueHelper.getMusicInfoById(mAuditionQueue, musicId);
+        SongInfo musicInfo = QueueHelper.getMusicInfoById(mPlayingQueue, musicId);
         if (musicInfo == null) {
             return;
         }
         musicInfo.setSongCoverBitmap(bitmap);
-        int index = mAuditionQueue.indexOf(musicInfo);
-        mAuditionQueue.set(index, musicInfo);
+        int index = mPlayingQueue.indexOf(musicInfo);
+        mPlayingQueue.set(index, musicInfo);
     }
 
-    @Override
+    /**
+     * 设置当前的音乐item，用于播放
+     *
+     * @param musicId       音乐id
+     * @param isJustPlay
+     * @param isSwitchMusic
+     */
     public void setCurrentQueueItem(String musicId, boolean isJustPlay, boolean isSwitchMusic) {
-        int index = QueueHelper.getMusicIndexOnQueue(mAuditionQueue, musicId);
+        int index = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, musicId);
         setCurrentQueueIndex(index, isJustPlay, isSwitchMusic);
     }
 
-    @Override
-    public void setCurrentQueueIndex(int index, boolean isJustPlay, boolean isSwitchMusic) {
-        if (index >= 0 && index < mAuditionQueue.size()) {
+    /**
+     * 设置当前的音乐item，用于播放
+     *
+     * @param index         队列下标
+     * @param isJustPlay
+     * @param isSwitchMusic
+     */
+    private void setCurrentQueueIndex(int index, boolean isJustPlay, boolean isSwitchMusic) {
+        if (index >= 0 && index < mPlayingQueue.size()) {
             mCurrentIndex = index;
             if (mListener != null) {
                 mListener.onCurrentQueueIndexUpdated(mCurrentIndex, isJustPlay, isSwitchMusic);
@@ -222,20 +270,27 @@ public class AuditionSongQueue implements SongQueue {
         }
     }
 
-    @Override
+    /**
+     * 得到上一首音乐信息
+     *
+     * @return SongInfo
+     */
     public SongInfo getPreMusicInfo() {
         return getNextOrPreMusicInfo(-1);
     }
 
-    @Override
+    /**
+     * 得到下一首音乐信息
+     *
+     * @return SongInfo
+     */
     public SongInfo getNextMusicInfo() {
         return getNextOrPreMusicInfo(1);
     }
 
-    @Override
-    public SongInfo getNextOrPreMusicInfo(int amount) {
+    private SongInfo getNextOrPreMusicInfo(int amount) {
         SongInfo info = null;
-        SongInfo songInfo = mAuditionQueue.get(mCurrentIndex + amount);
+        SongInfo songInfo = mPlayingQueue.get(mCurrentIndex + amount);
         switch (mPlayMode.getCurrPlayMode(mContext)) {
             //单曲循环
             case PlayMode.PLAY_IN_SINGLE_LOOP:
@@ -249,7 +304,7 @@ public class AuditionSongQueue implements SongQueue {
             //顺序播放
             case PlayMode.PLAY_IN_ORDER:
                 if (amount == 1) {
-                    if (mCurrentIndex != mAuditionQueue.size() - 1) {
+                    if (mCurrentIndex != mPlayingQueue.size() - 1) {
                         info = songInfo == null ? getCurrentMusic() : songInfo;
                     } else {
                         info = getCurrentMusic();
@@ -269,7 +324,9 @@ public class AuditionSongQueue implements SongQueue {
         return info;
     }
 
-    @Override
+    /**
+     * 更新媒体信息
+     */
     public void updateMetadata() {
         SongInfo currentMusic = getCurrentMusic();
         if (currentMusic == null) {
@@ -279,7 +336,7 @@ public class AuditionSongQueue implements SongQueue {
             return;
         }
         final String musicId = currentMusic.getSongId();
-        SongInfo metadata = QueueHelper.getMusicInfoById(mAuditionQueue, musicId);
+        SongInfo metadata = QueueHelper.getMusicInfoById(mPlayingQueue, musicId);
         if (metadata == null) {
             throw new IllegalArgumentException("Invalid musicId " + musicId);
         }
@@ -297,11 +354,24 @@ public class AuditionSongQueue implements SongQueue {
                     String currentPlayingId = currentMusic.getSongId();
                     if (musicId.equals(currentPlayingId)) {
                         if (mListener != null) {
-                            mListener.onMetadataChanged(QueueHelper.getMusicInfoById(mAuditionQueue, currentPlayingId));
+                            mListener.onMetadataChanged(QueueHelper.getMusicInfoById(mPlayingQueue, currentPlayingId));
                         }
                     }
                 }
             });
         }
     }
+
+
+    public interface MetadataUpdateListener {
+        void onMetadataChanged(SongInfo metadata);
+
+        void onMetadataRetrieveError();
+
+        void onCurrentQueueIndexUpdated(int queueIndex, boolean isJustPlay, boolean isSwitchMusic);
+
+        void onQueueUpdated(List<MediaSessionCompat.QueueItem> newQueue, List<SongInfo> playingQueue);
+    }
+
+
 }

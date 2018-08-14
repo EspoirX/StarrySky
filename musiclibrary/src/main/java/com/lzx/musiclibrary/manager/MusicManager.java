@@ -898,15 +898,9 @@ public class MusicManager implements IPlayControl {
         return 0;
     }
 
-    @Override
-    public void switchSongQueue(boolean isAudition) {
-        if (control != null) {
-            try {
-                control.switchSongQueue(isAudition);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
+
+    public void setAuditionList(List<SongInfo> auditionList) {
+        setPlayList(auditionList);
     }
 
     @Override
