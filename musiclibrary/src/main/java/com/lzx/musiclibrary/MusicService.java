@@ -1,6 +1,8 @@
 package com.lzx.musiclibrary;
 
-import android.app.Notification;
+import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
@@ -24,14 +26,21 @@ public class MusicService extends Service {
     private PlayControl mBinder;
 
     private static MusicService mService;
+    private NotificationManager mNotificationManager;
 
+    @SuppressLint("WrongConstant")
     @Override
     public void onCreate() {
         super.onCreate();
         mService = this;
+        this.mNotificationManager = (NotificationManager) getSystemService("notification");
         if (Build.VERSION.SDK_INT >= 26) {
-            int NOTIFICATION_ID = (int) (System.currentTimeMillis() % 10000);
-            startForeground(NOTIFICATION_ID, new Notification.Builder(this).build());
+            NotificationChannel channel = new NotificationChannel("com.lzx.musiclibrary", "播放通知栏", 4);
+            channel.enableLights(false);
+            channel.setShowBadge(false);
+            channel.setSound(null,null);
+            channel.enableVibration(false);
+            this.mNotificationManager.createNotificationChannel(channel);
         }
     }
 
