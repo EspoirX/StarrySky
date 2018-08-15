@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 140
-        versionName "1.4.0.1"
+        versionCode 141
+        versionName "1.4.1"
     }
 
     buildTypes {
@@ -28,7 +28,7 @@ android {
         userOrg = 'lizixian'
         groupId = 'com.lzx'
         artifactId = 'MusicLibrary'
-        version = '1.4.0.1'
+        version = '1.4.1'
         description = 'a rich music player package library'
         website = "https://github.com/lizixian18/MusicLibrary"
     }
