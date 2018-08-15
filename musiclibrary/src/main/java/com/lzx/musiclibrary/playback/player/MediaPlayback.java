@@ -319,6 +319,11 @@ public class MediaPlayback implements Playback,
     }
 
     @Override
+    public void setErrorProgress(int errorProgress) {
+        mErrorProgress = errorProgress;
+    }
+
+    @Override
     public SongInfo getCurrentMediaSongInfo() {
         return mCurrentMediaSongInfo;
     }

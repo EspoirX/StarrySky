@@ -160,6 +160,7 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     public void playNextOrPre(int amount, int playModel) {
+        mPlayback.setErrorProgress(0);
         switch (playModel) {
             //单曲循环
             case PlayMode.PLAY_IN_SINGLE_LOOP:

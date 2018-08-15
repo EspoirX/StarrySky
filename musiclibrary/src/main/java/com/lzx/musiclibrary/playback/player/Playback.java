@@ -77,6 +77,8 @@ public interface Playback {
 
     int getDuration();
 
+    void setErrorProgress(int errorProgress);
+
     SongInfo getCurrentMediaSongInfo();
 
     /**
