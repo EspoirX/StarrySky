@@ -87,6 +87,31 @@ public class NiceMusicApplication extends Application {
 - setCacheConfig(cacheConfig) 边播边存配置
 - giveUpAudioFocusManager() 放弃音频焦点管理，放弃后，多个音频一起会混播
 
+比如：
+
+```java
+//通知栏配置
+NotificationCreater creater = new NotificationCreater.Builder()
+        .setTargetClass("com.lzx.nicemusic.module.main.HomeActivity")
+        .setCreateSystemNotification(true)
+        .setNotificationCanClearBySystemBtn(true)
+        .setSystemNotificationShowTime(true)
+        .setPendingIntentMode(PendingIntentMode.MODE_ACTIVITY)
+        .build();
+
+//边播边存配置
+CacheConfig cacheConfig = new CacheConfig.Builder()
+        .setOpenCacheWhenPlaying(true)
+        .setCachePath(CacheUtils.getStorageDirectoryPath() + "/NiceMusic/Cache/")
+        .build();
+
+MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
+        .setNotificationCreater(creater)
+        .setCacheConfig(cacheConfig)
+        .setUseMediaPlayer(false)
+        .build();
+musicLibrary.init();
+```
 
 **其他说明**
 如果你是使用 System.exit(0); 方法来退出 APP 的，那么可能需要再调用 ActivityManager#killBackgroundProcesses 方法来

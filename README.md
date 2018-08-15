@@ -88,6 +88,32 @@ public class NiceMusicApplication extends Application {
 - setCacheConfig(cacheConfig) Cache when playing configuration
 - giveUpAudioFocusManager() Give up audio focus management, after give up, multiple audio will be mixed together
 
+for example：
+
+```java
+//通知栏配置
+NotificationCreater creater = new NotificationCreater.Builder()
+        .setTargetClass("com.lzx.nicemusic.module.main.HomeActivity")
+        .setCreateSystemNotification(true)
+        .setNotificationCanClearBySystemBtn(true)
+        .setSystemNotificationShowTime(true)
+        .setPendingIntentMode(PendingIntentMode.MODE_ACTIVITY)
+        .build();
+
+//边播边存配置
+CacheConfig cacheConfig = new CacheConfig.Builder()
+        .setOpenCacheWhenPlaying(true)
+        .setCachePath(CacheUtils.getStorageDirectoryPath() + "/NiceMusic/Cache/")
+        .build();
+
+MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
+        .setNotificationCreater(creater)
+        .setCacheConfig(cacheConfig)
+        .setUseMediaPlayer(false)
+        .build();
+musicLibrary.init();
+```
+
 **other instructions**
 If you use the System.exit(0); method to exit the APP, you may need to call the ActivityManager#killBackgroundProcesses method again.
 Kill the audio process, otherwise it may report a crash, so try not to do it.

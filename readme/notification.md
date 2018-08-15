@@ -3,29 +3,29 @@
 如果你想使用自定义样式的通知栏，需要在初始化的时候这样做，然后在布局中配置对应 id 和命名：
 
 ```java
-if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
+if (BaseUtil.getCurProcessName(this).equals("your package name")) {
     NotificationCreater creater = new NotificationCreater.Builder()
             .setTargetClass("com.lzx.nicemusic.module.main.HomeActivity")
             .build();
-    MusicManager.get()
-            .setContext(this)
-            .setNotificationCreater(creater)
-            .init();
+    MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
+             .setNotificationCreater(creater)
+             .build();
+    musicLibrary.init();
 }
 ```
 
 如果你想使用集成好的系统通知栏，只需要在 `NotificationCreater` 中添加 `setCreateSystemNotification(true)`
 
 ```java
-if (!BaseUtil.getCurProcessName(this).contains(":musicLibrary")) {
+  if (BaseUtil.getCurProcessName(this).equals("your package name")) {
     NotificationCreater creater = new NotificationCreater.Builder()
             .setTargetClass("com.lzx.nicemusic.module.main.HomeActivity")
             .setCreateSystemNotification(true)
             .build();
-    MusicManager.get()
-            .setContext(this)
-            .setNotificationCreater(creater)
-            .init();
+    MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
+             .setNotificationCreater(creater)
+             .build();
+    musicLibrary.init();
 }
 ```
 
