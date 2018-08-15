@@ -1,5 +1,10 @@
 ### 版本更新记录
 
+#### v1.4.0
+- 修复顺序播放下最后一首停止时通知栏状态不对问题
+- 8.0 通知栏问题
+- 播放失败后，无法继续播放问题
+
 #### v1.3.9
 - 定时播放添加倒计时进度回调
 - 通知栏 PendingIntent 转跳时添加 getActivity,getService,getBroadcast 选择，在配置的时候通过 setPendingIntentMode 方法
