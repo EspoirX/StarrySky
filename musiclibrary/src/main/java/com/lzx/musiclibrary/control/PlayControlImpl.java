@@ -127,6 +127,7 @@ public class PlayControlImpl implements QueueManager.MetadataUpdateListener, Pla
     }
 
     public void setPlayMode(int mode) {
+        mQueueManager.setCurrentMediaId(mPlaybackManager.getCurrentMediaId());
         mPlayMode.setCurrPlayMode(mMusicService, mode);
         mQueueManager.updatePlayModel(mPlayMode);
     }

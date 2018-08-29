@@ -29,6 +29,8 @@ public class QueueManager {
     private boolean isPlayRandomModel = false;
     private Context mContext;
 
+    private String currentMediaId; //当前在播放的音频id
+
     public QueueManager(Context context, MetadataUpdateListener listener, PlayMode playMode) {
         mPlayingQueue = Collections.synchronizedList(new ArrayList<SongInfo>());
         mNormalOrderQueue = Collections.synchronizedList(new ArrayList<SongInfo>());
@@ -40,6 +42,10 @@ public class QueueManager {
 
     public Context getContext() {
         return mContext;
+    }
+
+    public void setCurrentMediaId(String currentMediaId) {
+        this.currentMediaId = currentMediaId;
     }
 
     public void updatePlayModel(PlayMode playModel) {
@@ -55,10 +61,9 @@ public class QueueManager {
             Collections.shuffle(mPlayingQueue); //洗牌算法打乱顺序
         } else {
             if (mNormalOrderQueue.size() != 0) {
-                SongInfo songInfo = getCurrentMusic();
                 mPlayingQueue.clear();
                 mPlayingQueue.addAll(mNormalOrderQueue);
-                mCurrentIndex = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, songInfo.getSongId());
+                mCurrentIndex = TextUtils.isEmpty(currentMediaId) ? 0 : QueueHelper.getMusicIndexOnQueue(mPlayingQueue, currentMediaId);
                 mNormalOrderQueue.clear();
             }
         }

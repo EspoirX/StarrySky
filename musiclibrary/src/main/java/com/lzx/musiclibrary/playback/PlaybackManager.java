@@ -164,14 +164,14 @@ public class PlaybackManager implements Playback.Callback {
         switch (playModel) {
             //单曲循环
             case PlayMode.PLAY_IN_SINGLE_LOOP:
-                if (mQueueManager.skipQueuePosition(0)) {
-                    //重新设置id，否则不会重新播
-                    mPlayback.setCurrentMediaId("");
-                    handlePlayRequest();
-                } else {
-                    handleStopRequest(null);
-                }
-                break;
+//                if (mQueueManager.skipQueuePosition(0)) {
+//                    //重新设置id，否则不会重新播
+//                    mPlayback.setCurrentMediaId("");
+//                    handlePlayRequest();
+//                } else {
+//                    handleStopRequest(null);
+//                }
+//                break;
             case PlayMode.PLAY_IN_RANDOM:     //随机播放
             case PlayMode.PLAY_IN_FLASHBACK:  //倒叙播放
             case PlayMode.PLAY_IN_LIST_LOOP:  //列表循环
