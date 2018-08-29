@@ -268,9 +268,7 @@ public class MediaPlayback implements Playback,
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             float spSpeed = (float) SPUtils.get(mContext, play_back_speed, 1f);
             float spPitch = (float) SPUtils.get(mContext, play_back_pitch, 1f);
-            float currSpeed = mMediaPlayer.getPlaybackParams().getSpeed();
-            float currPitch = mMediaPlayer.getPlaybackParams().getPitch();
-            if (spSpeed != currSpeed || spPitch != currPitch) {
+            if (spSpeed != 1 || spPitch != 1) {
                 setPlaybackParameters(spSpeed, spPitch);
             }
         }
