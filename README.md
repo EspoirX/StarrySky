@@ -51,7 +51,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.4.2'
+    implementation 'com.lzx:MusicLibrary:1.4.3'
 }
 ```
 
@@ -91,7 +91,7 @@ public class NiceMusicApplication extends Application {
 for example：
 
 ```java
-//通知栏配置
+//Notification configuration
 NotificationCreater creater = new NotificationCreater.Builder()
         .setTargetClass("com.lzx.nicemusic.module.main.HomeActivity")
         .setCreateSystemNotification(true)

@@ -1,5 +1,8 @@
 ### 版本更新记录
 
+#### v1.4.3
+- 添加android.permission.FOREGROUND_SERVICE权限,适配android P
+
 #### v1.4.2
 - 修复单曲循环不能下一首问题 #53
 - 修复 MediaPlay 播放失败问题

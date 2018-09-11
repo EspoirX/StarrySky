@@ -49,7 +49,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.4.2'
+    implementation 'com.lzx:MusicLibrary:1.4.3'
 }
 ```
 
