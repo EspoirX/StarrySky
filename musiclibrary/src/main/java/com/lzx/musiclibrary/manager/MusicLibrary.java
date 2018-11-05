@@ -94,7 +94,6 @@ public class MusicLibrary {
             return mNotificationCreater;
         }
 
-
         CacheConfig getCacheConfig() {
             return mCacheConfig;
         }
@@ -104,12 +103,22 @@ public class MusicLibrary {
         }
     }
 
-    public void init() {
+    public void startMusicService() {
         init(true);
     }
 
-    public void bindService() {
+    public void bindMusicService() {
         init(false);
+    }
+
+    public void stopService() {
+        if (isInitLibrary) {
+            MusicManager.get().stopService();
+            Intent intent = new Intent(mContext, MusicService.class);
+            mContext.unbindService(mServiceConnection);
+            mContext.stopService(intent);
+            MusicLibrary.isInitLibrary = false;
+        }
     }
 
     private void init(boolean isStartService) {
@@ -133,7 +142,6 @@ public class MusicLibrary {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             IPlayControl control = IPlayControl.Stub.asInterface(iBinder);
             MusicManager.get().attachPlayControl(mContext, control);
-            MusicManager.get().attachServiceConnection(this);
             MusicManager.get().attachMusicLibraryBuilder(mBuilder);
             isInitLibrary = true;
             //发送一个广播，可通过接受它来知道服务初始化成功

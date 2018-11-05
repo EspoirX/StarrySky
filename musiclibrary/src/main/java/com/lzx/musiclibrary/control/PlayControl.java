@@ -1,15 +1,17 @@
 package com.lzx.musiclibrary.control;
 
-import android.os.Bundle;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.listener.NotifyContract;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.aidl.source.IOnPlayerEventListener;
 import com.lzx.musiclibrary.aidl.source.IOnTimerTaskListener;
-import com.lzx.musiclibrary.aidl.source.IPlayControl;
+import com.lzx.musiclibrary.bus.Subscriber;
+import com.lzx.musiclibrary.bus.tags.BusTags;
+import com.lzx.musiclibrary.bus.tags.QueueIndexUpdated;
 import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.helper.QueueHelper;
@@ -25,47 +27,31 @@ import java.util.List;
  * Created by xian on 2018/1/28.
  */
 
-public class PlayControl extends IPlayControl.Stub {
-
-    private MusicService mService;
-
-    private PlayControlImpl mController;
-    private Playback playback;
+public class PlayControl extends BasePlayControl {
 
     private RemoteCallbackList<IOnPlayerEventListener> mRemoteCallbackList;
     private RemoteCallbackList<IOnTimerTaskListener> mOnTimerTaskListenerList;
 
-    private NotifyContract.NotifyStatusChanged mNotifyStatusChanged;
-    private NotifyContract.NotifyMusicSwitch mNotifyMusicSwitch;
-    private NotifyContract.NotifyTimerTask mNotifyTimerTask;
     private boolean isAsyncLoading = false;
 
     private PlayControl(Builder builder) {
-        mService = builder.mMusicService;
-
+        super();
+        mMusicService = builder.mMusicService;
+        isAutoPlayNext = builder.isAutoPlayNext;
+        notificationCreater = builder.notificationCreater;
         mNotifyStatusChanged = new NotifyStatusChange();
         mNotifyMusicSwitch = new NotifyMusicSwitch();
         mNotifyTimerTask = new NotifyTimerTask();
         mRemoteCallbackList = new RemoteCallbackList<>();
         mOnTimerTaskListenerList = new RemoteCallbackList<>();
-
-
-        playback = builder.isUseMediaPlayer
-                ? new MediaPlayback(mService.getApplicationContext(), builder.cacheConfig, builder.isGiveUpAudioFocusManager)
-                : new ExoPlayback(mService.getApplicationContext(), builder.cacheConfig, builder.isGiveUpAudioFocusManager);
-
-        mController = new PlayControlImpl.Builder(mService)
-                .setAutoPlayNext(builder.isAutoPlayNext)
-                .setNotifyMusicSwitch(mNotifyMusicSwitch)
-                .setNotifyStatusChanged(mNotifyStatusChanged)
-                .setNotifyTimerTask(mNotifyTimerTask)
-                .setPlayback(playback)
-                .setNotificationCreater(builder.notificationCreater)
-                .build();
+        mPlayback = builder.isUseMediaPlayer
+                ? new MediaPlayback(mMusicService.getApplicationContext(), builder.cacheConfig, builder.isGiveUpAudioFocusManager)
+                : new ExoPlayback(mMusicService.getApplicationContext(), builder.cacheConfig, builder.isGiveUpAudioFocusManager);
+        init();
     }
 
-    public PlayControlImpl getController() {
-        return mController;
+    public PlayControl getController() {
+        return this;
     }
 
     public static class Builder {
@@ -221,234 +207,59 @@ public class PlayControl extends IPlayControl.Stub {
     }
 
     public Playback getPlayback() {
-        return playback;
+        return mPlayback;
     }
 
     public void releaseMediaSession() {
-        mController.releaseMediaSession();
-    }
-
-    @Override
-    public void playMusic(List<SongInfo> list, int index, boolean isJustPlay) {
-        if (!QueueHelper.isIndexPlayable(index, list)) {
-            return;
-        }
-        mController.playMusic(list, index, isJustPlay);
-    }
-
-    @Override
-    public void playMusicByInfo(SongInfo info, boolean isJustPlay) {
-        if (info == null) {
-            return;
-        }
-        mController.playMusicByInfo(info, isJustPlay);
-    }
-
-    @Override
-    public void playMusicByIndex(int index, boolean isJustPlay) {
-        mController.playMusicByIndex(index, isJustPlay);
-    }
-
-    @Override
-    public void pausePlayInMillis(long time) {
-        mController.pausePlayInMillis(time);
-    }
-
-    @Override
-    public int getCurrPlayingIndex() {
-        return mController.getCurrPlayingIndex();
-    }
-
-    @Override
-    public void pauseMusic() {
-        mController.pauseMusic();
-    }
-
-    @Override
-    public void resumeMusic() {
-        mController.resumeMusic();
-    }
-
-    @Override
-    public void stopMusic() {
-        mController.stopMusic();
-    }
-
-    @Override
-    public void setPlayList(List<SongInfo> list) {
-        mController.setPlayList(list);
-    }
-
-    @Override
-    public void setPlayListWithIndex(List<SongInfo> list, int index) {
-        mController.setPlayListWithIndex(list, index);
-    }
-
-    @Override
-    public List<SongInfo> getPlayList() {
-        return mController.getPlayList();
-    }
-
-    @Override
-    public void deleteSongInfoOnPlayList(SongInfo info, boolean isNeedToPlayNext) {
-        mController.deleteMusicInfoOnPlayList(info, isNeedToPlayNext);
-    }
-
-    @Override
-    public int getStatus() {
-        return mController.getState();
-    }
-
-    @Override
-    public int getDuration() {
-        return mController.getDuration();
-    }
-
-    @Override
-    public void playNext() {
-        mController.playNext();
-    }
-
-    @Override
-    public void playPre() {
-        mController.playPre();
-    }
-
-    @Override
-    public boolean hasPre() {
-        return mController.hasPre();
-    }
-
-    @Override
-    public boolean hasNext() {
-        return mController.hasNext();
-    }
-
-    @Override
-    public SongInfo getPreMusic() {
-        return mController.getPreMusic();
-    }
-
-    @Override
-    public SongInfo getNextMusic() {
-        return mController.getNextMusic();
-    }
-
-    @Override
-    public SongInfo getCurrPlayingMusic() {
-        return mController.getCurrPlayingMusic();
-    }
-
-    @Override
-    public void setCurrMusic(int index) {
-        mController.setCurrMusic(index);
-    }
-
-    @Override
-    public void setPlayMode(int mode) {
-        mController.setPlayMode(mode);
-    }
-
-    @Override
-    public int getPlayMode() {
-        return mController.getPlayMode();
-    }
-
-    @Override
-    public long getProgress() {
-        return mController.getProgress();
-    }
-
-    @Override
-    public void seekTo(int position) {
-        mController.seekTo(position);
-    }
-
-    @Override
-    public void reset() {
-        mController.stopMusic();
-        mController.stopNotification();
-    }
-
-    @Override
-    public void openCacheWhenPlaying(boolean isOpen) {
-        mController.openCacheWhenPlaying(isOpen);
-    }
-
-    @Override
-    public void stopNotification() {
-        mController.stopNotification();
-    }
-
-    @Override
-    public void setPlaybackParameters(float speed, float pitch) {
-        mController.setPlaybackParameters(speed, pitch);
-    }
-
-    @Override
-    public long getBufferedPosition() {
-        return mController.getBufferedPosition();
-    }
-
-    @Override
-    public void setVolume(float audioVolume) {
-        mController.setVolume(audioVolume);
-    }
-
-    @Override
-    public void updateNotificationCreater(NotificationCreater creater) {
-        mController.updateNotificationCreater(creater);
-    }
-
-    @Override
-    public void updateNotificationFavorite(boolean isFavorite) {
-        mController.updateFavorite(isFavorite);
-    }
-
-    @Override
-    public void updateNotificationLyrics(boolean isChecked) {
-        mController.updateLyrics(isChecked);
-    }
-
-    @Override
-    public void updateNotificationContentIntent(Bundle bundle, String targetClass) {
-        mController.updateContentIntent(bundle, targetClass);
+        mMediaSessionManager.release();
     }
 
     @Override
     public void registerPlayerEventListener(IOnPlayerEventListener listener) {
+        super.registerPlayerEventListener(listener);
         mRemoteCallbackList.register(listener);
     }
 
     @Override
     public void unregisterPlayerEventListener(IOnPlayerEventListener listener) {
+        super.unregisterPlayerEventListener(listener);
         mRemoteCallbackList.unregister(listener);
     }
 
     @Override
     public void registerTimerTaskListener(IOnTimerTaskListener listener) {
+        super.registerTimerTaskListener(listener);
         mOnTimerTaskListenerList.register(listener);
     }
 
     @Override
     public void unregisterTimerTaskListener(IOnTimerTaskListener listener) {
+        super.unregisterTimerTaskListener(listener);
         mOnTimerTaskListenerList.unregister(listener);
     }
 
-    @Override
-    public int getAudioSessionId() {
-        return mController.getAudioSessionId();
+    @Subscriber(tag = BusTags.onMetadataChanged)
+    public void onMetadataChanged(SongInfo songInfo) {
+        mMediaSessionManager.updateMetaData(QueueHelper.fetchInfoWithMediaMetadata(songInfo));
     }
 
-    @Override
-    public float getPlaybackSpeed() {
-        return mController.getPlaybackSpeed();
+    @Subscriber(tag = BusTags.onMetadataRetrieveError)
+    public void onMetadataRetrieveError() {
+        mPlaybackManager.updatePlaybackState("Unable to retrieve metadata.");
     }
 
-    @Override
-    public float getPlaybackPitch() {
-        return mController.getPlaybackPitch();
+    @Subscriber(tag = BusTags.onCurrentQueueIndexUpdated)
+    public void onCurrentQueueIndexUpdated(QueueIndexUpdated updated) {
+        mPlaybackManager.handlePlayPauseRequest(updated.isJustPlay, updated.isSwitchMusic); //播放
     }
 
+    @Subscriber(tag = BusTags.onQueueUpdated)
+    public void onQueueUpdated(List<MediaSessionCompat.QueueItem> newQueue) {
+        mMediaSessionManager.setQueue(newQueue);
+    }
 
+    @Subscriber(tag = BusTags.onPlayModeChange)
+    public void onPlayModeChange(int playMode) {
+        mPlayQueueManager.checkIndexForPlayMode(mPlayback.getCurrentMediaId());
+    }
 }

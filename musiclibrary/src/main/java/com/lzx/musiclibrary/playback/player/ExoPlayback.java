@@ -229,7 +229,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             mCurrentMediaId = mediaId;
             mCurrentMediaSongInfo = info;
         }
-
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false); // release everything except the player
 

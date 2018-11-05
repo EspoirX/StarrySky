@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.control.PlayControl;
-import com.lzx.musiclibrary.control.PlayControlImpl;
+import com.lzx.musiclibrary.control.BasePlayControl;
 import com.lzx.musiclibrary.notification.IMediaNotification;
 
 /**
@@ -30,7 +30,7 @@ public class PlayerReceiver extends BroadcastReceiver {
         if (binder == null) {
             return;
         }
-        PlayControlImpl controller = binder.getController();
+        BasePlayControl controller = binder.getController();
         if (controller == null) {
             return;
         }
@@ -40,9 +40,9 @@ public class PlayerReceiver extends BroadcastReceiver {
                 controller.stopNotification();
                 break;
             case IMediaNotification.ACTION_PLAY_PAUSE:
-                if (controller.getState() == State.STATE_PLAYING) {
+                if (controller.getStatus() == State.STATE_PLAYING) {
                     controller.pauseMusic();
-                } else if (controller.getState() == State.STATE_PAUSED) {
+                } else if (controller.getStatus() == State.STATE_PAUSED) {
                     controller.resumeMusic();
                 }
                 break;

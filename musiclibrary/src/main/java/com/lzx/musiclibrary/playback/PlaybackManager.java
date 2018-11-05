@@ -11,8 +11,8 @@ import android.text.TextUtils;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
 import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
-import com.lzx.musiclibrary.manager.QueueManager;
 import com.lzx.musiclibrary.playback.player.Playback;
+import com.lzx.musiclibrary.queue.PlayQueueManager;
 
 
 /**
@@ -22,21 +22,20 @@ import com.lzx.musiclibrary.playback.player.Playback;
 public class PlaybackManager implements Playback.Callback {
 
     private Playback mPlayback;
-    private QueueManager mQueueManager;
+    private PlayQueueManager mQueueManager;
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
-    private PlayMode mPlayMode;
+
     //是否自动播放下一首
     private boolean isAutoPlayNext;
     private String mCurrentMediaId;
 
-    public PlaybackManager(Playback playback, QueueManager queueManager, PlayMode playMode, boolean isAutoPlayNext) {
+    public PlaybackManager(Playback playback, PlayQueueManager queueManager, boolean isAutoPlayNext) {
         mPlayback = playback;
         mPlayback.setCallback(this);
         mQueueManager = queueManager;
         this.isAutoPlayNext = isAutoPlayNext;
         mMediaSessionCallback = new MediaSessionCallback();
-        mPlayMode = playMode;
     }
 
     public void setServiceCallback(PlaybackServiceCallback serviceCallback) {
@@ -57,7 +56,7 @@ public class PlaybackManager implements Playback.Callback {
      * 播放
      */
     public void handlePlayRequest() {
-        SongInfo currentMusic = mQueueManager.getCurrentMusic();
+        SongInfo currentMusic = mQueueManager.getCurrentSongInfo();
         if (currentMusic != null && mPlayback.getState() != State.STATE_ASYNC_LOADING) {
             String mediaId = currentMusic.getSongId();
             boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
@@ -101,6 +100,7 @@ public class PlaybackManager implements Playback.Callback {
      */
     public void handlePlayPauseRequest(boolean isJustPlay, boolean isSwitchMusic) {
         if (isJustPlay) {
+            mPlayback.setCurrentMediaId("");
             handlePlayRequest();
         } else {
             int state = mPlayback.getState();
@@ -144,58 +144,20 @@ public class PlaybackManager implements Playback.Callback {
             mServiceCallback.onPlaybackCompletion();
         }
         if (isAutoPlayNext) {
-            int playModel = mPlayMode.getCurrPlayMode(mQueueManager.getContext());
-            playNextOrPre(playModel == PlayMode.PLAY_IN_FLASHBACK ? -1 : 1, playModel);
-        }
-    }
-
-    /**
-     * 播放上一首和下一首
-     *
-     * @param amount 负数为上一首，正数为下一首
-     */
-    public void playNextOrPre(int amount) {
-        int playModel = mPlayMode.getCurrPlayMode(mQueueManager.getContext());
-        playNextOrPre(amount, playModel);
-    }
-
-    public void playNextOrPre(int amount, int playModel) {
-        mPlayback.setErrorProgress(0);
-        switch (playModel) {
-            //单曲循环
-            case PlayMode.PLAY_IN_SINGLE_LOOP:
-//                if (mQueueManager.skipQueuePosition(0)) {
-//                    //重新设置id，否则不会重新播
-//                    mPlayback.setCurrentMediaId("");
-//                    handlePlayRequest();
-//                } else {
-//                    handleStopRequest(null);
-//                }
-//                break;
-            case PlayMode.PLAY_IN_RANDOM:     //随机播放
-            case PlayMode.PLAY_IN_FLASHBACK:  //倒叙播放
-            case PlayMode.PLAY_IN_LIST_LOOP:  //列表循环
-                if (mQueueManager.getCurrentQueueSize() == 1) {
-                    handleStopRequest(null);
-                }
-                if (mQueueManager.skipQueuePosition(amount)) {
+            int playMode = mQueueManager.getPlayMode();
+            if (playMode == PlayMode.PLAY_IN_SINGLE_LOOP) {
+                mCurrentMediaId = "";
+                mPlayback.setCurrentMediaId("");
+                handlePlayRequest();
+            } else if (playMode == PlayMode.PLAY_IN_RANDOM || playMode == PlayMode.PLAY_IN_LIST_LOOP) {
+                if (mQueueManager.skipQueuePosition(1)) {
                     handlePlayRequest();
                 }
-                break;
-            //顺序播放
-            case PlayMode.PLAY_IN_ORDER:
-                if (hasNextOrPre(amount)) {
-                    if (mQueueManager.skipQueuePosition(amount)) {
-                        handlePlayRequest();
-                    }
-                } else {
-                    handleStopRequest(null);
-                }
-                break;
-
-            default:
-                handleStopRequest(null);
-                break;
+            } else if (playMode == PlayMode.PLAY_IN_FLASHBACK && mQueueManager.skipQueuePosition(-1)) {
+                handlePlayRequest();
+            } else if (playMode == PlayMode.PLAY_IN_ORDER && hasNextSong() && mQueueManager.skipQueuePosition(1)) {
+                handlePlayRequest();
+            }
         }
     }
 
@@ -205,30 +167,12 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
-    public boolean hasNextOrPre(int amount) {
-        if (amount == 1) {
-            return hasNextSong();
-        } else {
-            return amount == -1 && hasPreSong();
-        }
-    }
-
     public boolean hasNextSong() {
-        if (mPlayMode.getCurrPlayMode(mQueueManager.getContext()) == PlayMode.PLAY_IN_ORDER) {
-            int index = mQueueManager.getCurrentIndex();
-            return index != mQueueManager.getCurrentQueueSize() - 1;
-        } else {
-            return mQueueManager.getCurrentQueueSize() > 1;
-        }
+        return mQueueManager.hasNextSong();
     }
 
     public boolean hasPreSong() {
-        if (mPlayMode.getCurrPlayMode(mQueueManager.getContext()) == PlayMode.PLAY_IN_ORDER) {
-            int index = mQueueManager.getCurrentIndex();
-            return index != 0;
-        } else {
-            return mQueueManager.getCurrentQueueSize() > 1;
-        }
+        return mQueueManager.hasPreSong();
     }
 
     /**
@@ -290,7 +234,7 @@ public class PlaybackManager implements Playback.Callback {
         stateBuilder.setState(state == State.STATE_PLAYING ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED,
                 position, 1.0f, SystemClock.elapsedRealtime());
         // Set the activeQueueItemId if the current index is valid.
-        SongInfo currentMusic = mQueueManager.getCurrentMusic();
+        SongInfo currentMusic = mQueueManager.getCurrentSongInfo();
         if (currentMusic != null) {
             stateBuilder.setActiveQueueItemId(currentMusic.getTrackNumber());
         }
@@ -345,7 +289,7 @@ public class PlaybackManager implements Playback.Callback {
                 mPlayback.pause();
                 break;
             case PlaybackStateCompat.STATE_PLAYING:
-                SongInfo currentMusic = mQueueManager.getCurrentMusic();
+                SongInfo currentMusic = mQueueManager.getCurrentSongInfo();
                 if (resumePlaying && currentMusic != null) {
                     mPlayback.play(currentMusic);
                 } else if (!resumePlaying) {

@@ -22,18 +22,20 @@ public class BaseUtil {
 
     public static String getCurProcessName(Context context) {
         if(context == null) {
+            LogUtil.i("context == null");
             return "";
         } else if(!TextUtils.isEmpty(curProcessName)) {
             return curProcessName;
         } else {
             int pid = Process.myPid();
-            ActivityManager mActivityManager = (ActivityManager)context.getSystemService("activity");
+            ActivityManager mActivityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
             List runningAppProcesses = null;
 
             try {
                 runningAppProcesses = mActivityManager.getRunningAppProcesses();
             } catch (Exception var6) {
                 var6.printStackTrace();
+                LogUtil.i("var6 = "+var6.getMessage());
             }
 
             if(runningAppProcesses != null) {

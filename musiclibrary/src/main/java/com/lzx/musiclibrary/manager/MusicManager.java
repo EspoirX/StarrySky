@@ -1,7 +1,6 @@
 package com.lzx.musiclibrary.manager;
 
 import android.content.Context;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -51,7 +50,6 @@ public class MusicManager implements IPlayControl {
     private Context mContext;
     private boolean isOpenCacheWhenPlaying = false;
     private IPlayControl control;
-    private ServiceConnection mServiceConnection;
     private CacheConfig mCacheConfig;
     private ClientHandler mClientHandler;
     private PlayStateObservable mStateObservable;
@@ -89,10 +87,6 @@ public class MusicManager implements IPlayControl {
         }
     }
 
-    void attachServiceConnection(ServiceConnection serviceConnection) {
-        this.mServiceConnection = serviceConnection;
-    }
-
     void attachMusicLibraryBuilder(MusicLibrary.Builder builder) {
         this.mCacheConfig = builder.getCacheConfig();
         if (mCacheConfig != null) {
@@ -100,7 +94,7 @@ public class MusicManager implements IPlayControl {
         }
     }
 
-    public void unbindService() {
+    void stopService() {
         try {
             if (control != null && control.asBinder().isBinderAlive()) {
                 control.unregisterPlayerEventListener(mOnPlayerEventListener);
@@ -109,22 +103,29 @@ public class MusicManager implements IPlayControl {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        mContext.unbindService(mServiceConnection);
-        MusicLibrary.isInitLibrary = false;
     }
 
+    /**
+     * 添加一个状态观察者
+     */
     public void addStateObservable(Observer o) {
         if (mStateObservable != null) {
             mStateObservable.addObserver(o);
         }
     }
 
+    /**
+     * 删除一个状态观察者
+     */
     public void deleteStateObservable(Observer o) {
         if (mStateObservable != null) {
             mStateObservable.deleteObserver(o);
         }
     }
 
+    /**
+     * 删除所有状态观察者
+     */
     public void clearStateObservable() {
         if (mStateObservable != null) {
             mStateObservable.deleteObservers();
@@ -245,6 +246,9 @@ public class MusicManager implements IPlayControl {
         }
     }
 
+    /**
+     * 添加一个状态监听
+     */
     public void addPlayerEventListener(OnPlayerEventListener listener) {
         if (listener != null) {
             if (!mPlayerEventListeners.contains(listener)) {
@@ -253,18 +257,25 @@ public class MusicManager implements IPlayControl {
         }
     }
 
+    /**
+     * 删除一个状态监听
+     */
     public void removePlayerEventListener(OnPlayerEventListener listener) {
         if (listener != null) {
-            if (mPlayerEventListeners.contains(listener)) {
-                mPlayerEventListeners.remove(listener);
-            }
+            mPlayerEventListeners.remove(listener);
         }
     }
 
+    /**
+     * 删除所有状态监听
+     */
     public void clearPlayerEventListener() {
         mPlayerEventListeners.clear();
     }
 
+    /**
+     * 添加一个计时监听
+     */
     public void addTimerTaskEventListener(OnTimerTaskListener listener) {
         if (listener != null) {
             if (!mOnTimerTaskListeners.contains(listener)) {
@@ -273,14 +284,18 @@ public class MusicManager implements IPlayControl {
         }
     }
 
+    /**
+     * 删除一个计时监听
+     */
     public void removeTimerTaskEventListener(OnTimerTaskListener listener) {
         if (listener != null) {
-            if (mOnTimerTaskListeners.contains(listener)) {
-                mOnTimerTaskListeners.remove(listener);
-            }
+            mOnTimerTaskListeners.remove(listener);
         }
     }
 
+    /**
+     * 删除所有计时监听
+     */
     public void clearTimerTaskEventListener() {
         mOnTimerTaskListeners.clear();
     }
@@ -903,27 +918,31 @@ public class MusicManager implements IPlayControl {
         setPlayList(auditionList);
     }
 
+    @Deprecated
     @Override
     public void registerPlayerEventListener(IOnPlayerEventListener listener) {
         //Do nothing
     }
 
+    @Deprecated
     @Override
     public void unregisterPlayerEventListener(IOnPlayerEventListener listener) {
         //Do nothing
     }
 
+    @Deprecated
     @Override
     public void registerTimerTaskListener(IOnTimerTaskListener listener) {
         //Do nothing
     }
 
+    @Deprecated
     @Override
     public void unregisterTimerTaskListener(IOnTimerTaskListener listener) {
         //Do nothing
     }
 
-
+    @Deprecated
     @Override
     public IBinder asBinder() {
         //Do nothing
