@@ -169,7 +169,7 @@ public class SystemNotification implements IMediaNotification {
     }
 
     private Notification createNotification() {
-        if (mNotificationCreater != null && !TextUtils.isEmpty(mNotificationCreater.getTargetClass())) {
+        if (mNotificationCreater != null && !TextUtils.isEmpty(mNotificationCreater.getTargetClass()) && mSongInfo != null) {
             Class clazz = getTargetClass(mNotificationCreater.getTargetClass());
 
             String fetchArtUrl = null;

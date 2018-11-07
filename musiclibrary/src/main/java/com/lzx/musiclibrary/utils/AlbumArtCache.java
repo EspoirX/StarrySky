@@ -95,12 +95,14 @@ public final class AlbumArtCache {
 
         @Override
         protected Bitmap[] doInBackground(Void... voids) {
-            Bitmap[] bitmaps;
+            Bitmap[] bitmaps = null;
             try {
                 Bitmap bitmap = BitmapHelper.fetchAndRescaleBitmap(artUrl, MAX_ART_WIDTH, MAX_ART_HEIGHT);
                 Bitmap icon = BitmapHelper.scaleBitmap(bitmap, MAX_ART_WIDTH_ICON, MAX_ART_HEIGHT_ICON);
-                bitmaps = new Bitmap[]{bitmap, icon};
-                mCache.put(artUrl, bitmaps);
+                if (icon != null) {
+                    bitmaps = new Bitmap[]{bitmap, icon};
+                    mCache.put(artUrl, bitmaps);
+                }
             } catch (IOException e) {
                 return null;
             }

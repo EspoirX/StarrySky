@@ -5,81 +5,72 @@ import android.os.Looper;
 import android.os.Message;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
 
 /**
+ * 包装一下实例和订阅方法
  * create by lzx
- * time:2018/11/2
+ * time:2018/11/7
  */
 public class Subscription {
-    static final String DEFAULT_TAG = "DEFAULT_TAG";
+    private final Object subscriber;
+    private final SubscriberMethod subscriberMethod;
+    private volatile boolean active;
+
     private static final int HANDLER_MSG = 10001;
-
-    private Object subscriber;
-    private List<Method> methods;
-    private Map<String, String> tags;
-    private Map<String, ThreadMode> threadModes;
-
     private EventHandler mEventHandler;
 
-
-    Subscription(Object obj) {
-        subscriber = obj;
+    Subscription(Object subscriber, SubscriberMethod subscriberMethod) {
+        this.subscriber = subscriber;
+        this.subscriberMethod = subscriberMethod;
+        active = true;
         mEventHandler = new EventHandler(this);
-        methods = new ArrayList<>();
-        tags = new HashMap<>();
-        threadModes = new HashMap<>();
-        findMethod();
     }
 
-    /**
-     * 找出有注解Subscriber标记的方法
-     */
-    private void findMethod() {
-        methods.clear();
-        Method[] allMethod = subscriber.getClass().getDeclaredMethods();
-        for (Method method : allMethod) {
-            Subscriber annotation = method.getAnnotation(Subscriber.class);
-            if (annotation != null) {
-                methods.add(method);
-                String tag = DEFAULT_TAG.equals(annotation.tag()) ? subscriber.getClass().getName() : annotation.tag();
-                tags.put(method.getName(), tag);
-                threadModes.put(method.getName(), annotation.thread());
-            }
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Subscription) {
+            Subscription otherSubscription = (Subscription) other;
+            return subscriber == otherSubscription.subscriber
+                    && subscriberMethod.equals(otherSubscription.subscriberMethod);
+        } else {
+            return false;
         }
     }
 
-    String getTag(String method) {
-        return tags.get(method);
-    }
-
-    public Map<String, String> getTags() {
-        return tags;
+    @Override
+    public int hashCode() {
+        return subscriber.hashCode() + subscriberMethod.methodString.hashCode();
     }
 
     /**
-     * 反射执行方法
+     * 执行订阅方法
      */
-    void invokeMessage(Object msg) {
-        for (Method method : methods) {
-            if (method != null) {
-                try {
-                    if (threadModes.get(method.getName()) == ThreadMode.MAIN) {
-                        mEventHandler.obtainMessage(HANDLER_MSG, msg).sendToTarget();
-                    } else {
-                        method.invoke(subscriber, msg);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+    void postToSubscription(Subscription subscription, Object event, boolean isMainThread) {
+        if (isMainThread) {
+            invokeSubscriber(subscription, event);
+        } else {
+            SubscriptionMsg msg = new SubscriptionMsg(subscription, event);
+            mEventHandler.obtainMessage(HANDLER_MSG, msg).sendToTarget();
         }
     }
 
+    /**
+     * 通过反射执行订阅方法
+     */
+    private void invokeSubscriber(Subscription subscription, Object event) {
+        try {
+            subscription.subscriberMethod.method.invoke(subscription.subscriber, event);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 主线程Handler
+     */
     private static class EventHandler extends Handler {
 
         private final WeakReference<Subscription> mSubscription;
@@ -93,17 +84,19 @@ public class Subscription {
         public void handleMessage(Message message) {
             super.handleMessage(message);
             if (message.what == HANDLER_MSG) {
-                Object msg = message.obj;
-                for (Method method : mSubscription.get().methods) {
-                    if (method != null) {
-                        try {
-                            method.invoke(mSubscription.get().subscriber, msg);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+                SubscriptionMsg msg = (SubscriptionMsg) message.obj;
+                mSubscription.get().invokeSubscriber(msg.subscription, msg.event);
             }
+        }
+    }
+
+    private static class SubscriptionMsg {
+        Subscription subscription;
+        Object event;
+
+        SubscriptionMsg(Subscription subscription, Object event) {
+            this.subscription = subscription;
+            this.event = event;
         }
     }
 }

@@ -12,7 +12,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Subscriber {
-    String tag() default Subscription.DEFAULT_TAG; //标记，用于点对点通信
-
-    ThreadMode thread() default ThreadMode.SAMETHREAD;//用于线程切换
+    String tag() default "DEFAULT_TAG"; //标记，用于点对点通信
 }

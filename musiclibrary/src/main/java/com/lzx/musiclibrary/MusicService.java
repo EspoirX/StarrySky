@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.control.PlayControl;
 import com.lzx.musiclibrary.notification.NotificationCreater;
+import com.lzx.musiclibrary.utils.LogUtil;
 
 /**
  * Created by xian on 2018/1/20.
@@ -74,16 +75,16 @@ public class MusicService extends Service {
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
         stopSelf();
+        LogUtil.i("服务关闭了。。。");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        LogUtil.i("服务关闭了。。。");
         if (mBinder != null) {
             mBinder.stopMusic();
             mBinder.releaseMediaSession();
         }
     }
-
-
 }

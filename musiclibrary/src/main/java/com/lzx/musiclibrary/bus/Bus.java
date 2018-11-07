@@ -1,9 +1,12 @@
 package com.lzx.musiclibrary.bus;
 
-import com.lzx.musiclibrary.utils.LogUtil;
+import android.os.Looper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 简单实现一个EventBus
@@ -12,10 +15,19 @@ import java.util.Map;
  */
 public class Bus {
 
-    private HashMap<String, Subscription> subscriptionMap;
+    private final Map<String, CopyOnWriteArrayList<Subscription>> subscriptionsByTag;
+    private SubscriberMethodFinder subscriberMethodFinder;
+
+    private final ThreadLocal<PostingThreadState> currentPostingThreadState = new ThreadLocal<PostingThreadState>() {
+        @Override
+        protected PostingThreadState initialValue() {
+            return new PostingThreadState();
+        }
+    };
 
     private Bus() {
-        subscriptionMap = new HashMap<>();
+        subscriptionsByTag = new HashMap<>();
+        subscriberMethodFinder = new SubscriberMethodFinder();
     }
 
     public static Bus getInstance() {
@@ -29,14 +41,37 @@ public class Bus {
     /**
      * 订阅
      */
-    public void register(Object obj) {
-        if (obj == null) {
+    public void register(Object subscriber) {
+        if (subscriber == null) {
             return;
         }
-        String key = obj.getClass().getName();
-        LogUtil.i("key = " + key);
-        if (!subscriptionMap.containsKey(key)) {
-            subscriptionMap.put(key, new Subscription(obj));
+        Class<?> subscriberClass = subscriber.getClass();
+        //找到所有订阅方法
+        List<SubscriberMethod> subscriberMethods = subscriberMethodFinder.findSubscriberMethods(subscriberClass);
+        synchronized (this) {
+            for (SubscriberMethod subscriberMethod : subscriberMethods) {
+                subscribe(subscriber, subscriberMethod);
+            }
+        }
+    }
+
+    /**
+     * 遍历赋值到 subscriptionsByTag 中
+     */
+    private void subscribe(Object subscriber, SubscriberMethod subscriberMethod) {
+        String eventTag = subscriberMethod.eventTag; //唯一标记
+        Subscription newSubscription = new Subscription(subscriber, subscriberMethod);
+        CopyOnWriteArrayList<Subscription> subscriptions = subscriptionsByTag.get(eventTag);
+        if (subscriptions == null) {
+            subscriptions = new CopyOnWriteArrayList<>();
+            subscriptionsByTag.put(eventTag, subscriptions);
+        }
+        int size = subscriptions.size();
+        for (int i = 0; i <= size; i++) {
+            if (i == size) {
+                subscriptions.add(i, newSubscription);
+                break;
+            }
         }
     }
 
@@ -47,33 +82,72 @@ public class Bus {
         if (obj == null) {
             return;
         }
-        String key = obj.getClass().getName();
-        subscriptionMap.remove(key);
+        subscriptionsByTag.clear();
+        currentPostingThreadState.remove();
+        subscriberMethodFinder.clearCache();
     }
 
     /**
-     * 发布消息
+     * 发送事件
      */
-    public void post(Object msg, Class clazz) {
-        post(msg, clazz.getName());
-    }
-
-    public void post(Object msg) {
-        for (Map.Entry<String, Subscription> entry : subscriptionMap.entrySet()) {
-            Subscription subscription = entry.getValue();
-            subscription.invokeMessage(msg);
+    public void post(Object event, String eventTag) {
+        PostingThreadState postingState = currentPostingThreadState.get();
+        List<Object> eventQueue = postingState.eventQueue;
+        eventQueue.add(event);
+        if (!postingState.isPosting) {
+            postingState.isMainThread = isMainThread();
+            postingState.eventTag = eventTag;
+            postingState.isPosting = true;
+            if (postingState.canceled) {
+                throw new RuntimeException("Internal error. Abort state was not reset");
+            }
+            try {
+                while (!eventQueue.isEmpty()) {
+                    postSingleEventForTag(eventQueue.remove(0), postingState);
+                }
+            } finally {
+                postingState.isPosting = false;
+                postingState.isMainThread = false;
+            }
         }
     }
 
-    public void post(Object msg, String tag) {
-        for (Map.Entry<String, Subscription> entry : subscriptionMap.entrySet()) {
-            Subscription subscription = entry.getValue();
-            Map<String, String> tags = subscription.getTags();
-            for (Map.Entry<String, String> mapEntry : tags.entrySet()) {
-                if (mapEntry.getValue().equals(tag)) {
-                    subscription.invokeMessage(msg);
+    private void postSingleEventForTag(Object event, PostingThreadState postingState) {
+        CopyOnWriteArrayList<Subscription> subscriptions;
+        synchronized (this) {
+            subscriptions = subscriptionsByTag.get(postingState.eventTag);
+        }
+        if (subscriptions != null && !subscriptions.isEmpty()) {
+            for (Subscription subscription : subscriptions) {
+                postingState.event = event;
+                postingState.subscription = subscription;
+                boolean aborted;
+                try {
+                    subscription.postToSubscription(subscription, event, postingState.isMainThread);
+                    aborted = postingState.canceled;
+                } finally {
+                    postingState.event = null;
+                    postingState.subscription = null;
+                    postingState.canceled = false;
+                }
+                if (aborted) {
+                    break;
                 }
             }
         }
+    }
+
+    final static class PostingThreadState {
+        final List<Object> eventQueue = new ArrayList<>();
+        boolean isPosting;
+        boolean isMainThread;
+        Subscription subscription;
+        Object event;
+        boolean canceled;
+        String eventTag;
+    }
+
+    private boolean isMainThread() {
+        return Looper.myLooper() == Looper.getMainLooper();
     }
 }
