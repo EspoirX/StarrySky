@@ -237,7 +237,7 @@ MusicManager.get().playMusicByInfo(songInfo);
 PS：
 - 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。欢迎各位大佬指点指点。
 
-<a href="art/qq_qun.jpg"><img src="art/qq_qun.jpg"/></a>
+<a href="art/qq_qun.jpg"><img src="art/qq_qun.jpg" width="30%"/></a>
 
 <br><br>
 
