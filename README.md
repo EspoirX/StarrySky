@@ -73,7 +73,7 @@ public class NiceMusicApplication extends Application {
         if (BaseUtil.getCurProcessName(this).equals("your package name")) {
             MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
                               .build();
-            musicLibrary.init();
+            musicLibrary.startMusicService();
         }
     }
 }
@@ -169,7 +169,7 @@ At least set songId and songUrl to play.To play audio in the local audio or asse
 
 ## Function list
 
-1. Play audio
+Play audio
 2. Pause audio
 3. Stop audio
 4. Resume playback after pause

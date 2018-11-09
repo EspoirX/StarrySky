@@ -71,7 +71,7 @@ public class NiceMusicApplication extends Application {
         if (BaseUtil.getCurProcessName(this).equals("your package name")) {
             MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
                               .build();
-            musicLibrary.init();
+            musicLibrary.startMusicService();
         }
     }
 }
