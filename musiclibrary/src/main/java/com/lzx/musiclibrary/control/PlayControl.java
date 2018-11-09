@@ -108,7 +108,7 @@ public class PlayControl extends BasePlayControl {
                         try {
                             switch (status) {
                                 case State.STATE_IDLE:
-                                    listener.onPlayCompletion();
+                                    listener.onPlayCompletion(info);
                                     break;
                                 case State.STATE_ASYNC_LOADING:
                                     isAsyncLoading = true;
@@ -127,7 +127,7 @@ public class PlayControl extends BasePlayControl {
                                     listener.onPlayerPause();
                                     break;
                                 case State.STATE_ENDED:
-                                    listener.onPlayCompletion();
+                                    listener.onPlayCompletion(info);
                                     break;
                                 case State.STATE_STOP:
                                     listener.onPlayerStop();

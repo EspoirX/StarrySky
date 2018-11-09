@@ -83,7 +83,7 @@ public class MusicService extends Service {
         super.onDestroy();
         LogUtil.i("服务关闭了。。。");
         if (mBinder != null) {
-            mBinder.stopMusic();
+            //mBinder.stopMusic();
             mBinder.releaseMediaSession();
         }
     }

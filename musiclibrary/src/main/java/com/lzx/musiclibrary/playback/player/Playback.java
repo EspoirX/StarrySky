@@ -114,7 +114,7 @@ public interface Playback {
         /**
          * 当前音乐播放完毕
          */
-        void onPlayCompletion();
+        void onPlayCompletion(SongInfo songInfo);
 
         /**
          * 在播放状态改变时，可以实现这个回调来更新媒体会话的播放状态。

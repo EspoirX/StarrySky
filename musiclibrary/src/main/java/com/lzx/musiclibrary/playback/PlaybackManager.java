@@ -51,7 +51,6 @@ public class PlaybackManager implements Playback.Callback {
         return mMediaSessionCallback;
     }
 
-
     /**
      * 播放
      */
@@ -139,9 +138,9 @@ public class PlaybackManager implements Playback.Callback {
      * 播放完成
      */
     @Override
-    public void onPlayCompletion() {
+    public void onPlayCompletion(SongInfo songInfo) {
         if (mServiceCallback != null) {
-            mServiceCallback.onPlaybackCompletion();
+            mServiceCallback.onPlaybackCompletion(songInfo);
         }
         if (isAutoPlayNext) {
             int playMode = mQueueManager.getPlayMode();
@@ -230,7 +229,6 @@ public class PlaybackManager implements Playback.Callback {
             }
         }
         //设置播放状态
-
         stateBuilder.setState(state == State.STATE_PLAYING ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED,
                 position, 1.0f, SystemClock.elapsedRealtime());
         // Set the activeQueueItemId if the current index is valid.
@@ -405,7 +403,7 @@ public class PlaybackManager implements Playback.Callback {
 
         void onPlaybackError(String errorMsg);
 
-        void onPlaybackCompletion();
+        void onPlaybackCompletion(SongInfo songInfo);
 
         void onNotificationRequired();
 

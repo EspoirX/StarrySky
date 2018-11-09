@@ -85,7 +85,13 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
                 }
                 case TRANSACTION_onPlayCompletion: {
                     data.enforceInterface(DESCRIPTOR);
-                    this.onPlayCompletion();
+                    SongInfo _arg0;
+                    if ((0 != data.readInt())) {
+                        _arg0 = SongInfo.CREATOR.createFromParcel(data);
+                    } else {
+                        _arg0 = null;
+                    }
+                    this.onPlayCompletion(_arg0);
                     reply.writeNoException();
                     return true;
                 }
@@ -199,11 +205,12 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
              * 播放完成
              */
             @Override
-            public void onPlayCompletion() throws android.os.RemoteException {
+            public void onPlayCompletion(SongInfo songInfo) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
+                    songInfo.writeToParcel(_data, 0);
                     mRemote.transact(Stub.TRANSACTION_onPlayCompletion, _data, _reply, 0);
                     _reply.readException();
                 } finally {
@@ -276,7 +283,7 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
      * 播放完成
      * @throws android.os.RemoteException
      */
-    void onPlayCompletion() throws android.os.RemoteException;
+    void onPlayCompletion(SongInfo songInfo) throws android.os.RemoteException;
 
     void onPlayerStop() throws android.os.RemoteException;
 

@@ -68,6 +68,9 @@ public class MusicManager implements IPlayControl {
                 }
             }
         }
+        if (!MusicLibrary.isInitLibrary) {
+            MusicLibrary.isInitLibrary = true;
+        }
         return sInstance;
     }
 
@@ -149,8 +152,8 @@ public class MusicManager implements IPlayControl {
         }
 
         @Override
-        public void onPlayCompletion() {
-            mClientHandler.obtainMessage(MSG_PLAY_COMPLETION).sendToTarget();
+        public void onPlayCompletion(SongInfo songInfo) {
+            mClientHandler.obtainMessage(MSG_PLAY_COMPLETION, songInfo).sendToTarget();
         }
 
         @Override
@@ -213,7 +216,8 @@ public class MusicManager implements IPlayControl {
                     manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAYER_PAUSE);
                     break;
                 case MSG_PLAY_COMPLETION:
-                    manager.notifyPlayerEventChange(MSG_PLAY_COMPLETION, null, "", false);
+                    SongInfo songInfo = (SongInfo) msg.obj;
+                    manager.notifyPlayerEventChange(MSG_PLAY_COMPLETION, songInfo, "", false);
                     manager.mStateObservable.stateChangeNotifyObservers(MSG_PLAY_COMPLETION);
                     break;
                 case MSG_PLAYER_ERROR:
@@ -313,7 +317,7 @@ public class MusicManager implements IPlayControl {
                     listener.onPlayerPause();
                     break;
                 case MSG_PLAY_COMPLETION:
-                    listener.onPlayCompletion();
+                    listener.onPlayCompletion(info);
                     break;
                 case MSG_PLAYER_ERROR:
                     listener.onError(errorMsg);

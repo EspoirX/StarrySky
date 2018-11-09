@@ -18,7 +18,6 @@ import com.lzx.musiclibrary.cache.CacheUtils;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
 import com.lzx.musiclibrary.utils.BaseUtil;
-import com.lzx.musiclibrary.utils.LogUtil;
 import com.lzx.musiclibrary.utils.SPUtils;
 
 import java.io.IOException;
@@ -396,7 +395,7 @@ public class MediaPlayback implements Playback,
     @Override
     public void onCompletion(MediaPlayer mp) {
         if (mCallback != null) {
-            mCallback.onPlayCompletion();
+            mCallback.onPlayCompletion(mCurrentMediaSongInfo);
             //mCallback.onPlaybackStatusChanged(State.STATE_ENDED);
         }
     }
@@ -423,7 +422,6 @@ public class MediaPlayback implements Playback,
 
     @Override
     public void onSeekComplete(MediaPlayer mediaPlayer) {
-        //TODO
-        LogUtil.i("-------------------onSeekComplete------------------");
+
     }
 }

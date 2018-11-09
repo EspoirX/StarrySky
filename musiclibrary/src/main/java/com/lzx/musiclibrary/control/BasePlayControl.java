@@ -355,8 +355,8 @@ public class BasePlayControl extends IPlayControl.Stub implements PlaybackManage
     }
 
     @Override
-    public void onPlaybackCompletion() {
-        mNotifyStatusChanged.notify(mPlayQueueManager.getCurrentSongInfo(), mPlayQueueManager.getCurrentIndex(), State.STATE_ENDED, null);
+    public void onPlaybackCompletion(SongInfo songInfo) {
+        mNotifyStatusChanged.notify(songInfo, mPlayQueueManager.getCurrentIndex(), State.STATE_ENDED, null);
     }
 
     @Override

@@ -14,7 +14,7 @@ public interface OnPlayerEventListener {
 
     void onPlayerPause();
 
-    void onPlayCompletion();
+    void onPlayCompletion(SongInfo songInfo);
 
     void onPlayerStop();
 

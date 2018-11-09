@@ -140,6 +140,9 @@ public class SubscriberMethodFinder {
             skipSuperClasses = false;
         }
 
+        /**
+         * 双重检查是否已经添加
+         */
         boolean checkAdd(Method method, Class<?> eventType) {
             Object existing = anyMethodByEventType.put(eventType, method);
             if (existing == null) {
