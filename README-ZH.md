@@ -49,7 +49,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.4.3'
+    implementation 'com.lzx:MusicLibrary:1.4.4'
 }
 ```
 
@@ -207,7 +207,7 @@ MusicManager.get().playMusicByInfo(songInfo);
 36. 设置音量
 37. 注册/解注册一个播放状态监听器
 38. 注册/解注册一个定时播放监听器
-...
+39. ...
   
 ## 具体文档
   
@@ -236,6 +236,8 @@ MusicManager.get().playMusicByInfo(songInfo);
 
 PS：
 - 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。欢迎各位大佬指点指点。
+
+<a href="art/qq_qun.png"><img src="art/qq_qun.png"/></a>
 
 <br><br>
 

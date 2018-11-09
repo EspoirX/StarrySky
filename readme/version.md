@@ -1,5 +1,9 @@
 ### 版本更新记录
 
+#### v1.4.4
+- 代码重构
+- 修复部分bug
+
 #### v1.4.3
 - 添加android.permission.FOREGROUND_SERVICE权限,适配android P
 
