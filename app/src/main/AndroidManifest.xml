@@ -1,21 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.lzx.musiclib">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.lzx.musiclib">
 
     <application
+        android:name=".TestApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="com.lzx.musiclibrary.MusicService"
+            android:exported="true"
+            android:process=":MusicLibrary" />
+
+        <receiver
+            android:name="com.lzx.musiclibrary.receiver.RemoteControlReceiver"
+            android:exported="true"
+            android:process=":MusicLibrary">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.lzx.musiclibrary.receiver.PlayerReceiver"
+            android:exported="true"
+            android:process=":MusicLibrary">
+            <intent-filter>
+                <action android:name="com.lzx.nicemusic.close" />
+                <action android:name="com.lzx.nicemusic.play_pause" />
+                <action android:name="com.lzx.nicemusic.prev" />
+                <action android:name="com.lzx.nicemusic.next" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
