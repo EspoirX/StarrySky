@@ -51,7 +51,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.4.3'
+    implementation 'com.lzx:MusicLibrary:1.4.4'
 }
 ```
 
@@ -61,6 +61,7 @@ If your appcompat-v7 package is using 27+, then you need an extra reference to s
 implementation 'com.android.support:support-media-compat:27.1.1'
 ```
 
+If you find that you still can't find the related class's crash after the reference, please check if the same package exists but the version is different and cause conflict.
 
 2. add MusicLibrary to your Application
 
@@ -114,6 +115,42 @@ MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
 musicLibrary.init();
 ```
 
+3. Configuration AndroidManifest.xml
+
+In order to allow the user to decide whether to open the multi-process to use the library, the configuration of the manifest file is given to the user, as follows:
+
+
+```xml
+<!--MusicService-->
+<service
+    android:name="com.lzx.musiclibrary.MusicService"
+    android:exported="true"
+    android:process=":MusicLibrary" />
+<!--Wire control related-->
+<receiver
+    android:name="com.lzx.musiclibrary.receiver.RemoteControlReceiver"
+    android:exported="true"
+    android:process=":MusicLibrary">
+    <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON" />
+    </intent-filter>
+</receiver>
+<!--Notification bar event related-->
+<receiver
+    android:name="com.lzx.musiclibrary.receiver.PlayerReceiver"
+    android:exported="true"
+    android:process=":MusicLibrary">
+    <intent-filter>
+        <action android:name="com.lzx.nicemusic.close" />
+        <action android:name="com.lzx.nicemusic.play_pause" />
+        <action android:name="com.lzx.nicemusic.prev" />
+        <action android:name="com.lzx.nicemusic.next" />
+    </intent-filter>
+</receiver>
+```
+The default is to use multi-process, if you do not want to use, remove android:process=":MusicLibrary", where MusicLibrary is the name of the process, you can define it yourself.
+
+
 **other instructions**
 If you use the System.exit(0); method to exit the APP, you may need to call the ActivityManager#killBackgroundProcesses method again.
 Kill the audio process, otherwise it may report a crash, so try not to do it.
@@ -129,6 +166,48 @@ MusicManager.get().playMusicByInfo(songInfo);
 ```
 
 At least set songId and songUrl to play.To play audio in the local audio or assets folder, or streaming audio such as m3u8, just use set the songUrl and songId as usual.
+
+## Function list
+
+Play audio
+2. Pause audio
+3. Stop audio
+4. Resume playback after pause
+5. Timed playback
+6. Get the current playback subscript
+7. Get the current playlist
+8. Set the current playlist
+9. Delete a message from the playlist
+10. Get the playback status
+11. Get the audio duration
+12. Play the next song
+13. Play the previous one
+14. Determine if there is a previous one
+15. Determine if there is a next one
+16. Get the previous message
+17. Get the next message
+18. Get the current playback information
+19. Set current audio information
+20. Set the play mode
+21. Get the playback mode
+22. Get current progress
+23. Target to the specified location
+24. Get the audio SessionId
+25. Get the playback speed
+26. Get the playback tone
+27. Initialization
+27. Side-by-side storage configuration
+29. Player selection
+30. Configure a custom notification bar
+31. Configure the system notification bar
+32. Close the notification bar
+33. Update notification bar
+34. Variable speed
+35. Get buffer progress
+36. Set the volume
+37. Register/unregister a play status listener
+38. Register/unregister a timed play listener
+39. ...
 
 ## Wiki
 
@@ -157,6 +236,8 @@ At least set songId and songUrl to play.To play audio in the local audio or asse
 
 PS：
 - If you have ideas or opinions and suggestions, please feel free to ask for an issue and like to have a star. Welcome everybody to give pointers.
+
+<a href="art/qq_qun.jpg"><img src="art/qq_qun.jpg" width="30%"/></a>
 
 <br><br>
 
