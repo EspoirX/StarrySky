@@ -111,7 +111,7 @@ MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
         .setCacheConfig(cacheConfig)
         .setUseMediaPlayer(false)
         .build();
-musicLibrary.init();
+musicLibrary.startMusicService();
 ```
 
 3. 配置 AndroidManifest.xml
