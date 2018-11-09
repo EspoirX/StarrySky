@@ -16,7 +16,7 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (BaseUtil.getCurProcessName(this).equals("com.lzx.pandora")) {
+        if (BaseUtil.getCurProcessName(this).equals("com.lzx.musiclib")) {
             NotificationCreater creater = new NotificationCreater.Builder()
                     .setTargetClass("com.lzx.music.MusicTestActivity")
                     .setCreateSystemNotification(true)

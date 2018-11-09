@@ -58,6 +58,7 @@ dependencies {
 ```java
 implementation 'com.android.support:support-media-compat:27.1.1'
 ```
+如果引用后发现还是报找不到相关类的崩溃，请检查是否存在同样的包但是版本不一样导致冲突了。
 
 
 2. 添加 MusicLibrary 到你的 Application 中
@@ -113,9 +114,46 @@ MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
 musicLibrary.init();
 ```
 
+3. 配置 AndroidManifest.xml
+
+为了能让用户自己决定是否开启多进程来使用该库，所以把清单文件配置交给用户来做，具体如下：
+
+```xml
+<!--音频服务-->
+<service
+    android:name="com.lzx.musiclibrary.MusicService"
+    android:exported="true"
+    android:process=":MusicLibrary" />
+<!--线控相关-->
+<receiver
+    android:name="com.lzx.musiclibrary.receiver.RemoteControlReceiver"
+    android:exported="true"
+    android:process=":MusicLibrary">
+    <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON" />
+    </intent-filter>
+</receiver>
+<!--通知栏事件相关-->
+<receiver
+    android:name="com.lzx.musiclibrary.receiver.PlayerReceiver"
+    android:exported="true"
+    android:process=":MusicLibrary">
+    <intent-filter>
+        <action android:name="com.lzx.nicemusic.close" />
+        <action android:name="com.lzx.nicemusic.play_pause" />
+        <action android:name="com.lzx.nicemusic.prev" />
+        <action android:name="com.lzx.nicemusic.next" />
+    </intent-filter>
+</receiver>
+```
+默认是使用多进程的，如果不想使用则把  android:process=":MusicLibrary" 去掉即可，其中 MusicLibrary 是进程的名字，可以自己定义。
+
+
 **其他说明**
 如果你是使用 System.exit(0); 方法来退出 APP 的，那么可能需要再调用 ActivityManager#killBackgroundProcesses 方法来
 杀掉音频进程，不然可能会报一个崩溃，所以尽量别这么干吧。
+
+
 
 3. 简单应用 (播放一首音乐):
 
@@ -129,8 +167,49 @@ MusicManager.get().playMusicByInfo(songInfo);
 
 最少要设置 songId 和 songUrl 才能播放。若要播放本地音频或者 assets 文件夹下的音频，或者 m3u8 等流式音频，用法一样，只要设置对 songUrl 和 songId 就行。
 
+## 功能一览
+
+1. 播放音频
+2. 暂停音频
+3. 停止音频
+4. 暂停后恢复播放
+5. 定时播放
+6. 获取当前播放下标
+7. 获取当前播放列表
+8. 设置当前播放列表
+9. 从播放列表中删除一条信息
+10. 获取播放状态
+11. 获取音频时长
+12. 播放下一首
+13. 播放上一首
+14. 判断是否有上一首
+15. 判断是否有下一首
+16. 得到上一首信息
+17. 得到下一首信息
+18. 得到当前播放信息
+19. 设置当前音频信息
+20. 设置播放模式
+21. 获取播放模式
+22. 获取当前进度
+23. 定位到指定位置
+24. 获取音频SessionId
+25. 获取播放速度
+26. 获取播放音调
+27. 初始化
+27. 边播边存配置
+29. 播放器选择
+30. 配置自定义通知栏
+31. 配置系统通知栏
+32. 关闭通知栏
+33. 更新通知栏
+34. 变速
+35. 获取缓冲进度
+36. 设置音量
+37. 注册/解注册一个播放状态监听器
+38. 注册/解注册一个定时播放监听器
+...
   
-## 文档
+## 具体文档
   
 1. Model字典
  
