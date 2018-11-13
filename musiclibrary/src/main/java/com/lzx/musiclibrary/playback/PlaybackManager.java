@@ -86,9 +86,9 @@ public class PlaybackManager implements Playback.Callback {
      *
      * @param withError
      */
-    public void handleStopRequest(String withError) {
-        mPlayback.stop(true);
-        updatePlaybackState(withError);
+    public void handleStopRequest(String withError, boolean isResetPlayer) {
+        mPlayback.stop(true, isResetPlayer);
+        updatePlaybackState(withError, isResetPlayer);
     }
 
     /**
@@ -114,8 +114,6 @@ public class PlaybackManager implements Playback.Callback {
             } else if (state == State.STATE_PAUSED) {
                 handlePlayRequest();
             } else if (state == State.STATE_STOP) {
-                handlePlayRequest();
-            } else if (state == State.STATE_ENDED) {
                 handlePlayRequest();
             }
         }
@@ -181,12 +179,12 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void onPlaybackStatusChanged(int state) {
-        updatePlaybackState(null);
+        updatePlaybackState(null, false);
     }
 
     @Override
     public void onError(String error) {
-        updatePlaybackState(error);
+        updatePlaybackState(error, false);
     }
 
     /**
@@ -208,7 +206,7 @@ public class PlaybackManager implements Playback.Callback {
         return mPlayback.getCurrentMediaId();
     }
 
-    public void updatePlaybackState(String error) {
+    public void updatePlaybackState(String error, boolean isResetPlayer) {
         long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
         if (mPlayback != null && mPlayback.isConnected()) {
             position = mPlayback.getCurrentStreamPosition();
@@ -219,6 +217,9 @@ public class PlaybackManager implements Playback.Callback {
 
         //获取播放状态
         int state = mPlayback.getState();
+        if (isResetPlayer) {
+            state = State.STATE_STOP;
+        }
         //如果是播放失败
         if (error != null) {
             //设置错误信息
@@ -273,7 +274,7 @@ public class PlaybackManager implements Playback.Callback {
         int oldState = mPlayback.getState();
         long pos = mPlayback.getCurrentStreamPosition();
         String currentMediaId = mPlayback.getCurrentMediaId();
-        mPlayback.stop(false);
+        mPlayback.stop(false, false);
         playback.setCallback(this);
         playback.setCurrentMediaId(currentMediaId);
         playback.seekTo(pos < 0 ? 0 : pos);
@@ -293,7 +294,7 @@ public class PlaybackManager implements Playback.Callback {
                 } else if (!resumePlaying) {
                     mPlayback.pause();
                 } else {
-                    mPlayback.stop(true);
+                    mPlayback.stop(true, false);
                 }
                 break;
             case PlaybackStateCompat.STATE_NONE:
@@ -345,7 +346,7 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onStop() {
-            handleStopRequest(null);
+            handleStopRequest(null, false);
         }
 
         @Override
@@ -353,7 +354,7 @@ public class PlaybackManager implements Playback.Callback {
             if (mQueueManager.skipQueuePosition(1)) {
                 handlePlayRequest();
             } else {
-                handleStopRequest("Cannot skip");
+                handleStopRequest("Cannot skip", false);
             }
             mQueueManager.updateMetadata();
         }
@@ -363,7 +364,7 @@ public class PlaybackManager implements Playback.Callback {
             if (mQueueManager.skipQueuePosition(-1)) {
                 handlePlayRequest();
             } else {
-                handleStopRequest("Cannot skip");
+                handleStopRequest("Cannot skip", false);
             }
             mQueueManager.updateMetadata();
         }

@@ -51,9 +51,11 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.4.4'
+    implementation 'com.lzx:MusicLibrary:x.y.z'
 }
 ```
+Please replace x and y and z with the latest version numbers
+
 
 If your appcompat-v7 package is using 27+, then you need an extra reference to support-media-compat. For example:
 

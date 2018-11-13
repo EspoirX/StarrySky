@@ -49,9 +49,11 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.lzx:MusicLibrary:1.4.4'
+    implementation 'com.lzx:MusicLibrary:x.y.z'
 }
+
 ```
+请将 x.y.z 替换成最新的版本号
 
 如果你的 appcompat-v7 包使用的是 27+，那么需要额外引用 support-media-compat 例如：
 

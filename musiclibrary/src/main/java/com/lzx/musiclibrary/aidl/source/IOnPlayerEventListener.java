@@ -25,6 +25,7 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
         /**
          * Cast an IBinder object into an IOnPlayerEventListener interface,
          * generating a proxy if needed.
+         *
          * @param obj
          * @return IOnPlayerEventListener
          */
@@ -210,7 +211,12 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
                 android.os.Parcel _reply = android.os.Parcel.obtain();
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
-                    songInfo.writeToParcel(_data, 0);
+                    if ((songInfo != null)) {
+                        _data.writeInt(1);
+                        songInfo.writeToParcel(_data, 0);
+                    } else {
+                        _data.writeInt(0);
+                    }
                     mRemote.transact(Stub.TRANSACTION_onPlayCompletion, _data, _reply, 0);
                     _reply.readException();
                 } finally {
@@ -260,6 +266,7 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
 
     /**
      * 切换歌曲
+     *
      * @param music
      * @throws android.os.RemoteException
      */
@@ -267,12 +274,14 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
 
     /**
      * 继续播放
+     *
      * @throws android.os.RemoteException
      */
     void onPlayerStart() throws android.os.RemoteException;
 
     /**
      * 暂停播放
+     *
      * @throws android.os.RemoteException
      */
     void onPlayerPause() throws android.os.RemoteException;
@@ -281,6 +290,7 @@ public interface IOnPlayerEventListener extends android.os.IInterface {
 
     /**
      * 播放完成
+     *
      * @throws android.os.RemoteException
      */
     void onPlayCompletion(SongInfo songInfo) throws android.os.RemoteException;

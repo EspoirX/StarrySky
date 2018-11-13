@@ -1,15 +1,14 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 
-
 android {
     compileSdkVersion 26
 
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 144
-        versionName "1.4.4"
+        versionCode 146
+        versionName "1.4.6"
     }
 
     buildTypes {
@@ -28,7 +27,7 @@ android {
         userOrg = 'lizixian'
         groupId = 'com.lzx'
         artifactId = 'MusicLibrary'
-        version = '1.4.4'
+        version = '1.4.6'
         description = 'a rich music player package library'
         website = "https://github.com/lizixian18/MusicLibrary"
     }
@@ -37,11 +36,12 @@ android {
 
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:26.1.0'
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api 'com.android.support:appcompat-v7:26.1.0'
     //ExoPlayer
-    compile 'com.google.android.exoplayer:exoplayer:2.7.1'
-    compile 'com.google.android.exoplayer:extension-rtmp:2.7.1'
+    api 'com.google.android.exoplayer:exoplayer:2.7.1'
+    api 'com.google.android.exoplayer:extension-rtmp:2.7.1'
     //音视频缓存库
-    compile 'com.danikula:videocache:2.7.0'
+    api 'com.danikula:videocache:2.7.0'
+
 }

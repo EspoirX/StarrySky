@@ -122,11 +122,13 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
      *
      * @param releasePlayer 指示播放器是否也应该被释放
      */
-    private void releaseResources(boolean releasePlayer) {
+    private void releaseResources(boolean releasePlayer, boolean isResetPlayer) {
         if (releasePlayer && mExoPlayer != null) {
             mExoPlayer.release();
             mExoPlayer.removeListener(mEventListener);
-            mExoPlayerNullIsStopped = true;
+            if (!isResetPlayer) {
+                mExoPlayerNullIsStopped = true;
+            }
             mPlayOnFocusGain = false;
             mExoPlayer = null;
         }
@@ -139,10 +141,10 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     }
 
     @Override
-    public void stop(boolean notifyListeners) {
+    public void stop(boolean notifyListeners, boolean isResetPlayer) {
         mFocusAndLockManager.giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
-        releaseResources(true);
+        releaseResources(true, isResetPlayer);
     }
 
     @Override
@@ -174,7 +176,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                         state = mExoPlayer.getPlayWhenReady() ? State.STATE_PLAYING : State.STATE_PAUSED;
                         break;
                     case Player.STATE_ENDED:
-                        state = State.STATE_ENDED;
+                        state = State.STATE_IDLE;
                         break;
                 }
             }
@@ -230,7 +232,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             mCurrentMediaSongInfo = info;
         }
         if (mediaHasChanged || mExoPlayer == null) {
-            releaseResources(false); // release everything except the player
+            releaseResources(false, false); // release everything except the player
 
             String source = info.getSongUrl();
             if (source != null && BaseUtil.isOnLineSource(source)) {
@@ -355,7 +357,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
         }
-        releaseResources(false);
+        releaseResources(false, false);
         unregisterAudioNoisyReceiver();
     }
 

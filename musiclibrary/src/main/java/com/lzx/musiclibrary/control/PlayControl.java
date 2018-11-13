@@ -126,9 +126,6 @@ public class PlayControl extends BasePlayControl {
                                     }
                                     listener.onPlayerPause();
                                     break;
-                                case State.STATE_ENDED:
-                                    listener.onPlayCompletion(info);
-                                    break;
                                 case State.STATE_STOP:
                                     listener.onPlayerStop();
                                     break;
@@ -245,7 +242,7 @@ public class PlayControl extends BasePlayControl {
 
     @Subscriber(tag = BusTags.onMetadataRetrieveError)
     public void onMetadataRetrieveError() {
-        mPlaybackManager.updatePlaybackState("Unable to retrieve metadata.");
+        mPlaybackManager.updatePlaybackState("Unable to retrieve metadata.",false);
     }
 
     @Subscriber(tag = BusTags.onCurrentQueueIndexUpdated)

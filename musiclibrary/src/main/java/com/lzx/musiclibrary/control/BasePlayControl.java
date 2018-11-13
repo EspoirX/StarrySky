@@ -62,7 +62,7 @@ public class BasePlayControl extends IPlayControl.Stub implements PlaybackManage
         mPlaybackManager = new PlaybackManager(mPlayback, mPlayQueueManager, isAutoPlayNext);
         mPlaybackManager.setServiceCallback(this);
         mMediaSessionManager = new MediaSessionManager(this.mMusicService.getApplicationContext(), mPlaybackManager);
-        mPlaybackManager.updatePlaybackState(null);
+        mPlaybackManager.updatePlaybackState(null, false);
         updateNotificationCreater(notificationCreater);
     }
 
@@ -144,7 +144,7 @@ public class BasePlayControl extends IPlayControl.Stub implements PlaybackManage
 
     @Override
     public void stopMusic() {
-        mPlaybackManager.handleStopRequest(null);
+        mPlaybackManager.handleStopRequest(null, false);
     }
 
     @Override
@@ -241,7 +241,7 @@ public class BasePlayControl extends IPlayControl.Stub implements PlaybackManage
 
     @Override
     public void reset() {
-        stopMusic();
+        mPlaybackManager.handleStopRequest(null, true);
         stopNotification();
     }
 
@@ -356,7 +356,7 @@ public class BasePlayControl extends IPlayControl.Stub implements PlaybackManage
 
     @Override
     public void onPlaybackCompletion(SongInfo songInfo) {
-        mNotifyStatusChanged.notify(songInfo, mPlayQueueManager.getCurrentIndex(), State.STATE_ENDED, null);
+        mNotifyStatusChanged.notify(songInfo, mPlayQueueManager.getCurrentIndex(), State.STATE_IDLE, null);
     }
 
     @Override

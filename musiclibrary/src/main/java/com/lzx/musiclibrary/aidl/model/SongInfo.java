@@ -306,7 +306,6 @@ public class SongInfo implements Parcelable {
         dest.writeString(this.publishTime);
         dest.writeString(this.description);
         dest.writeString(this.versions);
-        //dest.writeParcelable(this.metadataCompat, flags);
         dest.writeParcelable(this.albumInfo, flags);
         dest.writeParcelable(this.tempInfo, flags);
 
@@ -341,10 +340,8 @@ public class SongInfo implements Parcelable {
         this.publishTime = in.readString();
         this.description = in.readString();
         this.versions = in.readString();
-       // this.metadataCompat = in.readParcelable(MediaMetadataCompat.class.getClassLoader());
         this.albumInfo = in.readParcelable(AlbumInfo.class.getClassLoader());
         this.tempInfo = in.readParcelable(TempInfo.class.getClassLoader());
-
     }
 
     public static final Parcelable.Creator<SongInfo> CREATOR = new Parcelable.Creator<SongInfo>() {

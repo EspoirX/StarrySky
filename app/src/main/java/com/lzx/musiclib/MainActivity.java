@@ -181,8 +181,6 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
             return "播放中";
         } else if (status == State.STATE_PAUSED) {
             return "暂停";
-        } else if (status == State.STATE_ENDED) {
-            return "播放完";
         } else if (status == State.STATE_ERROR) {
             return "错误";
         } else if (status == State.STATE_STOP) {

@@ -85,14 +85,16 @@ public class MediaPlayback implements Playback,
         }
     };
 
-    private void releaseResources(boolean releasePlayer) {
+    private void releaseResources(boolean releasePlayer, boolean isResetPlayer) {
         // Stops and releases player (if requested and available).
         if (releasePlayer && mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
-            mExoPlayerNullIsStopped = true;
+            if (!isResetPlayer) {
+                mExoPlayerNullIsStopped = true;
+            }
             mPlayOnFocusGain = false;
         }
         mFocusAndLockManager.releaseWifiLock();
@@ -145,10 +147,10 @@ public class MediaPlayback implements Playback,
     }
 
     @Override
-    public void stop(boolean notifyListeners) {
+    public void stop(boolean notifyListeners, boolean isResetPlayer) {
         mFocusAndLockManager.giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
-        releaseResources(true);
+        releaseResources(true, isResetPlayer);
         mPlayState = State.STATE_STOP;
     }
 
@@ -206,7 +208,7 @@ public class MediaPlayback implements Playback,
         }
 
         if (mediaHasChanged || mMediaPlayer == null) {
-            releaseResources(false); // release everything except the player
+            releaseResources(false, false); // release everything except the player
 
             String source = info.getSongUrl();
             if (source != null && BaseUtil.isOnLineSource(source)) {
@@ -288,7 +290,7 @@ public class MediaPlayback implements Playback,
             }
         }
         // While paused, retain the player instance, but give up audio focus.
-        releaseResources(false);
+        releaseResources(false, false);
         unregisterAudioNoisyReceiver();
     }
 

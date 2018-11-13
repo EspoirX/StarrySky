@@ -21,7 +21,7 @@ public interface Playback {
      *                        callback.onPlaybackStatusChanged will be called after changing
      *                        the state.
      */
-    void stop(boolean notifyListeners);
+    void stop(boolean notifyListeners,boolean isResetPlayer);
 
     /**
      * Set the latest playback state as determined by the caller.

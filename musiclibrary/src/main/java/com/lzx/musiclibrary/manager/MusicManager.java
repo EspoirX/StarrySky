@@ -21,6 +21,7 @@ import com.lzx.musiclibrary.cache.CacheUtils;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.notification.NotificationCreater;
 import com.lzx.musiclibrary.playback.PlayStateObservable;
+import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -657,9 +658,9 @@ public class MusicManager implements IPlayControl {
             try {
                 control.reset();
                 setPlayList(new ArrayList<SongInfo>());
-                clearPlayerEventListener();
-                clearStateObservable();
-                clearTimerTaskEventListener();
+                //clearPlayerEventListener();
+                //clearStateObservable();
+                //clearTimerTaskEventListener();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

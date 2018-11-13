@@ -23,7 +23,7 @@ public class SubscriberMethodFinder {
     private static final FindState[] FIND_STATE_POOL = new FindState[POOL_SIZE];
 
     /**
-     * 将找到的注解方法封装成 List
+     * 将找到的注解方法封装成 List<SubscriberMethod>
      */
     public List<SubscriberMethod> findSubscriberMethods(Class<?> subscriberClass) {
         List<SubscriberMethod> subscription = METHOD_CACHE.get(subscriberClass);
