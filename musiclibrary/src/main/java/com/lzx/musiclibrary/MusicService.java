@@ -1,5 +1,6 @@
 package com.lzx.musiclibrary;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -36,6 +37,8 @@ public class MusicService extends Service {
             channel.setSound(null, null);
             channel.enableVibration(false);
             this.mNotificationManager.createNotificationChannel(channel);
+            Notification notification = new Notification.Builder(getApplicationContext(),channel.getId()).build();
+            startForeground(1, notification);
         }
     }
 
