@@ -31,6 +31,8 @@ public class PlayControl extends BasePlayControl {
 
     private RemoteCallbackList<IOnPlayerEventListener> mRemoteCallbackList;
     private RemoteCallbackList<IOnTimerTaskListener> mOnTimerTaskListenerList;
+    private boolean isRegisterOnPlayerEventListener = false;
+    private boolean isRegisterOnTimerTaskListener = false;
 
     private boolean isAsyncLoading = false;
 
@@ -215,24 +217,32 @@ public class PlayControl extends BasePlayControl {
     public void registerPlayerEventListener(IOnPlayerEventListener listener) {
         super.registerPlayerEventListener(listener);
         mRemoteCallbackList.register(listener);
+        isRegisterOnPlayerEventListener = true;
     }
 
     @Override
     public void unregisterPlayerEventListener(IOnPlayerEventListener listener) {
         super.unregisterPlayerEventListener(listener);
-        mRemoteCallbackList.unregister(listener);
+        if (isRegisterOnPlayerEventListener) {
+            mRemoteCallbackList.unregister(listener);
+            isRegisterOnPlayerEventListener = false;
+        }
     }
 
     @Override
     public void registerTimerTaskListener(IOnTimerTaskListener listener) {
         super.registerTimerTaskListener(listener);
         mOnTimerTaskListenerList.register(listener);
+        isRegisterOnTimerTaskListener = true;
     }
 
     @Override
     public void unregisterTimerTaskListener(IOnTimerTaskListener listener) {
         super.unregisterTimerTaskListener(listener);
-        mOnTimerTaskListenerList.unregister(listener);
+        if (isRegisterOnTimerTaskListener) {
+            mOnTimerTaskListenerList.unregister(listener);
+            isRegisterOnTimerTaskListener = false;
+        }
     }
 
     @Subscriber(tag = BusTags.onMetadataChanged)
