@@ -160,6 +160,9 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
     private String getCurrInfo() {
         StringBuilder builder = new StringBuilder();
         List<SongInfo> songInfos = MusicManager.get().getPlayList();
+        if (songInfos==null){
+            return "";
+        }
         for (int i = 0; i < songInfos.size(); i++) {
             builder
                     .append(String.valueOf(i))
