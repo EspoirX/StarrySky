@@ -132,9 +132,17 @@ public class MusicLibrary {
         intent.putExtra("notificationCreater", mNotificationCreater);
         intent.putExtra("cacheConfig", mCacheConfig);
         if (isStartService) {
-            ContextCompat.startForegroundService(mContext, intent);
+            startService(intent);
         }
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void startService(Intent intent) {
+        try {
+            mContext.startService(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {

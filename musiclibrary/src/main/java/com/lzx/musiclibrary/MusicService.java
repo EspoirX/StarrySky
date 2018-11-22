@@ -30,6 +30,8 @@ public class MusicService extends Service {
         super.onCreate();
         mService = this;
         this.mNotificationManager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+        stopForeground(true);
+
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = new NotificationChannel("com.lzx.musiclibrary", "播放通知栏", NotificationManager.IMPORTANCE_HIGH);
             channel.enableLights(false);
@@ -37,8 +39,8 @@ public class MusicService extends Service {
             channel.setSound(null, null);
             channel.enableVibration(false);
             this.mNotificationManager.createNotificationChannel(channel);
-            Notification notification = new Notification.Builder(getApplicationContext(),channel.getId()).build();
-            startForeground(1, notification);
+            //    Notification notification = new Notification.Builder(getApplicationContext(),channel.getId()).build();
+            //    startForeground(1, notification);
         }
     }
 
@@ -71,6 +73,8 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+
         return START_STICKY;
     }
 
