@@ -57,8 +57,12 @@ public final class AlbumArtCache {
         mCache = new LruCache<String, Bitmap[]>(maxSize) {
             @Override
             protected int sizeOf(String key, Bitmap[] value) {
-                return value[BIG_BITMAP_INDEX].getByteCount()
-                        + value[ICON_BITMAP_INDEX].getByteCount();
+                if (value[BIG_BITMAP_INDEX] != null && value[ICON_BITMAP_INDEX] != null) {
+                    return value[BIG_BITMAP_INDEX].getByteCount()
+                            + value[ICON_BITMAP_INDEX].getByteCount();
+                } else {
+                    return 0;
+                }
             }
         };
     }
