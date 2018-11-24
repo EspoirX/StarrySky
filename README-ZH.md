@@ -25,18 +25,12 @@
 - 支持边播边存功能，没网也能播。
 - 支持改变播放速度和改变播放音调
 
-## 版本更新记录
-
-详细见 [版本更新记录](https://github.com/lizixian18/MusicLibrary/blob/master/readme/version.md)
-
 ## 项目状态
 
 本项目基本稳定，并已经在多个商业项目中实践使用，目前状态为修复发现的 Bug 以及对在 issues 中提出的需求尽量满足，如果在使用中遇到任何问题，欢迎反馈。
 
 ## API文档
  [API文档](https://lizixian18.github.io/lizixian.github.io-docsify-cli/#/)
-
-<br><br>
 
 PS：
 - 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。欢迎各位大佬指点指点。
