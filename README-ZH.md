@@ -30,7 +30,7 @@
 本项目基本稳定，并已经在多个商业项目中实践使用，目前状态为修复发现的 Bug 以及对在 issues 中提出的需求尽量满足，如果在使用中遇到任何问题，欢迎反馈。
 
 ## API文档
- [API文档](https://lizixian18.github.io/musiclibrary-docsify/#/
+ [API文档](https://lizixian18.github.io/musiclibrary-docsify/#/)
 
 PS：
 - 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。欢迎各位大佬指点指点。
