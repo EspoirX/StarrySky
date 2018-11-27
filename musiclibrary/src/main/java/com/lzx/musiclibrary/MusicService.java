@@ -9,10 +9,16 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.google.android.exoplayer2.upstream.cache.Cache;
+import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor;
+import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.lzx.musiclibrary.cache.CacheConfig;
 import com.lzx.musiclibrary.control.PlayControl;
 import com.lzx.musiclibrary.notification.NotificationCreater;
+import com.lzx.musiclibrary.playback.player.ExoPlayerHelper;
 import com.lzx.musiclibrary.utils.LogUtil;
+
+import java.io.File;
 
 /**
  * Created by xian on 2018/1/20.
@@ -42,7 +48,11 @@ public class MusicService extends Service {
             //    Notification notification = new Notification.Builder(getApplicationContext(),channel.getId()).build();
             //    startForeground(1, notification);
         }
+
+        ExoPlayerHelper.getInstance().init(this);
     }
+
+
 
     @Nullable
     @Override

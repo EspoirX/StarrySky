@@ -154,6 +154,8 @@ public class PlaybackManager implements Playback.Callback {
                 handlePlayRequest();
             } else if (playMode == PlayMode.PLAY_IN_ORDER && hasNextSong() && mQueueManager.skipQueuePosition(1)) {
                 handlePlayRequest();
+            } else {
+                handleStopRequest(null, true);
             }
         }
     }

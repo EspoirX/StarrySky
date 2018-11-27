@@ -2,6 +2,7 @@ package com.lzx.musiclib;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -14,6 +15,7 @@ import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.MusicManager;
 import com.lzx.musiclibrary.manager.TimerTaskManager;
+import com.lzx.musiclibrary.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,9 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
     TextView curr_info;
     SeekBar mSeekBar;
     TimerTaskManager manager;
+    TextView mCurrProgress;
+    int viewWidth = 0;
+    int seekBarWidth = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
 
         List<String> strings = new ArrayList<>();
         strings.add("http://music.163.com/song/media/outer/url?id=317151.mp3");
-        strings.add("http://music.163.com/song/media/outer/url?id=281951.mp3");
-        strings.add("http://music.163.com/song/media/outer/url?id=25906124.mp3");
+      //  strings.add("http://music.163.com/song/media/outer/url?id=281951.mp3");
+      //  strings.add("http://music.163.com/song/media/outer/url?id=25906124.mp3");
         final List<SongInfo> list = new ArrayList<>();
         for (int i = 0; i < strings.size(); i++) {
             SongInfo songInfo = new SongInfo();
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         play_mode = findViewById(R.id.play_mode);
         curr_info = findViewById(R.id.curr_info);
         mSeekBar = findViewById(R.id.seekBar);
+        mCurrProgress = findViewById(R.id.curr_progress);
         MusicManager.get().addPlayerEventListener(this);
         findViewById(R.id.play).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,10 +145,27 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 mSeekBar.setProgress((int) progress);
             }
         });
+
+        mCurrProgress.post(new Runnable() {
+            @Override
+            public void run() {
+                viewWidth = mCurrProgress.getWidth();
+                seekBarWidth = mSeekBar.getWidth();
+            }
+        });
+
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int halfWidth = viewWidth / 2;
+                int max = mSeekBar.getMax();
+                if (max == 0 || halfWidth == 0 || progress == 0) {
+                    return;
+                }
 
+
+                int translationX = (seekBarWidth - viewWidth) * progress / max;
+                mCurrProgress.setTranslationX(translationX);
             }
 
             @Override
@@ -160,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
     private String getCurrInfo() {
         StringBuilder builder = new StringBuilder();
         List<SongInfo> songInfos = MusicManager.get().getPlayList();
-        if (songInfos==null){
+        if (songInfos == null) {
             return "";
         }
         for (int i = 0; i < songInfos.size(); i++) {

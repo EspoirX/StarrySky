@@ -37,8 +37,12 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.upstream.TransferListener;
+import com.google.android.exoplayer2.upstream.cache.Cache;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.lzx.musiclibrary.MusicService;
 import com.lzx.musiclibrary.aidl.model.SongInfo;
@@ -78,10 +82,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
 
     private Callback mCallback;
     private Context mContext;
-    private DataSource.Factory mediaDataSourceFactory;
-    private RtmpDataSourceFactory rtmpDataSourceFactory;
-    protected String userAgent;
-    private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
+    private DataSource.Factory dataSourceFactory;
 
     private HttpProxyCacheServer mProxyCacheServer;
     private HttpProxyCacheServer.Builder builder;
@@ -93,9 +94,8 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         this.mContext = applicationContext;
         this.isGiveUpAudioFocusManager = isGiveUpAudioFocusManager;
         mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
-        userAgent = Util.getUserAgent(mContext, "ExoPlayer");
-        mediaDataSourceFactory = buildDataSourceFactory(true);
-        rtmpDataSourceFactory = new RtmpDataSourceFactory();
+        dataSourceFactory = ExoPlayerHelper.getInstance().buildDataSourceFactory();
+
         builder = CacheUtils.createHttpProxyCacheServerBuilder(mContext, cacheConfig);
         if (cacheConfig != null && cacheConfig.isOpenCacheWhenPlaying()) {
             isOpenCacheWhenPlaying = true;
@@ -248,13 +248,14 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             Uri playUri;
             if (BaseUtil.isOnLineSource(source)) {
                 String proxyUrl;
-                if (isOpenCacheWhenPlaying && (getMediaType(null, Uri.parse(source)) == C.TYPE_OTHER)) {
+                if (isOpenCacheWhenPlaying && (ExoPlayerHelper.getInstance().getMediaType(null, Uri.parse(source)) == C.TYPE_OTHER)) {
                     boolean isRtmpSource = source.toLowerCase().startsWith("rtmp://");
                     proxyUrl = isRtmpSource ? source : mProxyCacheServer.getProxyUrl(source);
                 } else {
                     proxyUrl = source;
                 }
                 playUri = Uri.parse(proxyUrl);
+
             } else {
                 playUri = BaseUtil.getLocalSourceUri(source);
             }
@@ -268,7 +269,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             //LogUtil.i("isOpenCacheWhenPlaying = " + isOpenCacheWhenPlaying + " playUri = " + playUri.toString());
 
             if (mExoPlayer == null) {
-                mExoPlayer = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(mContext),
+                mExoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, new DefaultRenderersFactory(mContext),
                         new DefaultTrackSelector(), new DefaultLoadControl());
                 mExoPlayer.addListener(mEventListener);
                 changePlaybackParameters();
@@ -280,7 +281,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes);
 
-            MediaSource mediaSource = buildMediaSource(playUri, null, null, null);
+            MediaSource mediaSource = ExoPlayerHelper.getInstance().buildMediaSource(dataSourceFactory, playUri, null);
             mExoPlayer.prepare(mediaSource);
             mFocusAndLockManager.acquireWifiLock();
         }
@@ -295,61 +296,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         if (spSpeed != currSpeed || spPitch != currPitch) {
             setPlaybackParameters(spSpeed, spPitch);
         }
-    }
-
-    /**
-     * 构建不同的MediaSource
-     */
-    private MediaSource buildMediaSource(
-            Uri uri,
-            String overrideExtension,
-            @Nullable Handler handler,
-            @Nullable MediaSourceEventListener listener) {
-        @C.ContentType int type = getMediaType(overrideExtension, uri);
-        switch (type) {
-            case C.TYPE_DASH:
-                return new DashMediaSource.Factory(
-                        new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                        buildDataSourceFactory(false))
-                        .createMediaSource(uri, handler, listener);
-            case C.TYPE_SS:
-                return new SsMediaSource.Factory(
-                        new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-                        buildDataSourceFactory(false))
-                        .createMediaSource(uri, handler, listener);
-            case C.TYPE_HLS:
-                return new HlsMediaSource.Factory(mediaDataSourceFactory)
-                        .createMediaSource(uri, handler, listener);
-            case C.TYPE_OTHER:
-                boolean isRtmpSource = uri.toString().toLowerCase().startsWith("rtmp://");
-                return new ExtractorMediaSource.Factory(isRtmpSource ? rtmpDataSourceFactory : mediaDataSourceFactory)
-                        .createMediaSource(uri, handler, listener);
-            default: {
-                throw new IllegalStateException("Unsupported type: " + type);
-            }
-        }
-    }
-
-    /**
-     * 获取播放类型
-     */
-    private int getMediaType(String overrideExtension, Uri uri) {
-        @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(uri)
-                : Util.inferContentType("." + overrideExtension);
-        return type;
-    }
-
-    private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter) {
-        return buildDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
-    }
-
-    private DataSource.Factory buildDataSourceFactory(TransferListener<? super DataSource> listener) {
-        return new DefaultDataSourceFactory(mContext, listener, buildHttpDataSourceFactory(listener));
-    }
-
-    private HttpDataSource.Factory buildHttpDataSourceFactory(
-            TransferListener<? super DataSource> listener) {
-        return new DefaultHttpDataSourceFactory(userAgent, listener);
     }
 
     @Override
