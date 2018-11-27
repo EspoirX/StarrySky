@@ -13,6 +13,7 @@ import com.lzx.musiclibrary.constans.PlayMode;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.playback.player.Playback;
 import com.lzx.musiclibrary.queue.PlayQueueManager;
+import com.lzx.musiclibrary.utils.LogUtil;
 
 
 /**
@@ -137,6 +138,7 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void onPlayCompletion(SongInfo songInfo) {
+
         if (mServiceCallback != null) {
             mServiceCallback.onPlaybackCompletion(songInfo);
         }
@@ -147,12 +149,12 @@ public class PlaybackManager implements Playback.Callback {
                 mPlayback.setCurrentMediaId("");
                 handlePlayRequest();
             } else if (playMode == PlayMode.PLAY_IN_RANDOM || playMode == PlayMode.PLAY_IN_LIST_LOOP) {
-                if (mQueueManager.skipQueuePosition(1)) {
+                if (mQueueManager.skipQueuePosition(1, true)) {
                     handlePlayRequest();
                 }
-            } else if (playMode == PlayMode.PLAY_IN_FLASHBACK && mQueueManager.skipQueuePosition(-1)) {
+            } else if (playMode == PlayMode.PLAY_IN_FLASHBACK && mQueueManager.skipQueuePosition(-1, true)) {
                 handlePlayRequest();
-            } else if (playMode == PlayMode.PLAY_IN_ORDER && hasNextSong() && mQueueManager.skipQueuePosition(1)) {
+            } else if (playMode == PlayMode.PLAY_IN_ORDER && hasNextSong() && mQueueManager.skipQueuePosition(1, true)) {
                 handlePlayRequest();
             } else {
                 handleStopRequest(null, true);
@@ -353,7 +355,7 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToNext() {
-            if (mQueueManager.skipQueuePosition(1)) {
+            if (mQueueManager.skipQueuePosition(1, true)) {
                 handlePlayRequest();
             } else {
                 handleStopRequest("Cannot skip", false);
@@ -363,7 +365,7 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToPrevious() {
-            if (mQueueManager.skipQueuePosition(-1)) {
+            if (mQueueManager.skipQueuePosition(-1, true)) {
                 handlePlayRequest();
             } else {
                 handleStopRequest("Cannot skip", false);

@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
 
         List<String> strings = new ArrayList<>();
         strings.add("http://music.163.com/song/media/outer/url?id=317151.mp3");
-      //  strings.add("http://music.163.com/song/media/outer/url?id=281951.mp3");
-      //  strings.add("http://music.163.com/song/media/outer/url?id=25906124.mp3");
+        strings.add("http://music.163.com/song/media/outer/url?id=281951.mp3");
+        strings.add("http://music.163.com/song/media/outer/url?id=25906124.mp3");
         final List<SongInfo> list = new ArrayList<>();
         for (int i = 0; i < strings.size(); i++) {
             SongInfo songInfo = new SongInfo();

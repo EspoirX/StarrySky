@@ -179,13 +179,13 @@ public class BasePlayControl extends IPlayControl.Stub implements PlaybackManage
 
     @Override
     public void playNext() {
-        SongInfo nextSongInfo = mPlayQueueManager.getNextMusicInfo();
+        SongInfo nextSongInfo = mPlayQueueManager.getNextMusicInfo(true);
         setCurrentQueueItem(nextSongInfo, true);
     }
 
     @Override
     public void playPre() {
-        SongInfo preSongInfo = mPlayQueueManager.getPreMusicInfo();
+        SongInfo preSongInfo = mPlayQueueManager.getPreMusicInfo(true);
         setCurrentQueueItem(preSongInfo, true);
     }
 
@@ -201,12 +201,12 @@ public class BasePlayControl extends IPlayControl.Stub implements PlaybackManage
 
     @Override
     public SongInfo getPreMusic() {
-        return mPlayQueueManager.getPreMusicInfo();
+        return mPlayQueueManager.getPreMusicInfo(false);
     }
 
     @Override
     public SongInfo getNextMusic() {
-        return mPlayQueueManager.getNextMusicInfo();
+        return mPlayQueueManager.getNextMusicInfo(false);
     }
 
     @Override

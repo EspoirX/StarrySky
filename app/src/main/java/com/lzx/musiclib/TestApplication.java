@@ -22,7 +22,6 @@ public class TestApplication extends Application {
                     .setCreateSystemNotification(true)
                     .build();
             musicLibrary = new MusicLibrary.Builder(this)
-                    .setUseMediaPlayer(true)
                     .setNotificationCreater(creater)
                     .build();
             musicLibrary.startMusicService();

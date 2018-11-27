@@ -188,13 +188,13 @@ public class PlayQueueManager implements IPlayQueue {
     }
 
     @Override
-    public SongInfo getPreMusicInfo() {
-        return getNextOrPreMusicInfo(-1);
+    public SongInfo getPreMusicInfo(boolean isUpdateIndex) {
+        return getNextOrPreMusicInfo(-1, isUpdateIndex);
     }
 
     @Override
-    public SongInfo getNextMusicInfo() {
-        return getNextOrPreMusicInfo(1);
+    public SongInfo getNextMusicInfo(boolean isUpdateIndex) {
+        return getNextOrPreMusicInfo(1, isUpdateIndex);
     }
 
     @Override
@@ -218,17 +218,17 @@ public class PlayQueueManager implements IPlayQueue {
     /**
      * 上一首或下一首
      */
-    private SongInfo getNextOrPreMusicInfo(int amount) {
+    private SongInfo getNextOrPreMusicInfo(int amount, boolean isUpdateIndex) {
         SongInfo info = null;
         int playMode = getPlayMode();
         if (playMode == PlayMode.PLAY_IN_SINGLE_LOOP) {
             info = getCurrentSongInfo();
         } else if (playMode == PlayMode.PLAY_IN_RANDOM || playMode == PlayMode.PLAY_IN_FLASHBACK || playMode == PlayMode.PLAY_IN_LIST_LOOP) {
-            if (skipQueuePosition(amount)) {
+            if (skipQueuePosition(amount, isUpdateIndex)) {
                 info = getCurrentSongInfo();
             }
         } else if (playMode == PlayMode.PLAY_IN_ORDER) {
-            if (hasNextSong() && skipQueuePosition(amount) || hasPreSong() && skipQueuePosition(amount)) {
+            if (hasNextSong() && skipQueuePosition(amount, isUpdateIndex) || hasPreSong() && skipQueuePosition(amount, isUpdateIndex)) {
                 info = getCurrentSongInfo();
             }
         }
@@ -273,7 +273,7 @@ public class PlayQueueManager implements IPlayQueue {
      * @param amount 维度
      * @return boolean
      */
-    public boolean skipQueuePosition(int amount) {
+    public boolean skipQueuePosition(int amount, boolean isUpdateIndex) {
         if (getSongInfos().size() == 0) {
             return false;
         } else {
@@ -293,7 +293,9 @@ public class PlayQueueManager implements IPlayQueue {
             if (!QueueHelper.isIndexPlayable(index, getSongInfos())) {
                 return false;
             }
-            mCurrentIndex = index;
+            if (isUpdateIndex) {
+                mCurrentIndex = index;
+            }
             return true;
         }
     }

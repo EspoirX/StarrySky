@@ -82,13 +82,13 @@ public interface IPlayQueue {
      * 获取上一首音频
      * Get the previous audio
      */
-    SongInfo getPreMusicInfo();
+    SongInfo getPreMusicInfo(boolean isUpdateIndex);
 
     /**
      * 获取下一首音频
      * Get the next audio
      */
-    SongInfo getNextMusicInfo();
+    SongInfo getNextMusicInfo(boolean isUpdateIndex);
 
     /**
      * 是否有下一首
