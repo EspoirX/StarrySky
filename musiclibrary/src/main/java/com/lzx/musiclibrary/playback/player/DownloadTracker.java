@@ -158,11 +158,14 @@ public class DownloadTracker implements DownloadManager.Listener {
             listener.onDownloadsChanged();
         }
         final DownloadAction[] actions = trackedDownloadStates.values().toArray(new DownloadAction[0]);
-        actionFileWriteHandler.post(() -> {
-            try {
-                actionFile.store(actions);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to store tracked actions", e);
+        actionFileWriteHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    actionFile.store(actions);
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to store tracked actions", e);
+                }
             }
         });
     }

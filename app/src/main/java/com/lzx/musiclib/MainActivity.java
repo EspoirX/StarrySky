@@ -1,5 +1,6 @@
 package com.lzx.musiclib;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,19 +18,21 @@ import com.lzx.musiclibrary.manager.MusicManager;
 import com.lzx.musiclibrary.manager.TimerTaskManager;
 import com.lzx.musiclibrary.utils.LogUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnPlayerEventListener {
 
 
-    Button play_mode;
+    Button play_mode, btn_speed;
     TextView curr_info;
     SeekBar mSeekBar;
     TimerTaskManager manager;
     TextView mCurrProgress;
     int viewWidth = 0;
     int seekBarWidth = 0;
+    float speed = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,102 +62,85 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         play_mode = findViewById(R.id.play_mode);
         curr_info = findViewById(R.id.curr_info);
         mSeekBar = findViewById(R.id.seekBar);
+        btn_speed = findViewById(R.id.btn_speed);
         mCurrProgress = findViewById(R.id.curr_progress);
         MusicManager.get().addPlayerEventListener(this);
-        findViewById(R.id.play).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MusicManager.get().playMusic(list, 0);
+        findViewById(R.id.play).setOnClickListener(v -> {
+            MusicManager.get().playMusic(list, 0);
+            curr_info.setText(getCurrInfo());
+        });
+        findViewById(R.id.pause).setOnClickListener(v -> {
+            MusicManager.get().pauseMusic();
+            curr_info.setText(getCurrInfo());
+        });
+        findViewById(R.id.resume).setOnClickListener(v -> {
+            MusicManager.get().resumeMusic();
+            curr_info.setText(getCurrInfo());
+        });
+        findViewById(R.id.pre).setOnClickListener(v -> {
+            if (MusicManager.get().hasPre()) {
+                MusicManager.get().playPre();
                 curr_info.setText(getCurrInfo());
+            } else {
+                Toast.makeText(MainActivity.this, "没有上一首", Toast.LENGTH_SHORT).show();
             }
         });
-        findViewById(R.id.pause).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MusicManager.get().pauseMusic();
+        findViewById(R.id.next).setOnClickListener(v -> {
+            if (MusicManager.get().hasNext()) {
+                MusicManager.get().playNext();
                 curr_info.setText(getCurrInfo());
+            } else {
+                Toast.makeText(MainActivity.this, "没有下一首", Toast.LENGTH_SHORT).show();
             }
         });
-        findViewById(R.id.resume).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MusicManager.get().resumeMusic();
-                curr_info.setText(getCurrInfo());
-            }
-        });
-        findViewById(R.id.pre).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (MusicManager.get().hasPre()) {
-                    MusicManager.get().playPre();
-                    curr_info.setText(getCurrInfo());
-                } else {
-                    Toast.makeText(MainActivity.this, "没有上一首", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (MusicManager.get().hasNext()) {
-                    MusicManager.get().playNext();
-                    curr_info.setText(getCurrInfo());
-                } else {
-                    Toast.makeText(MainActivity.this, "没有下一首", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        findViewById(R.id.close_server).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TestApplication.getMusicLibrary().stopService();
-            }
-        });
+        findViewById(R.id.close_server).setOnClickListener(v -> TestApplication.getMusicLibrary().stopService());
         play_mode.setText(getMode());
-        play_mode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int mode = MusicManager.get().getPlayMode();
-                if (mode == PlayMode.PLAY_IN_FLASHBACK) {
-                    MusicManager.get().setPlayMode(PlayMode.PLAY_IN_LIST_LOOP);
-                } else if (mode == PlayMode.PLAY_IN_LIST_LOOP) {
-                    MusicManager.get().setPlayMode(PlayMode.PLAY_IN_ORDER);
-                } else if (mode == PlayMode.PLAY_IN_ORDER) {
-                    MusicManager.get().setPlayMode(PlayMode.PLAY_IN_RANDOM);
-                } else if (mode == PlayMode.PLAY_IN_RANDOM) {
-                    MusicManager.get().setPlayMode(PlayMode.PLAY_IN_SINGLE_LOOP);
-                } else if (mode == PlayMode.PLAY_IN_SINGLE_LOOP) {
-                    MusicManager.get().setPlayMode(PlayMode.PLAY_IN_FLASHBACK);
-                }
-                play_mode.setText(getMode());
-                curr_info.setText(getCurrInfo());
+        play_mode.setOnClickListener(v -> {
+            int mode = MusicManager.get().getPlayMode();
+            if (mode == PlayMode.PLAY_IN_FLASHBACK) {
+                MusicManager.get().setPlayMode(PlayMode.PLAY_IN_LIST_LOOP);
+            } else if (mode == PlayMode.PLAY_IN_LIST_LOOP) {
+                MusicManager.get().setPlayMode(PlayMode.PLAY_IN_ORDER);
+            } else if (mode == PlayMode.PLAY_IN_ORDER) {
+                MusicManager.get().setPlayMode(PlayMode.PLAY_IN_RANDOM);
+            } else if (mode == PlayMode.PLAY_IN_RANDOM) {
+                MusicManager.get().setPlayMode(PlayMode.PLAY_IN_SINGLE_LOOP);
+            } else if (mode == PlayMode.PLAY_IN_SINGLE_LOOP) {
+                MusicManager.get().setPlayMode(PlayMode.PLAY_IN_FLASHBACK);
             }
+            play_mode.setText(getMode());
+            curr_info.setText(getCurrInfo());
         });
-        findViewById(R.id.reset).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MusicManager.get().reset();
-                TestApplication.getMusicLibrary().stopService();
-            }
+        findViewById(R.id.reset).setOnClickListener(v -> {
+            MusicManager.get().reset();
+            TestApplication.getMusicLibrary().stopService();
         });
         curr_info.setText(getCurrInfo());
-        manager.setUpdateProgressTask(new Runnable() {
-            @Override
-            public void run() {
-                long progress = MusicManager.get().getProgress();
-                mSeekBar.setProgress((int) progress);
-            }
+        manager.setUpdateProgressTask(() -> {
+            long progress = MusicManager.get().getProgress();
+            mSeekBar.setProgress((int) progress);
         });
 
-        mCurrProgress.post(new Runnable() {
-            @Override
-            public void run() {
-                viewWidth = mCurrProgress.getWidth();
-                seekBarWidth = mSeekBar.getWidth();
-            }
+        mCurrProgress.post(() -> {
+            viewWidth = mCurrProgress.getWidth();
+            seekBarWidth = mSeekBar.getWidth();
         });
 
+
+        btn_speed.setText("变速 当前" + MusicManager.get().getPlaybackSpeed() + "倍");
+        btn_speed.setOnClickListener(v -> {
+            speed += 0.5;
+            if (speed >= 3) {
+                speed = 1;
+            }
+            MusicManager.get().setPlaybackParameters(speed, 1);
+            btn_speed.setText("变速 当前" + MusicManager.get().getPlaybackSpeed() + "倍");
+        });
+
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("mm:ss");
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int halfWidth = viewWidth / 2;
@@ -162,10 +148,9 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 if (max == 0 || halfWidth == 0 || progress == 0) {
                     return;
                 }
-
-
                 int translationX = (seekBarWidth - viewWidth) * progress / max;
                 mCurrProgress.setTranslationX(translationX);
+                mCurrProgress.setText(sDateFormat.format(progress) + "/" + sDateFormat.format(max));
             }
 
             @Override
