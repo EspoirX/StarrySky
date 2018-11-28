@@ -127,14 +127,13 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         });
 
 
-        btn_speed.setText("变速 当前" + MusicManager.get().getPlaybackSpeed() + "倍");
         btn_speed.setOnClickListener(v -> {
             speed += 0.5;
             if (speed >= 3) {
                 speed = 1;
             }
             MusicManager.get().setPlaybackParameters(speed, 1);
-            btn_speed.setText("变速 当前" + MusicManager.get().getPlaybackSpeed() + "倍");
+            btn_speed.setText("变速 当前" + speed + "倍");
         });
 
         @SuppressLint("SimpleDateFormat")
