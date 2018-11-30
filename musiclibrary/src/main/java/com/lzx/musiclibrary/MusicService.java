@@ -52,8 +52,6 @@ public class MusicService extends Service {
         ExoPlayerHelper.getInstance().init(this);
     }
 
-
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

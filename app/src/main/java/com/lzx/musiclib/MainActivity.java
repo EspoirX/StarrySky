@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
 
         List<String> strings = new ArrayList<>();
         strings.add("http://music.163.com/song/media/outer/url?id=317151.mp3");
+        //strings.add("http://cdn.bopulab.cn/78d6f771-f158-11e8-9150-f598f5bfdc03");
         strings.add("http://music.163.com/song/media/outer/url?id=281951.mp3");
         strings.add("http://music.163.com/song/media/outer/url?id=25906124.mp3");
         final List<SongInfo> list = new ArrayList<>();
@@ -119,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         manager.setUpdateProgressTask(() -> {
             long progress = MusicManager.get().getProgress();
             mSeekBar.setProgress((int) progress);
+            mSeekBar.setSecondaryProgress((int) MusicManager.get().getBufferedPosition());
         });
 
         mCurrProgress.post(() -> {

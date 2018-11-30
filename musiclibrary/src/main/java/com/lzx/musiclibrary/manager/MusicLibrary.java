@@ -19,7 +19,6 @@ import com.lzx.musiclibrary.notification.NotificationCreater;
 public class MusicLibrary {
 
     public static String ACTION_MUSICLIBRARY_INIT_FINISH = "ACTION_MUSICLIBRARY_INIT_FINISH";//服务初始化成功action
-    public static boolean isInitLibrary = false;
     private Context mContext;
     private boolean isUseMediaPlayer;
     private boolean isAutoPlayNext;
@@ -51,10 +50,10 @@ public class MusicLibrary {
             this.context = context.getApplicationContext();
         }
 
-        public Builder setUseMediaPlayer(boolean isUseMediaPlayer) {
-            this.isUseMediaPlayer = isUseMediaPlayer;
-            return this;
-        }
+//        public Builder setUseMediaPlayer(boolean isUseMediaPlayer) {
+//            this.isUseMediaPlayer = isUseMediaPlayer;
+//            return this;
+//        }
 
         public Builder setAutoPlayNext(boolean autoPlayNext) {
             isAutoPlayNext = autoPlayNext;
@@ -112,19 +111,13 @@ public class MusicLibrary {
     }
 
     public void stopService() {
-        if (isInitLibrary) {
-            MusicManager.get().stopService();
-            Intent intent = new Intent(mContext, MusicService.class);
-            mContext.unbindService(mServiceConnection);
-            mContext.stopService(intent);
-            MusicLibrary.isInitLibrary = false;
-        }
+        MusicManager.get().stopService();
+        Intent intent = new Intent(mContext, MusicService.class);
+        mContext.unbindService(mServiceConnection);
+        mContext.stopService(intent);
     }
 
     private void init(boolean isStartService) {
-        if (isInitLibrary) {
-            return;
-        }
         Intent intent = new Intent(mContext, MusicService.class);
         intent.putExtra("isUseMediaPlayer", isUseMediaPlayer);
         intent.putExtra("isAutoPlayNext", isAutoPlayNext);
@@ -151,14 +144,12 @@ public class MusicLibrary {
             IPlayControl control = IPlayControl.Stub.asInterface(iBinder);
             MusicManager.get().attachPlayControl(mContext, control);
             MusicManager.get().attachMusicLibraryBuilder(mBuilder);
-            isInitLibrary = true;
             //发送一个广播，可通过接受它来知道服务初始化成功
             mContext.sendBroadcast(new Intent(ACTION_MUSICLIBRARY_INIT_FINISH));
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            isInitLibrary = false;
         }
     };
 }

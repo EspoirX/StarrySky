@@ -69,9 +69,6 @@ public class MusicManager implements IPlayControl {
                 }
             }
         }
-        if (!MusicLibrary.isInitLibrary) {
-            MusicLibrary.isInitLibrary = true;
-        }
         return sInstance;
     }
 
