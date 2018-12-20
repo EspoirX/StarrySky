@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -51,6 +52,7 @@ import com.lzx.musiclibrary.cache.CacheUtils;
 import com.lzx.musiclibrary.constans.State;
 import com.lzx.musiclibrary.manager.FocusAndLockManager;
 import com.lzx.musiclibrary.utils.BaseUtil;
+import com.lzx.musiclibrary.utils.LogUtil;
 import com.lzx.musiclibrary.utils.SPUtils;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
@@ -90,10 +92,9 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
     private boolean isStateError = false;
 
     public ExoPlayback(Context context, CacheConfig cacheConfig, boolean isGiveUpAudioFocusManager) {
-        Context applicationContext = context.getApplicationContext();
-        this.mContext = applicationContext;
+        this.mContext = context;
         this.isGiveUpAudioFocusManager = isGiveUpAudioFocusManager;
-        mFocusAndLockManager = new FocusAndLockManager(applicationContext, this);
+        mFocusAndLockManager = new FocusAndLockManager(context, this);
         dataSourceFactory = ExoPlayerHelper.getInstance().buildDataSourceFactory();
 
         builder = CacheUtils.createHttpProxyCacheServerBuilder(mContext, cacheConfig);
@@ -158,6 +159,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
         //STATE_BUFFERING 无法立即从当前位置进行播放
         //STATE_READY     可以从当前位置立即进行播放。 如果  {@link #getPlayWhenReady（）}为true，立即播放，否则暂停。
         //STATE_ENDED     已经完成播放媒体。
+        LogUtil.i("thread = " + Thread.currentThread());
         int state = State.STATE_IDLE;
         if (isStateError) {
             state = State.STATE_ERROR;
@@ -167,6 +169,7 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
             } else {
                 switch (mExoPlayer.getPlaybackState()) {
                     case Player.STATE_IDLE:
+                    case Player.STATE_ENDED:
                         state = State.STATE_IDLE;
                         break;
                     case Player.STATE_BUFFERING:
@@ -174,9 +177,6 @@ public class ExoPlayback implements Playback, FocusAndLockManager.AudioFocusChan
                         break;
                     case Player.STATE_READY:
                         state = mExoPlayer.getPlayWhenReady() ? State.STATE_PLAYING : State.STATE_PAUSED;
-                        break;
-                    case Player.STATE_ENDED:
-                        state = State.STATE_IDLE;
                         break;
                 }
             }

@@ -90,7 +90,7 @@ public class Bus {
     /**
      * 发送事件
      */
-    public void post(Object event, String eventTag) {
+    public synchronized void post(Object event, String eventTag) {
         PostingThreadState postingState = currentPostingThreadState.get();
         List<Object> eventQueue = postingState.eventQueue;
         eventQueue.add(event);

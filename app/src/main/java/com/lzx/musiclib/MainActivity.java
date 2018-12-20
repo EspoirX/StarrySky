@@ -68,20 +68,20 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         MusicManager.get().addPlayerEventListener(this);
         findViewById(R.id.play).setOnClickListener(v -> {
             MusicManager.get().playMusic(list, 0);
-            curr_info.setText(getCurrInfo());
+            curr_info.setText(getCurrInfo("play"));
         });
         findViewById(R.id.pause).setOnClickListener(v -> {
             MusicManager.get().pauseMusic();
-            curr_info.setText(getCurrInfo());
+            curr_info.setText(getCurrInfo("pause"));
         });
         findViewById(R.id.resume).setOnClickListener(v -> {
             MusicManager.get().resumeMusic();
-            curr_info.setText(getCurrInfo());
+            curr_info.setText(getCurrInfo("resume"));
         });
         findViewById(R.id.pre).setOnClickListener(v -> {
             if (MusicManager.get().hasPre()) {
                 MusicManager.get().playPre();
-                curr_info.setText(getCurrInfo());
+                curr_info.setText(getCurrInfo("pre"));
             } else {
                 Toast.makeText(MainActivity.this, "没有上一首", Toast.LENGTH_SHORT).show();
             }
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         findViewById(R.id.next).setOnClickListener(v -> {
             if (MusicManager.get().hasNext()) {
                 MusicManager.get().playNext();
-                curr_info.setText(getCurrInfo());
+                curr_info.setText(getCurrInfo("next"));
             } else {
                 Toast.makeText(MainActivity.this, "没有下一首", Toast.LENGTH_SHORT).show();
             }
@@ -110,13 +110,13 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 MusicManager.get().setPlayMode(PlayMode.PLAY_IN_FLASHBACK);
             }
             play_mode.setText(getMode());
-            curr_info.setText(getCurrInfo());
+            curr_info.setText(getCurrInfo("play_mode"));
         });
         findViewById(R.id.reset).setOnClickListener(v -> {
             MusicManager.get().reset();
             TestApplication.getMusicLibrary().stopService();
         });
-        curr_info.setText(getCurrInfo());
+        curr_info.setText(getCurrInfo("curr_info"));
         manager.setUpdateProgressTask(() -> {
             long progress = MusicManager.get().getProgress();
             mSeekBar.setProgress((int) progress);
@@ -166,7 +166,8 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         });
     }
 
-    private String getCurrInfo() {
+    private String getCurrInfo(String from) {
+        LogUtil.i("from = " + from);
         StringBuilder builder = new StringBuilder();
         List<SongInfo> songInfos = MusicManager.get().getPlayList();
         if (songInfos == null) {
@@ -221,45 +222,45 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
 
     @Override
     public void onMusicSwitch(SongInfo music) {
-        curr_info.setText(getCurrInfo());
+        curr_info.setText(getCurrInfo("onMusicSwitch"));
         manager.stopSeekBarUpdate();
         mSeekBar.setMax((int) music.getDuration());
     }
 
     @Override
     public void onPlayerStart() {
-        curr_info.setText(getCurrInfo());
+        curr_info.setText(getCurrInfo("onPlayerStart"));
         manager.scheduleSeekBarUpdate();
     }
 
     @Override
     public void onPlayerPause() {
-        curr_info.setText(getCurrInfo());
+        curr_info.setText(getCurrInfo("onPlayerPause"));
         manager.stopSeekBarUpdate();
     }
 
     @Override
     public void onPlayCompletion(SongInfo songInfo) {
-        curr_info.setText(getCurrInfo());
+        curr_info.setText(getCurrInfo("onPlayCompletion"));
         manager.stopSeekBarUpdate();
         mSeekBar.setProgress(0);
     }
 
     @Override
     public void onPlayerStop() {
-        curr_info.setText(getCurrInfo());
+        curr_info.setText(getCurrInfo("onPlayerStop"));
         manager.stopSeekBarUpdate();
     }
 
     @Override
     public void onError(String errorMsg) {
-        curr_info.setText(getCurrInfo());
+        curr_info.setText(getCurrInfo("onError"));
         manager.stopSeekBarUpdate();
     }
 
     @Override
     public void onAsyncLoading(boolean isFinishLoading) {
-        curr_info.setText(getCurrInfo());
+        curr_info.setText(getCurrInfo("onAsyncLoading"));
         if (isFinishLoading) {
             mSeekBar.setMax(MusicManager.get().getDuration());
         }

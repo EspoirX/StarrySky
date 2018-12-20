@@ -18,7 +18,7 @@ public class TestApplication extends Application {
         super.onCreate();
         if (BaseUtil.getCurProcessName(this).equals("com.lzx.musiclib")) {
             NotificationCreater creater = new NotificationCreater.Builder()
-                    .setTargetClass("com.lzx.music.MusicTestActivity")
+                    .setTargetClass("com.lzx.musiclib.MainActivity")
                     .setCreateSystemNotification(true)
                     .build();
             musicLibrary = new MusicLibrary.Builder(this)
