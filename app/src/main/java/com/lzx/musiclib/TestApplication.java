@@ -20,6 +20,7 @@ public class TestApplication extends Application {
             NotificationCreater creater = new NotificationCreater.Builder()
                     .setTargetClass("com.lzx.musiclib.MainActivity")
                     .setCreateSystemNotification(true)
+                    .setNotificationCanClearBySystemBtn(true)
                     .build();
             musicLibrary = new MusicLibrary.Builder(this)
                     .setNotificationCreater(creater)

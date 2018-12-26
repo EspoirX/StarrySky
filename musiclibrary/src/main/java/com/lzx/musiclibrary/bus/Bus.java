@@ -78,7 +78,7 @@ public class Bus {
     /**
      * 取消订阅
      */
-    public void unregister(Object obj) {
+    public synchronized void unregister(Object obj) {
         if (obj == null) {
             return;
         }

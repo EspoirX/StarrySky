@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         });
         findViewById(R.id.reset).setOnClickListener(v -> {
             MusicManager.get().reset();
+            MusicManager.get().stopNotification();
             TestApplication.getMusicLibrary().stopService();
         });
         curr_info.setText(getCurrInfo("curr_info"));

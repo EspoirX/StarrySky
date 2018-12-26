@@ -221,13 +221,11 @@ public class PlayQueueManager implements IPlayQueue {
     private SongInfo getNextOrPreMusicInfo(int amount, boolean isUpdateIndex) {
         SongInfo info = null;
         int playMode = getPlayMode();
-        if (playMode == PlayMode.PLAY_IN_SINGLE_LOOP) {
-            info = getCurrentSongInfo();
-        } else if (playMode == PlayMode.PLAY_IN_RANDOM || playMode == PlayMode.PLAY_IN_FLASHBACK || playMode == PlayMode.PLAY_IN_LIST_LOOP) {
+        if (playMode == PlayMode.PLAY_IN_RANDOM || playMode == PlayMode.PLAY_IN_FLASHBACK || playMode == PlayMode.PLAY_IN_LIST_LOOP) {
             if (skipQueuePosition(amount, isUpdateIndex)) {
                 info = getCurrentSongInfo();
             }
-        } else if (playMode == PlayMode.PLAY_IN_ORDER) {
+        } else if (playMode == PlayMode.PLAY_IN_SINGLE_LOOP || playMode == PlayMode.PLAY_IN_ORDER) {
             if (hasNextSong() && skipQueuePosition(amount, isUpdateIndex) || hasPreSong() && skipQueuePosition(amount, isUpdateIndex)) {
                 info = getCurrentSongInfo();
             }
