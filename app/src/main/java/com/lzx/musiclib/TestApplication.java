@@ -11,25 +11,12 @@ import com.lzx.musiclibrary.utils.BaseUtil;
  * time:2018/11/9
  */
 public class TestApplication extends Application {
-    private static MusicLibrary musicLibrary;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        if (BaseUtil.getCurProcessName(this).equals("com.lzx.musiclib")) {
-            NotificationCreater creater = new NotificationCreater.Builder()
-                    .setTargetClass("com.lzx.musiclib.MainActivity")
-                    .setCreateSystemNotification(true)
-                    .setNotificationCanClearBySystemBtn(true)
-                    .build();
-            musicLibrary = new MusicLibrary.Builder(this)
-                    .setNotificationCreater(creater)
-                    .build();
-            musicLibrary.startMusicService();
-        }
+
     }
 
-    public static MusicLibrary getMusicLibrary() {
-        return musicLibrary;
-    }
+
 }
