@@ -2,9 +2,6 @@ package com.lzx.musiclib;
 
 import android.app.Application;
 
-import com.lzx.musiclibrary.manager.MusicLibrary;
-import com.lzx.musiclibrary.notification.NotificationCreater;
-import com.lzx.musiclibrary.utils.BaseUtil;
 
 /**
  * create by lzx
