@@ -12,112 +12,21 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/pre"
+            android:id="@+id/subscribe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="上一首" />
+            android:text="subscribe" />
 
         <Button
-            android:id="@+id/play"
+            android:id="@+id/unsubscribe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="播放" />
+            android:text="unsubscribe" />
 
-        <Button
-            android:id="@+id/pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="暂停" />
 
-        <Button
-            android:id="@+id/next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="下一首" />
 
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/resume"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="继续播放" />
-
-        <Button
-            android:id="@+id/play_mode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="播放模式" />
-
-        <Button
-            android:id="@+id/close_server"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="关闭服务" />
-
-        <Button
-            android:id="@+id/reset"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="初始化" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_speed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="变速" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/curr_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="进度" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp">
-
-        <SeekBar
-            android:id="@+id/seekBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null" />
-
-
-        <TextView
-            android:id="@+id/curr_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/shape_round_black"
-            android:gravity="center"
-            android:paddingLeft="10dp"
-            android:paddingTop="2dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="2dp"
-            android:text="00:00/00:00"
-            android:textColor="#ffffff"
-            android:textSize="10sp"
-            tools:ignore="SmallSp" />
-    </FrameLayout>
 
 </LinearLayout>

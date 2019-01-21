@@ -29,6 +29,6 @@ android {
         implementation fileTree(dir: 'libs', include: ['*.jar'])
         //noinspection GradleCompatible
         implementation 'androidx.appcompat:appcompat:1.0.2'
-
+        implementation project(':starrysky')
     }
 }
