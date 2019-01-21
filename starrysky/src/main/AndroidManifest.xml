@@ -9,17 +9,6 @@
         <meta-data android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc"/>
 
-        <service
-            android:name=".MusicService"
-            android:enabled="true"
-            android:exported="true"
-            tools:ignore="ExportedService">
-
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
-
         <!--
              MediaSession, prior to API 21, uses a broadcast receiver to communicate with a
              media session. It does not have to be this broadcast receiver, but it must
