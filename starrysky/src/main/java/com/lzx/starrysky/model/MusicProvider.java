@@ -32,8 +32,14 @@ import java.util.concurrent.TimeUnit;
 public class MusicProvider {
 
     private List<SongInfo> mSongInfos;
-    private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListById;
-    private List<MediaMetadataCompat> mMusicList;
+    private ConcurrentMap<String, List<MediaMetadataCompat>> metadatasById;
+    private List<MediaMetadataCompat> metadatas;
+
+    enum State {
+        NON_INITIALIZED, INITIALIZING, INITIALIZED
+    }
+
+    private volatile static State mCurrentState = State.NON_INITIALIZED;
 
     public static MusicProvider getInstance() {
         return SingletonHolder.sInstance;
@@ -45,40 +51,40 @@ public class MusicProvider {
 
     private MusicProvider() {
         mSongInfos = Collections.synchronizedList(new ArrayList<>());
-        mMusicList = Collections.synchronizedList(new ArrayList<>());
-        mMusicListById = new ConcurrentHashMap<>();
+        metadatas = Collections.synchronizedList(new ArrayList<>());
+        metadatasById = new ConcurrentHashMap<>();
     }
 
+    /**
+     * 获取原始的List<SongInfo>
+     */
     public List<SongInfo> getSongInfos() {
         return mSongInfos;
     }
 
+    /**
+     * 设置
+     */
     public void setSongInfos(List<SongInfo> songInfos) {
         mSongInfos = songInfos;
     }
 
-    public ConcurrentMap<String, List<MediaMetadataCompat>> getMusicListById() {
-        return mMusicListById;
+    public ConcurrentMap<String, List<MediaMetadataCompat>> getMetadatasById() {
+        return metadatasById;
     }
 
-    public List<MediaMetadataCompat> getMusicList() {
-        return mMusicList;
+    public List<MediaMetadataCompat> getMetadatas() {
+        return metadatas;
     }
 
+    /**
+     * 获取 List<MediaBrowserCompat.MediaItem> 用于 onLoadChildren 回调
+     */
     public List<MediaBrowserCompat.MediaItem> getChildrenResult(String mediaId) {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
-        if (!TextUtils.isEmpty(mediaId)) {
-            List<MediaMetadataCompat> mediaMetadataCompats = mMusicListById.get(mediaId);
-            if (mediaMetadataCompats != null) {
-                for (MediaMetadataCompat metadata : mediaMetadataCompats) {
-                    MediaBrowserCompat.MediaItem mediaItem = new MediaBrowserCompat.MediaItem(
-                            metadata.getDescription(),
-                            MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
-                    mediaItems.add(mediaItem);
-                }
-            }
-        } else {
-            for (MediaMetadataCompat metadata : mMusicList) {
+        List<MediaMetadataCompat> mediaMetadataCompats = metadatasById.get(mediaId);
+        if (mediaMetadataCompats != null) {
+            for (MediaMetadataCompat metadata : mediaMetadataCompats) {
                 MediaBrowserCompat.MediaItem mediaItem = new MediaBrowserCompat.MediaItem(
                         metadata.getDescription(),
                         MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
@@ -88,23 +94,67 @@ public class MusicProvider {
         return mediaItems;
     }
 
+    /**
+     * 获取乱序列表
+     */
+    public Iterable<MediaMetadataCompat> getShuffledMusic() {
+        if (mCurrentState != State.INITIALIZED) {
+            return Collections.emptyList();
+        }
+        List<MediaMetadataCompat> shuffled = new ArrayList<>(metadatas.size());
+        shuffled.addAll(metadatas);
+        Collections.shuffle(shuffled);
+        return shuffled;
+    }
+
+    /**
+     * 根据id获取对应的MediaMetadataCompat对象
+     */
+    public MediaMetadataCompat getMusic(String songId) {
+        MediaMetadataCompat music = null;
+        for (MediaMetadataCompat data : metadatas) {
+            if (data != null && data.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID).equals(songId)) {
+                music = data;
+                break;
+            }
+        }
+        return music;
+    }
+
+    /**
+     * 异步加载给metadatasById和metadatas赋值
+     */
     public void retrieveMediaAsync(Context context, Callback callback) {
+        if (isInitialized()) {
+            callback.onReady();
+            return;
+        }
         UpdateCatalogTask task = new UpdateCatalogTask(context, mSongInfos, (concurrentMap, mediaMetadataCompats) -> {
-            mMusicList = mediaMetadataCompats;
-            mMusicListById = concurrentMap;
+            metadatas = mediaMetadataCompats;
+            metadatasById = concurrentMap;
             callback.onReady();
         });
         task.executeOnExecutor(Executors.newCachedThreadPool());
     }
 
+    /**
+     * 是否已经加载完
+     */
+    public boolean isInitialized() {
+        return mCurrentState == State.INITIALIZED;
+    }
+
+    /**
+     * 加载List<MediaMetadataCompat>的异步任务类
+     */
     public static class UpdateCatalogTask extends AsyncTask<Void, Void, List<MediaMetadataCompat>> {
 
         @SuppressLint("StaticFieldLeak")
         private Context mContext;
         private List<SongInfo> songInfos;
-        private AnsyncCallback callback;
+        private AsyncCallback callback;
 
-        UpdateCatalogTask(Context context, List<SongInfo> songInfos, AnsyncCallback callback) {
+        UpdateCatalogTask(Context context, List<SongInfo> songInfos, AsyncCallback callback) {
             mContext = context;
             this.songInfos = songInfos;
             this.callback = callback;
@@ -115,9 +165,7 @@ public class MusicProvider {
             List<MediaMetadataCompat> list = new ArrayList<>();
             try {
                 list = toMediaMetadata(mContext, songInfos);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return list;
@@ -126,7 +174,7 @@ public class MusicProvider {
         @Override
         protected void onPostExecute(List<MediaMetadataCompat> mediaMetadataCompats) {
             super.onPostExecute(mediaMetadataCompats);
-
+            //得到 ConcurrentMap<String, List<MediaMetadataCompat>>
             ConcurrentMap<String, List<MediaMetadataCompat>> newMusicList = new ConcurrentHashMap<>();
             for (MediaMetadataCompat m : mediaMetadataCompats) {
                 String songId = m.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
@@ -137,72 +185,85 @@ public class MusicProvider {
                 }
                 list.add(m);
             }
-
             callback.onMusicCatalogReady(newMusicList, mediaMetadataCompats);
         }
     }
 
-    private static List<MediaMetadataCompat> toMediaMetadata(Context context, List<SongInfo> songInfos) throws ExecutionException, InterruptedException {
+    /**
+     * List<SongInfo> 转 List<MediaMetadataCompat>
+     */
+    private synchronized static List<MediaMetadataCompat> toMediaMetadata(Context context, List<SongInfo> songInfos) throws ExecutionException, InterruptedException {
         List<MediaMetadataCompat> mediaMetadataCompats = new ArrayList<>();
-        for (SongInfo info : songInfos) {
-
-            String albumTitle = "";
-            if (!TextUtils.isEmpty(info.getAlbumName())) {
-                albumTitle = info.getAlbumName();
-            } else if (!TextUtils.isEmpty(info.getSongName())) {
-                albumTitle = info.getSongName();
+        try {
+            if (mCurrentState == State.NON_INITIALIZED) {
+                mCurrentState = State.INITIALIZING;
+                for (SongInfo info : songInfos) {
+                    String albumTitle = "";
+                    if (!TextUtils.isEmpty(info.getAlbumName())) {
+                        albumTitle = info.getAlbumName();
+                    } else if (!TextUtils.isEmpty(info.getSongName())) {
+                        albumTitle = info.getSongName();
+                    }
+                    String albumUrl = "";
+                    if (!TextUtils.isEmpty(info.getAlbumCover())) {
+                        albumUrl = info.getAlbumCover();
+                    } else if (!TextUtils.isEmpty(info.getSongCover())) {
+                        albumUrl = info.getSongCover();
+                    }
+                    MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
+                    builder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, info.getSongId());
+                    builder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, info.getSongUrl());
+                    if (!TextUtils.isEmpty(albumTitle)) {
+                        builder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, albumTitle);
+                    }
+                    if (!TextUtils.isEmpty(info.getArtist())) {
+                        builder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, info.getArtist());
+                    }
+                    if (info.getDuration() != -1) {
+                        long durationMs = TimeUnit.SECONDS.toMillis(info.getDuration());
+                        builder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, durationMs);
+                    }
+                    if (!TextUtils.isEmpty(info.getGenre())) {
+                        builder.putString(MediaMetadataCompat.METADATA_KEY_GENRE, info.getGenre());
+                    }
+                    if (!TextUtils.isEmpty(albumUrl)) {
+                        builder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, albumUrl);
+                        Bitmap art = Glide.with(context).applyDefaultRequestOptions(
+                                new RequestOptions()
+                                        .fallback(R.drawable.default_art)
+                                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE))
+                                .asBitmap()
+                                .load(albumUrl)
+                                .submit(144, 144)
+                                .get();
+                        builder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, art);
+                        builder.putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, art);
+                    }
+                    if (!TextUtils.isEmpty(info.getSongName())) {
+                        builder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, info.getSongName());
+                    }
+                    if (info.getTrackNumber() != -1) {
+                        builder.putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, info.getTrackNumber());
+                    }
+                    builder.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, info.getAlbumSongCount());
+                    mediaMetadataCompats.add(builder.build());
+                }
+                mCurrentState = State.INITIALIZED;
             }
-            String albumUrl = "";
-            if (!TextUtils.isEmpty(info.getAlbumCover())) {
-                albumUrl = info.getAlbumCover();
-            } else if (!TextUtils.isEmpty(info.getSongCover())) {
-                albumUrl = info.getSongCover();
+        } finally {
+            if (mCurrentState != State.INITIALIZED) {
+                mCurrentState = State.NON_INITIALIZED;
             }
-            MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
-            builder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, info.getSongId());
-            builder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, info.getSongUrl());
-            if (!TextUtils.isEmpty(albumTitle)) {
-                builder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, albumTitle);
-            }
-            if (!TextUtils.isEmpty(info.getArtist())) {
-                builder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, info.getArtist());
-            }
-            if (info.getDuration() != -1) {
-                long durationMs = TimeUnit.SECONDS.toMillis(info.getDuration());
-                builder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, durationMs);
-            }
-            if (!TextUtils.isEmpty(info.getGenre())) {
-                builder.putString(MediaMetadataCompat.METADATA_KEY_GENRE, info.getGenre());
-            }
-            if (!TextUtils.isEmpty(albumUrl)) {
-                builder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, albumUrl);
-                Bitmap art = Glide.with(context).applyDefaultRequestOptions(
-                        new RequestOptions()
-                                .fallback(R.drawable.default_art)
-                                .diskCacheStrategy(DiskCacheStrategy.RESOURCE))
-                        .asBitmap()
-                        .load(albumUrl)
-                        .submit(144, 144)
-                        .get();
-                builder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, art);
-                builder.putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, art);
-            }
-            if (!TextUtils.isEmpty(info.getSongName())) {
-                builder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, info.getSongName());
-            }
-            if (info.getTrackNumber() != -1) {
-                builder.putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, info.getTrackNumber());
-            }
-            builder.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, info.getAlbumSongCount());
-            mediaMetadataCompats.add(builder.build());
-
         }
         return mediaMetadataCompats;
     }
 
+    /**
+     * List<MediaMetadataCompat> 转 ConcatenatingMediaSource
+     */
     public ConcatenatingMediaSource toMediaSource(DataSource.Factory dataSourceFactory) {
         ConcatenatingMediaSource concatenatingMediaSource = new ConcatenatingMediaSource();
-        for (MediaMetadataCompat metadata : mMusicList) {
+        for (MediaMetadataCompat metadata : metadatas) {
             MediaSource mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory)
                     .setTag(fullDescription(metadata))
                     .createMediaSource(Uri.parse(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI)));
@@ -220,7 +281,7 @@ public class MusicProvider {
     }
 
 
-    public interface AnsyncCallback {
+    public interface AsyncCallback {
         void onMusicCatalogReady(ConcurrentMap<String, List<MediaMetadataCompat>> concurrentMap, List<MediaMetadataCompat> mediaMetadataCompats);
     }
 

@@ -39,7 +39,7 @@ public class UampPlaybackPreparer implements MediaSessionConnector.PlaybackPrepa
 
     @Override
     public void onPrepareFromMediaId(String mediaId, Bundle extras) {
-        List<MediaMetadataCompat> list = MusicProvider.getInstance().getMusicList();
+        List<MediaMetadataCompat> list = MusicProvider.getInstance().getMetadatas();
         MediaMetadataCompat itemToPlay = null;
         for (MediaMetadataCompat metadata : list) {
             if (mediaId.equals(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {

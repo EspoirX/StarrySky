@@ -11,9 +11,14 @@ import android.content.res.TypedArray;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.lzx.starrysky.MediaSessionConnection;
 import com.lzx.starrysky.MusicService;
@@ -29,39 +34,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static int getThemeColor(Context context, int attribute, int defaultColor) {
-        int themeColor = 0;
-        String packageName = context.getPackageName();
-        try {
-            Context packageContext = context.createPackageContext(packageName, 0);
-            ApplicationInfo applicationInfo =
-                    context.getPackageManager().getApplicationInfo(packageName, 0);
-            packageContext.setTheme(applicationInfo.theme);
-            Resources.Theme theme = packageContext.getTheme();
-            TypedArray ta = theme.obtainStyledAttributes(new int[]{attribute});
-            themeColor = ta.getColor(0, defaultColor);
-            ta.recycle();
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return themeColor;
-    }
+    private MediaBrowserCompat mMediaBrowser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= 21) {
-            // Since our app icon has the same color as colorPrimary, our entry in the Recent Apps
-            // list gets weird. We need to change either the icon or the color
-            // of the TaskDescription.
-            ActivityManager.TaskDescription taskDesc = new ActivityManager.TaskDescription(
-                    getTitle().toString(),
-                    BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_background),
-                    getThemeColor(this, R.attr.colorPrimary,
-                            android.R.color.darker_gray));
-            setTaskDescription(taskDesc);
-        }
+
         SongInfo s1 = new SongInfo();
         s1.setSongId("111");
         s1.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3");
@@ -81,36 +60,74 @@ public class MainActivity extends AppCompatActivity {
 
         MusicProvider.getInstance().setSongInfos(songInfos);
 
-        MediaSessionConnection connection = new MediaSessionConnection(this, new ComponentName(this, MusicService.class));
-        connection.subscribe("111", new MediaBrowserCompat.SubscriptionCallback() {
-            @Override
-            public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                super.onChildrenLoaded(parentId, children);
-                Log.i("xian", "1");
-                for (final MediaBrowserCompat.MediaItem mediaItem : children) {
-                    connection.getMediaController().addQueueItem(mediaItem.getDescription());
-                }
-                connection.getTransportControls().prepare();
-            }
-        });
+        mMediaBrowser = new MediaBrowserCompat(this,
+                new ComponentName(this, MusicService.class), mConnectionCallback, null);
+
         findViewById(R.id.subscribe).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                connection.getTransportControls().playFromMediaId("111", null);
+                mMediaBrowser.subscribe("111", new MediaBrowserCompat.SubscriptionCallback() {
+                    @Override
+                    public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                        super.onChildrenLoaded(parentId, children);
+                        Toast.makeText(MainActivity.this, "success", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
         findViewById(R.id.unsubscribe).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                connection.unsubscribe("111", new MediaBrowserCompat.SubscriptionCallback() {
-                    @Override
-                    public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                        super.onChildrenLoaded(parentId, children);
-                        Log.i("LogUtil", "parentId=" + parentId + " children=" + children.size());
-                    }
-                });
+                MediaControllerCompat.getMediaController(MainActivity.this)
+                        .getTransportControls().playFromMediaId("222", null);
             }
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mMediaBrowser.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(this);
+        if (controllerCompat != null) {
+            controllerCompat.unregisterCallback(mMediaControllerCallback);
+        }
+        mMediaBrowser.disconnect();
+    }
+
+    private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
+            new MediaBrowserCompat.ConnectionCallback() {
+                @Override
+                public void onConnected() {
+                    try {
+                        connectToSession(mMediaBrowser);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+    private void connectToSession(MediaBrowserCompat mediaBrowser) throws RemoteException {
+        MediaControllerCompat mediaController = new MediaControllerCompat(this, mediaBrowser.getSessionToken());
+        MediaControllerCompat.setMediaController(this, mediaController);
+        mediaController.registerCallback(mMediaControllerCallback);
+    }
+
+    private final MediaControllerCompat.Callback mMediaControllerCallback =
+            new MediaControllerCompat.Callback() {
+                @Override
+                public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
+
+                }
+
+                @Override
+                public void onMetadataChanged(MediaMetadataCompat metadata) {
+
+                }
+            };
 }
