@@ -4,21 +4,27 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.util.Log;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.lzx.starrysky.model.MusicProvider;
 
 import java.util.List;
+import java.util.function.LongUnaryOperator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,7 +52,28 @@ public class MusicService extends MediaBrowserServiceCompat {
         mediaSession = new MediaSessionCompat(this, "MusicService");
         mediaSession.setSessionActivity(sessionActivityPendingIntent);
         mediaSession.setActive(true);
+
+        mediaSession.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         setSessionToken(mediaSession.getSessionToken());
+
+        mediaSession.setCallback(new MediaSessionCompat.Callback() {
+            @Override
+            public void onPlayFromMediaId(String mediaId, Bundle extras) {
+                super.onPlayFromMediaId(mediaId, extras);
+                Log.i("xian", "mediaId = " + mediaId);
+            }
+
+            @Override
+            public void onPlay() {
+                super.onPlay();
+                Log.i("xian", "onPlay = ");
+            }
+        });
+        Bundle mSessionExtras = new Bundle();
+        mediaSession.setExtras(mSessionExtras);
 
         //媒体控制
         mediaController = new MediaControllerCompat(this, mediaSession);
@@ -56,18 +83,18 @@ public class MusicService extends MediaBrowserServiceCompat {
         // Produces DataSource instances through which media data is loaded.
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(
                 this, Util.getUserAgent(this, UAMP_USER_AGENT), null);
-        ExoPlayer exoPlayer = createrExoPlayer();
+        ExoPlayer exoPlayer = createExoPlayer();
 
         // Create the PlaybackPreparer of the media session connector.
-        UampPlaybackPreparer playbackPreparer = new UampPlaybackPreparer(createrExoPlayer(), dataSourceFactory);
+        UampPlaybackPreparer playbackPreparer = new UampPlaybackPreparer(exoPlayer, dataSourceFactory);
         mediaSessionConnector.setPlayer(exoPlayer, playbackPreparer);
-        mediaSessionConnector.setQueueNavigator(UampQueueNavigator(mediaSession));
+        mediaSessionConnector.setQueueNavigator(new UampQueueNavigator(mediaSession));
 
         mPackageValidator = new PackageValidator(this);
 
     }
 
-    private ExoPlayer createrExoPlayer() {
+    private ExoPlayer createExoPlayer() {
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setContentType(C.CONTENT_TYPE_MUSIC)
                 .setUsage(C.USAGE_MEDIA)
@@ -75,6 +102,20 @@ public class MusicService extends MediaBrowserServiceCompat {
         SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(this);
         player.setAudioAttributes(audioAttributes, true);
         return player;
+    }
+
+    private class UampQueueNavigator extends TimelineQueueNavigator {
+        private Timeline.Window mWindow;
+
+        public UampQueueNavigator(MediaSessionCompat mediaSession) {
+            super(mediaSession);
+            mWindow = new Timeline.Window();
+        }
+
+        @Override
+        public MediaDescriptionCompat getMediaDescription(Player player, int windowIndex) {
+            return (MediaDescriptionCompat) player.getCurrentTimeline().getWindow(windowIndex, mWindow, true).tag;
+        }
     }
 
     private class MediaControllerCallback extends MediaControllerCompat.Callback {
@@ -93,6 +134,7 @@ public class MusicService extends MediaBrowserServiceCompat {
 
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+        Log.i("xian", "parentId = " + parentId);
         result.detach();
         MusicProvider.getInstance().retrieveMediaAsync(this, () -> {
             result.sendResult(MusicProvider.getInstance().getChildrenResult(parentId));

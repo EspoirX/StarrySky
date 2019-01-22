@@ -3,12 +3,17 @@ package com.lzx.starrysky;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.lzx.starrysky.model.MusicProvider;
+
+import java.util.List;
 
 public class UampPlaybackPreparer implements MediaSessionConnector.PlaybackPreparer {
     private ExoPlayer mExoPlayer;
@@ -34,7 +39,20 @@ public class UampPlaybackPreparer implements MediaSessionConnector.PlaybackPrepa
 
     @Override
     public void onPrepareFromMediaId(String mediaId, Bundle extras) {
-
+        List<MediaMetadataCompat> list = MusicProvider.getInstance().getMusicList();
+        MediaMetadataCompat itemToPlay = null;
+        for (MediaMetadataCompat metadata : list) {
+            if (mediaId.equals(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
+                itemToPlay = metadata;
+                break;
+            }
+        }
+        if (itemToPlay != null) {
+            ConcatenatingMediaSource mediaSource = MusicProvider.getInstance().toMediaSource(dataSourceFactory);
+            int initialWindowIndex = list.indexOf(itemToPlay);
+            mExoPlayer.prepare(mediaSource);
+            mExoPlayer.seekTo(initialWindowIndex, 0);
+        }
     }
 
     @Override

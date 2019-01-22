@@ -3,7 +3,9 @@ package com.lzx.starrysky.model;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
@@ -12,6 +14,10 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.upstream.DataSource;
 import com.lzx.starrysky.R;
 
 import java.util.ArrayList;
@@ -49,6 +55,14 @@ public class MusicProvider {
 
     public void setSongInfos(List<SongInfo> songInfos) {
         mSongInfos = songInfos;
+    }
+
+    public ConcurrentMap<String, List<MediaMetadataCompat>> getMusicListById() {
+        return mMusicListById;
+    }
+
+    public List<MediaMetadataCompat> getMusicList() {
+        return mMusicList;
     }
 
     public List<MediaBrowserCompat.MediaItem> getChildrenResult(String mediaId) {
@@ -185,6 +199,26 @@ public class MusicProvider {
         }
         return mediaMetadataCompats;
     }
+
+    public ConcatenatingMediaSource toMediaSource(DataSource.Factory dataSourceFactory) {
+        ConcatenatingMediaSource concatenatingMediaSource = new ConcatenatingMediaSource();
+        for (MediaMetadataCompat metadata : mMusicList) {
+            MediaSource mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory)
+                    .setTag(fullDescription(metadata))
+                    .createMediaSource(Uri.parse(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI)));
+            concatenatingMediaSource.addMediaSource(mediaSource);
+        }
+        return concatenatingMediaSource;
+    }
+
+    private Object fullDescription(MediaMetadataCompat metadata) {
+        Bundle bundle = metadata.getDescription().getExtras();
+        if (bundle != null) {
+            bundle.putAll(metadata.getBundle());
+        }
+        return bundle;
+    }
+
 
     public interface AnsyncCallback {
         void onMusicCatalogReady(ConcurrentMap<String, List<MediaMetadataCompat>> concurrentMap, List<MediaMetadataCompat> mediaMetadataCompats);

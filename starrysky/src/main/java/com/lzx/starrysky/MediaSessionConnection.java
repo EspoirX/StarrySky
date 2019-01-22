@@ -30,9 +30,6 @@ public class MediaSessionConnection {
         mediaBrowserConnectionCallback = new MediaBrowserConnectionCallback();
         mediaBrowser = new MediaBrowserCompat(context, serviceComponent, mediaBrowserConnectionCallback, null);
         mediaBrowser.connect();
-
-
-
     }
 
     public void subscribe(String parentId, MediaBrowserCompat.SubscriptionCallback callback) {
@@ -63,6 +60,10 @@ public class MediaSessionConnection {
         return transportControls;
     }
 
+    public MediaControllerCompat getMediaController() {
+        return mediaController;
+    }
+
     private class MediaBrowserConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
         @Override
         public void onConnected() {
@@ -72,7 +73,6 @@ public class MediaSessionConnection {
                 mediaController.registerCallback(new MediaControllerCallback());
                 transportControls = mediaController.getTransportControls();
                 rootMediaId = mediaBrowser.getRoot();
-                Log.i("xian","rootMediaId="+rootMediaId);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
