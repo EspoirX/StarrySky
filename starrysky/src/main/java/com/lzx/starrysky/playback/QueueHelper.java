@@ -17,7 +17,6 @@
 package com.lzx.starrysky.playback;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;

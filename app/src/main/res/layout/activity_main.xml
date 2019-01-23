@@ -6,27 +6,69 @@
     android:orientation="vertical"
     tools:ignore="ResourceName">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/play"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:text="播放" />
 
-        <Button
-            android:id="@+id/subscribe"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="subscribe" />
+    <Button
+        android:id="@+id/pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="暂停" />
 
-        <Button
-            android:id="@+id/unsubscribe"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="unsubscribe" />
+    <Button
+        android:id="@+id/resum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="继续" />
 
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="停止" />
 
+    <Button
+        android:id="@+id/pre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="上一首" />
 
+    <Button
+        android:id="@+id/next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="下一首" />
 
-    </LinearLayout>
+    <Button
+        android:id="@+id/fastForward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="快进" />
 
+    <Button
+        android:id="@+id/rewind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="倒带" />
 
+    <Button
+        android:id="@+id/currSong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当前播放歌曲" />
+
+    <Button
+        android:id="@+id/currSongId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当前播放歌曲ID" />
+
+    <Button
+        android:id="@+id/currSongIndex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当前播放下标" />
 </LinearLayout>

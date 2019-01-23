@@ -16,7 +16,6 @@
 package com.lzx.starrysky.playback;
 
 
-import android.media.session.PlaybackState;
 
 import static android.support.v4.media.session.MediaSessionCompat.QueueItem;
 
@@ -25,9 +24,7 @@ public interface Playback {
 
     void start();
 
-
     void stop(boolean notifyListeners);
-
 
     void setState(int state);
 
@@ -50,6 +47,12 @@ public interface Playback {
     void setCurrentMediaId(String mediaId);
 
     String getCurrentMediaId();
+
+    void onFastForward();
+
+    void onRewind();
+
+    void setVolume(float audioVolume);
 
     interface Callback {
         void onCompletion();

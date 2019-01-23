@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -23,8 +22,6 @@ import com.lzx.starrysky.R;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class MusicProvider {
 
     private List<SongInfo> mSongInfos;
-    private ConcurrentMap<String, List<MediaMetadataCompat>> metadatasById;
+    //private ConcurrentMap<String, List<MediaMetadataCompat>> metadatasById;
     private List<MediaMetadataCompat> metadatas;
 
     enum State {
@@ -52,7 +49,7 @@ public class MusicProvider {
     private MusicProvider() {
         mSongInfos = Collections.synchronizedList(new ArrayList<>());
         metadatas = Collections.synchronizedList(new ArrayList<>());
-        metadatasById = new ConcurrentHashMap<>();
+        //metadatasById = new ConcurrentHashMap<>();
     }
 
     /**
@@ -69,9 +66,9 @@ public class MusicProvider {
         mSongInfos = songInfos;
     }
 
-    public ConcurrentMap<String, List<MediaMetadataCompat>> getMetadatasById() {
-        return metadatasById;
-    }
+//    public ConcurrentMap<String, List<MediaMetadataCompat>> getMetadatasById() {
+//        return metadatasById;
+//    }
 
     public List<MediaMetadataCompat> getMetadatas() {
         return metadatas;
@@ -82,15 +79,14 @@ public class MusicProvider {
      */
     public List<MediaBrowserCompat.MediaItem> getChildrenResult(String mediaId) {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
-        List<MediaMetadataCompat> mediaMetadataCompats = metadatasById.get(mediaId);
-        if (mediaMetadataCompats != null) {
-            for (MediaMetadataCompat metadata : mediaMetadataCompats) {
-                MediaBrowserCompat.MediaItem mediaItem = new MediaBrowserCompat.MediaItem(
-                        metadata.getDescription(),
-                        MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
-                mediaItems.add(mediaItem);
-            }
+        //List<MediaMetadataCompat> mediaMetadataCompats = metadatasById.get(mediaId);
+        for (MediaMetadataCompat metadata : metadatas) {
+            MediaBrowserCompat.MediaItem mediaItem = new MediaBrowserCompat.MediaItem(
+                    metadata.getDescription(),
+                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+            mediaItems.add(mediaItem);
         }
+
         return mediaItems;
     }
 
@@ -129,9 +125,9 @@ public class MusicProvider {
             callback.onReady();
             return;
         }
-        UpdateCatalogTask task = new UpdateCatalogTask(context, mSongInfos, (concurrentMap, mediaMetadataCompats) -> {
+        UpdateCatalogTask task = new UpdateCatalogTask(context, mSongInfos, (mediaMetadataCompats) -> {
             metadatas = mediaMetadataCompats;
-            metadatasById = concurrentMap;
+            // metadatasById = concurrentMap;
             callback.onReady();
         });
         task.executeOnExecutor(Executors.newCachedThreadPool());
@@ -142,6 +138,10 @@ public class MusicProvider {
      */
     public boolean isInitialized() {
         return mCurrentState == State.INITIALIZED;
+    }
+
+    public void nonInitialized() {
+        mCurrentState = State.NON_INITIALIZED;
     }
 
     /**
@@ -174,18 +174,18 @@ public class MusicProvider {
         @Override
         protected void onPostExecute(List<MediaMetadataCompat> mediaMetadataCompats) {
             super.onPostExecute(mediaMetadataCompats);
-            //得到 ConcurrentMap<String, List<MediaMetadataCompat>>
-            ConcurrentMap<String, List<MediaMetadataCompat>> newMusicList = new ConcurrentHashMap<>();
-            for (MediaMetadataCompat m : mediaMetadataCompats) {
-                String songId = m.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                List<MediaMetadataCompat> list = newMusicList.get(songId);
-                if (list == null) {
-                    list = new ArrayList<>();
-                    newMusicList.put(songId, list);
-                }
-                list.add(m);
-            }
-            callback.onMusicCatalogReady(newMusicList, mediaMetadataCompats);
+//            //得到 ConcurrentMap<String, List<MediaMetadataCompat>>
+//            ConcurrentMap<String, List<MediaMetadataCompat>> newMusicList = new ConcurrentHashMap<>();
+//            for (MediaMetadataCompat m : mediaMetadataCompats) {
+//                String songId = m.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+//                List<MediaMetadataCompat> list = newMusicList.get(songId);
+//                if (list == null) {
+//                    list = new ArrayList<>();
+//                    newMusicList.put(songId, list);
+//                }
+//                list.add(m);
+//            }
+            callback.onMusicCatalogReady(mediaMetadataCompats);
         }
     }
 
@@ -282,7 +282,7 @@ public class MusicProvider {
 
 
     public interface AsyncCallback {
-        void onMusicCatalogReady(ConcurrentMap<String, List<MediaMetadataCompat>> concurrentMap, List<MediaMetadataCompat> mediaMetadataCompats);
+        void onMusicCatalogReady(List<MediaMetadataCompat> mediaMetadataCompats);
     }
 
     public interface Callback {

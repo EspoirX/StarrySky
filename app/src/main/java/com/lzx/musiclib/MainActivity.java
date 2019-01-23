@@ -1,40 +1,24 @@
 package com.lzx.musiclib;
 
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.RemoteException;
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
-import android.view.View;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.lzx.starrysky.MediaSessionConnection;
-import com.lzx.starrysky.MusicService;
-import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.MusicManager;
 import com.lzx.starrysky.model.SongInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private MediaBrowserCompat mMediaBrowser;
+    //    private MediaBrowserCompat mMediaBrowser;
+    private MediaSessionConnection mMediaSessionConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,76 +42,47 @@ public class MainActivity extends AppCompatActivity {
         songInfos.add(s2);
         songInfos.add(s3);
 
-        MusicProvider.getInstance().setSongInfos(songInfos);
+        mMediaSessionConnection = MediaSessionConnection.getInstance(this);
 
-        mMediaBrowser = new MediaBrowserCompat(this,
-                new ComponentName(this, MusicService.class), mConnectionCallback, null);
-
-        findViewById(R.id.subscribe).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMediaBrowser.subscribe("111", new MediaBrowserCompat.SubscriptionCallback() {
-                    @Override
-                    public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                        super.onChildrenLoaded(parentId, children);
-                        Toast.makeText(MainActivity.this, "success", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        findViewById(R.id.play).setOnClickListener(v -> MusicManager.getInstance().playMusic(songInfos, 0));
+        findViewById(R.id.pause).setOnClickListener(v -> MusicManager.getInstance().pauseMusic());
+        findViewById(R.id.resum).setOnClickListener(v -> MusicManager.getInstance().playMusic());
+        findViewById(R.id.stop).setOnClickListener(v -> MusicManager.getInstance().stopMusic());
+        findViewById(R.id.pre).setOnClickListener(v -> MusicManager.getInstance().skipToPrevious());
+        findViewById(R.id.next).setOnClickListener(v -> MusicManager.getInstance().skipToNext());
+        findViewById(R.id.fastForward).setOnClickListener(v -> MusicManager.getInstance().fastForward());
+        findViewById(R.id.rewind).setOnClickListener(v -> MusicManager.getInstance().rewind());
+        findViewById(R.id.currSong).setOnClickListener(v -> {
+            SongInfo songInfo = MusicManager.getInstance().getNowPlayingSongInfo();
+            if (songInfo == null) {
+                Toast.makeText(MainActivity.this, "songInfo is null", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "curr SongInfo = " + songInfo.getSongId(), Toast.LENGTH_SHORT).show();
             }
         });
-        findViewById(R.id.unsubscribe).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MediaControllerCompat.getMediaController(MainActivity.this)
-                        .getTransportControls().playFromMediaId("222", null);
+        findViewById(R.id.currSongId).setOnClickListener(v -> {
+            String songId = MusicManager.getInstance().getNowPlayingSongId();
+            if (TextUtils.isEmpty(songId)) {
+                Toast.makeText(MainActivity.this, "songId is null", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "songId = " + songId, Toast.LENGTH_SHORT).show();
             }
+        });
+        findViewById(R.id.currSongIndex).setOnClickListener(v -> {
+            int index = MusicManager.getInstance().getNowPlayingIndex();
+            Toast.makeText(MainActivity.this, "index = " + index, Toast.LENGTH_SHORT).show();
         });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mMediaBrowser.connect();
+        mMediaSessionConnection.connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(this);
-        if (controllerCompat != null) {
-            controllerCompat.unregisterCallback(mMediaControllerCallback);
-        }
-        mMediaBrowser.disconnect();
+        mMediaSessionConnection.disconnect();
     }
-
-    private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
-            new MediaBrowserCompat.ConnectionCallback() {
-                @Override
-                public void onConnected() {
-                    try {
-                        connectToSession(mMediaBrowser);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-
-    private void connectToSession(MediaBrowserCompat mediaBrowser) throws RemoteException {
-        MediaControllerCompat mediaController = new MediaControllerCompat(this, mediaBrowser.getSessionToken());
-        MediaControllerCompat.setMediaController(this, mediaController);
-        mediaController.registerCallback(mMediaControllerCallback);
-    }
-
-    private final MediaControllerCompat.Callback mMediaControllerCallback =
-            new MediaControllerCompat.Callback() {
-                @Override
-                public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-
-                }
-
-                @Override
-                public void onMetadataChanged(MediaMetadataCompat metadata) {
-
-                }
-            };
 }

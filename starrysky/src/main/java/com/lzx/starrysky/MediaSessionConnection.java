@@ -8,10 +8,14 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
+/**
+ * 与服务端连接的管理类
+ */
 public class MediaSessionConnection {
     private Context mContext;
     private ComponentName serviceComponent;
@@ -23,13 +27,27 @@ public class MediaSessionConnection {
     private MediaControllerCompat.TransportControls transportControls;
     private MediaControllerCompat mediaController;
     private MediaBrowserConnectionCallback mediaBrowserConnectionCallback;
+    private MediaControllerCallback mMediaControllerCallback;
 
-    public MediaSessionConnection(Context context, ComponentName serviceComponent) {
+    private static volatile MediaSessionConnection sInstance;
+
+    public static MediaSessionConnection getInstance(Context context) {
+        if (sInstance == null) {
+            synchronized (MediaSessionConnection.class) {
+                if (sInstance == null) {
+                    sInstance = new MediaSessionConnection(context, new ComponentName(context, MusicService.class));
+                }
+            }
+        }
+        return sInstance;
+    }
+
+    private MediaSessionConnection(Context context, ComponentName serviceComponent) {
         mContext = context;
         this.serviceComponent = serviceComponent;
         mediaBrowserConnectionCallback = new MediaBrowserConnectionCallback();
+        mMediaControllerCallback = new MediaControllerCallback();
         mediaBrowser = new MediaBrowserCompat(context, serviceComponent, mediaBrowserConnectionCallback, null);
-        mediaBrowser.connect();
     }
 
     public void subscribe(String parentId, MediaBrowserCompat.SubscriptionCallback callback) {
@@ -64,15 +82,44 @@ public class MediaSessionConnection {
         return mediaController;
     }
 
+    /**
+     * 连接
+     */
+    public void connect() {
+        mediaBrowser.connect();
+    }
+
+    /**
+     * 断开连接
+     */
+    public void disconnect() {
+        if (mediaController != null) {
+            mediaController.unregisterCallback(mMediaControllerCallback);
+        }
+        mediaBrowser.disconnect();
+    }
+
+    /**
+     * 连接回调
+     */
     private class MediaBrowserConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
+        /**
+         * 已连接上
+         */
         @Override
         public void onConnected() {
             super.onConnected();
             try {
                 mediaController = new MediaControllerCompat(mContext, mediaBrowser.getSessionToken());
-                mediaController.registerCallback(new MediaControllerCallback());
+                mediaController.registerCallback(mMediaControllerCallback);
                 transportControls = mediaController.getTransportControls();
                 rootMediaId = mediaBrowser.getRoot();
+                subscribe(rootMediaId, new MediaBrowserCompat.SubscriptionCallback() {
+                    @Override
+                    public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                        super.onChildrenLoaded(parentId, children);
+                    }
+                });
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

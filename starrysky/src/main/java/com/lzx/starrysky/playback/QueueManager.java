@@ -16,19 +16,12 @@
 
 package com.lzx.starrysky.playback;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.os.Bundle;
-
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
-
-import com.lzx.starrysky.R;
 import com.lzx.starrysky.model.MusicProvider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
