@@ -2,6 +2,7 @@ package com.lzx.starrysky;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -144,12 +145,20 @@ public class MediaSessionConnection {
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
             playbackState = state != null ? state : EMPTY_PLAYBACK_STATE;
+
+            Intent intent = new Intent();
+            intent.putExtra(MusicManager.ACTION_PLAY_STATE_CHANGE, state);
+            mContext.sendBroadcast(intent);
         }
 
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             super.onMetadataChanged(metadata);
             nowPlaying = metadata != null ? metadata : NOTHING_PLAYING;
+
+            Intent intent = new Intent();
+            intent.putExtra(MusicManager.ACTION_META_DATA_CHANGE, nowPlaying);
+            mContext.sendBroadcast(intent);
         }
 
         @Override

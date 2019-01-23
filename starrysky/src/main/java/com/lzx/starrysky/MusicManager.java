@@ -1,7 +1,9 @@
 package com.lzx.starrysky;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
@@ -10,6 +12,7 @@ import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.model.SongInfo;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import androidx.annotation.NonNull;
 
@@ -431,5 +434,52 @@ public class MusicManager {
         }
     }
 
+    //播放状态改变通知
+    public static final String ACTION_PLAY_STATE_CHANGE = "ACTION_PLAY_STATE_CHANGE";
+    //切歌通知
+    public static final String ACTION_META_DATA_CHANGE = "ACTION_PLAY_STATE_CHANGE";
+
+    private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
+
+    /**
+     * 添加一个状态监听
+     */
+    public void addPlayerEventListener(OnPlayerEventListener listener) {
+        if (listener != null) {
+            if (!mPlayerEventListeners.contains(listener)) {
+                mPlayerEventListeners.add(listener);
+            }
+        }
+    }
+
+    /**
+     * 删除一个状态监听
+     */
+    public void removePlayerEventListener(OnPlayerEventListener listener) {
+        if (listener != null) {
+            mPlayerEventListeners.remove(listener);
+        }
+    }
+
+    /**
+     * 删除所有状态监听
+     */
+    public void clearPlayerEventListener() {
+        mPlayerEventListeners.clear();
+    }
+
+    private class PlayEventReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (ACTION_PLAY_STATE_CHANGE.equals(action)) {
+
+            }
+            if (ACTION_META_DATA_CHANGE.equals(action)) {
+
+            }
+        }
+    }
 
 }
