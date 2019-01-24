@@ -1,8 +1,7 @@
-package com.lzx.starrysky;
+package com.lzx.starrysky.manager;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -10,7 +9,12 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.lzx.starrysky.MusicService;
+import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.model.SongInfo;
+
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import androidx.annotation.NonNull;
 
@@ -59,22 +63,44 @@ public class MediaSessionConnection {
         mediaBrowser.unsubscribe(parentId, callback);
     }
 
+    /**
+     * 是否已连接
+     */
     public boolean isConnected() {
         return isConnected;
     }
 
+    /**
+     * 获取rootMediaId
+     */
     public String getRootMediaId() {
         return rootMediaId;
     }
 
+    /**
+     * 获取 MediaBrowserCompat
+     */
+    public MediaBrowserCompat getMediaBrowser() {
+        return mediaBrowser;
+    }
+
+    /**
+     * 获取当前播放的 PlaybackStateCompat
+     */
     public PlaybackStateCompat getPlaybackState() {
         return playbackState;
     }
 
+    /**
+     * 获取当前播放的 MediaMetadataCompat
+     */
     public MediaMetadataCompat getNowPlaying() {
         return nowPlaying;
     }
 
+    /**
+     * 获取播放控制器
+     */
     public MediaControllerCompat.TransportControls getTransportControls() {
         return transportControls;
     }
@@ -146,9 +172,35 @@ public class MediaSessionConnection {
             super.onPlaybackStateChanged(state);
             playbackState = state != null ? state : EMPTY_PLAYBACK_STATE;
 
-            Intent intent = new Intent();
-            intent.putExtra(MusicManager.ACTION_PLAY_STATE_CHANGE, state);
-            mContext.sendBroadcast(intent);
+            //状态监听
+            CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = MusicManager.getInstance().getPlayerEventListeners();
+            if (state != null) {
+                for (OnPlayerEventListener listener : mPlayerEventListeners) {
+                    switch (state.getState()) {
+                        case PlaybackStateCompat.STATE_PLAYING:
+                            listener.onPlayerStart();
+                            break;
+                        case PlaybackStateCompat.STATE_PAUSED:
+                            listener.onPlayerPause();
+                            break;
+                        case PlaybackStateCompat.STATE_STOPPED:
+                            listener.onPlayerStop();
+                            break;
+                        case PlaybackStateCompat.STATE_ERROR:
+                            listener.onError(state.getErrorCode(), state.getErrorMessage().toString());
+                            break;
+                        case PlaybackStateCompat.STATE_NONE:
+                            listener.onPlayCompletion();
+                            break;
+                        case PlaybackStateCompat.STATE_BUFFERING:
+                            listener.onBuffering();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
         }
 
         @Override
@@ -156,9 +208,22 @@ public class MediaSessionConnection {
             super.onMetadataChanged(metadata);
             nowPlaying = metadata != null ? metadata : NOTHING_PLAYING;
 
-            Intent intent = new Intent();
-            intent.putExtra(MusicManager.ACTION_META_DATA_CHANGE, nowPlaying);
-            mContext.sendBroadcast(intent);
+            //状态监听
+            CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = MusicManager.getInstance().getPlayerEventListeners();
+            if (metadata != null) {
+                SongInfo songInfo = null;
+                for (OnPlayerEventListener listener : mPlayerEventListeners) {
+                    List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
+                    for (SongInfo info : songInfos) {
+                        if (info.getSongId().equals(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
+                            songInfo = info;
+                            break;
+                        }
+                    }
+                    listener.onMusicSwitch(songInfo);
+                }
+            }
+
         }
 
         @Override

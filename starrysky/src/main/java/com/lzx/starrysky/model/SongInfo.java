@@ -1,8 +1,10 @@
 package com.lzx.starrysky.model;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class SongInfo {
+public class SongInfo implements Parcelable {
     private String songId = ""; //音乐id
     private String songName = ""; //音乐标题
     private String songCover = ""; //音乐封面
@@ -328,4 +330,103 @@ public class SongInfo {
     public void setAlbumPlayCount(int albumPlayCount) {
         this.albumPlayCount = albumPlayCount;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.songId);
+        dest.writeString(this.songName);
+        dest.writeString(this.songCover);
+        dest.writeString(this.songHDCover);
+        dest.writeString(this.songSquareCover);
+        dest.writeString(this.songRectCover);
+        dest.writeString(this.songRoundCover);
+        dest.writeParcelable(this.songCoverBitmap, flags);
+        dest.writeString(this.songUrl);
+        dest.writeString(this.genre);
+        dest.writeString(this.type);
+        dest.writeString(this.size);
+        dest.writeLong(this.duration);
+        dest.writeString(this.artist);
+        dest.writeString(this.artistId);
+        dest.writeString(this.downloadUrl);
+        dest.writeString(this.site);
+        dest.writeInt(this.favorites);
+        dest.writeInt(this.playCount);
+        dest.writeInt(this.trackNumber);
+        dest.writeString(this.language);
+        dest.writeString(this.country);
+        dest.writeString(this.proxyCompany);
+        dest.writeString(this.publishTime);
+        dest.writeString(this.description);
+        dest.writeString(this.versions);
+        dest.writeString(this.albumId);
+        dest.writeString(this.albumName);
+        dest.writeString(this.albumCover);
+        dest.writeString(this.albumHDCover);
+        dest.writeString(this.albumSquareCover);
+        dest.writeString(this.albumRectCover);
+        dest.writeString(this.albumRoundCover);
+        dest.writeString(this.albumArtist);
+        dest.writeInt(this.albumSongCount);
+        dest.writeInt(this.albumPlayCount);
+    }
+
+    public SongInfo() {
+    }
+
+    protected SongInfo(Parcel in) {
+        this.songId = in.readString();
+        this.songName = in.readString();
+        this.songCover = in.readString();
+        this.songHDCover = in.readString();
+        this.songSquareCover = in.readString();
+        this.songRectCover = in.readString();
+        this.songRoundCover = in.readString();
+        this.songCoverBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        this.songUrl = in.readString();
+        this.genre = in.readString();
+        this.type = in.readString();
+        this.size = in.readString();
+        this.duration = in.readLong();
+        this.artist = in.readString();
+        this.artistId = in.readString();
+        this.downloadUrl = in.readString();
+        this.site = in.readString();
+        this.favorites = in.readInt();
+        this.playCount = in.readInt();
+        this.trackNumber = in.readInt();
+        this.language = in.readString();
+        this.country = in.readString();
+        this.proxyCompany = in.readString();
+        this.publishTime = in.readString();
+        this.description = in.readString();
+        this.versions = in.readString();
+        this.albumId = in.readString();
+        this.albumName = in.readString();
+        this.albumCover = in.readString();
+        this.albumHDCover = in.readString();
+        this.albumSquareCover = in.readString();
+        this.albumRectCover = in.readString();
+        this.albumRoundCover = in.readString();
+        this.albumArtist = in.readString();
+        this.albumSongCount = in.readInt();
+        this.albumPlayCount = in.readInt();
+    }
+
+    public static final Parcelable.Creator<SongInfo> CREATOR = new Parcelable.Creator<SongInfo>() {
+        @Override
+        public SongInfo createFromParcel(Parcel source) {
+            return new SongInfo(source);
+        }
+
+        @Override
+        public SongInfo[] newArray(int size) {
+            return new SongInfo[size];
+        }
+    };
 }

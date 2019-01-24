@@ -1,22 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lzx.starrysky">
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application>
 
-        <!-- Declare that UAMP supports Android Auto. -->
-        <meta-data android:name="com.google.android.gms.car.application"
-            android:resource="@xml/automotive_app_desc"/>
-
-        <!--
-             MediaSession, prior to API 21, uses a broadcast receiver to communicate with a
-             media session. It does not have to be this broadcast receiver, but it must
-             handle the action "android.intent.action.MEDIA_BUTTON".
-
-             Additionally, this is used to resume the service from an inactive state upon
-             receiving a media button event (such as "play").
-        -->
         <receiver android:name="androidx.media.session.MediaButtonReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />

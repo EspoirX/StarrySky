@@ -2,6 +2,8 @@ package com.lzx.musiclib;
 
 import android.app.Application;
 
+import com.lzx.starrysky.manager.MusicManager;
+
 
 /**
  * create by lzx
@@ -12,7 +14,7 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        MusicManager.initMusicManager(this);
     }
 
 

@@ -1,13 +1,13 @@
-package com.lzx.starrysky;
+package com.lzx.starrysky.manager;
 
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
+import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.model.SongInfo;
 
@@ -17,6 +17,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import androidx.annotation.NonNull;
 
 public class MusicManager {
+
+    private static Context sContext;
+    private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
+
     public static MusicManager getInstance() {
         return SingletonHolder.sInstance;
     }
@@ -25,10 +29,23 @@ public class MusicManager {
         private static final MusicManager sInstance = new MusicManager();
     }
 
-    private static Context sContext;
-
+    /**
+     * 在Application调用
+     */
     public static void initMusicManager(Context context) {
         sContext = context;
+    }
+
+    private MusicManager() {
+
+    }
+
+    /**
+     * 释放资源，关闭程序时调用
+     */
+    public void onRelease() {
+        clearPlayerEventListener();
+        sContext = null;
     }
 
     /**
@@ -350,6 +367,30 @@ public class MusicManager {
     }
 
     /**
+     * 如果有下一首
+     */
+    public boolean isSkipToNextEnabled() {
+        MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
+        if (connection.isConnected()) {
+            return (connection.getPlaybackState().getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 如果有上一首
+     */
+    public boolean isSkipToPreviousEnabled() {
+        MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
+        if (connection.isConnected()) {
+            return (connection.getPlaybackState().getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 将当前播放速度作为正常播放的倍数。 倒带时这应该是负数， 值为1表示正常播放，0表示暂停。
      */
     public float getPlaybackSpeed() {
@@ -434,12 +475,17 @@ public class MusicManager {
         }
     }
 
-    //播放状态改变通知
-    public static final String ACTION_PLAY_STATE_CHANGE = "ACTION_PLAY_STATE_CHANGE";
-    //切歌通知
-    public static final String ACTION_META_DATA_CHANGE = "ACTION_PLAY_STATE_CHANGE";
-
-    private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
+    /**
+     * 获取媒体时长，单位毫秒
+     */
+    public long getDuration() {
+        long duration = -1;
+        MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
+        if (connection.isConnected()) {
+            duration = connection.getNowPlaying().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+        }
+        return duration;
+    }
 
     /**
      * 添加一个状态监听
@@ -468,18 +514,7 @@ public class MusicManager {
         mPlayerEventListeners.clear();
     }
 
-    private class PlayEventReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (ACTION_PLAY_STATE_CHANGE.equals(action)) {
-
-            }
-            if (ACTION_META_DATA_CHANGE.equals(action)) {
-
-            }
-        }
+    public CopyOnWriteArrayList<OnPlayerEventListener> getPlayerEventListeners() {
+        return mPlayerEventListeners;
     }
-
 }

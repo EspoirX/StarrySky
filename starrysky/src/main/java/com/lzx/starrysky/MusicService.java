@@ -11,6 +11,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.notification.factory.NotificationFactory;
 import com.lzx.starrysky.playback.LocalPlayback;
 import com.lzx.starrysky.playback.PlaybackManager;
 import com.lzx.starrysky.playback.QueueManager;
@@ -39,6 +40,8 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
     private PackageValidator mPackageValidator;
     private PlaybackManager mPlaybackManager;
 
+    private NotificationFactory mNotificationFactory;
+
     private static final int STOP_DELAY = 30000;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
 
@@ -66,6 +69,8 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         mPlaybackManager.updatePlaybackState(null);
         mPackageValidator = new PackageValidator(this);
 
+        mNotificationFactory = new NotificationFactory(this);
+        mNotificationFactory.createNotification();
     }
 
     @Override
@@ -96,6 +101,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
     public void onDestroy() {
         super.onDestroy();
         mPlaybackManager.handleStopRequest(null);
+        mNotificationFactory.stopNotification();
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mediaSession.release();
@@ -130,7 +136,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
 
     @Override
     public void onNotificationRequired() {
-
+        mNotificationFactory.startNotification();
     }
 
     @Override
