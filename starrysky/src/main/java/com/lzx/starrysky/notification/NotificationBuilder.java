@@ -22,7 +22,6 @@ public class NotificationBuilder {
     private String targetClass; //通知栏点击转跳界面
     private String contentTitle; //通知栏标题
     private String contentText;  //通知栏内容
-    private PendingIntent startOrPauseIntent; //播放或暂停按钮 PendingIntent
     private PendingIntent nextIntent; //下一首按钮 PendingIntent
     private PendingIntent preIntent; //上一首按钮 PendingIntent
     private PendingIntent closeIntent; //关闭按钮 PendingIntent
@@ -62,11 +61,6 @@ public class NotificationBuilder {
 
     public NotificationBuilder setContentText(String contentText) {
         this.contentText = contentText;
-        return this;
-    }
-
-    public NotificationBuilder setStartOrPauseIntent(PendingIntent startOrPauseIntent) {
-        this.startOrPauseIntent = startOrPauseIntent;
         return this;
     }
 
@@ -228,10 +222,6 @@ public class NotificationBuilder {
 
     public String getContentText() {
         return contentText;
-    }
-
-    public PendingIntent getStartOrPauseIntent() {
-        return startOrPauseIntent;
     }
 
     public PendingIntent getNextIntent() {

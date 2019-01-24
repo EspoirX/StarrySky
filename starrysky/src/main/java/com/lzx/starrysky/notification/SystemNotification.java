@@ -1,8 +1,6 @@
 package com.lzx.starrysky.notification;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -12,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -20,24 +17,15 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
-import com.lzx.starrysky.model.MusicProvider;
-import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
+import com.lzx.starrysky.notification.utils.NotificationUtils;
 
-import java.util.List;
-
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 public class SystemNotification extends BroadcastReceiver implements INotification {
-
-    private static final int NOTIFICATION_ID = 412;
-    private static final int REQUEST_CODE = 100;
-
 
     private PendingIntent mPlayIntent;
     private PendingIntent mPauseIntent;
@@ -176,7 +164,6 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
-        Log.i("xian", "onReceive#action = " + action);
         if (action == null) {
             return;
         }
@@ -202,19 +189,16 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         if (mMetadata == null || mPlaybackState == null) {
             return null;
         }
-
         MediaDescriptionCompat description = mMetadata.getDescription();
-
 
         Bitmap art = mMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART);
 
-        // Notification channels are only supported on Android O+.
+        //适配8.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel();
+            NotificationUtils.createNotificationChannel(mService, mNotificationManager);
         }
 
-        final NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(mService, CHANNEL_ID);
+        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
 
         final int playPauseButtonPosition = addActions(notificationBuilder);
         notificationBuilder
@@ -226,7 +210,6 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
                         .setMediaSession(mSessionToken))
                 .setDeleteIntent(mStopIntent)
                 //.setColor(mNotificationColor)
-                .setOnlyAlertOnce(true)
                 .setColorized(true)
                 .setSmallIcon(mBuilder.getSmallIconRes() != -1 ? mBuilder.getSmallIconRes() : R.drawable.ic_notification)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -234,11 +217,12 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
                 .setContentTitle(description.getTitle()) //歌名
                 .setContentText(description.getSubtitle()) //艺术家
                 .setLargeIcon(art);
+
         if (!TextUtils.isEmpty(mBuilder.getTargetClass())) {
-            Class clazz = getTargetClass(mBuilder.getTargetClass());
+            Class clazz = NotificationUtils.getTargetClass(mBuilder.getTargetClass());
             if (clazz != null) {
                 String songId = mMetadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                notificationBuilder.setContentIntent(createContentIntent(songId, null, clazz));
+                notificationBuilder.setContentIntent(NotificationUtils.createContentIntent(mService, mBuilder, songId, null, clazz));
             }
         }
 
@@ -253,61 +237,6 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
             return;
         }
         builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
-    }
-
-    /**
-     * 设置content点击事件
-     */
-    private PendingIntent createContentIntent(String songId, Bundle bundle, Class targetClass) {
-        SongInfo songInfo = null;
-        List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
-        for (SongInfo info : songInfos) {
-            if (info.getSongId().equals(songId)) {
-                songInfo = info;
-                break;
-            }
-        }
-        Intent openUI = new Intent(mService, targetClass);
-        openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        openUI.putExtra("notification_entry", ACTION_INTENT_CLICK);
-        if (songInfo != null) {
-            openUI.putExtra("songInfo", songInfo);
-        }
-        if (bundle != null) {
-            openUI.putExtra("bundleInfo", bundle);
-        }
-        @SuppressLint("WrongConstant")
-        PendingIntent pendingIntent;
-        switch (mBuilder.getPendingIntentMode()) {
-            case NotificationBuilder.MODE_ACTIVITY:
-                pendingIntent = PendingIntent.getActivity(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
-                break;
-            case NotificationBuilder.MODE_BROADCAST:
-                pendingIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
-                break;
-            case NotificationBuilder.MODE_SERVICE:
-                pendingIntent = PendingIntent.getService(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
-                break;
-            default:
-                pendingIntent = PendingIntent.getActivity(mService, REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
-                break;
-        }
-        return pendingIntent;
-    }
-
-    /**
-     * 得到目标界面 Class
-     */
-    private Class getTargetClass(String targetClass) {
-        Class clazz = null;
-        try {
-            if (!TextUtils.isEmpty(targetClass)) {
-                clazz = Class.forName(targetClass);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return clazz;
     }
 
     /**
@@ -353,21 +282,6 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         return playPauseButtonPosition;
     }
 
-    /**
-     * 兼容8.0
-     */
-    @RequiresApi(Build.VERSION_CODES.O)
-    private void createNotificationChannel() {
-        if (mNotificationManager.getNotificationChannel(CHANNEL_ID) == null) {
-            NotificationChannel notificationChannel =
-                    new NotificationChannel(CHANNEL_ID, mService.getString(R.string.notification_channel),
-                            NotificationManager.IMPORTANCE_LOW);
-
-            notificationChannel.setDescription(mService.getString(R.string.notification_channel_description));
-
-            mNotificationManager.createNotificationChannel(notificationChannel);
-        }
-    }
 
     private void setStopIntent(PendingIntent pendingIntent) {
         mStopIntent = pendingIntent == null ? getPendingIntent(ACTION_STOP) : pendingIntent;

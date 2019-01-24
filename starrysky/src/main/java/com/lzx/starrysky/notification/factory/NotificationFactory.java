@@ -3,6 +3,8 @@ package com.lzx.starrysky.notification.factory;
 import android.os.RemoteException;
 
 import com.lzx.starrysky.MusicService;
+import com.lzx.starrysky.notification.CustomNotification;
+import com.lzx.starrysky.notification.NotificationBuilder;
 import com.lzx.starrysky.notification.SystemNotification;
 
 public class NotificationFactory implements INotificationFactory {
@@ -17,7 +19,11 @@ public class NotificationFactory implements INotificationFactory {
     @Override
     public void createNotification() {
         try {
-            mNotification = new SystemNotification(mMusicService);
+            if (NotificationBuilder.getInstance().isCreateSystemNotification()) {
+                mNotification = new SystemNotification(mMusicService);
+            } else {
+                mNotification = new CustomNotification(mMusicService);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -35,20 +41,5 @@ public class NotificationFactory implements INotificationFactory {
         if (mNotification != null) {
             mNotification.stopNotification();
         }
-    }
-
-    @Override
-    public INotification buildSystemNotification() {
-        try {
-            return new SystemNotification(mMusicService);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    public INotification buildCustomNotification() {
-        return null;
     }
 }
