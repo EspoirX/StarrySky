@@ -91,9 +91,6 @@ public class DownloadTracker implements DownloadManager.Listener, DownloadHelper
 
     /**
      * 是否已经下载
-     *
-     * @param uri
-     * @return
      */
     public boolean isDownloaded(Uri uri) {
         return trackedDownloadStates.containsKey(uri);
@@ -109,6 +106,9 @@ public class DownloadTracker implements DownloadManager.Listener, DownloadHelper
         }
     }
 
+    /**
+     * 下载
+     */
     public void toggleDownload(String name, Uri uri, String extension) {
         this.name = name;
         if (isDownloaded(uri)) {
@@ -120,10 +120,6 @@ public class DownloadTracker implements DownloadManager.Listener, DownloadHelper
             downloadHelper = getDownloadHelper(uri, extension);
             downloadHelper.prepare(this);
         }
-    }
-
-    public void deleteAllDownloadCacheFile(){
-
     }
 
     /**

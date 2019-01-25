@@ -51,28 +51,46 @@ public class ExoDownload {
         userAgent = Utils.getUserAgent(sContext, "ExoPlayback");
     }
 
+    /**
+     * 配置缓存文件夹
+     */
     public void setCacheDestFileDir(String destFileDir) {
         this.destFileDir = destFileDir;
     }
 
+    /**
+     * 是否打开缓存功能
+     */
     public boolean isOpenCache() {
         return isOpenCache;
     }
 
+    /**
+     * 配置缓存开关
+     */
     public void setOpenCache(boolean openCache) {
         isOpenCache = openCache;
     }
 
+    /**
+     * 获取 DownloadManager
+     */
     public DownloadManager getDownloadManager() {
         initDownloadManager(sContext);
         return downloadManager;
     }
 
+    /**
+     * 获取 DownloadTracker
+     */
     public DownloadTracker getDownloadTracker() {
         initDownloadManager(sContext);
         return downloadTracker;
     }
 
+    /**
+     * 初始化 DownloadManager
+     */
     private synchronized void initDownloadManager(Context context) {
         if (downloadManager == null) {
             DownloaderConstructorHelper downloaderConstructorHelper =
@@ -92,6 +110,9 @@ public class ExoDownload {
         }
     }
 
+    /**
+     * 获取缓存实例
+     */
     public synchronized Cache getDownloadCache() {
         if (downloadCache == null) {
             File downloadContentDirectory = new File(getDownloadDirectory(sContext), DOWNLOAD_CONTENT_DIRECTORY);
@@ -101,10 +122,9 @@ public class ExoDownload {
     }
 
     /**
-     * 设置缓存文件夹
+     * 创建缓存文件夹
      */
     private File getDownloadDirectory(Context context) {
-        //String destFileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cacheDir";
         if (!TextUtils.isEmpty(destFileDir)) {
             downloadDirectory = new File(destFileDir);
         }
@@ -117,6 +137,26 @@ public class ExoDownload {
         return downloadDirectory;
     }
 
+    /**
+     * 删除所有缓存文件
+     */
+    public void deleteAllDownloadCacheFile() {
+        if (downloadDirectory == null) {
+            return;
+        }
+        for (File file : downloadDirectory.listFiles()) {
+            if (file.isFile()) {
+                file.delete(); // 删除所有文件
+            } else if (file.isDirectory()) {
+                deleteAllDownloadCacheFile(); // 递规的方式删除文件夹
+            }
+        }
+        downloadDirectory.delete();// 删除目录本身
+    }
+
+    /**
+     * DataSourceFactory构造
+     */
     public DataSource.Factory buildDataSourceFactory(Context context) {
         DefaultDataSourceFactory upstreamFactory =
                 new DefaultDataSourceFactory(context, buildHttpDataSourceFactory());
@@ -127,8 +167,7 @@ public class ExoDownload {
         return new DefaultHttpDataSourceFactory(userAgent);
     }
 
-    private static CacheDataSourceFactory buildReadOnlyCacheDataSource(
-            DefaultDataSourceFactory upstreamFactory, Cache cache) {
+    private static CacheDataSourceFactory buildReadOnlyCacheDataSource(DefaultDataSourceFactory upstreamFactory, Cache cache) {
         return new CacheDataSourceFactory(
                 cache,
                 upstreamFactory,

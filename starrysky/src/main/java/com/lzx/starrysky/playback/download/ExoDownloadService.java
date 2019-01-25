@@ -54,7 +54,6 @@ public class ExoDownloadService extends DownloadService {
         return Util.SDK_INT >= 21 ? new PlatformScheduler(this, JOB_ID) : null;
     }
 
-
     @Override
     protected Notification getForegroundNotification(TaskState[] taskStates) {
         return DownloadNotificationUtil.buildProgressNotification(
