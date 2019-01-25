@@ -17,6 +17,9 @@ public interface INotification {
     String ACTION_DOWNLOAD = "com.lzx.starrysky.download";
     String ACTION_INTENT_CLICK = "com.lzx.starrysky.EXTRY_NOTIFICATION_TO_MAINACTIVITY";
 
+    String ACTION_UPDATE_FAVORITE_UI = "com.lzx.starrysky.update_favorite_ui";
+    String ACTION_UPDATE_LYRICS_UI = "com.lzx.starrysky.update_lyrics_ui";
+
     String CHANNEL_ID = "com.lzx.starrysky.MUSIC_CHANNEL_ID";
 
     //布局
@@ -37,7 +40,6 @@ public interface INotification {
     String ID_TXT_NOTIFY_SONGNAME = "txt_notifySongName"; //歌名TextView id
     String ID_TXT_NOTIFY_ARTISTNAME = "txt_notifyArtistName";//艺术家TextView id
     //资源
-    String DRAWABLE_ICON_NOTIFICATION = "icon_notification"; //通知栏 smallIcon 图片资源
     String DRAWABLE_NOTIFY_BTN_FAVORITE = "notify_btn_favorite_checked";//喜欢按钮选中时的图片资源
     String DRAWABLE_NOTIFY_BTN_LYRICS = "notify_btn_lyrics_checked";//歌词按钮选中时的图片资源
     //通知栏白色背景资源
@@ -71,4 +73,14 @@ public interface INotification {
      * 关闭通知栏
      */
     void stopNotification();
+
+    /**
+     * 更新喜欢或收藏按钮UI
+     */
+    void updateFavoriteUI(boolean isFavorite);
+
+    /**
+     * 更新歌词按钮UI
+     */
+    void updateLyricsUI(boolean isChecked);
 }

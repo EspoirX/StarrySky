@@ -2,6 +2,7 @@ package com.lzx.starrysky.manager;
 
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -10,6 +11,8 @@ import android.text.TextUtils;
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.notification.NotificationConstructor;
+import com.lzx.starrysky.notification.factory.INotification;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -19,6 +22,7 @@ import androidx.annotation.NonNull;
 public class MusicManager {
 
     private static Context sContext;
+    private NotificationConstructor mConstructor;
     private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
 
     public static MusicManager getInstance() {
@@ -46,6 +50,21 @@ public class MusicManager {
     public void onRelease() {
         clearPlayerEventListener();
         sContext = null;
+    }
+
+    /**
+     * 设置通知栏配置,在Application创建并调用
+     */
+    public void setNotificationConstructor(NotificationConstructor constructor) {
+        mConstructor = constructor;
+    }
+
+    /**
+     * 获取通知栏配置，如果为 null ,则不创建通知栏
+     * @return
+     */
+    public NotificationConstructor getConstructor() {
+        return mConstructor;
     }
 
     /**
@@ -485,6 +504,30 @@ public class MusicManager {
             duration = connection.getNowPlaying().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         }
         return duration;
+    }
+
+    /**
+     * 更新通知栏喜欢或收藏按钮UI
+     */
+    public void updateFavoriteUI(boolean isFavorite) {
+        MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
+        if (connection.isConnected()) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("isFavorite", isFavorite);
+            connection.getMediaController().sendCommand(INotification.ACTION_UPDATE_FAVORITE_UI, bundle, null);
+        }
+    }
+
+    /**
+     * 更新通知栏歌词按钮UI
+     */
+    public void updateLyricsUI(boolean isChecked) {
+        MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
+        if (connection.isConnected()) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("isChecked", isChecked);
+            connection.getMediaController().sendCommand(INotification.ACTION_UPDATE_LYRICS_UI, bundle, null);
+        }
     }
 
     /**

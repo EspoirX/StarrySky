@@ -18,9 +18,13 @@ package com.lzx.starrysky.playback;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+
+import com.lzx.starrysky.notification.factory.INotification;
+import com.lzx.starrysky.notification.factory.NotificationFactory;
 
 import androidx.annotation.NonNull;
 
@@ -39,6 +43,7 @@ public class PlaybackManager implements Playback.Callback {
     private Playback mPlayback;
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
+    private NotificationFactory mNotificationFactory;
 
     public PlaybackManager(Context context, PlaybackServiceCallback serviceCallback, QueueManager queueManager,
                            Playback playback) {
@@ -51,6 +56,10 @@ public class PlaybackManager implements Playback.Callback {
         mPlayback.setCallback(this);
     }
 
+    public void setNotificationFactory(NotificationFactory notificationFactory) {
+        mNotificationFactory = notificationFactory;
+    }
+
     public Playback getPlayback() {
         return mPlayback;
     }
@@ -58,7 +67,6 @@ public class PlaybackManager implements Playback.Callback {
     public MediaSessionCompat.Callback getMediaSessionCallback() {
         return mMediaSessionCallback;
     }
-
 
     public void handlePlayRequest() {
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
@@ -236,7 +244,25 @@ public class PlaybackManager implements Playback.Callback {
             handleRewind();
         }
 
-
+        @Override
+        public void onCommand(String command, Bundle extras, ResultReceiver cb) {
+            super.onCommand(command, extras, cb);
+            if (command == null) {
+                return;
+            }
+            if (INotification.ACTION_UPDATE_FAVORITE_UI.equals(command)) {
+                boolean isFavorite = extras.getBoolean("isFavorite");
+                if (mNotificationFactory!=null){
+                    mNotificationFactory.updateFavoriteUI(isFavorite);
+                }
+            }
+            if (INotification.ACTION_UPDATE_LYRICS_UI.equals(command)) {
+                boolean isChecked = extras.getBoolean("isChecked");
+                if (mNotificationFactory!=null){
+                    mNotificationFactory.updateLyricsUI(isChecked);
+                }
+            }
+        }
     }
 
     public interface PlaybackServiceCallback {

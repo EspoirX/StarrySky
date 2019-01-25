@@ -3,6 +3,7 @@ package com.lzx.musiclib;
 import android.app.Application;
 
 import com.lzx.starrysky.manager.MusicManager;
+import com.lzx.starrysky.notification.NotificationConstructor;
 
 
 /**
@@ -14,7 +15,12 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        MusicManager.initMusicManager(this);
+        MusicManager.initMusicManager(this)
+        ;
+        NotificationConstructor constructor = new NotificationConstructor.Builder()
+                .setCreateSystemNotification(false)
+                .bulid();
+        MusicManager.getInstance().setNotificationConstructor(constructor);
     }
 
 

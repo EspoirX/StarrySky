@@ -4,25 +4,30 @@ import android.os.RemoteException;
 
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.notification.CustomNotification;
-import com.lzx.starrysky.notification.NotificationBuilder;
+import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.SystemNotification;
 
 public class NotificationFactory implements INotificationFactory {
 
     private MusicService mMusicService;
     private INotification mNotification;
+    private NotificationConstructor mConstructor;
 
-    public NotificationFactory(MusicService musicService) {
+    public NotificationFactory(MusicService musicService, NotificationConstructor constructor) {
         mMusicService = musicService;
+        mConstructor = constructor;
     }
 
     @Override
     public void createNotification() {
+        if (mConstructor == null) {
+            return;
+        }
         try {
-            if (NotificationBuilder.getInstance().isCreateSystemNotification()) {
-                mNotification = new SystemNotification(mMusicService);
+            if (mConstructor.isCreateSystemNotification()) {
+                mNotification = new SystemNotification(mMusicService, mConstructor);
             } else {
-                mNotification = new CustomNotification(mMusicService);
+                mNotification = new CustomNotification(mMusicService, mConstructor);
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -42,4 +47,24 @@ public class NotificationFactory implements INotificationFactory {
             mNotification.stopNotification();
         }
     }
+
+    /**
+     * 更新喜欢或收藏按钮UI
+     */
+    public void updateFavoriteUI(boolean isFavorite) {
+        if (mNotification != null) {
+            mNotification.updateFavoriteUI(isFavorite);
+        }
+    }
+
+    /**
+     * 更新歌词按钮UI
+     */
+    public void updateLyricsUI(boolean isChecked) {
+        if (mNotification != null) {
+            mNotification.updateLyricsUI(isChecked);
+        }
+    }
+
+
 }

@@ -62,14 +62,15 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
     private final NotificationManager mNotificationManager;
     private String packageName;
     private boolean mStarted = false;
-    private NotificationBuilder mBuilder;
+    private NotificationConstructor mConstructor;
+    private Notification mNotification;
 
     private Resources res;
     private NotificationColorUtils mColorUtils;
 
-    public CustomNotification(MusicService service) throws RemoteException {
+    public CustomNotification(MusicService service, NotificationConstructor constructor) throws RemoteException {
         mService = service;
-        mBuilder = NotificationBuilder.getInstance();
+        mConstructor = constructor;
 
         updateSessionToken();
 
@@ -78,15 +79,16 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         res = mService.getApplicationContext().getResources();
         mColorUtils = new NotificationColorUtils();
 
-        setStopIntent(mBuilder.getStopIntent());
-        setNextPendingIntent(mBuilder.getNextIntent());
-        setPrePendingIntent(mBuilder.getPreIntent());
-        setPlayPendingIntent(mBuilder.getPlayIntent());
-        setPausePendingIntent(mBuilder.getPauseIntent());
-        setFavoritePendingIntent(mBuilder.getFavoriteIntent());
-        setLyricsPendingIntent(mBuilder.getLyricsIntent());
-        setDownloadPendingIntent(mBuilder.getDownloadIntent());
-        setClosePendingIntent(mBuilder.getCloseIntent());
+        setStopIntent(mConstructor.getStopIntent());
+        setNextPendingIntent(mConstructor.getNextIntent());
+        setPrePendingIntent(mConstructor.getPreIntent());
+        setPlayPendingIntent(mConstructor.getPlayIntent());
+        setPausePendingIntent(mConstructor.getPauseIntent());
+        setFavoritePendingIntent(mConstructor.getFavoriteIntent());
+        setLyricsPendingIntent(mConstructor.getLyricsIntent());
+        setDownloadPendingIntent(mConstructor.getDownloadIntent());
+        setClosePendingIntent(mConstructor.getCloseIntent());
+        setPlayOrPauseIntent(mConstructor.getPlayOrPauseIntent());
 
         mRemoteView = createRemoteViews(false);
         mBigRemoteView = createRemoteViews(true);
@@ -128,11 +130,21 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
             case ACTION_PLAY:
                 mTransportControls.play();
                 break;
+            case ACTION_PLAY_OR_PAUSE:
+                if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+                    mTransportControls.pause();
+                } else {
+                    mTransportControls.play();
+                }
+                break;
             case ACTION_NEXT:
                 mTransportControls.skipToNext();
                 break;
             case ACTION_PREV:
                 mTransportControls.skipToPrevious();
+                break;
+            case ACTION_CLOSE:
+                stopNotification();
                 break;
             default:
                 break;
@@ -190,6 +202,8 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
                 filter.addAction(ACTION_PAUSE);
                 filter.addAction(ACTION_PLAY);
                 filter.addAction(ACTION_PREV);
+                filter.addAction(ACTION_PLAY_OR_PAUSE);
+                filter.addAction(ACTION_CLOSE);
 
                 mService.registerReceiver(this, filter);
 
@@ -221,7 +235,7 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         MediaDescriptionCompat description = mMetadata.getDescription();
 
         String songId = mMetadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-        int smallIcon = mBuilder.getSmallIconRes() != -1 ? mBuilder.getSmallIconRes() : R.drawable.ic_notification;
+        int smallIcon = mConstructor.getSmallIconRes() != -1 ? mConstructor.getSmallIconRes() : R.drawable.ic_notification;
         //适配8.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationUtils.createNotificationChannel(mService, mNotificationManager);
@@ -234,28 +248,24 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
                 .setContentTitle(description.getTitle()) //歌名
                 .setContentText(description.getSubtitle()); //艺术家
         //setContentIntent
-        if (!TextUtils.isEmpty(mBuilder.getTargetClass())) {
-            Class clazz = NotificationUtils.getTargetClass(mBuilder.getTargetClass());
+        if (!TextUtils.isEmpty(mConstructor.getTargetClass())) {
+            Class clazz = NotificationUtils.getTargetClass(mConstructor.getTargetClass());
             if (clazz != null) {
-                notificationBuilder.setContentIntent(NotificationUtils.createContentIntent(mService, mBuilder, songId, null, clazz));
+                notificationBuilder.setContentIntent(NotificationUtils.createContentIntent(mService, mConstructor, songId, null, clazz));
             }
         }
         //setCustomContentView and setCustomBigContentView
         if (Build.VERSION.SDK_INT >= 24) {
             notificationBuilder.setCustomContentView(mRemoteView);
-            if (mBigRemoteView != null) {
-                notificationBuilder.setCustomBigContentView(mBigRemoteView);
-            }
+            notificationBuilder.setCustomBigContentView(mBigRemoteView);
         }
 
         setNotificationPlaybackState(notificationBuilder);
 
         //create Notification
-        Notification notification = notificationBuilder.build();
-        notification.contentView = mRemoteView;
-        if (mBigRemoteView != null) {
-            notification.bigContentView = mBigRemoteView;
-        }
+        mNotification = notificationBuilder.build();
+        mNotification.contentView = mRemoteView;
+        mNotification.bigContentView = mBigRemoteView;
         SongInfo songInfo = null;
         List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
         for (SongInfo info : songInfos) {
@@ -264,9 +274,9 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
                 break;
             }
         }
-        updateRemoteViewUI(notification, songInfo, smallIcon);
+        updateRemoteViewUI(mNotification, songInfo, smallIcon);
 
-        return notification;
+        return mNotification;
     }
 
     private void setNotificationPlaybackState(NotificationCompat.Builder builder) {
@@ -293,7 +303,6 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         if (mPauseIntent != null) {
             remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_PAUSE, "id"), mPauseIntent);
         }
-
         if (mStopIntent != null) {
             remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_STOP, "id"), mStopIntent);
         }
@@ -346,33 +355,31 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         }
 
         //大布局
-        if (mBigRemoteView != null) {
-            //设置文字内容
-            mBigRemoteView.setTextViewText(getResourceId(ID_TXT_NOTIFY_SONGNAME, "id"), songName);
-            mBigRemoteView.setTextViewText(getResourceId(ID_TXT_NOTIFY_ARTISTNAME, "id"), artistName);
-            //设置播放暂停按钮
-            if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-                mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
-                        getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR :
-                                DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR, "drawable"));
-            } else {
-                mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
-                        getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_PLAY_SELECTOR :
-                                DRAWABLE_NOTIFY_BTN_LIGHT_PLAY_SELECTOR, "drawable"));
-            }
-            //设置喜欢或收藏按钮
-            mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
-                    getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_FAVORITE :
-                            DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE, "drawable"));
-            //设置歌词按钮
-            mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
-                    getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_LYRICS :
-                            DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS, "drawable"));
-            //设置下载按钮
-            mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_DOWNLOAD, "id"),
-                    getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_DOWNLOAD :
-                            DRAWABLE_NOTIFY_BTN_LIGHT_DOWNLOAD, "drawable"));
+        //设置文字内容
+        mBigRemoteView.setTextViewText(getResourceId(ID_TXT_NOTIFY_SONGNAME, "id"), songName);
+        mBigRemoteView.setTextViewText(getResourceId(ID_TXT_NOTIFY_ARTISTNAME, "id"), artistName);
+        //设置播放暂停按钮
+        if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
+                    getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR :
+                            DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR, "drawable"));
+        } else {
+            mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
+                    getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_PLAY_SELECTOR :
+                            DRAWABLE_NOTIFY_BTN_LIGHT_PLAY_SELECTOR, "drawable"));
         }
+        //设置喜欢或收藏按钮
+        mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
+                getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_FAVORITE :
+                        DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE, "drawable"));
+        //设置歌词按钮
+        mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
+                getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_LYRICS :
+                        DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS, "drawable"));
+        //设置下载按钮
+        mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_DOWNLOAD, "id"),
+                getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_DOWNLOAD :
+                        DRAWABLE_NOTIFY_BTN_LIGHT_DOWNLOAD, "drawable"));
 
         //上一首下一首按钮
         boolean hasNextSong = (mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0;
@@ -382,12 +389,9 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
 
         //封面
         mRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), art);
-        if (mBigRemoteView != null) {
-            mBigRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), art);
-        }
+        mBigRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), art);
         mNotificationManager.notify(NOTIFICATION_ID, notification);
     }
-
 
     /**
      * 下一首按钮样式
@@ -402,9 +406,7 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
                     DRAWABLE_NOTIFY_BTN_LIGHT_NEXT_SELECTOR, "drawable");
         }
         mRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_NEXT, "id"), res);
-        if (mBigRemoteView != null) {
-            mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_NEXT, "id"), res);
-        }
+        mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_NEXT, "id"), res);
     }
 
     /**
@@ -424,6 +426,51 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
             mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PRE, "id"), res);
         }
     }
+
+    /**
+     * 更新喜欢或收藏按钮样式
+     */
+    @Override
+    public void updateFavoriteUI(boolean isFavorite) {
+        if (mNotification == null) {
+            return;
+        }
+        boolean isDark = mColorUtils.isDarkNotificationBar(mService, mNotification);
+        //喜欢或收藏按钮选中时样式
+        if (isFavorite) {
+            mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
+                    getResourceId(DRAWABLE_NOTIFY_BTN_FAVORITE, "drawable"));
+        } else {
+            //喜欢或收藏按钮没选中时样式
+            mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
+                    getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_FAVORITE :
+                            DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE, "drawable"));
+        }
+        mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+    }
+
+    /**
+     * 更新歌词按钮UI
+     */
+    @Override
+    public void updateLyricsUI(boolean isChecked) {
+        if (mNotification == null) {
+            return;
+        }
+        boolean isDark = mColorUtils.isDarkNotificationBar(mService, mNotification);
+        //歌词按钮选中时样式
+        if (isChecked) {
+            mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
+                    getResourceId(DRAWABLE_NOTIFY_BTN_LYRICS, "drawable"));
+        } else {
+            //歌词按钮没选中时样式
+            mBigRemoteView.setImageViewResource(getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
+                    getResourceId(isDark ? DRAWABLE_NOTIFY_BTN_DARK_LYRICS :
+                            DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS, "drawable"));
+        }
+        mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+    }
+
 
     private int getResourceId(String name, String className) {
         return res.getIdentifier(name, className, packageName);

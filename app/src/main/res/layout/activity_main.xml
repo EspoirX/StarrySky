@@ -71,4 +71,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="当前播放下标" />
+
+    <Button
+        android:id="@+id/sendFavorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="通知栏喜欢" />
+
+    <Button
+        android:id="@+id/sendLyrics"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="通知栏歌词" />
 </LinearLayout>

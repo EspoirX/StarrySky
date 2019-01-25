@@ -13,7 +13,7 @@ import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.model.SongInfo;
-import com.lzx.starrysky.notification.NotificationBuilder;
+import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.INotification;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class NotificationUtils {
     /**
      * 设置content点击事件
      */
-    public static PendingIntent createContentIntent(MusicService mService, NotificationBuilder mBuilder,
+    public static PendingIntent createContentIntent(MusicService mService, NotificationConstructor mBuilder,
                                                     String songId, Bundle bundle, Class targetClass) {
         SongInfo songInfo = null;
         List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
@@ -61,13 +61,13 @@ public class NotificationUtils {
         @SuppressLint("WrongConstant")
         PendingIntent pendingIntent;
         switch (mBuilder.getPendingIntentMode()) {
-            case NotificationBuilder.MODE_ACTIVITY:
+            case NotificationConstructor.MODE_ACTIVITY:
                 pendingIntent = PendingIntent.getActivity(mService, INotification.REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
                 break;
-            case NotificationBuilder.MODE_BROADCAST:
+            case NotificationConstructor.MODE_BROADCAST:
                 pendingIntent = PendingIntent.getBroadcast(mService, INotification.REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
                 break;
-            case NotificationBuilder.MODE_SERVICE:
+            case NotificationConstructor.MODE_SERVICE:
                 pendingIntent = PendingIntent.getService(mService, INotification.REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
                 break;
             default:

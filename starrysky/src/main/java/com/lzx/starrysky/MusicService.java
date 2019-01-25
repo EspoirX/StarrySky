@@ -9,8 +9,11 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
+import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
 import com.lzx.starrysky.playback.LocalPlayback;
 import com.lzx.starrysky.playback.PlaybackManager;
@@ -51,6 +54,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         MusicProvider musicProvider = MusicProvider.getInstance();
         QueueManager queueManager = new QueueManager(musicProvider, this);
         LocalPlayback playback = new LocalPlayback(this, musicProvider);
+
         mPlaybackManager = new PlaybackManager(this, this, queueManager, playback);
 
         Intent sessionIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
@@ -68,13 +72,16 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
 
         mPlaybackManager.updatePlaybackState(null);
         mPackageValidator = new PackageValidator(this);
-
-        mNotificationFactory = new NotificationFactory(this);
+        //通知栏相关
+        NotificationConstructor constructor = MusicManager.getInstance().getConstructor();
+        mNotificationFactory = new NotificationFactory(this, constructor);
         mNotificationFactory.createNotification();
+        mPlaybackManager.setNotificationFactory(mNotificationFactory);
     }
 
     @Override
     public int onStartCommand(Intent startIntent, int flags, int startId) {
+        Log.i("xian", "= onStartCommand = ");
         if (startIntent != null) {
             String action = startIntent.getAction();
             String command = startIntent.getStringExtra(CMD_NAME);

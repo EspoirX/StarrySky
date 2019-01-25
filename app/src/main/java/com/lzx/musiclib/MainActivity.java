@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import com.lzx.starrysky.manager.MediaSessionConnection;
 import com.lzx.starrysky.manager.MusicManager;
-import com.lzx.starrysky.manager.OnPlayerEventListener;
 import com.lzx.starrysky.model.SongInfo;
 
 import java.util.ArrayList;
@@ -18,8 +17,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    //    private MediaBrowserCompat mMediaBrowser;
     private MediaSessionConnection mMediaSessionConnection;
+
+    boolean isFavorite = false;
+    boolean isChecked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,40 +83,22 @@ public class MainActivity extends AppCompatActivity {
             int index = MusicManager.getInstance().getNowPlayingIndex();
             Toast.makeText(MainActivity.this, "index = " + index, Toast.LENGTH_SHORT).show();
         });
-        MusicManager.getInstance().addPlayerEventListener(new OnPlayerEventListener() {
-            @Override
-            public void onMusicSwitch(SongInfo songInfo) {
-                //  Log.i("xian", "songInfo = " + songInfo.getSongId());
+        findViewById(R.id.sendFavorite).setOnClickListener(v -> {
+            if (isFavorite) {
+                MusicManager.getInstance().updateFavoriteUI(false);
+                isFavorite = false;
+            } else {
+                MusicManager.getInstance().updateFavoriteUI(true);
+                isFavorite = true;
             }
-
-            @Override
-            public void onPlayerStart() {
-                // Log.i("xian", "= onPlayerStart = ");
-            }
-
-            @Override
-            public void onPlayerPause() {
-                // Log.i("xian", "= onPlayerPause = ");
-            }
-
-            @Override
-            public void onPlayCompletion() {
-                //  Log.i("xian", "= onPlayCompletion = ");
-            }
-
-            @Override
-            public void onBuffering() {
-                // Log.i("xian", "= onBuffering = ");
-            }
-
-            @Override
-            public void onPlayerStop() {
-                //  Log.i("xian", "= onPlayerStop = ");
-            }
-
-            @Override
-            public void onError(int errorCode, String errorMsg) {
-                // Log.i("xian", "= onError = errorCode:" + errorCode + " errorMsg:" + errorMsg);
+        });
+        findViewById(R.id.sendLyrics).setOnClickListener(v -> {
+            if (isChecked) {
+                MusicManager.getInstance().updateLyricsUI(false);
+                isChecked = false;
+            } else {
+                MusicManager.getInstance().updateLyricsUI(true);
+                isChecked = true;
             }
         });
     }
