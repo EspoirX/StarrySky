@@ -43,9 +43,12 @@ import static android.support.v4.media.session.MediaSessionCompat.QueueItem;
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
 
-public final class LocalPlayback implements Playback {
+/**
+ * ExoPlayer 播放器的具体封装
+ */
+public final class ExoPlayback implements Playback {
 
-    private static final String TAG = "LocalPlayback";
+    private static final String TAG = "ExoPlayback";
 
     private final Context mContext;
     private boolean mPlayOnFocusGain;
@@ -59,7 +62,7 @@ public final class LocalPlayback implements Playback {
     // Whether to return STATE_NONE or STATE_STOPPED when mExoPlayer is null;
     private boolean mExoPlayerNullIsStopped = false;
 
-    public LocalPlayback(Context context, MusicProvider musicProvider) {
+    public ExoPlayback(Context context, MusicProvider musicProvider) {
         this.mContext = context.getApplicationContext();
         this.mMusicProvider = musicProvider;
     }
@@ -125,14 +128,11 @@ public final class LocalPlayback implements Playback {
     @Override
     public void play(QueueItem item) {
         mPlayOnFocusGain = true;
-//        tryToGetAudioFocus();
-//        registerAudioNoisyReceiver();
         String mediaId = item.getDescription().getMediaId();
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
         if (mediaHasChanged) {
             mCurrentMediaId = mediaId;
         }
-
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false); // release everything except the player
             MediaMetadataCompat track = mMusicProvider.getMusic(item.getDescription().getMediaId());
@@ -159,7 +159,7 @@ public final class LocalPlayback implements Playback {
                             mContext, Util.getUserAgent(mContext, "starrysky"), null);
 
             ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-            // The MediaSource represents the media to be played.
+
             ExtractorMediaSource.Factory extractorMediaFactory =
                     new ExtractorMediaSource.Factory(dataSourceFactory);
             extractorMediaFactory.setExtractorsFactory(extractorsFactory);
@@ -232,21 +232,14 @@ public final class LocalPlayback implements Playback {
 
     /**
      * 设置音量
-     * @param audioVolume
      */
     @Override
-    public void setVolume(float audioVolume){
-        if (mExoPlayer!=null){
+    public void setVolume(float audioVolume) {
+        if (mExoPlayer != null) {
             mExoPlayer.setVolume(audioVolume);
         }
     }
 
-    /**
-     * Releases resources used by the service for playback, which is mostly just the WiFi lock for
-     * local playback. If requested, the ExoPlayer instance is also released.
-     *
-     * @param releasePlayer Indicates whether the player should also be released
-     */
     private void releaseResources(boolean releasePlayer) {
         if (releasePlayer && mExoPlayer != null) {
             mExoPlayer.release();
@@ -285,7 +278,6 @@ public final class LocalPlayback implements Playback {
                     }
                     break;
                 case Player.STATE_ENDED:
-                    // The media player finished playing the current song.
                     if (mCallback != null) {
                         mCallback.onCompletion();
                     }
@@ -310,7 +302,6 @@ public final class LocalPlayback implements Playback {
                     what = "Unknown: " + error;
             }
 
-//            LogHelper.e(TAG, "ExoPlayer error: what=" + what);
             if (mCallback != null) {
                 mCallback.onError("ExoPlayer error " + what);
             }

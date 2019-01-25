@@ -19,6 +19,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import androidx.annotation.NonNull;
 
+/**
+ * 用户操作管理类
+ */
 public class MusicManager {
 
     private static Context sContext;
@@ -61,6 +64,7 @@ public class MusicManager {
 
     /**
      * 获取通知栏配置，如果为 null ,则不创建通知栏
+     *
      * @return
      */
     public NotificationConstructor getConstructor() {

@@ -19,7 +19,9 @@ package com.lzx.starrysky.playback;
 
 import static android.support.v4.media.session.MediaSessionCompat.QueueItem;
 
-
+/**
+ * 播放器接口，如果要实现其他播放器，实现该接口即可
+ */
 public interface Playback {
 
     void start();

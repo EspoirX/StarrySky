@@ -26,10 +26,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 媒体信息提供类
+ */
 public class MusicProvider {
 
     private List<SongInfo> mSongInfos;
-    //private ConcurrentMap<String, List<MediaMetadataCompat>> metadatasById;
     private List<MediaMetadataCompat> metadatas;
 
     enum State {
@@ -49,7 +51,6 @@ public class MusicProvider {
     private MusicProvider() {
         mSongInfos = Collections.synchronizedList(new ArrayList<>());
         metadatas = Collections.synchronizedList(new ArrayList<>());
-        //metadatasById = new ConcurrentHashMap<>();
     }
 
     /**
@@ -60,15 +61,11 @@ public class MusicProvider {
     }
 
     /**
-     * 设置
+     * 设置播放列表
      */
     public void setSongInfos(List<SongInfo> songInfos) {
         mSongInfos = songInfos;
     }
-
-//    public ConcurrentMap<String, List<MediaMetadataCompat>> getMetadatasById() {
-//        return metadatasById;
-//    }
 
     public List<MediaMetadataCompat> getMetadatas() {
         return metadatas;
@@ -79,14 +76,12 @@ public class MusicProvider {
      */
     public List<MediaBrowserCompat.MediaItem> getChildrenResult(String mediaId) {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
-        //List<MediaMetadataCompat> mediaMetadataCompats = metadatasById.get(mediaId);
         for (MediaMetadataCompat metadata : metadatas) {
             MediaBrowserCompat.MediaItem mediaItem = new MediaBrowserCompat.MediaItem(
                     metadata.getDescription(),
                     MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
             mediaItems.add(mediaItem);
         }
-
         return mediaItems;
     }
 
@@ -174,17 +169,6 @@ public class MusicProvider {
         @Override
         protected void onPostExecute(List<MediaMetadataCompat> mediaMetadataCompats) {
             super.onPostExecute(mediaMetadataCompats);
-//            //得到 ConcurrentMap<String, List<MediaMetadataCompat>>
-//            ConcurrentMap<String, List<MediaMetadataCompat>> newMusicList = new ConcurrentHashMap<>();
-//            for (MediaMetadataCompat m : mediaMetadataCompats) {
-//                String songId = m.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-//                List<MediaMetadataCompat> list = newMusicList.get(songId);
-//                if (list == null) {
-//                    list = new ArrayList<>();
-//                    newMusicList.put(songId, list);
-//                }
-//                list.add(m);
-//            }
             callback.onMusicCatalogReady(mediaMetadataCompats);
         }
     }

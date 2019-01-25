@@ -2,6 +2,9 @@ package com.lzx.starrysky.manager;
 
 import com.lzx.starrysky.model.SongInfo;
 
+/**
+ * 播放监听
+ */
 public interface OnPlayerEventListener {
     /**
      * 切歌回调

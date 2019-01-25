@@ -20,6 +20,9 @@ import java.util.List;
 
 import androidx.annotation.RequiresApi;
 
+/**
+ * 通知栏工具类，主要提供一些公共的方法
+ */
 public class NotificationUtils {
     /**
      * 得到目标界面 Class

@@ -1,21 +1,26 @@
 package com.lzx.starrysky;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
-import com.lzx.starrysky.playback.LocalPlayback;
+import com.lzx.starrysky.playback.ExoPlayback;
 import com.lzx.starrysky.playback.PlaybackManager;
 import com.lzx.starrysky.playback.QueueManager;
 
@@ -26,24 +31,23 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
-import androidx.media.session.MediaButtonReceiver;
 
 public class MusicService extends MediaBrowserServiceCompat implements QueueManager.MetadataUpdateListener, PlaybackManager.PlaybackServiceCallback {
 
     public static final String UPDATE_PARENT_ID = "update";
-    private static final String UAMP_BROWSABLE_ROOT = "/";
-    private static final String UAMP_EMPTY_ROOT = "@empty@";
-    private static final String UAMP_USER_AGENT = "uamp.next";
-    public static final String ACTION_CMD = "com.lzx.starrysky.ACTION_CMD";
-    public static final String CMD_NAME = "CMD_NAME";
-    public static final String CMD_PAUSE = "CMD_PAUSE";
+    private static final String STARRYSKY_BROWSABLE_ROOT = "/";
+    private static final String STARRYSKY_EMPTY_ROOT = "@empty@";
 
     private MediaSessionCompat mediaSession;
+    private MediaControllerCompat mediaController;
+    private MediaControllerCompat.TransportControls transportControls;
 
     private PackageValidator mPackageValidator;
     private PlaybackManager mPlaybackManager;
 
     private NotificationFactory mNotificationFactory;
+
+    private BecomingNoisyReceiver mBecomingNoisyReceiver;
 
     private static final int STOP_DELAY = 30000;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
@@ -53,7 +57,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         super.onCreate();
         MusicProvider musicProvider = MusicProvider.getInstance();
         QueueManager queueManager = new QueueManager(musicProvider, this);
-        LocalPlayback playback = new LocalPlayback(this, musicProvider);
+        ExoPlayback playback = new ExoPlayback(this, musicProvider);
 
         mPlaybackManager = new PlaybackManager(this, this, queueManager, playback);
 
@@ -63,12 +67,21 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         //会话连接
         mediaSession = new MediaSessionCompat(this, "MusicService");
         setSessionToken(mediaSession.getSessionToken());
-
         mediaSession.setSessionActivity(sessionActivityPendingIntent);
         mediaSession.setCallback(mPlaybackManager.getMediaSessionCallback());
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         Bundle mSessionExtras = new Bundle();
         mediaSession.setExtras(mSessionExtras);
+        try {
+            mediaController = new MediaControllerCompat(this, mediaSession.getSessionToken());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        if (mediaController != null) {
+            transportControls = mediaController.getTransportControls();
+        }
+
+        mBecomingNoisyReceiver = new BecomingNoisyReceiver(this, transportControls);
 
         mPlaybackManager.updatePlaybackState(null);
         mPackageValidator = new PackageValidator(this);
@@ -81,17 +94,8 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
 
     @Override
     public int onStartCommand(Intent startIntent, int flags, int startId) {
-        Log.i("xian", "= onStartCommand = ");
         if (startIntent != null) {
-            String action = startIntent.getAction();
-            String command = startIntent.getStringExtra(CMD_NAME);
-            if (ACTION_CMD.equals(action)) {
-                if (CMD_PAUSE.equals(command)) {
-                    mPlaybackManager.handlePauseRequest();
-                }
-            } else {
-                MediaButtonReceiver.handleIntent(mediaSession, startIntent);
-            }
+            //you can do something
         }
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
@@ -111,29 +115,45 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         mNotificationFactory.stopNotification();
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
+
         mediaSession.release();
     }
 
+    /**
+     * 媒体信息更新时回调
+     */
     @Override
     public void onMetadataChanged(MediaMetadataCompat metadata) {
         mediaSession.setMetadata(metadata);
     }
 
+    /**
+     * 当前播放媒体为 null 时回调
+     */
     @Override
     public void onMetadataRetrieveError() {
         mPlaybackManager.updatePlaybackState("Unable to retrieve metadata");
     }
 
+    /**
+     * 播放下标更新时回调
+     */
     @Override
     public void onCurrentQueueIndexUpdated(int queueIndex) {
         mPlaybackManager.handlePlayRequest();
     }
 
+    /**
+     * 播放队列更新时回调
+     */
     @Override
     public void onQueueUpdated(List<MediaSessionCompat.QueueItem> newQueue) {
         mediaSession.setQueue(newQueue);
     }
 
+    /**
+     * 播放时回调
+     */
     @Override
     public void onPlaybackStart() {
         mediaSession.setActive(true);
@@ -141,11 +161,17 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         startService(new Intent(getApplicationContext(), MusicService.class));
     }
 
+    /**
+     * 状态是播放或暂停时回调
+     */
     @Override
     public void onNotificationRequired() {
         mNotificationFactory.startNotification();
     }
 
+    /**
+     * 暂停或停止时回调
+     */
     @Override
     public void onPlaybackStop() {
         mediaSession.setActive(false);
@@ -154,9 +180,19 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         stopForeground(true);
     }
 
+    /**
+     * 播放状态改变时回调
+     */
     @Override
     public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
         mediaSession.setPlaybackState(newState);
+
+        if (newState.getState() == PlaybackStateCompat.STATE_BUFFERING ||
+                newState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            mBecomingNoisyReceiver.register();
+        } else {
+            mBecomingNoisyReceiver.unregister();
+        }
     }
 
     private static class DelayedStopHandler extends Handler {
@@ -182,15 +218,15 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
         if (mPackageValidator.isCallerAllowed(this, clientPackageName, clientUid)) {
-            return new BrowserRoot(UAMP_BROWSABLE_ROOT, null);
+            return new BrowserRoot(STARRYSKY_BROWSABLE_ROOT, null);
         } else {
-            return new BrowserRoot(UAMP_EMPTY_ROOT, null);
+            return new BrowserRoot(STARRYSKY_EMPTY_ROOT, null);
         }
     }
 
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-        if (UAMP_BROWSABLE_ROOT.equals(parentId)) {
+        if (STARRYSKY_BROWSABLE_ROOT.equals(parentId)) {
             result.sendResult(new ArrayList<>());
         } else if (MusicProvider.getInstance().isInitialized()) {
             result.sendResult(MusicProvider.getInstance().getChildrenResult(parentId));
@@ -199,6 +235,46 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
             MusicProvider.getInstance().retrieveMediaAsync(this, () -> {
                 result.sendResult(MusicProvider.getInstance().getChildrenResult(parentId));
             });
+        }
+    }
+
+    /**
+     * 拔下耳机时暂停，具体意思可参考 AudioManager.ACTION_AUDIO_BECOMING_NOISY
+     */
+    private static class BecomingNoisyReceiver extends BroadcastReceiver {
+
+        private Context context;
+        private IntentFilter noisyIntentFilter;
+        private MediaControllerCompat.TransportControls transportControls;
+        private boolean registered = false;
+
+        public BecomingNoisyReceiver(Context context, MediaControllerCompat.TransportControls transportControls) {
+            this.context = context;
+            this.transportControls = transportControls;
+            noisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        }
+
+        public void register() {
+            if (!registered) {
+                context.registerReceiver(this, noisyIntentFilter);
+                registered = true;
+            }
+        }
+
+        public void unregister() {
+            if (registered) {
+                context.unregisterReceiver(this);
+                registered = false;
+            }
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                if (transportControls != null) {
+                    transportControls.pause();
+                }
+            }
         }
     }
 }

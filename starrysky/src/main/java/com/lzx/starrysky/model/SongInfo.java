@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * 面向用户的音频信息
+ */
 public class SongInfo implements Parcelable {
     private String songId = ""; //音乐id
     private String songName = ""; //音乐标题

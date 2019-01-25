@@ -30,12 +30,11 @@ import androidx.annotation.NonNull;
 
 
 /**
- * Manage the interactions among the container service, the queue manager and the actual playback.
+ * 播放管理类
  */
 public class PlaybackManager implements Playback.Callback {
 
     private static final String TAG = "PlaybackManager";
-    // Action to thumbs up a media item
     private static final String CUSTOM_ACTION_THUMBS_UP = "com.lzx.starrysky.THUMBS_UP";
 
     private Context mContext;
@@ -68,6 +67,9 @@ public class PlaybackManager implements Playback.Callback {
         return mMediaSessionCallback;
     }
 
+    /**
+     * 播放
+     */
     public void handlePlayRequest() {
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
@@ -76,6 +78,9 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
+    /**
+     * 暂停
+     */
     public void handlePauseRequest() {
         if (mPlayback.isPlaying()) {
             mPlayback.pause();
@@ -83,44 +88,57 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
+    /**
+     * 停止
+     */
     public void handleStopRequest(String withError) {
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
         updatePlaybackState(withError);
     }
 
+    /**
+     * 快进
+     */
     public void handleFastForward() {
         mPlayback.onFastForward();
     }
 
+    /**
+     * 倒带
+     */
     public void handleRewind() {
         mPlayback.onRewind();
     }
 
+    /**
+     * 更新播放状态
+     */
     public void updatePlaybackState(String error) {
         long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
         if (mPlayback != null && mPlayback.isConnected()) {
             position = mPlayback.getCurrentStreamPosition();
         }
-
+        //构建一个播放状态对象
         PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
                 .setActions(getAvailableActions());
-
+        //获取播放器播放状态
         int state = mPlayback.getState();
-
+        //如果错误信息不为 null 的时候，播放状态设为 STATE_ERROR
         if (error != null) {
             stateBuilder.setErrorMessage(error);
             state = PlaybackStateCompat.STATE_ERROR;
         }
+        //设置播放状态
         stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
-
+        //设置当前活动的 songId
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
             stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
         }
-
+        //把状态回调出去
         mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
-
+        //如果是播放或者暂停的状态，更新一下通知栏
         if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_PAUSED) {
             mServiceCallback.onNotificationRequired();
         }
@@ -141,6 +159,9 @@ public class PlaybackManager implements Playback.Callback {
         return actions;
     }
 
+    /**
+     * 播放器播放完成回调
+     */
     @Override
     public void onCompletion() {
         if (mQueueManager.skipQueuePosition(1)) {
@@ -151,23 +172,32 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
+    /**
+     * 播放器播放状态改变回调
+     */
     @Override
     public void onPlaybackStatusChanged(int state) {
         updatePlaybackState(null);
     }
 
+    /**
+     * 播放器发送错误回调
+     */
     @Override
     public void onError(String error) {
         updatePlaybackState(error);
     }
 
+    /**
+     * 设置当前播放 id
+     */
     @Override
     public void setCurrentMediaId(String mediaId) {
         mQueueManager.setQueueFromMusic(mediaId);
     }
 
     /**
-     * API方法的具体实现
+     * MusicManager API 方法的具体实现
      */
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
         @Override
@@ -244,6 +274,9 @@ public class PlaybackManager implements Playback.Callback {
             handleRewind();
         }
 
+        /**
+         * 自定义方法
+         */
         @Override
         public void onCommand(String command, Bundle extras, ResultReceiver cb) {
             super.onCommand(command, extras, cb);
@@ -252,13 +285,13 @@ public class PlaybackManager implements Playback.Callback {
             }
             if (INotification.ACTION_UPDATE_FAVORITE_UI.equals(command)) {
                 boolean isFavorite = extras.getBoolean("isFavorite");
-                if (mNotificationFactory!=null){
+                if (mNotificationFactory != null) {
                     mNotificationFactory.updateFavoriteUI(isFavorite);
                 }
             }
             if (INotification.ACTION_UPDATE_LYRICS_UI.equals(command)) {
                 boolean isChecked = extras.getBoolean("isChecked");
-                if (mNotificationFactory!=null){
+                if (mNotificationFactory != null) {
                     mNotificationFactory.updateLyricsUI(isChecked);
                 }
             }

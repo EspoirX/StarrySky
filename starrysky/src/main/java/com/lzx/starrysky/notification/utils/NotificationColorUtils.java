@@ -16,6 +16,9 @@ import java.util.concurrent.CountDownLatch;
 
 import androidx.core.graphics.ColorUtils;
 
+/**
+ * 通知栏颜色工具类，主要是判断通知栏主题是白色还是黑色
+ */
 public class NotificationColorUtils {
     private static String NOTIFICATION_TITLE = "notification_music_title";
     private static String NOTIFICATION_CONTENT = "notification_music_content";

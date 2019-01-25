@@ -2,7 +2,9 @@ package com.lzx.starrysky.notification;
 
 import android.app.PendingIntent;
 
-
+/**
+ * 通知栏构建者，可设置各种通知栏配置
+ */
 public class NotificationConstructor {
 
     public static final int MODE_ACTIVITY = 0;

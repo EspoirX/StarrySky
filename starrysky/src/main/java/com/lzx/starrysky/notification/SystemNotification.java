@@ -25,6 +25,9 @@ import com.lzx.starrysky.notification.utils.NotificationUtils;
 
 import androidx.core.app.NotificationCompat;
 
+/**
+ * 系统通知栏
+ */
 public class SystemNotification extends BroadcastReceiver implements INotification {
 
     private PendingIntent mPlayIntent;

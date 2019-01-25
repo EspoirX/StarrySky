@@ -30,19 +30,23 @@ import java.util.List;
 
 
 /**
- * Utility class to help on queue related tasks.
+ * 播放队列帮助类
  */
 public class QueueHelper {
 
     private static final String TAG = "QueueHelper";
 
-    private static final int RANDOM_QUEUE_SIZE = 10;
-
+    /**
+     * 获取正在播放的队列
+     */
     public static List<MediaSessionCompat.QueueItem> getPlayingQueue(MusicProvider musicProvider) {
         List<MediaMetadataCompat> tracks = musicProvider.getMetadatas();
         return convertToQueue(tracks);
     }
 
+    /**
+     * 获取 id 为 mediaId 的媒体在播放队列中的下标
+     */
     public static int getMusicIndexOnQueue(Iterable<MediaSessionCompat.QueueItem> queue, String mediaId) {
         int index = 0;
         for (MediaSessionCompat.QueueItem item : queue) {
@@ -65,8 +69,10 @@ public class QueueHelper {
         return -1;
     }
 
-    private static List<MediaSessionCompat.QueueItem> convertToQueue(
-            List<MediaMetadataCompat> tracks) {
+    /**
+     * List<MediaMetadataCompat> 转 List<MediaSessionCompat.QueueItem>
+     */
+    private static List<MediaSessionCompat.QueueItem> convertToQueue(List<MediaMetadataCompat> tracks) {
         List<MediaSessionCompat.QueueItem> queue = new ArrayList<>();
         int count = 0;
         for (MediaMetadataCompat track : tracks) {
@@ -81,24 +87,28 @@ public class QueueHelper {
 
     }
 
-
+    /**
+     * 获取乱序的 List<MediaSessionCompat.QueueItem>
+     */
     public static List<MediaSessionCompat.QueueItem> getRandomQueue(MusicProvider musicProvider) {
-        List<MediaMetadataCompat> result = new ArrayList<>(RANDOM_QUEUE_SIZE);
+        List<MediaMetadataCompat> result = new ArrayList<>();
         Iterable<MediaMetadataCompat> shuffled = musicProvider.getShuffledMusic();
         for (MediaMetadataCompat metadata : shuffled) {
-            if (result.size() == RANDOM_QUEUE_SIZE) {
-                break;
-            }
             result.add(metadata);
         }
-
         return convertToQueue(result);
     }
 
+    /**
+     * 检查下标有没有越界
+     */
     public static boolean isIndexPlayable(int index, List<MediaSessionCompat.QueueItem> queue) {
         return (queue != null && index >= 0 && index < queue.size());
     }
 
+    /**
+     * 对比两个列表
+     */
     public static boolean equals(List<MediaSessionCompat.QueueItem> list1,
                                  List<MediaSessionCompat.QueueItem> list2) {
         if (list1 == list2) {
@@ -123,13 +133,14 @@ public class QueueHelper {
     }
 
 
-    public static boolean isQueueItemPlaying(Activity context,
-                                             MediaSessionCompat.QueueItem queueItem) {
+    /**
+     * 判断当前的媒体是否在播放
+     */
+    public static boolean isQueueItemPlaying(Activity context, MediaSessionCompat.QueueItem queueItem) {
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(context);
         if (controller != null && controller.getPlaybackState() != null) {
             long currentPlayingQueueId = controller.getPlaybackState().getActiveQueueItemId();
-            String currentPlayingMediaId = controller.getMetadata().getDescription()
-                    .getMediaId();
+            String currentPlayingMediaId = controller.getMetadata().getDescription().getMediaId();
             String itemMusicId = queueItem.getDescription().getMediaId();
             return queueItem.getQueueId() == currentPlayingQueueId
                     && currentPlayingMediaId != null

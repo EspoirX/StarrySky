@@ -34,8 +34,9 @@ public class QueueManager {
     private MusicProvider mMusicProvider;
     private MetadataUpdateListener mListener;
 
-    // "Now playing" queue:
+    //正在播放的队列
     private List<MediaSessionCompat.QueueItem> mPlayingQueue;
+    //下标
     private int mCurrentIndex;
 
     public QueueManager(@NonNull MusicProvider musicProvider,
@@ -43,11 +44,13 @@ public class QueueManager {
         this.mMusicProvider = musicProvider;
         this.mListener = listener;
 
-
-        mPlayingQueue = Collections.synchronizedList(new ArrayList<MediaSessionCompat.QueueItem>());
+        mPlayingQueue = Collections.synchronizedList(new ArrayList<>());
         mCurrentIndex = 0;
     }
 
+    /**
+     * 判断传入的媒体跟正在播放的媒体是否一样
+     */
     public boolean isSameBrowsingCategory(@NonNull String mediaId) {
         MediaSessionCompat.QueueItem current = getCurrentMusic();
         if (current == null) {
@@ -56,6 +59,9 @@ public class QueueManager {
         return mediaId.equals(current.getDescription().getMediaId());
     }
 
+    /**
+     * 更新当前下标并通知
+     */
     private void setCurrentQueueIndex(int index) {
         if (index >= 0 && index < mPlayingQueue.size()) {
             mCurrentIndex = index;
@@ -63,12 +69,20 @@ public class QueueManager {
         }
     }
 
+    /**
+     * 根据传入的媒体id来更新此媒体的下标并通知
+     */
     public boolean setCurrentQueueItem(String mediaId) {
         int index = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, mediaId);
         setCurrentQueueIndex(index);
         return index >= 0;
     }
 
+    /**
+     * 转跳下一首或上一首
+     *
+     * @param amount 正为下一首，负为上一首
+     */
     public boolean skipQueuePosition(int amount) {
         int index = mCurrentIndex + amount;
         if (index < 0) {
@@ -83,7 +97,9 @@ public class QueueManager {
         return true;
     }
 
-
+    /**
+     * 打乱当前的列表顺序
+     */
     public void setRandomQueue() {
         setCurrentQueue(QueueHelper.getRandomQueue(mMusicProvider));
         updateMetadata();
@@ -100,6 +116,9 @@ public class QueueManager {
         updateMetadata();
     }
 
+    /**
+     * 获取当前播放的媒体
+     */
     public MediaSessionCompat.QueueItem getCurrentMusic() {
         if (!QueueHelper.isIndexPlayable(mCurrentIndex, mPlayingQueue)) {
             return null;
@@ -107,6 +126,9 @@ public class QueueManager {
         return mPlayingQueue.get(mCurrentIndex);
     }
 
+    /**
+     * 获取队列大小
+     */
     public int getCurrentQueueSize() {
         if (mPlayingQueue == null) {
             return 0;
@@ -114,12 +136,17 @@ public class QueueManager {
         return mPlayingQueue.size();
     }
 
+    /**
+     * 更新队列,下标为 0
+     */
     protected void setCurrentQueue(List<MediaSessionCompat.QueueItem> newQueue) {
         setCurrentQueue(newQueue, null);
     }
 
-    protected void setCurrentQueue(List<MediaSessionCompat.QueueItem> newQueue,
-                                   String initialMediaId) {
+    /**
+     * 更新队列和下标
+     */
+    protected void setCurrentQueue(List<MediaSessionCompat.QueueItem> newQueue, String initialMediaId) {
         mPlayingQueue = newQueue;
         int index = 0;
         if (initialMediaId != null) {
@@ -129,6 +156,9 @@ public class QueueManager {
         mListener.onQueueUpdated(newQueue);
     }
 
+    /**
+     * 更新媒体信息
+     */
     public void updateMetadata() {
         MediaSessionCompat.QueueItem currentMusic = getCurrentMusic();
         if (currentMusic == null) {
