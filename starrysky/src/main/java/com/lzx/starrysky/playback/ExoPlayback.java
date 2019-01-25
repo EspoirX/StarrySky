@@ -50,21 +50,11 @@ import com.google.android.exoplayer2.trackselection.RandomTrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
-import com.google.android.exoplayer2.upstream.HttpDataSource;
-import com.google.android.exoplayer2.upstream.cache.Cache;
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
-import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory;
-import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor;
-import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.Util;
 import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.playback.download.ExoDownload;
 
-import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.Nullable;
@@ -88,8 +78,6 @@ public final class ExoPlayback implements Playback {
     public static final String EXTENSION_RENDERER_MODE_OFF = "EXTENSION_RENDERER_MODE_OFF";
     public static String rendererMode = EXTENSION_RENDERER_MODE_OFF;
 
-    private static final String DOWNLOAD_CONTENT_DIRECTORY = "downloads";
-
     private final Context mContext;
     private boolean mPlayOnFocusGain;
     private Callback mCallback;
@@ -101,8 +89,7 @@ public final class ExoPlayback implements Playback {
 
     private boolean mExoPlayerNullIsStopped = false;
 
-    private Cache downloadCache;
-    private File downloadDirectory;
+
     private String userAgent;
 
     private DefaultTrackSelector trackSelector;
@@ -189,7 +176,10 @@ public final class ExoPlayback implements Playback {
             if (source != null) {
                 source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
             }
-
+            //缓存歌曲
+            if (ExoDownload.getInstance().isOpenCache()) {
+                ExoDownload.getInstance().getDownloadTracker().toggleDownload(mediaId, Uri.parse(source), "");
+            }
             if (mExoPlayer == null) {
                 //轨道选择
                 TrackSelection.Factory trackSelectionFactory;
@@ -222,42 +212,13 @@ public final class ExoPlayback implements Playback {
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes, true); //第二个参数能使ExoPlayer自动管理焦点
 
-            DataSource.Factory dataSourceFactory = buildDataSourceFactory();
+            DataSource.Factory dataSourceFactory = ExoDownload.getInstance().buildDataSourceFactory(mContext);
+            //buildDataSourceFactory();
             MediaSource mediaSource = buildMediaSource(dataSourceFactory, Uri.parse(source), null);
 
             mExoPlayer.prepare(mediaSource);
         }
         mExoPlayer.setPlayWhenReady(true);
-    }
-
-    private DataSource.Factory buildDataSourceFactory() {
-        HttpDataSource.Factory httpDataSource = new DefaultHttpDataSourceFactory(userAgent);
-        DefaultDataSourceFactory upstreamFactory = new DefaultDataSourceFactory(mContext, httpDataSource);
-        return new CacheDataSourceFactory(
-                getDownloadCache(),
-                upstreamFactory,
-                new FileDataSourceFactory(),
-                /* cacheWriteDataSinkFactory= */ null,
-                CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR,
-                /* eventListener= */ null);
-    }
-
-    private synchronized Cache getDownloadCache() {
-        if (downloadCache == null) {
-            File downloadContentDirectory = new File(getDownloadDirectory(), DOWNLOAD_CONTENT_DIRECTORY);
-            downloadCache = new SimpleCache(downloadContentDirectory, new NoOpCacheEvictor());
-        }
-        return downloadCache;
-    }
-
-    private File getDownloadDirectory() {
-        if (downloadDirectory == null) {
-            downloadDirectory = mContext.getExternalFilesDir(null);
-            if (downloadDirectory == null) {
-                downloadDirectory = mContext.getFilesDir();
-            }
-        }
-        return downloadDirectory;
     }
 
     private MediaSource buildMediaSource(DataSource.Factory dataSourceFactory, Uri uri, @Nullable String overrideExtension) {
@@ -289,7 +250,7 @@ public final class ExoPlayback implements Playback {
     }
 
     private List<StreamKey> getOfflineStreamKeys(Uri uri) {
-        return Collections.emptyList();
+        return ExoDownload.getInstance().getDownloadTracker().getOfflineStreamKeys(uri);
     }
 
     @Override

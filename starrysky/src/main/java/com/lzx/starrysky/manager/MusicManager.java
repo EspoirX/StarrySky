@@ -13,6 +13,7 @@ import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.INotification;
+import com.lzx.starrysky.playback.download.ExoDownload;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -41,6 +42,7 @@ public class MusicManager {
      */
     public static void initMusicManager(Context context) {
         sContext = context;
+        ExoDownload.initExoDownload(sContext);
     }
 
     private MusicManager() {

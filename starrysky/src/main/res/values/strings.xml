@@ -4,6 +4,8 @@
     <string name="notification_channel">StarrySky_Channel_ID</string>
     <string name="notification_channel_description">Channel ID for StarrySky</string>
 
+    <string name="exo_download_notification_channel_name">Downloads</string>
+
     <string name="label_pause">Pause</string>
     <string name="label_play">Play</string>
     <string name="label_previous">Previous</string>
