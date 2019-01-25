@@ -3,10 +3,12 @@ package com.lzx.musiclib;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.lzx.starrysky.manager.MediaSessionConnection;
 import com.lzx.starrysky.manager.MusicManager;
+import com.lzx.starrysky.manager.OnPlayerEventListener;
 import com.lzx.starrysky.model.SongInfo;
 
 import java.util.ArrayList;
@@ -99,6 +101,42 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 MusicManager.getInstance().updateLyricsUI(true);
                 isChecked = true;
+            }
+        });
+        MusicManager.getInstance().addPlayerEventListener(new OnPlayerEventListener() {
+            @Override
+            public void onMusicSwitch(SongInfo songInfo) {
+
+            }
+
+            @Override
+            public void onPlayerStart() {
+                Log.i("xian", "--onPlayerStart--");
+            }
+
+            @Override
+            public void onPlayerPause() {
+                Log.i("xian", "--onPlayerPause--");
+            }
+
+            @Override
+            public void onPlayerStop() {
+                Log.i("xian", "--onPlayerStop--");
+            }
+
+            @Override
+            public void onPlayCompletion() {
+                Log.i("xian", "--onPlayCompletion--");
+            }
+
+            @Override
+            public void onBuffering() {
+                Log.i("xian", "--onBuffering--");
+            }
+
+            @Override
+            public void onError(int errorCode, String errorMsg) {
+                Log.i("xian", "--onError-- errorCode=" + errorCode + "  errorMsg = " + errorMsg);
             }
         });
     }
