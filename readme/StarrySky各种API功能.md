@@ -33,6 +33,7 @@ MusicManager.getInstance().playMusicByInfo(s1);
 **播放相关**
 
 **1. playMusic(List<SongInfo> songInfos, int index, boolean isResetPlayList)**
+
 描述：  
 @param songInfos       播放列表  
 @param index           要播放的歌曲在播放列表中的下标  
@@ -40,80 +41,99 @@ MusicManager.getInstance().playMusicByInfo(s1);
                        如果false，则使用原来的，相当于缓存，建议当播放列表改变或者第一次播放时才设为true
 
 **2. void playMusic(List<SongInfo> songInfos, int index)**
+
 描述：  
 跟上面方法一样，默认 isResetPlayList 为 false
 
 **3. void playMusicById(String songId)**
+
 描述：  
 根据 songId 播放,调用前请确保已经设置了播放列表
 
 **4. void playMusicByInfo(SongInfo info)**
+
 描述：  
 根据 SongInfo 播放，如果 SongInfo 没有在已有的播放列表中，会把当前的 SongInfo 添加到播放列表，再播放，如果存在，则实际也是根据 songId 播放
 
 **5. void playMusicByIndex(int index)**
+
 描述：  
 根据要播放的歌曲在播放列表中的下标播放,调用前请确保已经设置了播放列表
 
 **6. void pauseMusic()**
+
 描述：  
 暂停播放
 
 **7. void playMusic()**
+
 描述：  
 恢复播放，比如暂停后恢复播放。
 
 **8. void stopMusic()**
+
 描述：  
 停止播放
 
 **9. void prepare()**
+
 描述：  
 播放准备，这可以减少在接收到播放命令时开始播放所花费的时间，不需要准备。
 
 **10.  void prepareFromSongId(String songId)**
+
 描述：  
 根据 songId 给某个媒体播放准备
 
 **11. void skipToNext()**
+
 描述：  
 转跳到下一首
 
 **12. void skipToPrevious()**
+
 描述：  
 转跳到上一首
 
 **13. boolean isSkipToNextEnabled()**
+
 描述：  
 是否有下一首
 
 **14. boolean isSkipToPreviousEnabled()**
+
 描述：  
 是否有上一首
 
 **15. void fastForward()**
+
 描述：  
 快进，每调用一次增加 0.5 倍
 
 **16. void rewind()**
+
 描述：  
 快退，每调用一次减少 0.5 倍，最小为 0 ，0 的时候就会暂停
 
 **17. void seekTo(long pos)**
+
 描述：  
 移动到媒体流中的新位置,以毫秒为单位。
 
 **18. void setShuffleMode(int shuffleMode)**
+
 描述：  
 设置随机播放模式，shuffleMode 必须是以下之一：  
 PlaybackStateCompat.SHUFFLE_MODE_NONE 顺序播放  
 PlaybackStateCompat.SHUFFLE_MODE_ALL  随机播放
 
 **19. int getShuffleMode()**
+
 描述：  
 获取随机播放模式
 
 **20. setRepeatMode(int repeatMode)**
+
 描述：  
 设置播放模式，repeatMode 必须是以下之一：  
 PlaybackStateCompat.REPEAT_MODE_NONE  顺序播放  
@@ -121,50 +141,62 @@ PlaybackStateCompat.REPEAT_MODE_ONE   单曲循环
 PlaybackStateCompat.REPEAT_MODE_ALL   列表循环
 
 **21. int getRepeatMode()**
+
 描述：  
 获取播放模式
 
 **22. List<SongInfo> getPlayList()**
+
 描述：  
 获取播放列表
 
 **23. void updatePlayList(List<SongInfo> songInfos)**
+
 描述：  
 更新播放列表，此方法会重新刷新和加载播放数据
 
 **24. SongInfo getNowPlayingSongInfo()**
+
 描述：  
 获取当前播放的歌曲信息，有可能为 null，所以使用时最好判断一下
 
 **25. String getNowPlayingSongId()**
+
 描述：  
 获取当前播放的歌曲信息的 songId
 
 **26. int getNowPlayingIndex()**
+
 描述：  
 获取当前播放歌曲在播放列表中的下标，获取不到时默认值为 -1
 
 **27. long getBufferedPosition()**
+
 描述：  
 以 ms 为单位获取当前缓冲的位置
 
 **28. long getPlayingPosition()**
+
 描述：  
 获取播放位置 毫秒为单位
 
 **29. float getPlaybackSpeed()**
+
 描述：  
 获取当前的播放速度，播放速度应该时正常播放的倍数，快退时这应该是负数，值为 1 表示正常播放，0 表示暂停。
 
 **30. Object getPlaybackState()**
+
 描述：  
 获取底层框架{@link android.media.session.PlaybackState}对象。此方法仅在API 21+上受支持。
 
 **31. CharSequence getErrorMessage()**
+
 描述：  
 获取发送错误时的错误信息
 
 **32. int getErrorCode()**
+
 描述：  
 获取发送错误时的错误码，下面是错误码有可能的取值：  
 0 : 这是默认的错误代码  
@@ -181,6 +213,7 @@ PlaybackStateCompat.REPEAT_MODE_ALL   列表循环
 11: 由于队列耗尽而无法播放导航（上一首，下一首）时出现错误代码。  
 
 **33. int getState()**
+
 描述：  
 获取当前的播放状态。 它的取值是以下之一：
 PlaybackStateCompat.STATE_NONE                   默认播放状态，表示尚未添加媒体，或者表示已重置且无内容可播放。  
@@ -197,10 +230,12 @@ PlaybackStateCompat.STATE_SKIPPING_TO_NEXT       正在转跳到下一首
 PlaybackStateCompat.STATE_SKIPPING_TO_QUEUE_ITEM 正在切歌  
 
 **34. long getDuration()**
+
 描述：  
 获取媒体时长，单位毫秒
 
 **35. List<SongInfo> querySongInfoInLocal()**
+
 描述：  
 扫描本地媒体信息，并转化为 List<SongInfo> 返回
 
@@ -222,14 +257,17 @@ public interface OnPlayerEventListener {
 ```
 
 **1. void addPlayerEventListener(OnPlayerEventListener listener)**
+
 描述：  
 添加一个播放状态监听器
 
 **2. void removePlayerEventListener(OnPlayerEventListener listener)**
+
 描述：  
 移除一个播放状态监听器
 
 **3. void clearPlayerEventListener()**
+
 描述：  
 移除所有播放状态监听器
 
@@ -239,18 +277,22 @@ public interface OnPlayerEventListener {
 通知栏相关的 API 可在[快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)中了解具体用法。
 
 **1. void setNotificationConstructor(NotificationConstructor constructor)**
+
 描述：  
 设置通知栏配置,应该在 Application 中创建并调用
 
 **2. NotificationConstructor getConstructor()**
+
 描述：  
 获取通知栏配置
 
 **3. void updateFavoriteUI(boolean isFavorite)**
+
 描述：  
 如果通知栏中有喜欢或者收藏按钮，可调用此方法来改变按钮是否选中的 UI 显示状态
 
 **4. void updateLyricsUI(boolean isChecked)**
+
 描述：  
 如果通知栏中有是否显示歌词的按钮，可调用此方法来改变按钮是否选中的 UI 显示状态
 
