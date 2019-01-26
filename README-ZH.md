@@ -1,39 +1,50 @@
-<p align="center">
-<a href="art/logo.jpg"><img src="art/logo.jpg"/></a>
-</p>
+# A Powerful and Streamline MusicLibrary
 
-<p align="center">
 <a href="http://developer.android.com/index.html"><img src="https://img.shields.io/badge/platform-android-green.svg"></a>
 <a href="https://bintray.com/lizixian/MusicLibrary/MusicLibrary/_latestVersion"><img src="https://api.bintray.com/packages/lizixian/MusicLibrary/MusicLibrary/images/download.svg"></a>
 <a href="http://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/license-MIT-green.svg"></a>
-</p>
 
-# MusicLibrary
+<img src="art/logo.jpg"/>
 
-一个丰富的音乐播放封装库，针对快速集成音频播放功能，你值得拥有。  
+# StarrySky
+
+@(StarrySky)[MusicLibrary|Music|音频集成]
+
+一个丰富的音乐播放封装库，针对快速集成音频播放功能，减少大家搬砖的时间，你值得拥有。
+
+>MusicLibrary 改名为 StarrySky，因为 MusicLibrary 名字有点土，所有想了个文艺点的，
+StarrySky 是一个全新的版本，基于媒体浏览器服务(MediaBrowserService)实现，
+代码比原来的版本更加精简，注释更全，而且问题更少，欢迎大家继续使用。  
+
+原来版本的代码在 master 分支上。
+
 
 ## 特点
 
 - 轻松播放本地和网络音频
-- 基于IPC实现音频服务，减少应用内存峰值，避免OOM。
 - 集成和调用API非常简单，音频功能几乎可以集成到一个语句中。
 - 提供丰富的API方法来轻松实现各种功能。
-- 用一句话，您可以自定义通知栏和系统通知栏来自定义通知栏的控件。
-- 集成MediaPlayer和ExoPlayer播放器，可自由切换
-- 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS，rtmp.)。
-- 支持保存播放进度。
+- 方便集成自定义通知栏和系统通知栏。
+- 使用ExoPlayer作为底层播放器。
+- 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS，rtmp)。
 - 支持边播边存功能，没网也能播。
-- 支持改变播放速度和改变播放音调
+- 支持改变播放速度
+- 等等等等
 
-## 项目状态
+若在使用中发现 Bug 或者有什么建议问题的可以在 issues 中提出或者添加 QQ 群交流，欢迎反馈。
 
-本项目基本稳定，并已经在多个商业项目中实践使用，目前状态为修复发现的 Bug 以及对在 issues 中提出的需求尽量满足，如果在使用中遇到任何问题，欢迎反馈。
+## 使用文档
 
-## API文档
- [API文档](https://lizixian18.github.io/musiclibrary-docsify/#/)
+- [集成StarrySky](https://github.com/lizixian18/MusicLibrary/blob/master/readme/集成StarrySky.md)
+- [StarrySky各种API功能](https://github.com/lizixian18/MusicLibrary/blob/master/readme/StarrySky各种API功能.md)
+- [快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/master/readme/快速集成通知栏.md)
+- [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/master/readme/媒体缓存功能.md)
+
 
 PS：
-- 如果你有想法或者意见和建议，欢迎提issue，喜欢点个star。欢迎各位大佬指点指点。
+- 如果有兴趣，建议稍微阅读一下源码，这样对使用或者解决问题有很大帮助。
+- 如果发现库中功能满足不了你的需求，建议通过下载源码修改成你要的样子来使用。
+- 如果该项目对你有所帮助，欢迎 star 或 fork，谢谢各位。
 
 <a href="art/qq_qun.jpg"><img src="art/qq_qun.jpg" width="30%"/></a>
 
