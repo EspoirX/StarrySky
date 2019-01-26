@@ -90,7 +90,14 @@ public class MusicManager {
      * 根据 SongInfo 播放，实际也是根据 songId 播放
      */
     public void playMusicByInfo(SongInfo info) {
-        playMusicById(info.getSongId());
+        List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
+        if (!songInfos.contains(info)) {
+            songInfos.add(info);
+            int index = songInfos.indexOf(info);
+            playMusic(songInfos, index, true);
+        } else {
+            playMusicById(info.getSongId());
+        }
     }
 
     /**

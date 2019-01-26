@@ -4,6 +4,10 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
+import androidx.annotation.Nullable;
+
 /**
  * 面向用户的音频信息
  */
@@ -498,4 +502,13 @@ public class SongInfo implements Parcelable {
             return new SongInfo[size];
         }
     };
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        SongInfo songInfo = (SongInfo) obj;
+        return Objects.equals(songId, songInfo.getSongId()) &&
+                Objects.equals(songUrl, songInfo.getSongUrl());
+    }
 }

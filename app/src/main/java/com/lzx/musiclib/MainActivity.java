@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         songInfos.add(s2);
         songInfos.add(s3);
 
-
         findViewById(R.id.play).setOnClickListener(v -> MusicManager.getInstance().playMusic(songInfos, 0));
         findViewById(R.id.pause).setOnClickListener(v -> MusicManager.getInstance().pauseMusic());
         findViewById(R.id.resum).setOnClickListener(v -> MusicManager.getInstance().playMusic());

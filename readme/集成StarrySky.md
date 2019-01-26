@@ -47,10 +47,12 @@ public class MainActivity extends AppCompatActivity {
 ```
 
 MediaSessionConnection 是一个单例，connect() 是连接方法，disconnect() 是断开连接方法，一般在 onStart() 和 onStop() 中成对调用，
-这可以写到你的 BaseActivity 中，也可以按照实际需要调用。MediaSessionConnection 里面还有其他一些方法，大家可以点开查看，里面都有注释说明。
+这可以写到你的 BaseActivity 中，也可以按照实际需要调用。MediaSessionConnection 里面还有其他一些方法，大家可以[点开查看](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/manager/MediaSessionConnection.java)，
+里面都有注释说明。
 
 **第三步**
-一些权限问题，如果你要使用缓存功能，那么就会有一些读写权限申请的问题，因为 StarrySky 里面没有做申请这些权限的逻辑，所以在使用的过程中如果有必要
+
+一些权限问题，比如你要使用缓存功能，那么就会有一些读写权限申请的问题，因为 StarrySky 里面没有做申请这些权限的逻辑，所以在使用的过程中如果有必要，
 请自己灵活把握申请这些权限。
 
 
