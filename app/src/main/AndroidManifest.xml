@@ -21,6 +21,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver
+            android:name=".NotificationReceiver"
+            android:exported="true"
+            android:process=":MusicLibrary">
+            <intent-filter>
+                <action android:name="ACTION_PLAY_OR_PAUSE" />
+                <action android:name="ACTION_NEXT" />
+                <action android:name="ACTION_PRE" />
+                <action android:name="ACTION_FAVORITE" />
+                <action android:name="ACTION_LYRICS" />
+            </intent-filter>
+        </receiver>
 
 
     </application>
