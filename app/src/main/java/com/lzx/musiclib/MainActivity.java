@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MediaSessionConnection mMediaSessionConnection;
 
     boolean isFavorite = false;
     boolean isChecked = false;
@@ -56,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         songInfos.add(s2);
         songInfos.add(s3);
 
-        mMediaSessionConnection = MediaSessionConnection.getInstance(this);
 
         findViewById(R.id.play).setOnClickListener(v -> MusicManager.getInstance().playMusic(songInfos, 0));
         findViewById(R.id.pause).setOnClickListener(v -> MusicManager.getInstance().pauseMusic());
@@ -149,12 +147,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mMediaSessionConnection.connect();
+        MediaSessionConnection.getInstance(this).connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mMediaSessionConnection.disconnect();
+        MediaSessionConnection.getInstance(this).disconnect();
     }
 }

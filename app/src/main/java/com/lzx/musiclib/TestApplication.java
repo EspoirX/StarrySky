@@ -29,6 +29,4 @@ public class TestApplication extends Application {
         ExoDownload.getInstance().setOpenCache(true); //打开缓存开关
         ExoDownload.getInstance().setCacheDestFileDir(destFileDir); //设置缓存文件夹
     }
-
-
 }
