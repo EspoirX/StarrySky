@@ -15,6 +15,7 @@ public class SongInfo implements Parcelable {
     private String songSquareCover = ""; //专辑封面(正方形)
     private String songRectCover = ""; //专辑封面(矩形)
     private String songRoundCover = ""; //专辑封面(圆形)
+    private String songNameKey = "";
     private Bitmap songCoverBitmap;
     private String songUrl = ""; //音乐播放地址
     private String genre = ""; //类型（流派）
@@ -22,6 +23,7 @@ public class SongInfo implements Parcelable {
     private String size = "0"; //音乐大小
     private long duration = -1; //音乐长度
     private String artist = ""; //音乐艺术家
+    private String artistKey = "";
     private String artistId = ""; //音乐艺术家id
     private String downloadUrl = ""; //音乐下载地址
     private String site = ""; //地点
@@ -32,11 +34,15 @@ public class SongInfo implements Parcelable {
     private String country = ""; //地区
     private String proxyCompany = "";//代理公司
     private String publishTime = "";//发布时间
+    private String year = ""; //录制音频文件的年份
+    private String modifiedTime = ""; //最后修改时间
     private String description = ""; //音乐描述
     private String versions = ""; //版本
+    private String mimeType = "";
 
     private String albumId = "";    //专辑id
     private String albumName = "";  //专辑名称
+    private String albumNameKey = "";
     private String albumCover = ""; //专辑封面
     private String albumHDCover = ""; //专辑封面(高清)
     private String albumSquareCover = ""; //专辑封面(正方形)
@@ -102,6 +108,14 @@ public class SongInfo implements Parcelable {
         this.songRoundCover = songRoundCover;
     }
 
+    public String getSongNameKey() {
+        return songNameKey;
+    }
+
+    public void setSongNameKey(String songNameKey) {
+        this.songNameKey = songNameKey;
+    }
+
     public Bitmap getSongCoverBitmap() {
         return songCoverBitmap;
     }
@@ -156,6 +170,14 @@ public class SongInfo implements Parcelable {
 
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    public String getArtistKey() {
+        return artistKey;
+    }
+
+    public void setArtistKey(String artistKey) {
+        this.artistKey = artistKey;
     }
 
     public String getArtistId() {
@@ -238,6 +260,22 @@ public class SongInfo implements Parcelable {
         this.publishTime = publishTime;
     }
 
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    public String getModifiedTime() {
+        return modifiedTime;
+    }
+
+    public void setModifiedTime(String modifiedTime) {
+        this.modifiedTime = modifiedTime;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -254,6 +292,14 @@ public class SongInfo implements Parcelable {
         this.versions = versions;
     }
 
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
     public String getAlbumId() {
         return albumId;
     }
@@ -268,6 +314,14 @@ public class SongInfo implements Parcelable {
 
     public void setAlbumName(String albumName) {
         this.albumName = albumName;
+    }
+
+    public String getAlbumNameKey() {
+        return albumNameKey;
+    }
+
+    public void setAlbumNameKey(String albumNameKey) {
+        this.albumNameKey = albumNameKey;
     }
 
     public String getAlbumCover() {
@@ -348,6 +402,7 @@ public class SongInfo implements Parcelable {
         dest.writeString(this.songSquareCover);
         dest.writeString(this.songRectCover);
         dest.writeString(this.songRoundCover);
+        dest.writeString(this.songNameKey);
         dest.writeParcelable(this.songCoverBitmap, flags);
         dest.writeString(this.songUrl);
         dest.writeString(this.genre);
@@ -355,6 +410,7 @@ public class SongInfo implements Parcelable {
         dest.writeString(this.size);
         dest.writeLong(this.duration);
         dest.writeString(this.artist);
+        dest.writeString(this.artistKey);
         dest.writeString(this.artistId);
         dest.writeString(this.downloadUrl);
         dest.writeString(this.site);
@@ -365,10 +421,14 @@ public class SongInfo implements Parcelable {
         dest.writeString(this.country);
         dest.writeString(this.proxyCompany);
         dest.writeString(this.publishTime);
+        dest.writeString(this.year);
+        dest.writeString(this.modifiedTime);
         dest.writeString(this.description);
         dest.writeString(this.versions);
+        dest.writeString(this.mimeType);
         dest.writeString(this.albumId);
         dest.writeString(this.albumName);
+        dest.writeString(this.albumNameKey);
         dest.writeString(this.albumCover);
         dest.writeString(this.albumHDCover);
         dest.writeString(this.albumSquareCover);
@@ -390,6 +450,7 @@ public class SongInfo implements Parcelable {
         this.songSquareCover = in.readString();
         this.songRectCover = in.readString();
         this.songRoundCover = in.readString();
+        this.songNameKey = in.readString();
         this.songCoverBitmap = in.readParcelable(Bitmap.class.getClassLoader());
         this.songUrl = in.readString();
         this.genre = in.readString();
@@ -397,6 +458,7 @@ public class SongInfo implements Parcelable {
         this.size = in.readString();
         this.duration = in.readLong();
         this.artist = in.readString();
+        this.artistKey = in.readString();
         this.artistId = in.readString();
         this.downloadUrl = in.readString();
         this.site = in.readString();
@@ -407,10 +469,14 @@ public class SongInfo implements Parcelable {
         this.country = in.readString();
         this.proxyCompany = in.readString();
         this.publishTime = in.readString();
+        this.year = in.readString();
+        this.modifiedTime = in.readString();
         this.description = in.readString();
         this.versions = in.readString();
+        this.mimeType = in.readString();
         this.albumId = in.readString();
         this.albumName = in.readString();
+        this.albumNameKey = in.readString();
         this.albumCover = in.readString();
         this.albumHDCover = in.readString();
         this.albumSquareCover = in.readString();

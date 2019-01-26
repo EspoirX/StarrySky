@@ -140,18 +140,32 @@ public class ExoDownload {
     /**
      * 删除所有缓存文件
      */
-    public void deleteAllDownloadCacheFile() {
+    public void deleteAllCacheFile() {
         if (downloadDirectory == null) {
-            return;
+            downloadDirectory = getDownloadDirectory(sContext);
         }
         for (File file : downloadDirectory.listFiles()) {
             if (file.isFile()) {
                 file.delete(); // 删除所有文件
             } else if (file.isDirectory()) {
-                deleteAllDownloadCacheFile(); // 递规的方式删除文件夹
+                deleteAllCacheFile(); // 递规的方式删除文件夹
             }
         }
         downloadDirectory.delete();// 删除目录本身
+    }
+
+    /**
+     * 删除某一首歌的缓存
+     */
+    public void deleteCacheFileByUrl(String url) {
+        getDownloadTracker().deleteCacheFileByUrl(url);
+    }
+
+    /**
+     * 获取媒体缓存大小
+     */
+    public long getCachedSize() {
+        return getDownloadDirectory(sContext).length();
     }
 
     /**

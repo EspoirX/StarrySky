@@ -84,6 +84,9 @@ public class QueueManager {
      * @param amount 正为下一首，负为上一首
      */
     public boolean skipQueuePosition(int amount) {
+        if (mPlayingQueue.size() == 0) {
+            return false;
+        }
         int index = mCurrentIndex + amount;
         if (index < 0) {
             index = 0;

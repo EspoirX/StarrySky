@@ -2,7 +2,10 @@ package com.lzx.starrysky.manager;
 
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -15,6 +18,7 @@ import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.playback.download.ExoDownload;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -46,7 +50,6 @@ public class MusicManager {
     }
 
     private MusicManager() {
-
     }
 
     /**
@@ -534,6 +537,60 @@ public class MusicManager {
             bundle.putBoolean("isChecked", isChecked);
             connection.getMediaController().sendCommand(INotification.ACTION_UPDATE_LYRICS_UI, bundle, null);
         }
+    }
+
+    /**
+     * 扫描本地媒体信息
+     */
+    public List<SongInfo> querySongInfoInLocal() {
+        List<SongInfo> songInfos = new ArrayList<>();
+        Cursor cursor = sContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null,
+                null, null);
+        if (cursor == null) {
+            return songInfos;
+        }
+        while (cursor.moveToNext()) {
+            SongInfo song = new SongInfo();
+            song.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID)));
+            song.setAlbumCover(getAlbumArtPicPath(sContext, song.getAlbumId()));
+            song.setSongNameKey(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE_KEY)));
+            song.setArtistKey(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST_KEY)));
+            song.setAlbumNameKey(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_KEY)));
+            song.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST)));
+            song.setAlbumName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM)));
+            song.setSongUrl(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA)));
+            song.setDescription(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DISPLAY_NAME)));
+            song.setSongName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.TITLE)));
+            song.setMimeType(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.MIME_TYPE)));
+            song.setYear(String.valueOf(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.YEAR))));
+            song.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DURATION)));
+            song.setSize(String.valueOf(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.SIZE))));
+            song.setPublishTime(String.valueOf(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_ADDED))));
+            song.setModifiedTime(String.valueOf(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_MODIFIED))));
+            songInfos.add(song);
+        }
+        cursor.close();
+        return songInfos;
+    }
+
+    private synchronized String getAlbumArtPicPath(Context context, String albumId) {
+        // 小米应用商店检测crash ，错误信息：[31188,0,com.duan.musicoco,13155908,java.lang.IllegalStateException,Unknown URL: content://media/external/audio/albums/null,Parcel.java,1548]
+        if (TextUtils.isEmpty(albumId)) {
+            return null;
+        }
+        String[] projection = {MediaStore.Audio.Albums.ALBUM_ART};
+        String imagePath = null;
+        Uri uri = Uri.parse("content://media" + MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.getPath() + "/" + albumId);
+        Cursor cur = context.getContentResolver().query(uri, projection, null, null, null);
+        if (cur == null) {
+            return null;
+        }
+        if (cur.getCount() > 0 && cur.getColumnCount() > 0) {
+            cur.moveToNext();
+            imagePath = cur.getString(0);
+        }
+        cur.close();
+        return imagePath;
     }
 
     /**

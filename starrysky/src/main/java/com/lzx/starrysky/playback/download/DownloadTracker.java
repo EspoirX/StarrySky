@@ -19,6 +19,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.text.TextUtils;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.offline.ActionFile;
@@ -112,13 +113,31 @@ public class DownloadTracker implements DownloadManager.Listener, DownloadHelper
     public void toggleDownload(String name, Uri uri, String extension) {
         this.name = name;
         if (isDownloaded(uri)) {
-            Log.i("xian", "--- 已经下载完了 ---");
+            //Log.i("xian", "--- 已经下载完了 ---");
             //DownloadAction removeAction = getDownloadHelper(uri, extension).getRemoveAction(Util.getUtf8Bytes(name));
             //startServiceWithAction(removeAction);
         } else {
-            Log.i("xian", "--- 新下载 ---");
+            // Log.i("xian", "--- 新下载 ---");
             downloadHelper = getDownloadHelper(uri, extension);
-            downloadHelper.prepare(this);
+            if (downloadHelper != null) {
+                downloadHelper.prepare(this);
+            }
+        }
+    }
+
+    public void deleteCacheFileByUrl(String url) {
+        if (TextUtils.isEmpty(url)) {
+            return;
+        }
+        Uri uri = Uri.parse(url);
+        if (isDownloaded(uri)) {
+            if (downloadHelper == null) {
+                downloadHelper = getDownloadHelper(uri, "");
+            }
+            if (downloadHelper != null) {
+                DownloadAction removeAction = downloadHelper.getRemoveAction(Util.getUtf8Bytes(name));
+                startServiceWithAction(removeAction);
+            }
         }
     }
 
@@ -228,7 +247,7 @@ public class DownloadTracker implements DownloadManager.Listener, DownloadHelper
             case C.TYPE_OTHER:
                 return new ProgressiveDownloadHelper(uri);
             default:
-                throw new IllegalStateException("Unsupported type: " + type);
+                return null;
         }
     }
 }

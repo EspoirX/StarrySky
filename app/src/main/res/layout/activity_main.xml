@@ -96,6 +96,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="通知栏歌词" />
+
+        <Button
+            android:id="@+id/cacheSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取缓存大小" />
     </LinearLayout>
 
     <LinearLayout

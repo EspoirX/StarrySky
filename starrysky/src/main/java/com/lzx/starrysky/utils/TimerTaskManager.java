@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 时间任务管理
  */
-public class TimerTask {
+public class TimerTaskManager {
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
     private final Handler mHandler = new Handler();

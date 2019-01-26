@@ -10,6 +10,7 @@ import com.lzx.starrysky.manager.MediaSessionConnection;
 import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.manager.OnPlayerEventListener;
 import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.playback.download.ExoDownload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,6 +103,10 @@ public class MainActivity extends AppCompatActivity {
                 MusicManager.getInstance().updateLyricsUI(true);
                 isChecked = true;
             }
+        });
+        findViewById(R.id.cacheSize).setOnClickListener(v -> {
+            String size = ExoDownload.getInstance().getCachedSize() + "";
+            Toast.makeText(MainActivity.this, "大小：" + size, Toast.LENGTH_SHORT).show();
         });
         MusicManager.getInstance().addPlayerEventListener(new OnPlayerEventListener() {
             @Override
