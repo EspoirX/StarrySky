@@ -1,14 +1,11 @@
+# A Powerful and Streamline MusicLibrary
+
+[](http://developer.android.com/index.html)
+[](https://api.bintray.com/packages/lizixian/MusicLibrary/MusicLibrary/images/download.svg)
+[](https://img.shields.io/badge/license-MIT-green.svg)
+
 <img src="art/logo.jpg"/>
 
-<p align="center">
-<a href="http://developer.android.com/index.html"><img src="https://img.shields.io/badge/platform-android-green.svg"></a>
-<a href="https://bintray.com/lizixian/MusicLibrary/MusicLibrary/_latestVersion"><img src="https://api.bintray.com/packages/lizixian/MusicLibrary/MusicLibrary/images/download.svg"></a>
-<a href="http://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/license-MIT-green.svg"></a>
-</p>
-
-# MusicLibrary
-
-一个丰富的音乐播放封装库，针对快速集成音频播放功能，你值得拥有。 
 
 [中文文档](https://github.com/lizixian18/MusicLibrary/blob/master/README-ZH.md)
 
