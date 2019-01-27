@@ -36,9 +36,9 @@ MusicManager.getInstance().playMusicByInfo(s1);
 
 `描述：  `
 
-`@param songInfos       播放列表    
-@param index           要播放的歌曲在播放列表中的下标    
-@param isResetPlayList 是否重新设置播放列表，如果true，则会重新加载播放列表中的资源，比如封面下载等，  
+`@param songInfos       播放列表`      
+`@param index           要播放的歌曲在播放列表中的下标`   
+`@param isResetPlayList 是否重新设置播放列表，如果true，则会重新加载播放列表中的资源，比如封面下载等，  
                        如果false，则使用原来的，相当于缓存，建议当播放列表改变或者第一次播放时才设为true`
 
 **2. void playMusic(List<SongInfo> songInfos, int index)**
