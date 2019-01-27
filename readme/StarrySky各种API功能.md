@@ -115,9 +115,9 @@ MusicManager.getInstance().playMusicByInfo(s1);
 
 `描述：  `
 
-`设置随机播放模式，shuffleMode 必须是以下之一：  
-PlaybackStateCompat.SHUFFLE_MODE_NONE 顺序播放  
-PlaybackStateCompat.SHUFFLE_MODE_ALL  随机播放`
+`设置随机播放模式，shuffleMode 必须是以下之一：`    
+`PlaybackStateCompat.SHUFFLE_MODE_NONE 顺序播放 `   
+`PlaybackStateCompat.SHUFFLE_MODE_ALL  随机播放`
 
 **19. int getShuffleMode()**
 
@@ -127,10 +127,10 @@ PlaybackStateCompat.SHUFFLE_MODE_ALL  随机播放`
 
 `描述：  `
 
-`设置播放模式，repeatMode 必须是以下之一：  
-PlaybackStateCompat.REPEAT_MODE_NONE  顺序播放  
-PlaybackStateCompat.REPEAT_MODE_ONE   单曲循环  
-PlaybackStateCompat.REPEAT_MODE_ALL   列表循环`
+`设置播放模式，repeatMode 必须是以下之一：`    
+`PlaybackStateCompat.REPEAT_MODE_NONE  顺序播放`  
+`PlaybackStateCompat.REPEAT_MODE_ONE   单曲循环`    
+`PlaybackStateCompat.REPEAT_MODE_ALL   列表循环`
 
 **21. int getRepeatMode()**
 
@@ -184,37 +184,37 @@ PlaybackStateCompat.REPEAT_MODE_ALL   列表循环`
 
 `描述：`
   
-`获取发送错误时的错误码，下面是错误码有可能的取值：  
-0 : 这是默认的错误代码  
-1 : 当应用程序状态无效以满足请求时的错误代码。  
-2 : 应用程序不支持请求时的错误代码。  
-3 : 由于身份验证已过期而无法执行请求时出现错误代码。  
-4 : 成功请求需要高级帐户时的错误代码。  
-5 : 检测到太多并发流时的错误代码。  
-6 : 由于家长控制而阻止内容时出现错误代码。  
-7 : 内容因区域不可用而被阻止时的错误代码。  
-8 : 请求的内容已在播放时出现错误代码。  
-9 : 当应用程序无法跳过任何更多歌曲时出现错误代码，因为已达到跳过限制。  
-10: 由于某些外部事件而导致操作中断时的错误代码。  
-11: 由于队列耗尽而无法播放导航（上一首，下一首）时出现错误代码。`
+`获取发送错误时的错误码，下面是错误码有可能的取值：`    
+`0 : 这是默认的错误代码`    
+`1 : 当应用程序状态无效以满足请求时的错误代码。`    
+`2 : 应用程序不支持请求时的错误代码。`    
+`3 : 由于身份验证已过期而无法执行请求时出现错误代码。`    
+`4 : 成功请求需要高级帐户时的错误代码。`    
+`5 : 检测到太多并发流时的错误代码。`    
+`6 : 由于家长控制而阻止内容时出现错误代码。`    
+`7 : 内容因区域不可用而被阻止时的错误代码。`    
+`8 : 请求的内容已在播放时出现错误代码。`    
+`9 : 当应用程序无法跳过任何更多歌曲时出现错误代码，因为已达到跳过限制。`    
+`10: 由于某些外部事件而导致操作中断时的错误代码。`    
+`11: 由于队列耗尽而无法播放导航（上一首，下一首）时出现错误代码。`  
 
 **33. int getState()**
 
 `描述：  `
 
-`获取当前的播放状态。 它的取值是以下之一：
-PlaybackStateCompat.STATE_NONE                   默认播放状态，表示尚未添加媒体，或者表示已重置且无内容可播放。  
-PlaybackStateCompat.STATE_STOPPED                当前已停止。  
-PlaybackStateCompat.STATE_PLAYING                正在播放  
-PlaybackStateCompat.STATE_PAUSED                 已暂停  
-PlaybackStateCompat.STATE_FAST_FORWARDING        当前正在快进  
-PlaybackStateCompat.STATE_REWINDING              当前正在倒带   
-PlaybackStateCompat.STATE_BUFFERING              当前正在缓冲  
-PlaybackStateCompat.STATE_ERROR                  当前处于错误状态  
-PlaybackStateCompat.STATE_CONNECTING             正在连接中  
-PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS   正在转跳到上一首  
-PlaybackStateCompat.STATE_SKIPPING_TO_NEXT       正在转跳到下一首  
-PlaybackStateCompat.STATE_SKIPPING_TO_QUEUE_ITEM 正在切歌`
+`获取当前的播放状态。 它的取值是以下之一：`  
+`PlaybackStateCompat.STATE_NONE                   默认播放状态，表示尚未添加媒体，或者表示已重置且无内容可播放。`    
+`PlaybackStateCompat.STATE_STOPPED                当前已停止。`    
+`PlaybackStateCompat.STATE_PLAYING                正在播放`    
+`PlaybackStateCompat.STATE_PAUSED                 已暂停`    
+`PlaybackStateCompat.STATE_FAST_FORWARDING        当前正在快进`    
+`PlaybackStateCompat.STATE_REWINDING              当前正在倒带`     
+`PlaybackStateCompat.STATE_BUFFERING              当前正在缓冲`    
+`PlaybackStateCompat.STATE_ERROR                  当前处于错误状态`    
+`PlaybackStateCompat.STATE_CONNECTING             正在连接中`    
+`PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS   正在转跳到上一首`    
+`PlaybackStateCompat.STATE_SKIPPING_TO_NEXT       正在转跳到下一首`    
+`PlaybackStateCompat.STATE_SKIPPING_TO_QUEUE_ITEM 正在切歌`
 
 **34. long getDuration()**
 
