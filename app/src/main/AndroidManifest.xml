@@ -23,8 +23,7 @@
         </activity>
         <receiver
             android:name=".NotificationReceiver"
-            android:exported="true"
-            android:process=":MusicLibrary">
+            android:exported="true">
             <intent-filter>
                 <action android:name="ACTION_PLAY_OR_PAUSE" />
                 <action android:name="ACTION_NEXT" />

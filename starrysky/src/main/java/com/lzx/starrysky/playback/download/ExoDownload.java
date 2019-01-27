@@ -34,6 +34,7 @@ public class ExoDownload {
     private DownloadTracker downloadTracker;
     private String destFileDir;
     private boolean isOpenCache = false;
+    private boolean isShowNotificationWhenDownload = false;
 
     public static ExoDownload getInstance() {
         return SingletonHolder.sInstance;
@@ -70,6 +71,20 @@ public class ExoDownload {
      */
     public void setOpenCache(boolean openCache) {
         isOpenCache = openCache;
+    }
+
+    /**
+     * 下载时是否显示通知栏
+     */
+    public boolean isShowNotificationWhenDownload() {
+        return isShowNotificationWhenDownload;
+    }
+
+    /**
+     * 配置下载时是否显示通知栏
+     */
+    public void setShowNotificationWhenDownload(boolean showNotificationWhenDownload) {
+        isShowNotificationWhenDownload = showNotificationWhenDownload;
     }
 
     /**
@@ -140,7 +155,7 @@ public class ExoDownload {
     /**
      * 删除所有缓存文件
      */
-    public void deleteAllCacheFile() {
+    public boolean deleteAllCacheFile() {
         if (downloadDirectory == null) {
             downloadDirectory = getDownloadDirectory(sContext);
         }
@@ -151,7 +166,7 @@ public class ExoDownload {
                 deleteAllCacheFile(); // 递规的方式删除文件夹
             }
         }
-        downloadDirectory.delete();// 删除目录本身
+       return downloadDirectory.delete();// 删除目录本身
     }
 
     /**

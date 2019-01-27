@@ -27,7 +27,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.lzx.starrysky.R;
 
 /**
- * A service for downloading media.
+ * 媒体下载服务
  */
 public class ExoDownloadService extends DownloadService {
 
@@ -36,9 +36,16 @@ public class ExoDownloadService extends DownloadService {
     private static final int JOB_ID = 1;
     private static final int FOREGROUND_NOTIFICATION_ID = 1;
 
+    /**
+     * 传入FOREGROUND_NOTIFICATION_ID，是因为这样服务位于前台需要通知，并且要求服务位于前台以确保进程不会被终止
+     * 如果使用FOREGROUND_NOTIFICATION_ID_NONE，则服务可能会被后台杀死
+     */
     public ExoDownloadService() {
         super(
-                FOREGROUND_NOTIFICATION_ID,
+                //传入FOREGROUND_NOTIFICATION_ID_NONE，则下载时不会出现通知栏，如果想要通知栏，则传入FOREGROUND_NOTIFICATION_ID
+                ExoDownload.getInstance().isShowNotificationWhenDownload() ?
+                        FOREGROUND_NOTIFICATION_ID :
+                        FOREGROUND_NOTIFICATION_ID_NONE,
                 DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
                 CHANNEL_ID,
                 R.string.exo_download_notification_channel_name);
@@ -65,12 +72,17 @@ public class ExoDownloadService extends DownloadService {
                 taskStates);
     }
 
+
     @Override
     protected void onTaskStateChanged(TaskState taskState) {
+        if (!ExoDownload.getInstance().isShowNotificationWhenDownload()) {
+            return;
+        }
         if (taskState.action.isRemoveAction) {
             return;
         }
         Notification notification = null;
+        //下载完成时通知栏提示
         if (taskState.state == TaskState.STATE_COMPLETED) {
             notification =
                     DownloadNotificationUtil.buildDownloadCompletedNotification(
@@ -80,6 +92,7 @@ public class ExoDownloadService extends DownloadService {
                             /* contentIntent= */ null,
                             Util.fromUtf8Bytes(taskState.action.data));
         } else if (taskState.state == TaskState.STATE_FAILED) {
+            //下载失败时通知栏提示
             notification =
                     DownloadNotificationUtil.buildDownloadFailedNotification(
                             /* context= */ this,
