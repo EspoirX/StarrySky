@@ -8,240 +8,50 @@
 
 # StarrySky
 
-一个丰富的音乐播放封装库，针对快速集成音频播放功能，你值得拥有。
+`StarrySky` `MusicLibrary` `Music` `音频集成`
 
-[中文文档](https://github.com/lizixian18/MusicLibrary/blob/master/README-ZH.md)
+一个丰富的音乐播放封装库，针对快速集成音频播放功能，减少大家搬砖的时间，你值得拥有。
 
-## Features
+>MusicLibrary 改名为 StarrySky，因为 MusicLibrary 名字有点土，所有想了个文艺点的，
+StarrySky 是一个全新的版本，基于媒体浏览器服务(MediaBrowserService)实现，
+代码比原来的版本更加精简，注释更全，而且问题更少，欢迎大家继续使用。  
 
-- Easily play local and web audio.
-- Implement audio services based on IPC, reduce app memory peaks, and avoid OOM.
-- Integrating and calling APIs is very simple, and audio functions can be integrated in almost one sentence.
-- Provides rich API methods to easily implement various functions.
-- In one sentence, you can customize the notification bar and the system notification bar to customize the control of the notification bar.
-- Integrated MediaPlayer and ExoPlayer Players, Freely Switchable
-- Supports multiple audio formats and supports audio streaming(DASH, SmoothStreaming, HLS，rtmp.).
-- Supports the playback progress
-- Supports Cache while playing，no network can play.
-- Supports changing the playing speed and changing the playing pitch.
-
-## Version update record
-
-See details [Version update record](https://github.com/lizixian18/MusicLibrary/blob/master/readme/version.md)
-
-## project status
-
-The project is basically stable and has been practically used in a number of commercial projects. The current status is to repair the bugs found and to satisfy the requirements raised in the issues. If you encounter any problems in use, welcome feedback.
-
-## Demo
-
-Specific application Demo Please refer to [NiceMusic](https://github.com/lizixian18/NiceMusic)
-
-## Usage
-
-1.Import library
-
-```java
-allprojects {
-    repositories {
-        maven{url 'https://dl.bintray.com/lizixian/MusicLibrary'}
-    }
-}
-
-dependencies {
-    implementation 'com.lzx:MusicLibrary:x.y.z'
-}
-```
-Please replace x and y and z with the latest version numbers
+原来版本的代码在 master 分支上。
 
 
-If your appcompat-v7 package is using 27+, then you need an extra reference to support-media-compat. For example:
+## 特点
 
-```java
-implementation 'com.android.support:support-media-compat:27.1.1'
-```
+- 轻松播放本地和网络音频
+- 集成和调用API非常简单，音频功能几乎可以集成到一个语句中。
+- 提供丰富的API方法来轻松实现各种功能。
+- 方便集成自定义通知栏和系统通知栏。
+- 使用ExoPlayer作为底层播放器。
+- 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS，rtmp)。
+- 支持边播边存功能，没网也能播。
+- 支持改变播放速度
+- 等等等等
 
-If you find that you still can't find the related class's crash after the reference, please check if the same package exists but the version is different and cause conflict.
+若在使用中发现 Bug 或者有什么建议问题的可以在 issues 中提出或者添加 QQ 群交流，欢迎反馈。
 
-2. add MusicLibrary to your Application
+## 使用文档
 
-```java
-public class NiceMusicApplication extends Application {
+- [集成StarrySky](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/%E9%9B%86%E6%88%90StarrySky.md)
+- [StarrySky各种API功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky各种API功能.md)
+- [快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)
+- [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/媒体缓存功能.md)
 
-    @Override
-    public void onCreate() {
-        if (BaseUtil.getCurProcessName(this).equals("your package name")) {
-            MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
-                              .build();
-            musicLibrary.startMusicService();
-        }
-    }
-}
-```
-
-**note**
-1. Because the music service is running in the musicLibrary process, in the multi-process case, Application will create multiple times, so you need to add the above judgment in the initialization, initialized in your main process.
-2. There are some parameters that can be configured during initialization:
-
-- setAutoPlayNext(boolean autoPlayNext) Whether to play the next song automatically after playing the current song
-- setUseMediaPlayer(boolean isUseMediaPlayer) Whether to use MediaPlayer
-- setNotificationCreater(NotificationCreater creater) Notification bar configuration
-- setCacheConfig(cacheConfig) Cache when playing configuration
-- giveUpAudioFocusManager() Give up audio focus management, after give up, multiple audio will be mixed together
-
-for example：
-
-```java
-//Notification configuration
-NotificationCreater creater = new NotificationCreater.Builder()
-        .setTargetClass("com.lzx.nicemusic.module.main.HomeActivity")
-        .setCreateSystemNotification(true)
-        .setNotificationCanClearBySystemBtn(true)
-        .setSystemNotificationShowTime(true)
-        .setPendingIntentMode(PendingIntentMode.MODE_ACTIVITY)
-        .build();
-
-//边播边存配置
-CacheConfig cacheConfig = new CacheConfig.Builder()
-        .setOpenCacheWhenPlaying(true)
-        .setCachePath(CacheUtils.getStorageDirectoryPath() + "/NiceMusic/Cache/")
-        .build();
-
-MusicLibrary musicLibrary = new MusicLibrary.Builder(this)
-        .setNotificationCreater(creater)
-        .setCacheConfig(cacheConfig)
-        .setUseMediaPlayer(false)
-        .build();
-musicLibrary.startMusicService();
-```
-
-3. Configuration AndroidManifest.xml
-
-In order to allow the user to decide whether to open the multi-process to use the library, the configuration of the manifest file is given to the user, as follows:
-
-
-```xml
-<!--MusicService-->
-<service
-    android:name="com.lzx.musiclibrary.MusicService"
-    android:exported="true"
-    android:process=":MusicLibrary" />
-<!--Wire control related-->
-<receiver
-    android:name="com.lzx.musiclibrary.receiver.RemoteControlReceiver"
-    android:exported="true"
-    android:process=":MusicLibrary">
-    <intent-filter>
-        <action android:name="android.intent.action.MEDIA_BUTTON" />
-    </intent-filter>
-</receiver>
-<!--Notification bar event related-->
-<receiver
-    android:name="com.lzx.musiclibrary.receiver.PlayerReceiver"
-    android:exported="true"
-    android:process=":MusicLibrary">
-    <intent-filter>
-        <action android:name="com.lzx.nicemusic.close" />
-        <action android:name="com.lzx.nicemusic.play_pause" />
-        <action android:name="com.lzx.nicemusic.prev" />
-        <action android:name="com.lzx.nicemusic.next" />
-    </intent-filter>
-</receiver>
-```
-The default is to use multi-process, if you do not want to use, remove android:process=":MusicLibrary", where MusicLibrary is the name of the process, you can define it yourself.
-
-
-**other instructions**
-If you use the System.exit(0); method to exit the APP, you may need to call the ActivityManager#killBackgroundProcesses method again.
-Kill the audio process, otherwise it may report a crash, so try not to do it.
-
-3. Simple to use (play a song):
-
-```java
-SongInfo songInfo = new SongInfo();
-songInfo.setSongId("your song Id"); 
-songInfo.setSongUrl("your song url"); 
-
-MusicManager.get().playMusicByInfo(songInfo);
-```
-
-At least set songId and songUrl to play.To play audio in the local audio or assets folder, or streaming audio such as m3u8, just use set the songUrl and songId as usual.
-
-## Function list
-
-Play audio
-2. Pause audio
-3. Stop audio
-4. Resume playback after pause
-5. Timed playback
-6. Get the current playback subscript
-7. Get the current playlist
-8. Set the current playlist
-9. Delete a message from the playlist
-10. Get the playback status
-11. Get the audio duration
-12. Play the next song
-13. Play the previous one
-14. Determine if there is a previous one
-15. Determine if there is a next one
-16. Get the previous message
-17. Get the next message
-18. Get the current playback information
-19. Set current audio information
-20. Set the play mode
-21. Get the playback mode
-22. Get current progress
-23. Target to the specified location
-24. Get the audio SessionId
-25. Get the playback speed
-26. Get the playback tone
-27. Initialization
-27. Side-by-side storage configuration
-29. Player selection
-30. Configure a custom notification bar
-31. Configure the system notification bar
-32. Close the notification bar
-33. Update notification bar
-34. Variable speed
-35. Get buffer progress
-36. Set the volume
-37. Register/unregister a play status listener
-38. Register/unregister a timed play listener
-39. ...
-
-## Wiki
-
-1. MusicLibrary Model 
- 
-   See details [MusicLibrary Model Description](https://github.com/lizixian18/MusicLibrary/blob/master/readme/model.md)
-   
-2. MusicManager API
-   
-   See details [API Description](https://github.com/lizixian18/MusicLibrary/blob/master/readme/api.md)
- 
-3. Notification bar integration
-
-   See details [Notification Description](https://github.com/lizixian18/MusicLibrary/blob/master/readme/notification.md)
-
-4. Cache when playing configuration instructions
- 
-   See details [Cache when playing Description](https://github.com/lizixian18/MusicLibrary/blob/master/readme/playcache.md)
-
-5. Code implementation and principle
-  
-   See details [Code implementation and principle](https://github.com/lizixian18/MusicLibrary/blob/master/readme/principle.md)
-
-
-<br><br>
 
 PS：
-- If you have ideas or opinions and suggestions, please feel free to ask for an issue and like to have a star. Welcome everybody to give pointers.
+- 如果有兴趣，建议稍微阅读一下源码，这样对使用或者解决问题有很大帮助。
+- 如果发现库中功能满足不了你的需求，建议通过下载源码修改成你要的样子来使用。
+- 如果该项目对你有所帮助，欢迎 star 或 fork，谢谢各位。
 
 <a href="art/qq_qun.jpg"><img src="art/qq_qun.jpg" width="30%"/></a>
 
 <br><br>
 
-##  About me
+
+## 关于我
 
 An android developer in GuangZhou  
 简书：[http://www.jianshu.com/users/286f9ad9c417/latest_articles](http://www.jianshu.com/users/286f9ad9c417/latest_articles)   
