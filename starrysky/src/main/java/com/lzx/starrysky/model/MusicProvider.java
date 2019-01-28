@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
@@ -17,7 +18,9 @@ import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
+import com.lzx.starrysky.manager.MediaSessionConnection;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,10 +29,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+
 /**
  * 媒体信息提供类
  */
-public class MusicProvider {
+public class MusicProvider   {
 
     private List<SongInfo> mSongInfos;
     private List<MediaMetadataCompat> metadatas;
@@ -54,7 +58,7 @@ public class MusicProvider {
     }
 
     /**
-     * 获取原始的List<SongInfo>
+     * 获取原始的List#SongInfo
      */
     public List<SongInfo> getSongInfos() {
         return mSongInfos;
@@ -67,12 +71,21 @@ public class MusicProvider {
         mSongInfos = songInfos;
     }
 
+    public boolean addSongInfo(SongInfo songInfo) {
+        if (!mSongInfos.contains(songInfo)) {
+            mSongInfos.add(songInfo);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public List<MediaMetadataCompat> getMetadatas() {
         return metadatas;
     }
 
     /**
-     * 获取 List<MediaBrowserCompat.MediaItem> 用于 onLoadChildren 回调
+     * 获取 List#MediaBrowserCompat.MediaItem 用于 onLoadChildren 回调
      */
     public List<MediaBrowserCompat.MediaItem> getChildrenResult(String mediaId) {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
@@ -112,6 +125,19 @@ public class MusicProvider {
         return music;
     }
 
+    public void updateMediadata(MediaSessionConnection connection, String songId) {
+        nonInitialized();
+        connection.subscribe(MusicService.UPDATE_PARENT_ID, new MediaBrowserCompat.SubscriptionCallback() {
+            @Override
+            public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                super.onChildrenLoaded(parentId, children);
+                if (!TextUtils.isEmpty(songId)) {
+                    connection.getTransportControls().playFromMediaId(songId, null);
+                }
+            }
+        });
+    }
+
     /**
      * 异步加载给metadatasById和metadatas赋值
      */
@@ -140,7 +166,7 @@ public class MusicProvider {
     }
 
     /**
-     * 加载List<MediaMetadataCompat>的异步任务类
+     * 加载 List#MediaMetadataCompat 的异步任务类
      */
     public static class UpdateCatalogTask extends AsyncTask<Void, Void, List<MediaMetadataCompat>> {
 
@@ -243,7 +269,7 @@ public class MusicProvider {
     }
 
     /**
-     * List<MediaMetadataCompat> 转 ConcatenatingMediaSource
+     * List#MediaMetadataCompat 转 ConcatenatingMediaSource
      */
     public ConcatenatingMediaSource toMediaSource(DataSource.Factory dataSourceFactory) {
         ConcatenatingMediaSource concatenatingMediaSource = new ConcatenatingMediaSource();

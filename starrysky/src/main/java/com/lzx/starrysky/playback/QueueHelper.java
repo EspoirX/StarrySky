@@ -22,7 +22,6 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.text.TextUtils;
 
-
 import com.lzx.starrysky.model.MusicProvider;
 
 import java.util.ArrayList;
@@ -88,7 +87,7 @@ public class QueueHelper {
     }
 
     /**
-     * 获取乱序的 List<MediaSessionCompat.QueueItem>
+     * 获取乱序的 List#MediaSessionCompat.QueueItem
      */
     public static List<MediaSessionCompat.QueueItem> getRandomQueue(MusicProvider musicProvider) {
         List<MediaMetadataCompat> result = new ArrayList<>();

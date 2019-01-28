@@ -17,6 +17,7 @@ package com.lzx.starrysky.playback;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
@@ -56,8 +57,6 @@ import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.playback.download.ExoDownload;
 
 import java.util.List;
-
-import androidx.annotation.Nullable;
 
 import static android.support.v4.media.session.MediaSessionCompat.QueueItem;
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;

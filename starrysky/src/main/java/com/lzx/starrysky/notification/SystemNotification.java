@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -23,7 +24,6 @@ import com.lzx.starrysky.R;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.utils.NotificationUtils;
 
-import androidx.core.app.NotificationCompat;
 
 /**
  * 系统通知栏
@@ -206,7 +206,7 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
 
         final int playPauseButtonPosition = addActions(notificationBuilder);
         notificationBuilder
-                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
                         // show only play/pause in compact view
                         .setShowActionsInCompactView(playPauseButtonPosition)
                         .setShowCancelButton(true)

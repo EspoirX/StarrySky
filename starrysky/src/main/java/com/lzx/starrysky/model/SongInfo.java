@@ -3,10 +3,10 @@ package com.lzx.starrysky.model;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import java.util.Objects;
 
-import androidx.annotation.Nullable;
 
 /**
  * 面向用户的音频信息

@@ -2,6 +2,7 @@ package com.lzx.musiclib;
 
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -15,7 +16,6 @@ import com.lzx.starrysky.playback.download.ExoDownload;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.app.AppCompatActivity;
 
 
 public class MainActivity extends AppCompatActivity {

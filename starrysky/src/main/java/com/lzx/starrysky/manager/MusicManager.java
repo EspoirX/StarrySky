@@ -6,12 +6,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
-import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.notification.NotificationConstructor;
@@ -21,8 +19,6 @@ import com.lzx.starrysky.playback.download.ExoDownload;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import androidx.annotation.NonNull;
 
 /**
  * 用户操作管理类
@@ -90,13 +86,14 @@ public class MusicManager {
      * 根据 SongInfo 播放，实际也是根据 songId 播放
      */
     public void playMusicByInfo(SongInfo info) {
-        List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
-        if (!songInfos.contains(info)) {
-            songInfos.add(info);
-            int index = songInfos.indexOf(info);
-            playMusic(songInfos, index, true);
-        } else {
-            playMusicById(info.getSongId());
+        MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
+        if (connection.isConnected()) {
+            boolean isAdd = MusicProvider.getInstance().addSongInfo(info);
+            if (isAdd) {
+                MusicProvider.getInstance().updateMediadata(connection, info.getSongId());
+            } else {
+                connection.getTransportControls().playFromMediaId(info.getSongId(), null);
+            }
         }
     }
 
@@ -106,13 +103,10 @@ public class MusicManager {
     public void playMusicByIndex(int index) {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
         if (connection.isConnected()) {
-            connection.subscribe(MusicService.UPDATE_PARENT_ID, new MediaBrowserCompat.SubscriptionCallback() {
-                @Override
-                public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                    super.onChildrenLoaded(parentId, children);
-                    connection.getTransportControls().playFromMediaId(children.get(index).getMediaId(), null);
-                }
-            });
+            List<SongInfo> list = MusicProvider.getInstance().getSongInfos();
+            if (list != null && index >= 0 && index < list.size()) {
+                connection.getTransportControls().playFromMediaId(list.get(index).getSongId(), null);
+            }
         }
     }
 
@@ -132,13 +126,9 @@ public class MusicManager {
                 MusicProvider.getInstance().nonInitialized();
                 MusicProvider.getInstance().setSongInfos(songInfos);
             }
-            connection.subscribe(MusicService.UPDATE_PARENT_ID, new MediaBrowserCompat.SubscriptionCallback() {
-                @Override
-                public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                    super.onChildrenLoaded(parentId, children);
-                    connection.getTransportControls().playFromMediaId(songInfos.get(index).getSongId(), null);
-                }
-            });
+            if (songInfos != null && index >= 0 && index < songInfos.size()) {
+                MusicProvider.getInstance().updateMediadata(connection, songInfos.get(index).getSongId());
+            }
         }
     }
 
@@ -313,12 +303,7 @@ public class MusicManager {
         if (connection.isConnected()) {
             MusicProvider.getInstance().nonInitialized();
             MusicProvider.getInstance().setSongInfos(songInfos);
-            connection.subscribe(MusicService.UPDATE_PARENT_ID, new MediaBrowserCompat.SubscriptionCallback() {
-                @Override
-                public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                    super.onChildrenLoaded(parentId, children);
-                }
-            });
+            MusicProvider.getInstance().updateMediadata(connection, null);
         }
     }
 

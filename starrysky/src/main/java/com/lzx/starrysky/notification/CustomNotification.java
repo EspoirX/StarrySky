@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -31,7 +32,6 @@ import com.lzx.starrysky.notification.utils.NotificationUtils;
 
 import java.util.List;
 
-import androidx.core.app.NotificationCompat;
 
 /**
  * 自定义通知栏

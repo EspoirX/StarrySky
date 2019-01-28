@@ -1,8 +1,8 @@
 # A Powerful and Streamline MusicLibrary
 
-<a href="http://developer.android.com/index.html"><img src="https://img.shields.io/badge/platform-android-green.svg"></a>
-<a href="https://bintray.com/lizixian/MusicLibrary/MusicLibrary/_latestVersion"><img src="https://api.bintray.com/packages/lizixian/MusicLibrary/MusicLibrary/images/download.svg"></a>
-<a href="http://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/license-MIT-green.svg"></a>
+[ ![](https://img.shields.io/badge/platform-android-green.svg) ](http://developer.android.com/index.html)
+[ ![Download](https://api.bintray.com/packages/lizixian/StarrySky/StarrySkyJava/images/download.svg) ](https://bintray.com/lizixian/StarrySky/StarrySkyJava/_latestVersion)
+[ ![](https://img.shields.io/badge/license-MIT-green.svg) ](http://choosealicense.com/licenses/mit/)
 
 <img src="art/logo.jpg"/>
 
@@ -32,6 +32,21 @@ StarrySky 是一个全新的版本，基于媒体浏览器服务(MediaBrowserSer
 - 等等等等
 
 若在使用中发现 Bug 或者有什么建议问题的可以在 issues 中提出或者添加 QQ 群交流，欢迎反馈。
+
+## 集成
+```groovy
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.lzx:StarrySkyJava:2.0.0'
+}
+```
+
+StarrySky 里面依赖的第三方库除了 ExoPlayer 之外还有 glide:4.8.0，用于封面的下载，如果版本跟你项目中的版本有冲突，建议通过导入源码的
+方式自己修改。
+
+请使用 Java8。
+
+
 
 ## 使用文档
 

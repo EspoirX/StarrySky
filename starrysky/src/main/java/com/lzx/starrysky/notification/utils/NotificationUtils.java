@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 
 import com.lzx.starrysky.MusicService;
@@ -18,7 +19,6 @@ import com.lzx.starrysky.notification.factory.INotification;
 
 import java.util.List;
 
-import androidx.annotation.RequiresApi;
 
 /**
  * 通知栏工具类，主要提供一些公共的方法
