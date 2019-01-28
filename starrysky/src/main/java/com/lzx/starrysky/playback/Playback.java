@@ -37,6 +37,10 @@ public interface Playback {
 
     long getCurrentStreamPosition();
 
+    long getBufferedPosition();
+
+    long getDuration();
+
     void updateLastKnownStreamPosition();
 
     void play(QueueItem item);

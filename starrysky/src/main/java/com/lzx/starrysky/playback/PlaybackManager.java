@@ -21,12 +21,14 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.lzx.starrysky.manager.MusicManager;
+import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
-
 
 
 /**
@@ -53,6 +55,7 @@ public class PlaybackManager implements Playback.Callback {
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
         mPlayback.setCallback(this);
+        MusicManager.getInstance().setPlayback(mPlayback);
     }
 
     public void setNotificationFactory(NotificationFactory notificationFactory) {
@@ -133,11 +136,14 @@ public class PlaybackManager implements Playback.Callback {
         stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
         //设置当前活动的 songId
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
+        MediaMetadataCompat currMetadata = null;
         if (currentMusic != null) {
             stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
+            final String musicId = currentMusic.getDescription().getMediaId();
+            currMetadata = MusicProvider.getInstance().getMusic(musicId);
         }
         //把状态回调出去
-        mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
+        mServiceCallback.onPlaybackStateUpdated(stateBuilder.build(), currMetadata);
         //如果是播放或者暂停的状态，更新一下通知栏
         if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_PAUSED) {
             mServiceCallback.onNotificationRequired();
@@ -200,6 +206,7 @@ public class PlaybackManager implements Playback.Callback {
      * MusicManager API 方法的具体实现
      */
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
+
         @Override
         public void onPlay() {
             if (mQueueManager.getCurrentMusic() == null) {
@@ -295,7 +302,9 @@ public class PlaybackManager implements Playback.Callback {
                     mNotificationFactory.updateLyricsUI(isChecked);
                 }
             }
-            if (ExoPlayback.ACTION_CHANGE_VOLUME.equals(command)){}{
+            if (ExoPlayback.ACTION_CHANGE_VOLUME.equals(command)) {
+            }
+            {
                 float audioVolume = extras.getFloat("AudioVolume");
                 mPlayback.setVolume(audioVolume);
             }
@@ -309,6 +318,6 @@ public class PlaybackManager implements Playback.Callback {
 
         void onPlaybackStop();
 
-        void onPlaybackStateUpdated(PlaybackStateCompat newState);
+        void onPlaybackStateUpdated(PlaybackStateCompat newState, MediaMetadataCompat currMetadata);
     }
 }

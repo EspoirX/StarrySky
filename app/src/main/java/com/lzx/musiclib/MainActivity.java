@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
     TextView currInfo, currTime;
     SeekBar mSeekBar;
 
+    MediaSessionConnection mMediaSessionConnection;
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         mSeekBar = findViewById(R.id.seekBar);
 
         mTimerTask = new TimerTaskManager();
-
+        mMediaSessionConnection = MediaSessionConnection.getInstance(this);
 
         SongInfo s1 = new SongInfo();
         s1.setSongId("111");
@@ -120,58 +122,47 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         });
 
         MusicManager.getInstance().addPlayerEventListener(this);
+
         mTimerTask.setUpdateProgressTask(() -> {
-            int progress = (int) MusicManager.getInstance().getPlayingPosition();
-            int buffered = (int) MusicManager.getInstance().getBufferedPosition();
-            mSeekBar.setProgress(progress);
-            mSeekBar.setSecondaryProgress(buffered);
-            currTime.setText(formatMusicTime(progress) + "/" + formatMusicTime(MusicManager.getInstance().getDuration()));
-        });
-        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+            long position = MusicManager.getInstance().getPlayingPosition();
+            long duration = MusicManager.getInstance().getDuration();
+            if (mSeekBar.getMax() != duration) {
+                mSeekBar.setMax((int) duration);
             }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                MusicManager.getInstance().seekTo(seekBar.getProgress());
-            }
+            mSeekBar.setProgress((int) position);
+            currTime.setText(formatMusicTime(position) + "/" + formatMusicTime(duration));
         });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        MediaSessionConnection.getInstance(this).connect();
+        mMediaSessionConnection.connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        MediaSessionConnection.getInstance(this).disconnect();
+        mMediaSessionConnection.disconnect();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         MusicManager.getInstance().removePlayerEventListener(this);
+        mTimerTask.removeUpdateProgressTask();
     }
 
     @Override
     public void onMusicSwitch(SongInfo songInfo) {
+        if (songInfo == null) {
+            return;
+        }
         currInfo.setText("当前播放：" + songInfo.getSongName());
     }
 
     @Override
     public void onPlayerStart() {
-        mSeekBar.setMax((int) MusicManager.getInstance().getDuration());
         mTimerTask.startToUpdateProgress();
     }
 

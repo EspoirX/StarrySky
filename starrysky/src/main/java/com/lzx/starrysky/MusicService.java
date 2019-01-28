@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class MusicService extends MediaBrowserServiceCompat implements QueueManager.MetadataUpdateListener, PlaybackManager.PlaybackServiceCallback {
 
     public static final String UPDATE_PARENT_ID = "update";
@@ -57,7 +56,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
     public void onCreate() {
         super.onCreate();
         MusicProvider musicProvider = MusicProvider.getInstance();
-        QueueManager queueManager = new QueueManager(musicProvider, this);
+        QueueManager queueManager = new QueueManager(this,musicProvider, this);
         ExoPlayback playback = new ExoPlayback(this, musicProvider);
 
         mPlaybackManager = new PlaybackManager(this, this, queueManager, playback);
@@ -185,7 +184,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
      * 播放状态改变时回调
      */
     @Override
-    public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
+    public void onPlaybackStateUpdated(PlaybackStateCompat newState, MediaMetadataCompat currMetadata) {
         mediaSession.setPlaybackState(newState);
 
         if (newState.getState() == PlaybackStateCompat.STATE_BUFFERING ||

@@ -16,6 +16,7 @@
 
 package com.lzx.starrysky.playback;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -27,10 +28,10 @@ import java.util.Collections;
 import java.util.List;
 
 
-
 public class QueueManager {
     private static final String TAG = "QueueManager";
 
+    private Context mContext;
     private MusicProvider mMusicProvider;
     private MetadataUpdateListener mListener;
 
@@ -39,8 +40,9 @@ public class QueueManager {
     //下标
     private int mCurrentIndex;
 
-    public QueueManager(@NonNull MusicProvider musicProvider,
+    public QueueManager(Context context, @NonNull MusicProvider musicProvider,
                         @NonNull MetadataUpdateListener listener) {
+        mContext = context;
         this.mMusicProvider = musicProvider;
         this.mListener = listener;
 

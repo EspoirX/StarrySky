@@ -27,13 +27,9 @@ public class TimerTaskManager {
     public void startToUpdateProgress() {
         stopToUpdateProgress();
         if (!mExecutorService.isShutdown()) {
-            mScheduleFuture = mExecutorService.scheduleAtFixedRate(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mUpdateProgressTask != null) {
-                                mHandler.post(mUpdateProgressTask);
-                            }
+            mScheduleFuture = mExecutorService.scheduleAtFixedRate(() -> {
+                        if (mUpdateProgressTask != null) {
+                            mHandler.post(mUpdateProgressTask);
                         }
                     },
                     PROGRESS_UPDATE_INITIAL_INTERVAL,

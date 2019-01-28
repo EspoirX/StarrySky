@@ -15,6 +15,7 @@ import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.playback.ExoPlayback;
+import com.lzx.starrysky.playback.Playback;
 import com.lzx.starrysky.playback.download.ExoDownload;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class MusicManager {
     private static Context sContext;
     private NotificationConstructor mConstructor;
     private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
+    private Playback mPlayback;
 
     public static MusicManager getInstance() {
         return SingletonHolder.sInstance;
@@ -55,6 +57,8 @@ public class MusicManager {
     public void onRelease() {
         clearPlayerEventListener();
         sContext = null;
+        mPlayback = null;
+        mConstructor = null;
     }
 
     /**
@@ -62,6 +66,14 @@ public class MusicManager {
      */
     public void setNotificationConstructor(NotificationConstructor constructor) {
         mConstructor = constructor;
+    }
+
+    public Playback getPlayback() {
+        return mPlayback;
+    }
+
+    public void setPlayback(Playback playback) {
+        mPlayback = playback;
     }
 
     /**
@@ -369,7 +381,7 @@ public class MusicManager {
     public long getBufferedPosition() {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
         if (connection.isConnected()) {
-            return connection.getPlaybackState().getBufferedPosition();
+            return mPlayback != null ? mPlayback.getBufferedPosition() : 0;
         } else {
             return 0;
         }
@@ -381,7 +393,7 @@ public class MusicManager {
     public long getPlayingPosition() {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
         if (connection.isConnected()) {
-            return connection.getPlaybackState().getPosition();
+            return mPlayback != null ? mPlayback.getCurrentStreamPosition() : 0;
         } else {
             return 0;
         }
@@ -569,6 +581,12 @@ public class MusicManager {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
         if (connection.isConnected()) {
             duration = connection.getNowPlaying().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+            //如果没设置duration
+            if (duration == 0) {
+                if (mPlayback != null) {
+                    duration = mPlayback.getDuration();
+                }
+            }
         }
         return duration;
     }

@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 媒体信息提供类
  */
-public class MusicProvider   {
+public class MusicProvider {
 
     private List<SongInfo> mSongInfos;
     private List<MediaMetadataCompat> metadatas;
@@ -299,5 +299,8 @@ public class MusicProvider   {
         void onReady();
     }
 
+    public interface OnUpdataArtListener {
+        void onSuccess(MediaMetadataCompat metadata);
+    }
 
 }

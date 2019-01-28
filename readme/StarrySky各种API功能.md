@@ -300,13 +300,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //创建 TimerTaskManager 对象
         mTimerTask = new TimerTaskManager();
-        //SeekBar 设置 Max
-        mSeekBar.setMax(MusicManager.getInstance().getDuration());
         //设置更新回调
-        mTimerTask.setUpdateProgressTask(() -> {
-            long progress = MusicManager.getInstance().getPlayingPosition();
-            mSeekBar.setProgress((int) progress);
-        });
+         mTimerTask.setUpdateProgressTask(() -> {
+                    long position = MusicManager.getInstance().getPlayingPosition();
+                    long duration = MusicManager.getInstance().getDuration();
+                     //SeekBar 设置 Max
+                    if (mSeekBar.getMax() != duration) {
+                        mSeekBar.setMax((int) duration);
+                    }
+                    mSeekBar.setProgress((int) position);
+                });
         //开始获取进度，一般可以在 onPlayerStart 中调用
         mTimerTask.startToUpdateProgress();
         //停止获取进度，一般可以在 onPlayerPause 和 onPlayerStop，onPlayCompletion，onError 等方法中调用

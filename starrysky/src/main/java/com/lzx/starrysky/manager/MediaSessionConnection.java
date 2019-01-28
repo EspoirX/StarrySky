@@ -3,7 +3,6 @@ package com.lzx.starrysky.manager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -33,6 +32,7 @@ public class MediaSessionConnection {
     private MediaControllerCompat mediaController;
     private MediaBrowserConnectionCallback mediaBrowserConnectionCallback;
     private MediaControllerCallback mMediaControllerCallback;
+    private OnConnectListener mConnectListener;
 
     private static volatile MediaSessionConnection sInstance;
 
@@ -61,6 +61,10 @@ public class MediaSessionConnection {
 
     public void unsubscribe(String parentId, MediaBrowserCompat.SubscriptionCallback callback) {
         mediaBrowser.unsubscribe(parentId, callback);
+    }
+
+    public void setConnectListener(OnConnectListener connectListener) {
+        mConnectListener = connectListener;
     }
 
     /**
@@ -141,12 +145,9 @@ public class MediaSessionConnection {
                 mediaController.registerCallback(mMediaControllerCallback);
                 transportControls = mediaController.getTransportControls();
                 rootMediaId = mediaBrowser.getRoot();
-                subscribe(rootMediaId, new MediaBrowserCompat.SubscriptionCallback() {
-                    @Override
-                    public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                        super.onChildrenLoaded(parentId, children);
-                    }
-                });
+                if (mConnectListener != null) {
+                    mConnectListener.onConnected();
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -246,4 +247,8 @@ public class MediaSessionConnection {
             .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
             .build();
+
+    public interface OnConnectListener {
+        void onConnected();
+    }
 }

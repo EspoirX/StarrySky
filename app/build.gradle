@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -32,4 +31,6 @@ android {
         implementation 'com.google.android:flexbox:1.0.0'
         implementation project(':starrysky')
     }
+}
+dependencies {
 }

@@ -33,9 +33,6 @@ import com.google.android.exoplayer2.offline.StreamKey;
 import com.google.android.exoplayer2.offline.TrackKey;
 import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.source.dash.offline.DashDownloadHelper;
-import com.google.android.exoplayer2.source.hls.offline.HlsDownloadHelper;
-import com.google.android.exoplayer2.source.smoothstreaming.offline.SsDownloadHelper;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.util.Log;
 import com.google.android.exoplayer2.util.Util;
@@ -145,6 +142,9 @@ public class DownloadTracker implements DownloadManager.Listener, DownloadHelper
      * 开始下载
      */
     private void startDownload() {
+        if (downloadHelper == null) {
+            return;
+        }
         DownloadAction downloadAction = downloadHelper.getDownloadAction(Util.getUtf8Bytes(name), trackKeys);
         if (trackedDownloadStates.containsKey(downloadAction.uri)) {
             return;
@@ -156,6 +156,9 @@ public class DownloadTracker implements DownloadManager.Listener, DownloadHelper
 
     @Override
     public void onPrepared(DownloadHelper helper) {
+        if (downloadHelper == null) {
+            return;
+        }
         for (int i = 0; i < downloadHelper.getPeriodCount(); i++) {
             TrackGroupArray trackGroups = downloadHelper.getTrackGroups(i);
             for (int j = 0; j < trackGroups.length; j++) {
@@ -215,14 +218,11 @@ public class DownloadTracker implements DownloadManager.Listener, DownloadHelper
             listener.onDownloadsChanged();
         }
         final DownloadAction[] actions = trackedDownloadStates.values().toArray(new DownloadAction[0]);
-        actionFileWriteHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    actionFile.store(actions);
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to store tracked actions", e);
-                }
+        actionFileWriteHandler.post(() -> {
+            try {
+                actionFile.store(actions);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to store tracked actions", e);
             }
         });
     }
@@ -238,12 +238,12 @@ public class DownloadTracker implements DownloadManager.Listener, DownloadHelper
     private DownloadHelper getDownloadHelper(Uri uri, String extension) {
         int type = Util.inferContentType(uri, extension);
         switch (type) {
-            case C.TYPE_DASH:
-                return new DashDownloadHelper(uri, dataSourceFactory);
-            case C.TYPE_SS:
-                return new SsDownloadHelper(uri, dataSourceFactory);
-            case C.TYPE_HLS:
-                return new HlsDownloadHelper(uri, dataSourceFactory);
+//            case C.TYPE_DASH:
+//                return new DashDownloadHelper(uri, dataSourceFactory);
+//            case C.TYPE_SS:
+//                return new SsDownloadHelper(uri, dataSourceFactory);
+//            case C.TYPE_HLS:
+//                return new HlsDownloadHelper(uri, dataSourceFactory);
             case C.TYPE_OTHER:
                 return new ProgressiveDownloadHelper(uri);
             default:

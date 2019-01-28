@@ -153,6 +153,11 @@ public final class ExoPlayback implements Playback {
     }
 
     @Override
+    public long getBufferedPosition() {
+        return mExoPlayer != null ? mExoPlayer.getBufferedPosition() : 0;
+    }
+
+    @Override
     public void updateLastKnownStreamPosition() {
         // Nothing to do. Position maintained by ExoPlayer.
     }
@@ -316,6 +321,15 @@ public final class ExoPlayback implements Playback {
     public void setVolume(float audioVolume) {
         if (mExoPlayer != null) {
             mExoPlayer.setVolume(audioVolume);
+        }
+    }
+
+    @Override
+    public long getDuration() {
+        if (mExoPlayer != null) {
+            return mExoPlayer.getDuration();
+        } else {
+            return -1;
         }
     }
 
