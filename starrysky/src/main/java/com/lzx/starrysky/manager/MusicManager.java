@@ -253,7 +253,7 @@ public class MusicManager {
     }
 
     /**
-     * 设置随机播放模式
+     * 设置播放模式
      * 必须是以下之一：
      * PlaybackStateCompat.SHUFFLE_MODE_NONE 顺序播放
      * PlaybackStateCompat.SHUFFLE_MODE_ALL  随机播放
@@ -266,7 +266,7 @@ public class MusicManager {
     }
 
     /**
-     * 获取随机播放模式
+     * 获取播放模式
      */
     public int getShuffleMode() {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
@@ -400,7 +400,7 @@ public class MusicManager {
     }
 
     /**
-     * 如果有下一首
+     * 是否有下一首
      */
     public boolean isSkipToNextEnabled() {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
@@ -412,7 +412,7 @@ public class MusicManager {
     }
 
     /**
-     * 如果有上一首
+     * 是否有上一首
      */
     public boolean isSkipToPreviousEnabled() {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
@@ -570,6 +570,18 @@ public class MusicManager {
             Bundle bundle = new Bundle();
             bundle.putFloat("AudioVolume", audioVolume);
             connection.getMediaController().sendCommand(ExoPlayback.ACTION_CHANGE_VOLUME, bundle, null);
+        }
+    }
+
+    /**
+     * 获取音量
+     */
+    public float getVolume() {
+        MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
+        if (connection.isConnected()) {
+            return mPlayback != null ? mPlayback.getVolume() : -1;
+        } else {
+            return -1;
         }
     }
 

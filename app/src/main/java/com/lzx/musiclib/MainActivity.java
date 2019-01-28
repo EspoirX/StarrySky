@@ -3,8 +3,10 @@ package com.lzx.musiclib;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -120,17 +122,89 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
             String size = ExoDownload.getInstance().getCachedSize() + "";
             Toast.makeText(MainActivity.this, "大小：" + size, Toast.LENGTH_SHORT).show();
         });
+        findViewById(R.id.shuffleMode).setOnClickListener(v -> {
+            int repeatMode = MusicManager.getInstance().getShuffleMode();
+            if (repeatMode == PlaybackStateCompat.SHUFFLE_MODE_NONE) {
+                Toast.makeText(MainActivity.this, "设置为随机播放", Toast.LENGTH_SHORT).show();
+                MusicManager.getInstance().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+            } else {
+                Toast.makeText(MainActivity.this, "设置为顺序播放", Toast.LENGTH_SHORT).show();
+                MusicManager.getInstance().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+            }
+        });
+        findViewById(R.id.isShuffleMode).setOnClickListener(v -> {
+            int repeatMode = MusicManager.getInstance().getShuffleMode();
+            Toast.makeText(MainActivity.this, repeatMode == PlaybackStateCompat.SHUFFLE_MODE_NONE ? "否" : "是", Toast.LENGTH_SHORT).show();
+        });
+        findViewById(R.id.playMode).setOnClickListener(v -> {
+            int repeatMode = MusicManager.getInstance().getRepeatMode();
+            if (repeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+                MusicManager.getInstance().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+                Toast.makeText(MainActivity.this, "设置为单曲循环", Toast.LENGTH_SHORT).show();
+            } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
+                MusicManager.getInstance().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+                Toast.makeText(MainActivity.this, "列表循环", Toast.LENGTH_SHORT).show();
+            } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
+                MusicManager.getInstance().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
+                Toast.makeText(MainActivity.this, "顺序播放", Toast.LENGTH_SHORT).show();
+            }
+        });
+        findViewById(R.id.hasNext).setOnClickListener(v -> {
+            boolean hasNext = MusicManager.getInstance().isSkipToNextEnabled();
+            Toast.makeText(MainActivity.this, hasNext ? "有" : "没", Toast.LENGTH_SHORT).show();
+        });
+        findViewById(R.id.hasPre).setOnClickListener(v -> {
+            boolean hasPre = MusicManager.getInstance().isSkipToPreviousEnabled();
+            Toast.makeText(MainActivity.this, hasPre ? "有" : "没", Toast.LENGTH_SHORT).show();
+        });
+        findViewById(R.id.playSpeed).setOnClickListener(v -> {
+            float speed = MusicManager.getInstance().getPlaybackSpeed();
+            Toast.makeText(MainActivity.this, "speed = " + speed, Toast.LENGTH_SHORT).show();
+        });
+        findViewById(R.id.volume).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float volume = MusicManager.getInstance().getVolume();
+                volume = volume + 0.1f;
+                if (volume > 1) {
+                    volume = 1;
+                }
+
+            }
+        });
+        findViewById(R.id.getVolume).setOnClickListener(v -> {
+            float volume = MusicManager.getInstance().getVolume();
+            Toast.makeText(MainActivity.this, "volume = " + volume, Toast.LENGTH_SHORT).show();
+        });
 
         MusicManager.getInstance().addPlayerEventListener(this);
 
         mTimerTask.setUpdateProgressTask(() -> {
             long position = MusicManager.getInstance().getPlayingPosition();
             long duration = MusicManager.getInstance().getDuration();
+            long buffered = MusicManager.getInstance().getBufferedPosition();
             if (mSeekBar.getMax() != duration) {
                 mSeekBar.setMax((int) duration);
             }
             mSeekBar.setProgress((int) position);
+            mSeekBar.setSecondaryProgress((int) buffered);
             currTime.setText(formatMusicTime(position) + "/" + formatMusicTime(duration));
+        });
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                MusicManager.getInstance().seekTo(seekBar.getProgress());
+            }
         });
     }
 

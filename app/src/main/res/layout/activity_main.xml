@@ -19,13 +19,14 @@
         android:id="@+id/seekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp"
+        android:secondaryProgressTint="@color/colorAccent" />
 
     <TextView
         android:id="@+id/currTime"
-        android:textColor="#000000"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#000000" />
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -128,6 +129,65 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="获取缓存大小" />
+
+                <Button
+                    android:id="@+id/shuffleMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="随机播放" />
+
+                <Button
+                    android:id="@+id/isShuffleMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="当前是否随机" />
+
+                <Button
+                    android:id="@+id/playMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设置播放模式" />
+
+                <Button
+                    android:id="@+id/hasNext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="是否有下一首" />
+
+                <Button
+                    android:id="@+id/hasPre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="是否有上一首" />
+
+                <Button
+                    android:id="@+id/playSpeed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="当前播放的倍数" />
+
+                <Button
+                    android:id="@+id/addvolume"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="音量加" />
+                <Button
+                    android:id="@+id/jianvolume"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="音量加" />
+
+                <Button
+                    android:id="@+id/getVolume"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="获取音量" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="扫描本地媒体信息" />
+
             </com.google.android.flexbox.FlexboxLayout>
         </FrameLayout>
     </android.support.v4.widget.NestedScrollView>

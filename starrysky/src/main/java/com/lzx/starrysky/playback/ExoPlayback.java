@@ -324,6 +324,21 @@ public final class ExoPlayback implements Playback {
         }
     }
 
+    /**
+     * 获取音量
+     */
+    @Override
+    public float getVolume() {
+        if (mExoPlayer != null) {
+            return mExoPlayer.getVolume();
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * 获取时长
+     */
     @Override
     public long getDuration() {
         if (mExoPlayer != null) {

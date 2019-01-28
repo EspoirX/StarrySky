@@ -59,6 +59,8 @@ public interface Playback {
 
     void setVolume(float audioVolume);
 
+    float getVolume();
+
     interface Callback {
         void onCompletion();
 
