@@ -1,114 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     tools:ignore="ResourceName">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/currInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="当前播放："
+        android:textColor="#000000" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:id="@+id/currTime"
+        android:textColor="#000000"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_marginTop="10dp">
 
-        <Button
-            android:id="@+id/play"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="播放" />
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="暂停" />
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:alignContent="stretch"
+                app:alignItems="stretch"
+                app:flexWrap="wrap">
 
-        <Button
-            android:id="@+id/resum"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="继续" />
+                <Button
+                    android:id="@+id/play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="播放" />
 
-        <Button
-            android:id="@+id/stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="停止" />
+                <Button
+                    android:id="@+id/pause"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="暂停" />
 
-        <Button
-            android:id="@+id/pre"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="上一首" />
+                <Button
+                    android:id="@+id/resum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="继续" />
 
-        <Button
-            android:id="@+id/next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="下一首" />
+                <Button
+                    android:id="@+id/stop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="停止" />
 
-        <Button
-            android:id="@+id/fastForward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="快进" />
+                <Button
+                    android:id="@+id/pre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="上一首" />
 
-        <Button
-            android:id="@+id/rewind"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="倒带" />
+                <Button
+                    android:id="@+id/next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="下一首" />
 
-        <Button
-            android:id="@+id/currSong"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="当前播放歌曲" />
+                <Button
+                    android:id="@+id/fastForward"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="快进" />
 
-        <Button
-            android:id="@+id/currSongId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="当前播放歌曲ID" />
-    </LinearLayout>
+                <Button
+                    android:id="@+id/rewind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="倒带" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
+                <Button
+                    android:id="@+id/currSong"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="当前播放歌曲" />
 
-        <Button
-            android:id="@+id/currSongIndex"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="当前播放下标" />
+                <Button
+                    android:id="@+id/currSongId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="当前播放歌曲ID" />
 
-        <Button
-            android:id="@+id/sendFavorite"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="通知栏喜欢" />
 
-        <Button
-            android:id="@+id/sendLyrics"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="通知栏歌词" />
+                <Button
+                    android:id="@+id/currSongIndex"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="当前播放下标" />
 
-        <Button
-            android:id="@+id/cacheSize"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="获取缓存大小" />
-    </LinearLayout>
+                <Button
+                    android:id="@+id/sendFavorite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="通知栏喜欢" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
+                <Button
+                    android:id="@+id/sendLyrics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="通知栏歌词" />
 
-    </LinearLayout>
+                <Button
+                    android:id="@+id/cacheSize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="获取缓存大小" />
+            </com.google.android.flexbox.FlexboxLayout>
+        </FrameLayout>
+    </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

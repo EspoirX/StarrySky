@@ -69,6 +69,8 @@ public final class ExoPlayback implements Playback {
 
     private static final String TAG = "ExoPlayback";
 
+    public static final String ACTION_CHANGE_VOLUME = "ACTION_CHANGE_VOLUME";
+
     public static final String ABR_ALGORITHM_DEFAULT = "default";
     public static final String ABR_ALGORITHM_RANDOM = "random";
     public static String abrAlgorithm = ABR_ALGORITHM_DEFAULT;
@@ -88,16 +90,12 @@ public final class ExoPlayback implements Playback {
 
     private boolean mExoPlayerNullIsStopped = false;
 
-
-    private String userAgent;
-
     private DefaultTrackSelector trackSelector;
     private DefaultTrackSelector.Parameters trackSelectorParameters;
 
     public ExoPlayback(Context context, MusicProvider musicProvider) {
         this.mContext = context.getApplicationContext();
         this.mMusicProvider = musicProvider;
-        userAgent = Utils.getUserAgent(mContext, "ExoPlayback");
         trackSelectorParameters = new DefaultTrackSelector.ParametersBuilder().build();
     }
 

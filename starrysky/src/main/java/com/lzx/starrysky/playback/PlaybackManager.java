@@ -295,6 +295,10 @@ public class PlaybackManager implements Playback.Callback {
                     mNotificationFactory.updateLyricsUI(isChecked);
                 }
             }
+            if (ExoPlayback.ACTION_CHANGE_VOLUME.equals(command)){}{
+                float audioVolume = extras.getFloat("AudioVolume");
+                mPlayback.setVolume(audioVolume);
+            }
         }
     }
 

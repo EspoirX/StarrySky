@@ -14,6 +14,7 @@ import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.INotification;
+import com.lzx.starrysky.playback.ExoPlayback;
 import com.lzx.starrysky.playback.download.ExoDownload;
 
 import java.util.ArrayList;
@@ -492,6 +493,71 @@ public class MusicManager {
             return connection.getPlaybackState().getState();
         } else {
             return -1;
+        }
+    }
+
+    /**
+     * 比较方便的判断当前媒体是否在播放
+     */
+    public boolean isPlaying() {
+        return getState() == PlaybackStateCompat.STATE_PLAYING;
+    }
+
+    /**
+     * 比较方便的判断当前媒体是否暂停中
+     */
+    public boolean isPaused() {
+        return getState() == PlaybackStateCompat.STATE_PAUSED;
+    }
+
+    /**
+     * 比较方便的判断当前媒体是否空闲
+     */
+    public boolean isIdea() {
+        return getState() == PlaybackStateCompat.STATE_NONE;
+    }
+
+    /**
+     * 判断传入的音乐是不是正在播放的音乐
+     */
+    public boolean isCurrMusicIsPlayingMusic(String songId) {
+        if (TextUtils.isEmpty(songId)) {
+            return false;
+        } else {
+            SongInfo playingMusic = getNowPlayingSongInfo();
+            return playingMusic != null && songId.equals(playingMusic.getSongId());
+        }
+    }
+
+    /**
+     * 判断传入的音乐是否正在播放
+     */
+    public boolean isCurrMusicIsPlaying(String songId) {
+        return isCurrMusicIsPlayingMusic(songId) && isPlaying();
+    }
+
+    /**
+     * 判断传入的音乐是否正在暂停
+     */
+    public boolean isCurrMusicIsPaused(String songId) {
+        return isCurrMusicIsPlayingMusic(songId) && isPaused();
+    }
+
+    /**
+     * 设置音量
+     */
+    public void setVolume(float audioVolume) {
+        MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
+        if (connection.isConnected()) {
+            if (audioVolume < 0) {
+                audioVolume = 0;
+            }
+            if (audioVolume > 1) {
+                audioVolume = 1;
+            }
+            Bundle bundle = new Bundle();
+            bundle.putFloat("AudioVolume", audioVolume);
+            connection.getMediaController().sendCommand(ExoPlayback.ACTION_CHANGE_VOLUME, bundle, null);
         }
     }
 

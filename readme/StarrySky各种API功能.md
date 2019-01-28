@@ -224,6 +224,36 @@ MusicManager.getInstance().playMusicByInfo(s1);
 
 `描述：  扫描本地媒体信息，并转化为 List<SongInfo> 返回`
 
+**36. boolean isPlaying()**
+
+`描述：  比较方便的判断当前媒体是否在播放`
+
+**37. boolean isPaused()**
+
+`描述：  比较方便的判断当前媒体是否暂停中`
+
+**38. boolean isIdea()**
+
+`描述：  比较方便的判断当前媒体是否空闲`
+
+**39. boolean isCurrMusicIsPlayingMusic(String songId)**
+
+`描述：  判断传入的音乐是不是正在播放的音乐，在Adapter中判断状态比较有用`
+
+**40. boolean isCurrMusicIsPlaying(String songId)**
+
+`描述：  判断传入的音乐是否正在播放`
+
+**41. boolean isCurrMusicIsPaused(String songId)**
+
+`描述：  判断传入的音乐是否正在暂停`
+
+**42. setVolume(float audioVolume)**
+
+`描述：  设置音量`
+
+
+
 
 **播放监听相关**
 
@@ -252,6 +282,66 @@ public interface OnPlayerEventListener {
 **3. void clearPlayerEventListener()**
 
 `描述：  移除所有播放状态监听器`
+
+
+添加播放进度监听：  
+
+获取当前播放进度的原理就是一秒钟调用一次 getPlayingPosition()，为了方便，StarrySky 提供了一个工具类 TimerTaskManager ，当然你也可以完全自己去实现，
+看看 TimerTaskManager 的用法：
+
+```java
+public class MainActivity extends AppCompatActivity {
+
+    private TimerTaskManager mTimerTask;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        //创建 TimerTaskManager 对象
+        mTimerTask = new TimerTaskManager();
+        //SeekBar 设置 Max
+        mSeekBar.setMax(MusicManager.getInstance().getDuration());
+        //设置更新回调
+        mTimerTask.setUpdateProgressTask(() -> {
+            long progress = MusicManager.getInstance().getPlayingPosition();
+            mSeekBar.setProgress((int) progress);
+        });
+        //开始获取进度，一般可以在 onPlayerStart 中调用
+        mTimerTask.startToUpdateProgress();
+        //停止获取进度，一般可以在 onPlayerPause 和 onPlayerStop，onPlayCompletion，onError 等方法中调用
+        mTimerTask.stopToUpdateProgress();
+        //释放资源，一般可以在 onStop 或者 onDestroy 中调用
+        mTimerTask.removeUpdateProgressTask();
+    }
+}
+```
+
+定时播放功能：
+
+定时播放原理也是定时调用 stopMusic() 方法，可以自己实现，或者使用 TimerTaskManager 中封装好的定时方法：
+
+```java
+mTimerTask = new TimerTaskManager();
+
+//开始定时
+mTimerTask.startCountDownTask(10 * 1000, new TimerTaskManager.OnCountDownFinishListener() {
+    @Override
+    public void onFinish() {
+        //定时完成
+        MusicManager.getInstance().stopMusic();
+    }
+
+    @Override
+    public void onTick(long millisUntilFinished) {
+        //定时监听
+        mTimeView.setText("时间："+millisUntilFinished);
+    }
+});
+
+//取消定时
+mTimerTask.cancelCountDownTask();
+```
 
 
 **通知栏相关**

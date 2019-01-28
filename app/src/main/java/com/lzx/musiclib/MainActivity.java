@@ -1,10 +1,12 @@
 package com.lzx.musiclib;
 
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lzx.starrysky.manager.MediaSessionConnection;
@@ -12,22 +14,33 @@ import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.manager.OnPlayerEventListener;
 import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.playback.download.ExoDownload;
+import com.lzx.starrysky.utils.TimerTaskManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements OnPlayerEventListener {
 
     boolean isFavorite = false;
     boolean isChecked = false;
 
+    TimerTaskManager mTimerTask;
+    TextView currInfo, currTime;
+    SeekBar mSeekBar;
+
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        currInfo = findViewById(R.id.currInfo);
+        currTime = findViewById(R.id.currTime);
+        mSeekBar = findViewById(R.id.seekBar);
+
+        mTimerTask = new TimerTaskManager();
+
 
         SongInfo s1 = new SongInfo();
         s1.setSongId("111");
@@ -105,40 +118,30 @@ public class MainActivity extends AppCompatActivity {
             String size = ExoDownload.getInstance().getCachedSize() + "";
             Toast.makeText(MainActivity.this, "大小：" + size, Toast.LENGTH_SHORT).show();
         });
-        MusicManager.getInstance().addPlayerEventListener(new OnPlayerEventListener() {
+
+        MusicManager.getInstance().addPlayerEventListener(this);
+        mTimerTask.setUpdateProgressTask(() -> {
+            int progress = (int) MusicManager.getInstance().getPlayingPosition();
+            int buffered = (int) MusicManager.getInstance().getBufferedPosition();
+            mSeekBar.setProgress(progress);
+            mSeekBar.setSecondaryProgress(buffered);
+            currTime.setText(formatMusicTime(progress) + "/" + formatMusicTime(MusicManager.getInstance().getDuration()));
+        });
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @SuppressLint("SetTextI18n")
             @Override
-            public void onMusicSwitch(SongInfo songInfo) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
             }
 
             @Override
-            public void onPlayerStart() {
-                Log.i("xian", "--onPlayerStart--");
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
             }
 
             @Override
-            public void onPlayerPause() {
-                Log.i("xian", "--onPlayerPause--");
-            }
-
-            @Override
-            public void onPlayerStop() {
-                Log.i("xian", "--onPlayerStop--");
-            }
-
-            @Override
-            public void onPlayCompletion() {
-                Log.i("xian", "--onPlayCompletion--");
-            }
-
-            @Override
-            public void onBuffering() {
-                Log.i("xian", "--onBuffering--");
-            }
-
-            @Override
-            public void onError(int errorCode, String errorMsg) {
-                Log.i("xian", "--onError-- errorCode=" + errorCode + "  errorMsg = " + errorMsg);
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                MusicManager.getInstance().seekTo(seekBar.getProgress());
             }
         });
     }
@@ -154,4 +157,63 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         MediaSessionConnection.getInstance(this).disconnect();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MusicManager.getInstance().removePlayerEventListener(this);
+    }
+
+    @Override
+    public void onMusicSwitch(SongInfo songInfo) {
+        currInfo.setText("当前播放：" + songInfo.getSongName());
+    }
+
+    @Override
+    public void onPlayerStart() {
+        mSeekBar.setMax((int) MusicManager.getInstance().getDuration());
+        mTimerTask.startToUpdateProgress();
+    }
+
+    @Override
+    public void onPlayerPause() {
+        mTimerTask.stopToUpdateProgress();
+    }
+
+    @Override
+    public void onPlayerStop() {
+        mTimerTask.stopToUpdateProgress();
+    }
+
+    @Override
+    public void onPlayCompletion() {
+        mTimerTask.stopToUpdateProgress();
+    }
+
+    @Override
+    public void onBuffering() {
+
+    }
+
+    @Override
+    public void onError(int errorCode, String errorMsg) {
+        mTimerTask.stopToUpdateProgress();
+    }
+
+    public static String formatMusicTime(long duration) {
+        String time = "";
+        long minute = duration / 60000;
+        long seconds = duration % 60000;
+        long second = Math.round((int) seconds / 1000);
+        if (minute < 10) {
+            time += "0";
+        }
+        time += minute + ":";
+        if (second < 10) {
+            time += "0";
+        }
+        time += second;
+        return time;
+    }
+
 }
