@@ -1,0 +1,252 @@
+# 快速集成通知栏
+
+## NotificationConstructor 
+
+[NotificationConstructor](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/notification/NotificationConstructor.java) 是通知栏构造者，里面可以配置很多参数去对应配置通知栏的相关操作：
+
+| 变量名  |   功能  |
+| :--------     |   :----------   |
+| String targetClass | 通知栏点击转跳界面，传入的是类的全路径 |
+| String contentTitle       | 通知栏标题    |
+| String contentText        | 通知栏内容    |
+| PendingIntent nextIntent  |  下一首按钮 PendingIntent,如果想自己实现下一首按钮点击，可设置这个 |
+| PendingIntent preIntent      |  上一首按钮 PendingIntent,功能同上    |
+| PendingIntent closeIntent       | 关闭按钮 PendingIntent,功能同上，closeIntent 的默认实现是 stopMusic()  |
+| PendingIntent playIntent        | 播放按钮 PendingIntent,功能同上    |
+| PendingIntent pauseIntent   | 暂停按钮 PendingIntent,功能同上    |
+| PendingIntent playOrPauseIntent    | 播放/暂停按钮 PendingIntent,功能同上    |
+| PendingIntent stopIntent         |  停止按钮 PendingIntent,功能同上    |
+| PendingIntent downloadIntent        | 下载按钮 PendingIntent    |
+| PendingIntent favoriteIntent    | 喜欢或收藏按钮 PendingIntent    |
+| PendingIntent lyricsIntent  | 桌面歌词按钮 PendingIntent，同 喜欢或收藏按钮    |
+
+在系统通知栏中，有默认实现的 PendingIntent 是 nextIntent，preIntent，playIntent，pauseIntent，其他都没有默认实现。  
+在自定义通知栏中，有默认实现的 PendingIntent 是 nextIntent，preIntent，playIntent，pauseIntent，playOrPauseIntent，closeIntent，
+其他都没有默认实现。如果你的通知栏中还有其他按钮，则需要自己实现点击事件。
+
+| 变量名  |   功能  |
+| :--------     |   :----------   |
+|pendingIntentMode  |  设置通知栏点击模式，有三种：MODE_ACTIVITY，MODE_BROADCAST，MODE_SERVICE。分别对应 PendingIntent.getActivity()，PendingIntent.getBroadcast()，PendingIntent.getService()，默认是 PendingIntent.getActivity()  |
+|skipPreviousDrawableRes | 在系统通知栏中，上一首按钮的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_skip_previous_white_24dp.png)    |
+|skipNextDrawableRes |在系统通知栏中，下一首按钮的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_skip_next_white_24dp.png)    |
+|pauseDrawableRes |在系统通知栏中，正在播放时，播放按钮显示的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_pause_white_24dp.png) |
+|playDrawableRes |在系统通知栏中，暂停状态时，播放按钮显示的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_play_arrow_white_24dp.png)|
+|smallIconRes |对应通知栏的 smallIcon，不传则使用默认的 [smallIcon](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_notification.png)|
+
+
+## 集成系统通知栏
+
+只需要在 Application 中添加两句话，即可集成系统通知栏：
+```java
+public class TestApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        //初始化
+        MusicManager.initMusicManager(this);
+        //配置通知栏
+        NotificationConstructor constructor = new NotificationConstructor.Builder()
+                .bulid();
+        MusicManager.getInstance().setNotificationConstructor(constructor);
+    }
+}
+```
+
+这样系统通知栏就集成好了。
+
+## 集成自定义通知栏
+
+自定义通知栏的集成步骤会多一点，但是也相对简单，在集成之前，先看看自定义通知栏的构造吧，先看下面四张图：
+<img src="https://raw.githubusercontent.com/lizixian18/MusicLibrary/StarrySkyJava/art/notification1.png"> <img src="https://raw.githubusercontent.com/lizixian18/MusicLibrary/StarrySkyJava/art/notification2.png">
+
+<img src="https://raw.githubusercontent.com/lizixian18/MusicLibrary/StarrySkyJava/art/notification3.png"> <img src="https://raw.githubusercontent.com/lizixian18/MusicLibrary/StarrySkyJava/art/notification4.png">
+
+可以看到在不同的手机里，通知栏的背景可能是深色的，也可能是浅色的，同时有两种样式，一种是按钮比较少，我叫它做小布局，一种是按钮比较大，叫它做大布局，它们之间是可以来回切换的。  
+所以在自定义通知栏中，我们要适配这四种情况。
+
+**第一步**
+
+首先适配通知栏字体颜色，让他跟随背景色的深浅而自动改变颜色。  
+首先创建 values-v19 和 values-v21 文件夹，然后里面新建一个 style.xml，它们的内容是一样的，就是：
+
+```java
+<resources>
+    <style name="notification_info" parent="android:TextAppearance.Material.Notification.Info"/>
+    <style name="notification_title" parent="android:TextAppearance.Material.Notification.Title"/>
+</resources>
+```
+
+然后在你写布局的时候，对应的通知栏 title 和 info 的 TextView 就可以引用它们。记住 TextView 不能写死字体颜色，不然就不能适配了。
+
+**第二步**
+
+既然有深浅两种背景，那么需要用到的资源文件也要准备两套了，因为 StarrySky 可以快速集成通知栏，所以我们是不需要写任何关于通知栏的代码的，只管
+写好布局就行，所以在布局的命名，一些资源文件的命名以及一些控件的 id 命名就要有规定了，这样才能让 StarrySky 匹配到。  
+
+1. 布局文件的命名  
+
+    小布局通知栏的布局文件要命名成 view_notify_play.xml  
+    大布局通知栏的布局文件要命名成 view_notify_big_play.xml
+
+2. 控件 id 命名
+
+    如果你的通知栏布局中有以下按钮，则需按照以下规则命名：
+    
+    | 通知栏控件名称  |   命名  |
+    | :--------     |   :----------   |
+    | 播放按钮       | img_notifyPlay    |
+    | 暂停按钮       | img_notifyPause    |
+    | 停止按钮       | img_notifyStop    |
+    | 播放或暂停按钮  | img_notifyPlayOrPause |
+    | 下一首按钮     | img_notifyNext    |
+    | 上一首按钮     | img_notifyPre    |
+    | 关闭按钮       | img_notifyClose    |
+    | 喜欢或收藏按钮  | img_notifyFavorite    |
+    | 桌面歌词按钮    | img_notifyLyrics    |
+    | 下载按钮       | img_notifyDownload    |
+    | 封面图片       | img_notifyIcon    |
+    | 歌名TextView   | txt_notifySongName    |
+    | 艺术家TextView  | txt_notifyArtistName    |
+
+3. 资源命名 
+
+    为了更好的UI效果，StarrySky 中的通知栏上一首、下一首、播放、暂停、播放或暂停这五个按钮使用的资源是 `selector`，  
+    `selector` 里面就是你对应的 normal 和 pressed 图片了。      
+    因为上一首和下一首这两个按钮还需要判断是否有上一首和是否有下一首，而且没有上一首和下一首的时候你可能需要不同的样式，例如置灰等。  
+    所以对这两个按钮的图片资源命名也有一些约定。  
+    同样的，如果你的布局中有相应的资源，请将他们按约定命名，没有就不用管。
+    
+    | 通知栏背景色  | 资源名称  |   命名  |
+    | :-------- | :--------   | :------   |
+    | 浅色背景   | 播放按钮 selector | notify_btn_light_play_selector.xml | 
+    | 浅色背景   | 暂停按钮 selector | notify_btn_light_pause_selector.xml | 
+    | 浅色背景   | 下一首按钮 selector | notify_btn_light_prev_selector.xml | 
+    | 浅色背景   | 上一首按钮 selector | notify_btn_light_prev_selector.xml | 
+    | 浅色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_light_next_pressed | 
+    | 浅色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_light_prev_pressed | 
+    | 浅色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_light_favorite_normal | 
+    | 浅色背景   | 桌面歌词按钮的图片资源 | notify_btn_light_lyrics_normal | 
+    | 深色背景   | 播放按钮 selector | notify_btn_dark_play_selector.xml | 
+    | 深色背景   | 暂停按钮 selector | notify_btn_dark_pause_selector.xml | 
+    | 深色背景   | 下一首按钮 selector | notify_btn_dark_next_selector.xml | 
+    | 深色背景   | 上一首按钮 selector | notify_btn_dark_prev_selector.xml | 
+    | 深色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_dark_next_pressed | 
+    | 深色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_dark_prev_pressed | 
+    | 深色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_dark_favorite_normal | 
+    | 深色背景   | 桌面歌词按钮的图片资源 | notify_btn_dark_lyrics_normal | 
+    | 深白通用   | 喜欢按钮被选中时的图片资源 | notify_btn_favorite_checked | 
+    | 深白通用   | 桌面歌词按钮选中时的图片资源 | notify_btn_lyrics_checked | 
+    | 深白通用   | 通知栏 smallIcon 图片资源 | icon_notification | 
+    | 深白通用   | 下载按钮暂 | 暂时没什么规定，可以随便命名 | 
+    
+    自定义通知栏的布局还有资源等，都在代码中有例子，大家如果看得不太明白可以打开参考一下。  
+
+**第三步**
+
+布局做好了，因为 StarrySky 默认创建的是系统通知栏，所以接下来就是配置一下 NotificationConstructor 即可：
+
+```java
+public class TestApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        //初始化
+        MusicManager.initMusicManager(this);
+        //配置通知栏
+        NotificationConstructor constructor = new NotificationConstructor.Builder()
+                .setCreateSystemNotification(false)
+                .bulid();
+        MusicManager.getInstance().setNotificationConstructor(constructor);
+    }
+}
+```
+
+到这里，自定义通知栏就集成完毕了。
+
+## 自定义通知栏点击事件例子
+
+有时候我们要在通知栏里面的按钮点击事件上做一些自己的逻辑，那么就需要自定义点击事件了，要怎么做呢，这里举一个例子：
+
+就像前面图片中所示的大布局，假设现在我们要自己实现里面的 播放暂停，上一首，下一首，收藏，歌词等功能。
+
+**第一步**
+
+创建一个通知栏响应广播 NotificationReceiver，并且定义好对应按钮的 Action，然后设置给 NotificationConstructor：
+
+```java
+public class TestApplication extends Application {
+
+    public static String ACTION_PLAY_OR_PAUSE = "ACTION_PLAY_OR_PAUSE";
+    public static String ACTION_NEXT = "ACTION_NEXT";
+    public static String ACTION_PRE = "ACTION_PRE";
+    public static String ACTION_FAVORITE = "ACTION_FAVORITE";
+    public static String ACTION_LYRICS = "ACTION_LYRICS";
+
+    private PendingIntent getPendingIntent(String action) {
+        Intent intent = new Intent(action);
+        intent.setClass(this, NotificationReceiver.class);
+        return PendingIntent.getBroadcast(this, 0, intent, 0);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        //初始化
+        MusicManager.initMusicManager(this);
+        //配置通知栏
+        NotificationConstructor constructor = new NotificationConstructor.Builder()
+                .setCreateSystemNotification(false)
+                .setPlayOrPauseIntent(getPendingIntent(ACTION_PLAY_OR_PAUSE))
+                .setNextIntent(getPendingIntent(ACTION_NEXT))
+                .setPreIntent(getPendingIntent(ACTION_PRE))
+                .setFavoriteIntent(getPendingIntent(ACTION_FAVORITE))
+                .setLyricsIntent(getPendingIntent(ACTION_LYRICS))
+                .bulid();
+        MusicManager.getInstance().setNotificationConstructor(constructor);
+    }
+}
+```
+
+**第二步**
+
+在广播中实现对应的方法：
+
+```java
+public class NotificationReceiver extends BroadcastReceiver {
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        String action = intent.getAction();
+        if (TextUtils.isEmpty(action)) {
+            return;
+        }
+        if (TestApplication.ACTION_PLAY_OR_PAUSE.equals(action)) {
+            int state = MusicManager.getInstance().getState();
+            if (state == PlaybackStateCompat.STATE_PLAYING) {
+                MusicManager.getInstance().pauseMusic();
+            } else {
+                MusicManager.getInstance().playMusic();
+            }
+        }
+        if (TestApplication.ACTION_NEXT.equals(action)) {
+            MusicManager.getInstance().skipToNext();
+        }
+        if (TestApplication.ACTION_PRE.equals(action)) {
+            MusicManager.getInstance().skipToPrevious();
+        }
+        if (TestApplication.ACTION_FAVORITE.equals(action)) {
+            //这里实现自己的喜欢或收藏逻辑，如果选中可以传 true 把按钮变成选中状态，false 就非选中状态
+            MusicManager.getInstance().updateFavoriteUI(true);
+        }
+        if (TestApplication.ACTION_LYRICS.equals(action)) {
+            //这里实现自己的是否显示歌词逻辑，如果选中可以传 true 把按钮变成选中状态，false 就非选中状态
+            MusicManager.getInstance().updateLyricsUI(true);
+        }
+    }
+}
+```
+
+这样就可以完成自定义通知栏点击了。当然，广播别忘记注册了。
+

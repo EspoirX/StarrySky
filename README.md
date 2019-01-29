@@ -8,7 +8,9 @@
 
 # StarrySky
 
-`StarrySky` `MusicLibrary` `Music` `音频集成`
+`StarrySky` `MusicLibrary` `Music` `音频集成` 
+
+[English Document](https://github.com/lizixian18/StarrySky/blob/StarrySkyJava/README-EN.md)
 
 一个丰富的音乐播放封装库，针对快速集成音频播放功能，减少大家搬砖的时间，你值得拥有。
 
@@ -43,7 +45,7 @@ dependencies {
 x.x.x 填的是当前的版本号。
 
 
-StarrySky 里面依赖的第三方库除了 ExoPlayer 之外还有 glide:4.8.0，用于封面的下载，如果版本跟你项目中的版本有冲突，建议通过导入源码的
+StarrySky 里面依赖的第三方库除了 ExoPlayer 之外还有 Glide:4.8.0，用于封面的下载，如果版本跟你项目中的版本有冲突，建议通过导入源码的
 方式自己修改。
 
 请使用 Java8。
