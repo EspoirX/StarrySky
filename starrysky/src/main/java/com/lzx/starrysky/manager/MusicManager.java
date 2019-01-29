@@ -291,7 +291,7 @@ public class MusicManager {
     }
 
     /**
-     * 获取播放模式
+     * 获取播放模式,默认顺序播放
      */
     public int getRepeatMode() {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);

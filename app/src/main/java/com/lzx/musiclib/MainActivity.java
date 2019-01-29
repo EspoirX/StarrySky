@@ -304,7 +304,11 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
     }
 
     @Override
-    public void onPlayCompletion() {
+    public void onPlayCompletion(SongInfo songInfo) {
+        //songInfo maybe null
+        if (songInfo == null) {
+            return;
+        }
         //停止更新进度条
         mTimerTask.stopToUpdateProgress();
     }

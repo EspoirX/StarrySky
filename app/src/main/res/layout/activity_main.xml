@@ -81,17 +81,6 @@
                     android:layout_height="wrap_content"
                     android:text="下一首" />
 
-                <Button
-                    android:id="@+id/fastForward"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="快进" />
-
-                <Button
-                    android:id="@+id/rewind"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="倒带" />
 
                 <Button
                     android:id="@+id/currSong"
@@ -167,16 +156,29 @@
                     android:text="是否有上一首" />
 
                 <Button
+                    android:id="@+id/fastForward"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="播速度加" />
+
+                <Button
+                    android:id="@+id/rewind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="播速度减" />
+
+                <Button
                     android:id="@+id/playSpeed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="当前播放的倍数" />
+                    android:text="当前播放的速度" />
 
                 <Button
                     android:id="@+id/addvolume"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="音量加" />
+
                 <Button
                     android:id="@+id/jianvolume"
                     android:layout_width="wrap_content"

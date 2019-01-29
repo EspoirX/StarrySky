@@ -29,7 +29,7 @@ public interface OnPlayerEventListener {
     /**
      * 播放完成
      */
-    void onPlayCompletion();
+    void onPlayCompletion(SongInfo songInfo);
 
     /**
      * 正在缓冲

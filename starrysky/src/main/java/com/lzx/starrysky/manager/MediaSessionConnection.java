@@ -191,7 +191,16 @@ public class MediaSessionConnection {
                             listener.onError(state.getErrorCode(), state.getErrorMessage().toString());
                             break;
                         case PlaybackStateCompat.STATE_NONE:
-                            listener.onPlayCompletion();
+                            SongInfo songInfo = null;
+                            String songId = nowPlaying.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+                            List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
+                            for (SongInfo info : songInfos) {
+                                if (info.getSongId().equals(songId)) {
+                                    songInfo = info;
+                                    break;
+                                }
+                            }
+                            listener.onPlayCompletion(songInfo);
                             break;
                         case PlaybackStateCompat.STATE_BUFFERING:
                             listener.onBuffering();

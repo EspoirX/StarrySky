@@ -265,7 +265,7 @@ public interface OnPlayerEventListener {
     void onPlayerStart(); //开始播放时回调,与 onMusicSwitch 的关系是先回调 onMusicSwitch，再回调 onPlayerStart
     void onPlayerPause(); //暂停播放时回调
     void onPlayerStop(); //停止播放时回调
-    void onPlayCompletion(); //播放完成时回调
+    void onPlayCompletion(SongInfo songInfo); //播放完成时回调
     void onBuffering(); //正在缓冲时回调
     void onError(int errorCode, String errorMsg); //发生错误时回调
 }

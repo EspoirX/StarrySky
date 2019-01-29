@@ -37,7 +37,6 @@ import com.lzx.starrysky.notification.factory.NotificationFactory;
 public class PlaybackManager implements Playback.Callback {
 
     private static final String TAG = "PlaybackManager";
-    private static final String CUSTOM_ACTION_THUMBS_UP = "com.lzx.starrysky.THUMBS_UP";
 
     private Context mContext;
     private QueueManager mQueueManager;
@@ -46,6 +45,8 @@ public class PlaybackManager implements Playback.Callback {
     private MediaSessionCallback mMediaSessionCallback;
     private NotificationFactory mNotificationFactory;
     private int currRepeatMode;
+    private boolean shouldPlayNext = true; //是否可以播放下一首
+    private boolean shouldPlayPre = false;  //是否可以播放上一首
 
     public PlaybackManager(Context context, PlaybackServiceCallback serviceCallback, QueueManager queueManager,
                            Playback playback) {
@@ -152,17 +153,40 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
+    /**
+     * 获取状态
+     */
     private long getAvailableActions() {
-        long actions =
-                PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                        PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID |
-                        PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH |
-                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
-                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
+        long actions = PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID |
+                PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH |
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
         if (mPlayback.isPlaying()) {
-            actions |= PlaybackStateCompat.ACTION_PAUSE;
+            actions |= PlaybackStateCompat.ACTION_PAUSE; //添加 ACTION_PAUSE
         } else {
-            actions |= PlaybackStateCompat.ACTION_PLAY;
+            actions |= PlaybackStateCompat.ACTION_PLAY; //添加 ACTION_PLAY
+        }
+        if (!shouldPlayNext) {
+            //在不能播放下一首的情况下，判断actions是否包含ACTION_SKIP_TO_NEXT，如果包含则清除
+            if ((actions & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
+                actions &= ~PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
+            }
+        } else {
+            //判断 actions 是否包含 ACTION_SKIP_TO_NEXT，如果不包含，则添加
+            if ((actions & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) == 0) {
+                actions |= PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
+            }
+        }
+        //同理
+        if (!shouldPlayPre) {
+            if ((actions & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
+                actions &= ~PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
+            }
+        } else {
+            if ((actions & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) == 0) {
+                actions |= PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
+            }
         }
         return actions;
     }
@@ -174,8 +198,9 @@ public class PlaybackManager implements Playback.Callback {
     public void onCompletion() {
         if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
             //顺序播放
-            if (mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1
-                    && mQueueManager.skipQueuePosition(1)) {
+            shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1
+                    && mQueueManager.skipQueuePosition(1);
+            if (shouldPlayNext) {
                 handlePlayRequest();
                 mQueueManager.updateMetadata();
             } else {
@@ -183,11 +208,13 @@ public class PlaybackManager implements Playback.Callback {
             }
         } else if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
             //单曲播放
+            shouldPlayNext = false;
             mPlayback.setCurrentMediaId("");
             handlePlayRequest();
         } else if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
             //列表循环
-            if (mQueueManager.skipQueuePosition(1)) {
+            shouldPlayNext = mQueueManager.skipQueuePosition(1);
+            if (shouldPlayNext) {
                 handlePlayRequest();
                 mQueueManager.updateMetadata();
             } else {
@@ -262,29 +289,41 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToNext() {
-            if (mQueueManager.skipQueuePosition(1)) {
-                handlePlayRequest();
+            if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+                //顺序播放
+                shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1
+                        && mQueueManager.skipQueuePosition(1);
             } else {
-                handleStopRequest("Cannot skip");
+                shouldPlayNext = mQueueManager.skipQueuePosition(1);
             }
-            mQueueManager.updateMetadata();
+            if (shouldPlayNext) {
+                //当前的媒体如果是在倒数第二首点击到最后一首的时候，如果不重新判断，会用于为 true
+                if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+                    shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1;
+                }
+                shouldPlayPre = true;
+                handlePlayRequest();
+                mQueueManager.updateMetadata();
+            }
         }
 
         @Override
         public void onSkipToPrevious() {
-            if (mQueueManager.skipQueuePosition(-1)) {
-                handlePlayRequest();
+            if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+                shouldPlayPre = mQueueManager.getCurrentIndex() != 0 && mQueueManager.skipQueuePosition(-1);
             } else {
-                handleStopRequest("Cannot skip");
+                shouldPlayPre = mQueueManager.skipQueuePosition(-1);
             }
-            mQueueManager.updateMetadata();
+            if (shouldPlayPre) {
+                shouldPlayNext = true;
+                handlePlayRequest();
+                mQueueManager.updateMetadata();
+            }
         }
 
         @Override
         public void onCustomAction(@NonNull String action, Bundle extras) {
-            if (CUSTOM_ACTION_THUMBS_UP.equals(action)) {
-                updatePlaybackState(null);
-            }
+            //updatePlaybackState(null);
         }
 
         @Override
@@ -311,6 +350,14 @@ public class PlaybackManager implements Playback.Callback {
             super.onSetRepeatMode(repeatMode);
             currRepeatMode = repeatMode;
             mServiceCallback.onRepeatModeUpdated(repeatMode);
+            if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+                shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1;
+                shouldPlayPre = mQueueManager.getCurrentIndex() != 0;
+            } else {
+                shouldPlayNext = true;
+                shouldPlayPre = true;
+            }
+            updatePlaybackState(null);  //更新状态
         }
 
         /**
