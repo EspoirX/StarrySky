@@ -45,6 +45,7 @@ public class PlaybackManager implements Playback.Callback {
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
     private NotificationFactory mNotificationFactory;
+    private int currRepeatMode;
 
     public PlaybackManager(Context context, PlaybackServiceCallback serviceCallback, QueueManager queueManager,
                            Playback playback) {
@@ -56,6 +57,7 @@ public class PlaybackManager implements Playback.Callback {
         mPlayback = playback;
         mPlayback.setCallback(this);
         MusicManager.getInstance().setPlayback(mPlayback);
+        currRepeatMode = PlaybackStateCompat.REPEAT_MODE_NONE;
     }
 
     public void setNotificationFactory(NotificationFactory notificationFactory) {
@@ -170,11 +172,27 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void onCompletion() {
-        if (mQueueManager.skipQueuePosition(1)) {
+        if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+            //顺序播放
+            if (mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1
+                    && mQueueManager.skipQueuePosition(1)) {
+                handlePlayRequest();
+                mQueueManager.updateMetadata();
+            } else {
+                handleStopRequest(null);
+            }
+        } else if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
+            //单曲播放
+            mPlayback.setCurrentMediaId("");
             handlePlayRequest();
-            mQueueManager.updateMetadata();
-        } else {
-            handleStopRequest(null);
+        } else if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
+            //列表循环
+            if (mQueueManager.skipQueuePosition(1)) {
+                handlePlayRequest();
+                mQueueManager.updateMetadata();
+            } else {
+                handleStopRequest(null);
+            }
         }
     }
 
@@ -281,6 +299,20 @@ public class PlaybackManager implements Playback.Callback {
             handleRewind();
         }
 
+        @Override
+        public void onSetShuffleMode(int shuffleMode) {
+            super.onSetShuffleMode(shuffleMode);
+            mQueueManager.setQueueByShuffleMode(shuffleMode);
+            mServiceCallback.onShuffleModeUpdated(shuffleMode);
+        }
+
+        @Override
+        public void onSetRepeatMode(int repeatMode) {
+            super.onSetRepeatMode(repeatMode);
+            currRepeatMode = repeatMode;
+            mServiceCallback.onRepeatModeUpdated(repeatMode);
+        }
+
         /**
          * 自定义方法
          */
@@ -303,8 +335,6 @@ public class PlaybackManager implements Playback.Callback {
                 }
             }
             if (ExoPlayback.ACTION_CHANGE_VOLUME.equals(command)) {
-            }
-            {
                 float audioVolume = extras.getFloat("AudioVolume");
                 mPlayback.setVolume(audioVolume);
             }
@@ -319,5 +349,9 @@ public class PlaybackManager implements Playback.Callback {
         void onPlaybackStop();
 
         void onPlaybackStateUpdated(PlaybackStateCompat newState, MediaMetadataCompat currMetadata);
+
+        void onShuffleModeUpdated(int shuffleMode);
+
+        void onRepeatModeUpdated(int repeatMode);
     }
 }

@@ -20,6 +20,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.lzx.starrysky.model.MusicProvider;
 
@@ -72,6 +73,13 @@ public class QueueManager {
     }
 
     /**
+     * 获取当前下标
+     */
+    public int getCurrentIndex() {
+        return mCurrentIndex;
+    }
+
+    /**
      * 根据传入的媒体id来更新此媒体的下标并通知
      */
     public boolean setCurrentQueueItem(String mediaId) {
@@ -108,6 +116,17 @@ public class QueueManager {
     public void setRandomQueue() {
         setCurrentQueue(QueueHelper.getRandomQueue(mMusicProvider));
         updateMetadata();
+    }
+
+    /**
+     * 如果当前模式是随机，则打乱顺序，否则恢复正常顺序
+     */
+    public void setQueueByShuffleMode(int shuffleMode) {
+        if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_NONE) {
+            setCurrentQueue(QueueHelper.getPlayingQueue(mMusicProvider));
+        } else if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
+            setCurrentQueue(QueueHelper.getRandomQueue(mMusicProvider));
+        }
     }
 
     public void setQueueFromMusic(String mediaId) {

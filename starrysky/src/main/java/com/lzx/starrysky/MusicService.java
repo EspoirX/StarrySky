@@ -56,7 +56,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
     public void onCreate() {
         super.onCreate();
         MusicProvider musicProvider = MusicProvider.getInstance();
-        QueueManager queueManager = new QueueManager(this,musicProvider, this);
+        QueueManager queueManager = new QueueManager(this, musicProvider, this);
         ExoPlayback playback = new ExoPlayback(this, musicProvider);
 
         mPlaybackManager = new PlaybackManager(this, this, queueManager, playback);
@@ -193,6 +193,22 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         } else {
             mBecomingNoisyReceiver.unregister();
         }
+    }
+
+    /**
+     * 更新播放顺序
+     */
+    @Override
+    public void onShuffleModeUpdated(int shuffleMode) {
+        mediaSession.setShuffleMode(shuffleMode);
+    }
+
+    /**
+     * 更新播放模式
+     */
+    @Override
+    public void onRepeatModeUpdated(int repeatMode) {
+        mediaSession.setRepeatMode(repeatMode);
     }
 
     private static class DelayedStopHandler extends Handler {

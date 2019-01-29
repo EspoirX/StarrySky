@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,14 +71,23 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         songInfos.add(s2);
         songInfos.add(s3);
 
+        //播放
         findViewById(R.id.play).setOnClickListener(v -> MusicManager.getInstance().playMusic(songInfos, 0));
+        //暂停
         findViewById(R.id.pause).setOnClickListener(v -> MusicManager.getInstance().pauseMusic());
+        //恢复播放
         findViewById(R.id.resum).setOnClickListener(v -> MusicManager.getInstance().playMusic());
+        //停止播放
         findViewById(R.id.stop).setOnClickListener(v -> MusicManager.getInstance().stopMusic());
+        //下一首
         findViewById(R.id.pre).setOnClickListener(v -> MusicManager.getInstance().skipToPrevious());
+        //上一首
         findViewById(R.id.next).setOnClickListener(v -> MusicManager.getInstance().skipToNext());
+        //快进
         findViewById(R.id.fastForward).setOnClickListener(v -> MusicManager.getInstance().fastForward());
+        //快退
         findViewById(R.id.rewind).setOnClickListener(v -> MusicManager.getInstance().rewind());
+        //当前歌曲信息
         findViewById(R.id.currSong).setOnClickListener(v -> {
             SongInfo songInfo = MusicManager.getInstance().getNowPlayingSongInfo();
             if (songInfo == null) {
@@ -88,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 Toast.makeText(MainActivity.this, "curr SongInfo = " + songInfo.getSongId(), Toast.LENGTH_SHORT).show();
             }
         });
+        //当前歌曲id
         findViewById(R.id.currSongId).setOnClickListener(v -> {
             String songId = MusicManager.getInstance().getNowPlayingSongId();
             if (TextUtils.isEmpty(songId)) {
@@ -96,10 +105,12 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 Toast.makeText(MainActivity.this, "songId = " + songId, Toast.LENGTH_SHORT).show();
             }
         });
+        //当前歌曲下标
         findViewById(R.id.currSongIndex).setOnClickListener(v -> {
             int index = MusicManager.getInstance().getNowPlayingIndex();
             Toast.makeText(MainActivity.this, "index = " + index, Toast.LENGTH_SHORT).show();
         });
+        //通知栏喜欢按钮
         findViewById(R.id.sendFavorite).setOnClickListener(v -> {
             if (isFavorite) {
                 MusicManager.getInstance().updateFavoriteUI(false);
@@ -109,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 isFavorite = true;
             }
         });
+        //通知栏歌词按钮
         findViewById(R.id.sendLyrics).setOnClickListener(v -> {
             if (isChecked) {
                 MusicManager.getInstance().updateLyricsUI(false);
@@ -118,10 +130,12 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 isChecked = true;
             }
         });
+        //缓存大小
         findViewById(R.id.cacheSize).setOnClickListener(v -> {
             String size = ExoDownload.getInstance().getCachedSize() + "";
             Toast.makeText(MainActivity.this, "大小：" + size, Toast.LENGTH_SHORT).show();
         });
+        //设置是否随机播放
         findViewById(R.id.shuffleMode).setOnClickListener(v -> {
             int repeatMode = MusicManager.getInstance().getShuffleMode();
             if (repeatMode == PlaybackStateCompat.SHUFFLE_MODE_NONE) {
@@ -132,10 +146,12 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 MusicManager.getInstance().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
             }
         });
+        //获取是否随机播放
         findViewById(R.id.isShuffleMode).setOnClickListener(v -> {
             int repeatMode = MusicManager.getInstance().getShuffleMode();
             Toast.makeText(MainActivity.this, repeatMode == PlaybackStateCompat.SHUFFLE_MODE_NONE ? "否" : "是", Toast.LENGTH_SHORT).show();
         });
+        //设置播放模式
         findViewById(R.id.playMode).setOnClickListener(v -> {
             int repeatMode = MusicManager.getInstance().getRepeatMode();
             if (repeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
@@ -143,42 +159,69 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 Toast.makeText(MainActivity.this, "设置为单曲循环", Toast.LENGTH_SHORT).show();
             } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
                 MusicManager.getInstance().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
-                Toast.makeText(MainActivity.this, "列表循环", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "设置为列表循环", Toast.LENGTH_SHORT).show();
             } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
                 MusicManager.getInstance().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
-                Toast.makeText(MainActivity.this, "顺序播放", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "设置为顺序播放", Toast.LENGTH_SHORT).show();
             }
         });
+        //获取播放模式
+        findViewById(R.id.currPlayMode).setOnClickListener(v -> {
+            int repeatMode = MusicManager.getInstance().getRepeatMode();
+            if (repeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+                Toast.makeText(MainActivity.this, "当前为顺序播放", Toast.LENGTH_SHORT).show();
+            } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
+                Toast.makeText(MainActivity.this, "当前为单曲循环", Toast.LENGTH_SHORT).show();
+            } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
+                Toast.makeText(MainActivity.this, "当前为列表循环", Toast.LENGTH_SHORT).show();
+            }
+        });
+        //是否有下一首
         findViewById(R.id.hasNext).setOnClickListener(v -> {
             boolean hasNext = MusicManager.getInstance().isSkipToNextEnabled();
             Toast.makeText(MainActivity.this, hasNext ? "有" : "没", Toast.LENGTH_SHORT).show();
         });
+        //是否有上一首
         findViewById(R.id.hasPre).setOnClickListener(v -> {
             boolean hasPre = MusicManager.getInstance().isSkipToPreviousEnabled();
             Toast.makeText(MainActivity.this, hasPre ? "有" : "没", Toast.LENGTH_SHORT).show();
         });
+        //获取播放速度
         findViewById(R.id.playSpeed).setOnClickListener(v -> {
             float speed = MusicManager.getInstance().getPlaybackSpeed();
             Toast.makeText(MainActivity.this, "speed = " + speed, Toast.LENGTH_SHORT).show();
         });
-        findViewById(R.id.volume).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                float volume = MusicManager.getInstance().getVolume();
-                volume = volume + 0.1f;
-                if (volume > 1) {
-                    volume = 1;
-                }
-
+        //音量加
+        findViewById(R.id.addvolume).setOnClickListener(v -> {
+            float volume = MusicManager.getInstance().getVolume();
+            volume = volume + 0.1f;
+            if (volume > 1) {
+                volume = 1;
             }
+            MusicManager.getInstance().setVolume(volume);
         });
+        //音量减
+        findViewById(R.id.jianvolume).setOnClickListener(v -> {
+            float volume = MusicManager.getInstance().getVolume();
+            volume = volume - 0.1f;
+            if (volume < 0) {
+                volume = 0;
+            }
+            MusicManager.getInstance().setVolume(volume);
+        });
+        //获取当前音量
         findViewById(R.id.getVolume).setOnClickListener(v -> {
             float volume = MusicManager.getInstance().getVolume();
             Toast.makeText(MainActivity.this, "volume = " + volume, Toast.LENGTH_SHORT).show();
         });
-
+        //获取本地音频信息
+        findViewById(R.id.localSong).setOnClickListener(v -> {
+            List<SongInfo> list = MusicManager.getInstance().querySongInfoInLocal();
+            Toast.makeText(MainActivity.this, "list.size = " + list.size(), Toast.LENGTH_SHORT).show();
+        });
+        //添加监听
         MusicManager.getInstance().addPlayerEventListener(this);
-
+        //进度更新
         mTimerTask.setUpdateProgressTask(() -> {
             long position = MusicManager.getInstance().getPlayingPosition();
             long duration = MusicManager.getInstance().getDuration();
@@ -190,6 +233,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
             mSeekBar.setSecondaryProgress((int) buffered);
             currTime.setText(formatMusicTime(position) + "/" + formatMusicTime(duration));
         });
+        //进度条滑动
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -211,18 +255,21 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
     @Override
     protected void onStart() {
         super.onStart();
+        //连接音频服务
         mMediaSessionConnection.connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        //断开音频服务
         mMediaSessionConnection.disconnect();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //回收资源
         MusicManager.getInstance().removePlayerEventListener(this);
         mTimerTask.removeUpdateProgressTask();
     }
@@ -237,21 +284,28 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
 
     @Override
     public void onPlayerStart() {
+        //开始更新进度条
         mTimerTask.startToUpdateProgress();
     }
 
     @Override
     public void onPlayerPause() {
+        //停止更新进度条
         mTimerTask.stopToUpdateProgress();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onPlayerStop() {
+        //停止更新进度条
         mTimerTask.stopToUpdateProgress();
+        mSeekBar.setProgress(0);
+        currTime.setText("00:00");
     }
 
     @Override
     public void onPlayCompletion() {
+        //停止更新进度条
         mTimerTask.stopToUpdateProgress();
     }
 
@@ -262,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
 
     @Override
     public void onError(int errorCode, String errorMsg) {
+        //停止更新进度条
         mTimerTask.stopToUpdateProgress();
     }
 

@@ -149,6 +149,12 @@
                     android:text="设置播放模式" />
 
                 <Button
+                    android:id="@+id/currPlayMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="当前播放模式" />
+
+                <Button
                     android:id="@+id/hasNext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -175,7 +181,7 @@
                     android:id="@+id/jianvolume"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="音量加" />
+                    android:text="音量减" />
 
                 <Button
                     android:id="@+id/getVolume"
@@ -184,6 +190,7 @@
                     android:text="获取音量" />
 
                 <Button
+                    android:id="@+id/localSong"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="扫描本地媒体信息" />
