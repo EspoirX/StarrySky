@@ -37,9 +37,11 @@ StarrySky 是一个全新的版本，基于媒体浏览器服务(MediaBrowserSer
 ```groovy
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.lzx:StarrySkyJava:2.0.0'
+    implementation 'com.lzx:StarrySkyJava:x.x.x'
 }
 ```
+x.x.x 填的是当前的版本号。
+
 
 StarrySky 里面依赖的第三方库除了 ExoPlayer 之外还有 glide:4.8.0，用于封面的下载，如果版本跟你项目中的版本有冲突，建议通过导入源码的
 方式自己修改。
