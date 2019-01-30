@@ -2,7 +2,7 @@
 
 ## NotificationConstructor 
 
-[NotificationConstructor](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/notification/NotificationConstructor.java) 是通知栏构造者，里面可以配置很多参数去对应配置通知栏的相关操作：
+[NotificationConstructor](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/notification/NotificationConstructor.java) is the notification bar constructor, which can be configured with many parameters to correspond to the related operations of the configuration notification bar:
 
 | variable name  |   Features  |
 | :--------     |   :----------   |
