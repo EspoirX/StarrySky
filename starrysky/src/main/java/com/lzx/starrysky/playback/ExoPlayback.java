@@ -117,9 +117,7 @@ public final class ExoPlayback implements Playback {
     @Override
     public int getState() {
         if (mExoPlayer == null) {
-            return mExoPlayerNullIsStopped
-                    ? PlaybackStateCompat.STATE_STOPPED
-                    : PlaybackStateCompat.STATE_NONE;
+            return mExoPlayerNullIsStopped ? PlaybackStateCompat.STATE_STOPPED : PlaybackStateCompat.STATE_NONE;
         }
         switch (mExoPlayer.getPlaybackState()) {
             case Player.STATE_IDLE:
@@ -127,11 +125,9 @@ public final class ExoPlayback implements Playback {
             case Player.STATE_BUFFERING:
                 return PlaybackStateCompat.STATE_BUFFERING;
             case Player.STATE_READY:
-                return mExoPlayer.getPlayWhenReady()
-                        ? PlaybackStateCompat.STATE_PLAYING
-                        : PlaybackStateCompat.STATE_PAUSED;
+                return mExoPlayer.getPlayWhenReady() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
             case Player.STATE_ENDED:
-                return PlaybackStateCompat.STATE_PAUSED;
+                return PlaybackStateCompat.STATE_NONE;
             default:
                 return PlaybackStateCompat.STATE_NONE;
         }

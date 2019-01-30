@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.lzx.starrysky.manager.MediaSessionConnection;
 import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.manager.OnPlayerEventListener;
@@ -250,6 +252,8 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 MusicManager.getInstance().seekTo(seekBar.getProgress());
             }
         });
+        Glide.with(this);
+        Glide.get(this);
     }
 
     @Override
@@ -274,24 +278,28 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         mTimerTask.removeUpdateProgressTask();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onMusicSwitch(SongInfo songInfo) {
         if (songInfo == null) {
             return;
         }
         currInfo.setText("当前播放：" + songInfo.getSongName());
+        LogUtil.i("= onMusicSwitch = " + songInfo.getSongName());
     }
 
     @Override
     public void onPlayerStart() {
         //开始更新进度条
         mTimerTask.startToUpdateProgress();
+        LogUtil.i("= onPlayerStart = ");
     }
 
     @Override
     public void onPlayerPause() {
         //停止更新进度条
         mTimerTask.stopToUpdateProgress();
+        LogUtil.i("= onPlayerPause = ");
     }
 
     @SuppressLint("SetTextI18n")
@@ -301,6 +309,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         mTimerTask.stopToUpdateProgress();
         mSeekBar.setProgress(0);
         currTime.setText("00:00");
+        LogUtil.i("= onPlayerStop = ");
     }
 
     @Override
@@ -311,17 +320,19 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         }
         //停止更新进度条
         mTimerTask.stopToUpdateProgress();
+        LogUtil.i("= onPlayCompletion = " + songInfo.getSongName());
     }
 
     @Override
     public void onBuffering() {
-
+        LogUtil.i("= onBuffering = ");
     }
 
     @Override
     public void onError(int errorCode, String errorMsg) {
         //停止更新进度条
         mTimerTask.stopToUpdateProgress();
+        LogUtil.i("= onError = errorCode:" + errorCode + " errorMsg:" + errorMsg);
     }
 
     public static String formatMusicTime(long duration) {
@@ -338,6 +349,12 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         }
         time += second;
         return time;
+    }
+
+    public static class LogUtil {
+        public static void i(String msg) {
+            Log.i("LogUtil", msg);
+        }
     }
 
 }

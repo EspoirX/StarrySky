@@ -196,6 +196,8 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void onCompletion() {
+        updatePlaybackState(null);
+
         if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
             //顺序播放
             shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1
