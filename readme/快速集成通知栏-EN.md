@@ -1,51 +1,51 @@
-# 快速集成通知栏
+# Quickly integrate notification bar
 
 ## NotificationConstructor 
 
 [NotificationConstructor](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/notification/NotificationConstructor.java) 是通知栏构造者，里面可以配置很多参数去对应配置通知栏的相关操作：
 
-| 变量名  |   功能  |
+| variable name  |   Features  |
 | :--------     |   :----------   |
-| String targetClass | 通知栏点击转跳界面，传入的是类的全路径 |
-| String contentTitle       | 通知栏标题    |
-| String contentText        | 通知栏内容    |
-| PendingIntent nextIntent  |  下一首按钮 PendingIntent,如果想自己实现下一首按钮点击，可设置这个 |
-| PendingIntent preIntent      |  上一首按钮 PendingIntent,功能同上    |
-| PendingIntent closeIntent       | 关闭按钮 PendingIntent,功能同上，closeIntent 的默认实现是 stopMusic()  |
-| PendingIntent playIntent        | 播放按钮 PendingIntent,功能同上    |
-| PendingIntent pauseIntent   | 暂停按钮 PendingIntent,功能同上    |
-| PendingIntent playOrPauseIntent    | 播放/暂停按钮 PendingIntent,功能同上    |
-| PendingIntent stopIntent         |  停止按钮 PendingIntent,功能同上    |
-| PendingIntent downloadIntent        | 下载按钮 PendingIntent    |
-| PendingIntent favoriteIntent    | 喜欢或收藏按钮 PendingIntent    |
-| PendingIntent lyricsIntent  | 桌面歌词按钮 PendingIntent，同 喜欢或收藏按钮    |
+| String targetClass | The notification bar clicks on the jump interface, and the full path of the class is passed in. |
+| String contentTitle       | Notification bar title    |
+| String contentText        | Notification bar content    |
+| PendingIntent nextIntent  |  Next button PendingIntent, if you want to implement the next button click, you can set this |
+| PendingIntent preIntent      |  Previous button PendingIntent, function as above    |
+| PendingIntent closeIntent       | Close button PendingIntent, function the same as above, the default implementation of closeIntent is stopMusic()  |
+| PendingIntent playIntent        | Play button PendingIntent, function as above    |
+| PendingIntent pauseIntent   | Pause button PendingIntent, function as above    |
+| PendingIntent playOrPauseIntent    | Play/pause button PendingIntent, function as above    |
+| PendingIntent stopIntent         |  Stop button PendingIntent, function as above    |
+| PendingIntent downloadIntent        | Download button PendingIntent   |
+| PendingIntent favoriteIntent    | Like or favorite button PendingIntent   |
+| PendingIntent lyricsIntent  | Desktop lyrics button PendingIntent, same Like or favorite button   |
 
-在系统通知栏中，有默认实现的 PendingIntent 是 nextIntent，preIntent，playIntent，pauseIntent，其他都没有默认实现。  
-在自定义通知栏中，有默认实现的 PendingIntent 是 nextIntent，preIntent，playIntent，pauseIntent，playOrPauseIntent，closeIntent，
-其他都没有默认实现。如果你的通知栏中还有其他按钮，则需要自己实现点击事件。
+In the system notification bar, there are default implementations of PendingIntent are nextIntent, preIntent, playIntent, pauseIntent, and others have no default implementation.
+In the custom notification bar, the default implementation of PendingIntent is nextIntent, preIntent, playIntent, pauseIntent, playOrPauseIntent, closeIntent,
+Nothing else has a default implementation. If you have other buttons in your notification bar, you'll need to implement the click event yourself.
 
-| 变量名  |   功能  |
+| variable name  |   Features  |
 | :--------     |   :----------   |
-|pendingIntentMode  |  设置通知栏点击模式，有三种：MODE_ACTIVITY，MODE_BROADCAST，MODE_SERVICE。分别对应 PendingIntent.getActivity()，PendingIntent.getBroadcast()，PendingIntent.getService()，默认是 PendingIntent.getActivity()  |
-|skipPreviousDrawableRes | 在系统通知栏中，上一首按钮的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_skip_previous_white_24dp.png)    |
-|skipNextDrawableRes |在系统通知栏中，下一首按钮的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_skip_next_white_24dp.png)    |
-|pauseDrawableRes |在系统通知栏中，正在播放时，播放按钮显示的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_pause_white_24dp.png) |
-|playDrawableRes |在系统通知栏中，暂停状态时，播放按钮显示的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_play_arrow_white_24dp.png)|
-|smallIconRes |对应通知栏的 smallIcon，不传则使用默认的 [smallIcon](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_notification.png)|
+|pendingIntentMode  |  Set the notification bar click mode, there are three：MODE_ACTIVITY，MODE_BROADCAST，MODE_SERVICE。分别对应 PendingIntent.getActivity()，PendingIntent.getBroadcast()，PendingIntent.getService()，The default is PendingIntent.getActivity()  |
+|skipPreviousDrawableRes | In the system notification bar, the drawable res of the previous button, if not passed, the default [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_skip_previous_white_24dp.png)    |
+|skipNextDrawableRes |In the system notification bar, the drawable res of the next button, if not passed, the default [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_skip_next_white_24dp.png)    |
+|pauseDrawableRes |In the system notification bar, the drawable res displayed by the play button when playing, if not, the default is used. [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_pause_white_24dp.png) |
+|playDrawableRes |In the system notification bar, the drawable res displayed by the play button when the state is paused, if not passed, the default is used. [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_play_arrow_white_24dp.png)|
+|smallIconRes |Corresponding to the smallIcon of the notification bar, if not passed, the default is used. [smallIcon](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_notification.png)|
 
 
-## 集成系统通知栏
+## Integrated system notification bar
 
-只需要在 Application 中添加两句话，即可集成系统通知栏：
+Simply add two sentences to the Application to integrate the system notification bar:
 ```java
 public class TestApplication extends Application {
 
     @Override
     public void onCreate() {
         super.onCreate();
-        //初始化
+        //initialize
         MusicManager.initMusicManager(this);
-        //配置通知栏
+        //Configure notification bar
         NotificationConstructor constructor = new NotificationConstructor.Builder()
                 .bulid();
         MusicManager.getInstance().setNotificationConstructor(constructor);
@@ -53,22 +53,22 @@ public class TestApplication extends Application {
 }
 ```
 
-这样系统通知栏就集成好了。
+This way the system notification bar is integrated.
 
-## 集成自定义通知栏
+## Integrated custom notification bar
 
-自定义通知栏的集成步骤会多一点，但是也相对简单，在集成之前，先看看自定义通知栏的构造吧，先看下面四张图：
+The integration step of the custom notification bar will be a bit more, but it is relatively simple. Before the integration, let's take a look at the construction of the custom notification bar. Let's look at the following four images:
 <img src="https://raw.githubusercontent.com/lizixian18/MusicLibrary/StarrySkyJava/art/notification1.png"> <img src="https://raw.githubusercontent.com/lizixian18/MusicLibrary/StarrySkyJava/art/notification2.png">
 
 <img src="https://raw.githubusercontent.com/lizixian18/MusicLibrary/StarrySkyJava/art/notification3.png"> <img src="https://raw.githubusercontent.com/lizixian18/MusicLibrary/StarrySkyJava/art/notification4.png">
 
-可以看到在不同的手机里，通知栏的背景可能是深色的，也可能是浅色的，同时有两种样式，一种是按钮比较少，我叫它做小布局，一种是按钮比较大，叫它做大布局，它们之间是可以来回切换的。  
-所以在自定义通知栏中，我们要适配这四种情况。
+It can be seen that in different mobile phones, the background of the notification bar may be dark or light, and there are two styles. One is that there are fewer buttons, I call it a small layout, and the other is a button. It's bigger, let it make a big layout, and it can switch back and forth between them.
+So in the custom notification bar, we have to adapt to these four situations.
 
-**第一步**
+**first step**
 
-首先适配通知栏字体颜色，让他跟随背景色的深浅而自动改变颜色。  
-首先创建 values-v19 和 values-v21 文件夹，然后里面新建一个 style.xml，它们的内容是一样的，就是：
+First adjust the color of the notification bar font, let him automatically change the color according to the depth of the background color.
+First create the values-v19 and values-v21 folders, then create a new style.xml with the same content, which is:
 
 ```java
 <resources>
@@ -77,74 +77,74 @@ public class TestApplication extends Application {
 </resources>
 ```
 
-然后在你写布局的时候，对应的通知栏 title 和 info 的 TextView 就可以引用它们。记住 TextView 不能写死字体颜色，不然就不能适配了。
+Then when you write the layout, the corresponding notification bar title and info's TextView can reference them. Remember that TextView can't write dead font colors, or you can't fit it.
 
-**第二步**
+**Second step**
 
-既然有深浅两种背景，那么需要用到的资源文件也要准备两套了，因为 StarrySky 可以快速集成通知栏，所以我们是不需要写任何关于通知栏的代码的，只管
-写好布局就行，所以在布局的命名，一些资源文件的命名以及一些控件的 id 命名就要有规定了，这样才能让 StarrySky 匹配到。  
+Since there are two backgrounds, you need to prepare two sets of resource files, because StarrySky can quickly integrate the notification bar, so we don't need to write any code about the notification bar, just
+Write the layout on the line, so in the naming of the layout, the naming of some resource files and the id naming of some controls, it is necessary to make StarrySky match.
 
-1. 布局文件的命名  
+1. Layout file naming  
 
-    小布局通知栏的布局文件要命名成 view_notify_play.xml  
-    大布局通知栏的布局文件要命名成 view_notify_big_play.xml
+    The layout file of the small layout notification bar should be named view_notify_play.xml  
+    The layout file of the big layout notification bar should be named view_notify_big_play.xml
 
-2. 控件 id 命名
+2. Control id naming
 
-    如果你的通知栏布局中有以下按钮，则需按照以下规则命名：
+    If you have the following buttons in your notification bar layout, you need to name them according to the following rules:
     
-    | 通知栏控件名称  |   命名  |
+    | Notification bar control name  |   name  |
     | :--------     |   :----------   |
-    | 播放按钮       | img_notifyPlay    |
-    | 暂停按钮       | img_notifyPause    |
-    | 停止按钮       | img_notifyStop    |
-    | 播放或暂停按钮  | img_notifyPlayOrPause |
-    | 下一首按钮     | img_notifyNext    |
-    | 上一首按钮     | img_notifyPre    |
-    | 关闭按钮       | img_notifyClose    |
-    | 喜欢或收藏按钮  | img_notifyFavorite    |
-    | 桌面歌词按钮    | img_notifyLyrics    |
-    | 下载按钮       | img_notifyDownload    |
-    | 封面图片       | img_notifyIcon    |
-    | 歌名TextView   | txt_notifySongName    |
-    | 艺术家TextView  | txt_notifyArtistName    |
+    | Play button       | img_notifyPlay    |
+    | Pause button       | img_notifyPause    |
+    | Stop button       | img_notifyStop    |
+    | Play or pause button  | img_notifyPlayOrPause |
+    | Next button     | img_notifyNext    |
+    | Previous button     | img_notifyPre    |
+    | Close button       | img_notifyClose    |
+    | Like or favorite button  | img_notifyFavorite    |
+    | Desktop lyrics button    | img_notifyLyrics    |
+    | Download button       | img_notifyDownload    |
+    | cover image       | img_notifyIcon    |
+    | Song name TextView   | txt_notifySongName    |
+    | artist TextView  | txt_notifyArtistName    |
 
-3. 资源命名 
+3. Resource naming 
 
-    为了更好的UI效果，StarrySky 中的通知栏上一首、下一首、播放、暂停、播放或暂停这五个按钮使用的资源是 `selector`，  
-    `selector` 里面就是你对应的 normal 和 pressed 图片了。      
-    因为上一首和下一首这两个按钮还需要判断是否有上一首和是否有下一首，而且没有上一首和下一首的时候你可能需要不同的样式，例如置灰等。  
-    所以对这两个按钮的图片资源命名也有一些约定。  
-    同样的，如果你的布局中有相应的资源，请将他们按约定命名，没有就不用管。
+     For better UI effects, the resources used in the first, next, play, pause, play, or pause buttons on the notification bar in StarrySky are `selector`.
+     Inside `selector` is your corresponding normal and pressed image.
+     Because the last one and the next two buttons still need to determine whether there is a previous one and whether there is a next one, and there may be different styles when there is no previous and next one, such as graying.
+     So there are some conventions for naming the image resources of these two buttons.
+     Similarly, if you have the appropriate resources in your layout, please name them by convention.
     
-    | 通知栏背景色  | 资源名称  |   命名  |
+    | Notification bar background color  | resources name  |   name  |
     | :-------- | :--------   | :------   |
-    | 浅色背景   | 播放按钮 selector | notify_btn_light_play_selector.xml | 
-    | 浅色背景   | 暂停按钮 selector | notify_btn_light_pause_selector.xml | 
-    | 浅色背景   | 下一首按钮 selector | notify_btn_light_prev_selector.xml | 
-    | 浅色背景   | 上一首按钮 selector | notify_btn_light_prev_selector.xml | 
-    | 浅色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_light_next_pressed | 
-    | 浅色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_light_prev_pressed | 
-    | 浅色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_light_favorite_normal | 
-    | 浅色背景   | 桌面歌词按钮的图片资源 | notify_btn_light_lyrics_normal | 
-    | 深色背景   | 播放按钮 selector | notify_btn_dark_play_selector.xml | 
-    | 深色背景   | 暂停按钮 selector | notify_btn_dark_pause_selector.xml | 
-    | 深色背景   | 下一首按钮 selector | notify_btn_dark_next_selector.xml | 
-    | 深色背景   | 上一首按钮 selector | notify_btn_dark_prev_selector.xml | 
-    | 深色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_dark_next_pressed | 
-    | 深色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_dark_prev_pressed | 
-    | 深色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_dark_favorite_normal | 
-    | 深色背景   | 桌面歌词按钮的图片资源 | notify_btn_dark_lyrics_normal | 
-    | 深白通用   | 喜欢按钮被选中时的图片资源 | notify_btn_favorite_checked | 
-    | 深白通用   | 桌面歌词按钮选中时的图片资源 | notify_btn_lyrics_checked | 
-    | 深白通用   | 通知栏 smallIcon 图片资源 | icon_notification | 
-    | 深白通用   | 下载按钮暂 | 暂时没什么规定，可以随便命名 | 
+    | Light background   | Play button selector | notify_btn_light_play_selector.xml | 
+    | Light background   | Pause button selector | notify_btn_light_pause_selector.xml | 
+    | Light background   | Next button selector | notify_btn_light_prev_selector.xml | 
+    | Light background   | Previous button selector | notify_btn_light_prev_selector.xml | 
+    | Light background   | The next button when there is no picture resource at the next one | notify_btn_light_next_pressed | 
+    | Light background   | The previous button does not have the image resource of the previous one. | notify_btn_light_prev_pressed | 
+    | Light background   | Like or favorite button image resources | notify_btn_light_favorite_normal | 
+    | Light background   | Desktop lyrics button image resource | notify_btn_light_lyrics_normal | 
+    | Dark background   | Play button selector | notify_btn_dark_play_selector.xml | 
+    | Dark background   | Pause button selector | notify_btn_dark_pause_selector.xml | 
+    | Dark background   | Next button selector | notify_btn_dark_next_selector.xml | 
+    | Dark background  | Previous button selector | notify_btn_dark_prev_selector.xml | 
+    | Dark background   | The next button when there is no picture resource at the next one  | notify_btn_dark_next_pressed | 
+    | Dark background   | The previous button does not have the image resource of the previous one | notify_btn_dark_prev_pressed | 
+    | Dark background   | Like or favorite button image resources | notify_btn_dark_favorite_normal | 
+    | Dark background   | Desktop lyrics button image resource | notify_btn_dark_lyrics_normal | 
+    | Light and Dark in common use   | Like or favorite button image resources  | notify_btn_favorite_checked | 
+    | Light and Dark in common use    | Desktop lyrics button image resource | notify_btn_lyrics_checked | 
+    | Light and Dark in common use    | Notification bar smallIcon Image Resources| icon_notification | 
+    | Light and Dark in common use    | Download button | There is no provision for the time being, you can just name it. | 
     
-    自定义通知栏的布局还有资源等，都在代码中有例子，大家如果看得不太明白可以打开参考一下。  
+   The layout of the custom notification bar, resources, etc., are all examples in the code. If you don't understand it, you can open the reference.
 
-**第三步**
+**third step**
 
-布局做好了，因为 StarrySky 默认创建的是系统通知栏，所以接下来就是配置一下 NotificationConstructor 即可：
+The layout is done, because StarrySky creates the system notification bar by default, so the next step is to configure the NotificationConstructor:
 
 ```java
 public class TestApplication extends Application {
@@ -163,17 +163,17 @@ public class TestApplication extends Application {
 }
 ```
 
-到这里，自定义通知栏就集成完毕了。
+At this point, the custom notification bar is integrated.
 
-## 自定义通知栏点击事件例子
+## Custom notification bar click event example
 
-有时候我们要在通知栏里面的按钮点击事件上做一些自己的逻辑，那么就需要自定义点击事件了，要怎么做呢，这里举一个例子：
+Sometimes we have to do some logic on the button click event in the notification bar, then we need to customize the click event, how to do it, here is an example:
 
-就像前面图片中所示的大布局，假设现在我们要自己实现里面的 播放暂停，上一首，下一首，收藏，歌词等功能。
+Just like the large layout shown in the previous picture, suppose we now have to implement the playback pause, the previous one, the next one, the collection, the lyrics and so on.
 
-**第一步**
+**first step**
 
-创建一个通知栏响应广播 NotificationReceiver，并且定义好对应按钮的 Action，然后设置给 NotificationConstructor：
+Create a notification bar to respond to the broadcast NotificationReceiver and define the Action for the corresponding button, then set it to the NotificationConstructor:
 
 ```java
 public class TestApplication extends Application {
@@ -209,9 +209,9 @@ public class TestApplication extends Application {
 }
 ```
 
-**第二步**
+**Second step**
 
-在广播中实现对应的方法：
+Implement the corresponding method in the broadcast:
 
 ```java
 public class NotificationReceiver extends BroadcastReceiver {
@@ -237,16 +237,16 @@ public class NotificationReceiver extends BroadcastReceiver {
             MusicManager.getInstance().skipToPrevious();
         }
         if (TestApplication.ACTION_FAVORITE.equals(action)) {
-            //这里实现自己的喜欢或收藏逻辑，如果选中可以传 true 把按钮变成选中状态，false 就非选中状态
+            //Here to achieve their favorite or favorite logic, if selected can pass true to turn the button into the selected state, false is not selected
             MusicManager.getInstance().updateFavoriteUI(true);
         }
         if (TestApplication.ACTION_LYRICS.equals(action)) {
-            //这里实现自己的是否显示歌词逻辑，如果选中可以传 true 把按钮变成选中状态，false 就非选中状态
+            //Here to achieve their own display lyrics logic, if selected can pass true to turn the button into the selected state, false is not selected
             MusicManager.getInstance().updateLyricsUI(true);
         }
     }
 }
 ```
 
-这样就可以完成自定义通知栏点击了。当然，广播别忘记注册了。
+This will complete the custom notification bar click. Of course, don't forget to register for the broadcast.
 
