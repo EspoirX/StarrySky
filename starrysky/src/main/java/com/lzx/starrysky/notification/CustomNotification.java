@@ -19,7 +19,6 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.lzx.starrysky.MusicService;
@@ -119,7 +118,6 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
-        Log.i("xian", "action  =  " + action);
         if (action == null) {
             return;
         }
@@ -265,7 +263,9 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         //create Notification
         mNotification = notificationBuilder.build();
         mNotification.contentView = mRemoteView;
-        mNotification.bigContentView = mBigRemoteView;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mNotification.bigContentView = mBigRemoteView;
+        }
         SongInfo songInfo = null;
         List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
         for (SongInfo info : songInfos) {

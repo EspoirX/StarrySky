@@ -83,7 +83,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
 
         mBecomingNoisyReceiver = new BecomingNoisyReceiver(this, transportControls);
 
-        mPlaybackManager.updatePlaybackState(null);
+        mPlaybackManager.updatePlaybackState(false,null);
         mPackageValidator = new PackageValidator(this);
         //通知栏相关
         NotificationConstructor constructor = MusicManager.getInstance().getConstructor();
@@ -132,7 +132,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
      */
     @Override
     public void onMetadataRetrieveError() {
-        mPlaybackManager.updatePlaybackState("Unable to retrieve metadata");
+        mPlaybackManager.updatePlaybackState(false,"Unable to retrieve metadata");
     }
 
     /**

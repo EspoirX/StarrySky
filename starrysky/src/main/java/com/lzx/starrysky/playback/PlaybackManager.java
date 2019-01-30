@@ -47,6 +47,7 @@ public class PlaybackManager implements Playback.Callback {
     private int currRepeatMode;
     private boolean shouldPlayNext = true; //是否可以播放下一首
     private boolean shouldPlayPre = false;  //是否可以播放上一首
+    private PlaybackStateCompat.Builder stateBuilder;
 
     public PlaybackManager(Context context, PlaybackServiceCallback serviceCallback, QueueManager queueManager,
                            Playback playback) {
@@ -100,7 +101,7 @@ public class PlaybackManager implements Playback.Callback {
     public void handleStopRequest(String withError) {
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
-        updatePlaybackState(withError);
+        updatePlaybackState(false,withError);
     }
 
     /**
@@ -120,36 +121,42 @@ public class PlaybackManager implements Playback.Callback {
     /**
      * 更新播放状态
      */
-    public void updatePlaybackState(String error) {
-        long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
-        if (mPlayback != null && mPlayback.isConnected()) {
-            position = mPlayback.getCurrentStreamPosition();
-        }
-        //构建一个播放状态对象
-        PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
-                .setActions(getAvailableActions());
-        //获取播放器播放状态
-        int state = mPlayback.getState();
-        //如果错误信息不为 null 的时候，播放状态设为 STATE_ERROR
-        if (error != null) {
-            stateBuilder.setErrorMessage(error);
-            state = PlaybackStateCompat.STATE_ERROR;
-        }
-        //设置播放状态
-        stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
-        //设置当前活动的 songId
-        MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
-        MediaMetadataCompat currMetadata = null;
-        if (currentMusic != null) {
-            stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
-            final String musicId = currentMusic.getDescription().getMediaId();
-            currMetadata = MusicProvider.getInstance().getMusic(musicId);
-        }
-        //把状态回调出去
-        mServiceCallback.onPlaybackStateUpdated(stateBuilder.build(), currMetadata);
-        //如果是播放或者暂停的状态，更新一下通知栏
-        if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_PAUSED) {
-            mServiceCallback.onNotificationRequired();
+    public void updatePlaybackState(boolean isOnlyUpdateActions, String error) {
+        if (isOnlyUpdateActions && stateBuilder != null) {
+            //单独更新 Actions
+            stateBuilder.setActions(getAvailableActions());
+            mServiceCallback.onPlaybackStateUpdated(stateBuilder.build(), null);
+        }else {
+            long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
+            if (mPlayback != null && mPlayback.isConnected()) {
+                position = mPlayback.getCurrentStreamPosition();
+            }
+            //构建一个播放状态对象
+            stateBuilder = new PlaybackStateCompat.Builder()
+                    .setActions(getAvailableActions());
+            //获取播放器播放状态
+            int state = mPlayback.getState();
+            //如果错误信息不为 null 的时候，播放状态设为 STATE_ERROR
+            if (error != null) {
+                stateBuilder.setErrorMessage(error);
+                state = PlaybackStateCompat.STATE_ERROR;
+            }
+            //设置播放状态
+            stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
+            //设置当前活动的 songId
+            MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
+            MediaMetadataCompat currMetadata = null;
+            if (currentMusic != null) {
+                stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
+                final String musicId = currentMusic.getDescription().getMediaId();
+                currMetadata = MusicProvider.getInstance().getMusic(musicId);
+            }
+            //把状态回调出去
+            mServiceCallback.onPlaybackStateUpdated(stateBuilder.build(), currMetadata);
+            //如果是播放或者暂停的状态，更新一下通知栏
+            if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_PAUSED) {
+                mServiceCallback.onNotificationRequired();
+            }
         }
     }
 
@@ -196,7 +203,7 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void onCompletion() {
-        updatePlaybackState(null);
+        updatePlaybackState(false,null);
 
         if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
             //顺序播放
@@ -230,7 +237,7 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void onPlaybackStatusChanged(int state) {
-        updatePlaybackState(null);
+        updatePlaybackState(false,null);
     }
 
     /**
@@ -238,7 +245,7 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void onError(String error) {
-        updatePlaybackState(error);
+        updatePlaybackState(false,error);
     }
 
     /**
@@ -317,6 +324,10 @@ public class PlaybackManager implements Playback.Callback {
                 shouldPlayPre = mQueueManager.skipQueuePosition(-1);
             }
             if (shouldPlayPre) {
+                //当前的媒体如果是在第二首点击到上一首的时候，如果不重新判断，会用于为 true
+                if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+                    shouldPlayPre =  mQueueManager.getCurrentIndex() != 0;
+                }
                 shouldPlayNext = true;
                 handlePlayRequest();
                 mQueueManager.updateMetadata();
@@ -359,7 +370,7 @@ public class PlaybackManager implements Playback.Callback {
                 shouldPlayNext = true;
                 shouldPlayPre = true;
             }
-            updatePlaybackState(null);  //更新状态
+            updatePlaybackState(true,null);  //更新状态
         }
 
         /**
