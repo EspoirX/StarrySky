@@ -158,11 +158,11 @@ public class MusicProvider {
         } else if (!TextUtils.isEmpty(info.getSongName())) {
             albumTitle = info.getSongName();
         }
-        String albumUrl = "";
-        if (!TextUtils.isEmpty(info.getAlbumCover())) {
-            albumUrl = info.getAlbumCover();
-        } else if (!TextUtils.isEmpty(info.getSongCover())) {
-            albumUrl = info.getSongCover();
+        String songCover = "";
+        if (!TextUtils.isEmpty(info.getSongCover())) {
+            songCover = info.getSongCover();
+        } else if (!TextUtils.isEmpty(info.getAlbumCover())) {
+            songCover = info.getAlbumCover();
         }
         MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
         builder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, info.getSongId());
@@ -180,8 +180,8 @@ public class MusicProvider {
         if (!TextUtils.isEmpty(info.getGenre())) {
             builder.putString(MediaMetadataCompat.METADATA_KEY_GENRE, info.getGenre());
         }
-        if (!TextUtils.isEmpty(albumUrl)) {
-            builder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, albumUrl);
+        if (!TextUtils.isEmpty(songCover)) {
+            builder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, songCover);
         }
         if (!TextUtils.isEmpty(info.getSongName())) {
             builder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, info.getSongName());
