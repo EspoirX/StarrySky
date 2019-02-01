@@ -32,20 +32,14 @@ MusicManager.getInstance().playMusicByInfo(s1);
 
 **播放相关**
 
-**1. playMusic(List<SongInfo> songInfos, int index, boolean isResetPlayList)**
+**~~1. playMusic(List<SongInfo> songInfos, int index, boolean isResetPlayList)~~**
 
-`描述：  `
-
-`@param songInfos       播放列表`      
-`@param index           要播放的歌曲在播放列表中的下标`   
-`@param isResetPlayList 是否重新设置播放列表，如果true，则会重新加载播放列表中的资源，比如封面下载等，  
-                       如果false，则使用原来的，相当于缓存，建议当播放列表改变或者第一次播放时才设为true`
 
 **2. void playMusic(List<SongInfo> songInfos, int index)**
 
 `描述：  `
 
-`跟上面方法一样，默认 isResetPlayList 为 false`
+`播放，传入播放列表和要播放的歌曲在播放列表中的索引`
 
 **3. void playMusicById(String songId)**
 

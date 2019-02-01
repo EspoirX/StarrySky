@@ -32,19 +32,14 @@ MusicManager.getInstance().playMusicByInfo(s1);
 
 **About Play**
 
-**1. playMusic(List<SongInfo> songInfos, int index, boolean isResetPlayList)**
+**~~1. playMusic(List<SongInfo> songInfos, int index, boolean isResetPlayList)~~**
 
-`Description：  `
-
-`@param songInfos       playlist`      
-`@param index           The index of the song to be played in the playlist`   
-`@param isResetPlayList Whether to reset the playlist, if true, the resources in the playlist will be reloaded, such as cover download, etc. If false, the original is used, which is equivalent to the cache. It is recommended to set the playlist when it is changed or the first time.`
 
 **2. void playMusic(List<SongInfo> songInfos, int index)**
 
 `Description：  `
 
-`As with the above method, the default isResetPlayList is false`
+`Play, the incoming playlist and the index of the song to be played in the playlist`
 
 **3. void playMusicById(String songId)**
 

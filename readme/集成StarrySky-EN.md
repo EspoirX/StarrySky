@@ -25,28 +25,23 @@ The related methods of connecting services can be easily used:
 
 ```java
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         MediaSessionConnection.getInstance(this).connect();
     }
 
+  
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         MediaSessionConnection.getInstance(this).disconnect();
     }
 }
 ```
 
-MediaSessionConnection is a singleton mode, connect() is the connection method, and disconnect() is the disconnect method, which is usually called in pairs in onStart() and onStop() .
+MediaSessionConnection is a singleton mode, connect() is the connection method, and disconnect() is the disconnect method, which is usually called in pairs in onCreate() and onDestroy() .
 This can be written to your BaseActivity or it can be called as needed. There are other methods in MediaSessionConnection, you can [click to view](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/manager/MediaSessionConnection.Java),
 There are notes in it.
 

@@ -30,23 +30,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         MediaSessionConnection.getInstance(this).connect();
     }
 
+  
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         MediaSessionConnection.getInstance(this).disconnect();
     }
 }
 ```
 
-MediaSessionConnection 是一个单例，connect() 是连接方法，disconnect() 是断开连接方法，一般在 onStart() 和 onStop() 中成对调用，
+MediaSessionConnection 是一个单例，connect() 是连接方法，disconnect() 是断开连接方法，一般在 onCreate() 和 onDestroy() 中成对调用，
 这可以写到你的 BaseActivity 中，也可以按照实际需要调用。MediaSessionConnection 里面还有其他一些方法，大家可以[点开查看](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/manager/MediaSessionConnection.java)，
 里面都有注释说明。
 
