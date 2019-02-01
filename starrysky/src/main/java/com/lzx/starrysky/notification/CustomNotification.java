@@ -10,8 +10,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -21,6 +24,11 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.model.MusicProvider;
@@ -388,9 +396,38 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         disablePreviousBtn(hasPreSong, isDark);
 
         //封面
+        String fetchArtUrl = null;
+        if (art == null) {
+            fetchArtUrl = mMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
+            if (TextUtils.isEmpty(fetchArtUrl)) {
+                art = BitmapFactory.decodeResource(mService.getResources(), R.drawable.default_art);
+            }
+        }
         mRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), art);
         mBigRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), art);
         mNotificationManager.notify(NOTIFICATION_ID, notification);
+
+        if (fetchArtUrl != null) {
+            fetchBitmapFromURLAsync(fetchArtUrl, notification);
+        }
+    }
+
+    /**
+     * 加载封面
+     */
+    private void fetchBitmapFromURLAsync(String fetchArtUrl, Notification notification) {
+        Glide.with(mService).applyDefaultRequestOptions(
+                new RequestOptions()
+                        .fallback(R.drawable.default_art)
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE))
+                .asBitmap().load(fetchArtUrl).into(new SimpleTarget<Bitmap>(144, 144) {
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                mRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), resource);
+                mBigRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), resource);
+                mNotificationManager.notify(NOTIFICATION_ID, notification);
+            }
+        });
     }
 
     /**

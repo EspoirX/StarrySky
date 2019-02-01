@@ -117,17 +117,21 @@ public class MediaSessionConnection {
      * 连接
      */
     public void connect() {
-        mediaBrowser.connect();
+        if (!isConnected) {
+            mediaBrowser.connect();
+        }
     }
 
     /**
      * 断开连接
      */
     public void disconnect() {
-        if (mediaController != null) {
-            mediaController.unregisterCallback(mMediaControllerCallback);
+        if (isConnected) {
+            if (mediaController != null) {
+                mediaController.unregisterCallback(mMediaControllerCallback);
+            }
+            mediaBrowser.disconnect();
         }
-        mediaBrowser.disconnect();
     }
 
     /**

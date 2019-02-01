@@ -91,7 +91,9 @@ public class MusicManager {
     public void playMusicById(String songId) {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
         if (connection.isConnected()) {
-            connection.getTransportControls().playFromMediaId(songId, null);
+            if (MusicProvider.getInstance().hasSongInfo(songId)) {
+                connection.getTransportControls().playFromMediaId(songId, null);
+            }
         }
     }
 
@@ -101,12 +103,8 @@ public class MusicManager {
     public void playMusicByInfo(SongInfo info) {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
         if (connection.isConnected()) {
-            boolean isAdd = MusicProvider.getInstance().addSongInfo(info);
-            if (isAdd) {
-                MusicProvider.getInstance().updateMediadata(connection, info.getSongId());
-            } else {
-                connection.getTransportControls().playFromMediaId(info.getSongId(), null);
-            }
+            MusicProvider.getInstance().addSongInfo(info);
+            connection.getTransportControls().playFromMediaId(info.getSongId(), null);
         }
     }
 
@@ -128,28 +126,13 @@ public class MusicManager {
      *
      * @param songInfos       播放列表
      * @param index           要播放的歌曲在播放列表中的下标
-     * @param isResetPlayList 是否重新设置播放列表，如果true，则会重新加载播放列表中的资源，比如封面下载等，
-     *                        如果false,则使用原来的，相当于缓存，建议当播放列表改变或者第一次播放时才设为true
-     */
-    public void playMusic(List<SongInfo> songInfos, int index, boolean isResetPlayList) {
-        MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
-        if (connection.isConnected()) {
-            //如果列表为空（第一次）或者 isResetPlayList 为 true 都会重新设置播放列表
-            if (MusicProvider.getInstance().getSongInfos().isEmpty() || isResetPlayList) {
-                MusicProvider.getInstance().nonInitialized();
-                MusicProvider.getInstance().setSongInfos(songInfos);
-            }
-            if (songInfos != null && index >= 0 && index < songInfos.size()) {
-                MusicProvider.getInstance().updateMediadata(connection, songInfos.get(index).getSongId());
-            }
-        }
-    }
-
-    /**
-     * 播放
      */
     public void playMusic(List<SongInfo> songInfos, int index) {
-        playMusic(songInfos, index, false);
+        MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
+        if (connection.isConnected()) {
+            MusicProvider.getInstance().setSongInfos(songInfos);
+            connection.getTransportControls().playFromMediaId(songInfos.get(index).getSongId(), null);
+        }
     }
 
     /**
@@ -314,9 +297,7 @@ public class MusicManager {
     public void updatePlayList(List<SongInfo> songInfos) {
         MediaSessionConnection connection = MediaSessionConnection.getInstance(sContext);
         if (connection.isConnected()) {
-            MusicProvider.getInstance().nonInitialized();
             MusicProvider.getInstance().setSongInfos(songInfos);
-            MusicProvider.getInstance().updateMediadata(connection, null);
         }
     }
 
@@ -330,13 +311,7 @@ public class MusicManager {
             MediaMetadataCompat metadataCompat = connection.getNowPlaying();
             if (metadataCompat != null) {
                 String songId = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
-                for (SongInfo info : songInfos) {
-                    if (info.getSongId().equals(songId)) {
-                        songInfo = info;
-                        break;
-                    }
-                }
+                songInfo = MusicProvider.getInstance().getSongInfo(songId);
             }
         }
         return songInfo;
@@ -364,13 +339,7 @@ public class MusicManager {
         int index = -1;
         String songId = getNowPlayingSongId();
         if (!TextUtils.isEmpty(songId)) {
-            List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
-            for (int i = 0; i < songInfos.size(); i++) {
-                if (songId.equals(songInfos.get(i).getSongId())) {
-                    index = i;
-                    break;
-                }
-            }
+            index = MusicProvider.getInstance().getIndexBySongInfo(songId);
         }
         return index;
     }

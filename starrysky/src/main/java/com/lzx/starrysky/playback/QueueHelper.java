@@ -39,7 +39,7 @@ public class QueueHelper {
      * 获取正在播放的队列
      */
     public static List<MediaSessionCompat.QueueItem> getPlayingQueue(MusicProvider musicProvider) {
-        List<MediaMetadataCompat> tracks = musicProvider.getMetadatas();
+        List<MediaMetadataCompat> tracks = musicProvider.getMusicList();
         return convertToQueue(tracks);
     }
 

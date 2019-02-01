@@ -9,8 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -19,6 +22,11 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.notification.factory.INotification;
@@ -197,6 +205,15 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
 
         Bitmap art = mMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART);
 
+        String fetchArtUrl = null;
+        if (art == null) {
+            fetchArtUrl = mMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
+            if (TextUtils.isEmpty(fetchArtUrl)) {
+                art = BitmapFactory.decodeResource(mService.getResources(),
+                        R.drawable.default_art);
+            }
+        }
+
         //适配8.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationUtils.createNotificationChannel(mService, mNotificationManager);
@@ -232,6 +249,10 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
 
         setNotificationPlaybackState(notificationBuilder);
 
+        if (fetchArtUrl != null) {
+            fetchBitmapFromURLAsync(fetchArtUrl, notificationBuilder);
+        }
+
         return notificationBuilder.build();
     }
 
@@ -241,6 +262,23 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
             return;
         }
         builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
+    }
+
+    /**
+     * 封面加载
+     */
+    private void fetchBitmapFromURLAsync(String fetchArtUrl, NotificationCompat.Builder notificationBuilder) {
+        Glide.with(mService).applyDefaultRequestOptions(
+                new RequestOptions()
+                        .fallback(R.drawable.default_art)
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE))
+                .asBitmap().load(fetchArtUrl).into(new SimpleTarget<Bitmap>(144, 144) {
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                notificationBuilder.setLargeIcon(resource);
+                mNotificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
+            }
+        });
     }
 
     /**

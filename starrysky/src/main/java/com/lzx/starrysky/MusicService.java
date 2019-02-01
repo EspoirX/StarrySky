@@ -28,7 +28,6 @@ import com.lzx.starrysky.playback.PlaybackManager;
 import com.lzx.starrysky.playback.QueueManager;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -83,7 +82,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
 
         mBecomingNoisyReceiver = new BecomingNoisyReceiver(this, transportControls);
 
-        mPlaybackManager.updatePlaybackState(false,null);
+        mPlaybackManager.updatePlaybackState(false, null);
         mPackageValidator = new PackageValidator(this);
         //通知栏相关
         NotificationConstructor constructor = MusicManager.getInstance().getConstructor();
@@ -132,7 +131,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
      */
     @Override
     public void onMetadataRetrieveError() {
-        mPlaybackManager.updatePlaybackState(false,"Unable to retrieve metadata");
+        mPlaybackManager.updatePlaybackState(false, "Unable to retrieve metadata");
     }
 
     /**
@@ -242,16 +241,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
 
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-        if (STARRYSKY_BROWSABLE_ROOT.equals(parentId)) {
-            result.sendResult(new ArrayList<>());
-        } else if (MusicProvider.getInstance().isInitialized()) {
-            result.sendResult(MusicProvider.getInstance().getChildrenResult(parentId));
-        } else {
-            result.detach();
-            MusicProvider.getInstance().retrieveMediaAsync(this, () -> {
-                result.sendResult(MusicProvider.getInstance().getChildrenResult(parentId));
-            });
-        }
+        //可以不做任何事情
     }
 
     /**
