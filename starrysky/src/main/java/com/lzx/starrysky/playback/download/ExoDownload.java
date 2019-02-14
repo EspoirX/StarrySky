@@ -142,6 +142,9 @@ public class ExoDownload {
     private File getDownloadDirectory(Context context) {
         if (!TextUtils.isEmpty(destFileDir)) {
             downloadDirectory = new File(destFileDir);
+            if (!downloadDirectory.exists()) {
+                downloadDirectory.mkdirs();
+            }
         }
         if (downloadDirectory == null) {
             downloadDirectory = context.getExternalFilesDir(null);
@@ -166,7 +169,7 @@ public class ExoDownload {
                 deleteAllCacheFile(); // 递规的方式删除文件夹
             }
         }
-       return downloadDirectory.delete();// 删除目录本身
+        return downloadDirectory.delete();// 删除目录本身
     }
 
     /**
