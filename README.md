@@ -14,7 +14,7 @@
 
 一个丰富的音乐播放封装库，针对快速集成音频播放功能，减少大家搬砖的时间，你值得拥有。
 
->MusicLibrary 改名为 StarrySky，因为 MusicLibrary 名字有点土，所有想了个文艺点的，
+>MusicLibrary 改名为 StarrySky，
 StarrySky 是一个全新的版本，基于媒体浏览器服务(MediaBrowserService)实现，
 代码比原来的版本更加精简，注释更全，而且问题更少，欢迎大家继续使用。  
 
