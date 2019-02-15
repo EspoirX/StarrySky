@@ -46,6 +46,7 @@ public class MusicProvider {
      * 设置播放列表
      */
     public synchronized void setSongInfos(List<SongInfo> songInfos) {
+        mSongInfoListById.clear();
         for (SongInfo info : songInfos) {
             mSongInfoListById.put(info.getSongId(), info);
         }
