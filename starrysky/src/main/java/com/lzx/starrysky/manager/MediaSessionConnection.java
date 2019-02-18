@@ -21,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 与服务端连接的管理类
  */
 public class MediaSessionConnection {
-    private Context mContext;
+    private static Context sContext;
     private ComponentName serviceComponent;
     private MediaBrowserCompat mediaBrowser;
     private boolean isConnected;
@@ -34,25 +34,28 @@ public class MediaSessionConnection {
     private MediaControllerCallback mMediaControllerCallback;
     private OnConnectListener mConnectListener;
 
+    public static void initConnection(Context context) {
+        sContext = context;
+    }
+
     private static volatile MediaSessionConnection sInstance;
 
-    public static MediaSessionConnection getInstance(Context context) {
+    public static MediaSessionConnection getInstance() {
         if (sInstance == null) {
             synchronized (MediaSessionConnection.class) {
                 if (sInstance == null) {
-                    sInstance = new MediaSessionConnection(context, new ComponentName(context, MusicService.class));
+                    sInstance = new MediaSessionConnection(new ComponentName(sContext, MusicService.class));
                 }
             }
         }
         return sInstance;
     }
 
-    private MediaSessionConnection(Context context, ComponentName serviceComponent) {
-        mContext = context;
+    private MediaSessionConnection(ComponentName serviceComponent) {
         this.serviceComponent = serviceComponent;
         mediaBrowserConnectionCallback = new MediaBrowserConnectionCallback();
         mMediaControllerCallback = new MediaControllerCallback();
-        mediaBrowser = new MediaBrowserCompat(context, serviceComponent, mediaBrowserConnectionCallback, null);
+        mediaBrowser = new MediaBrowserCompat(sContext, serviceComponent, mediaBrowserConnectionCallback, null);
     }
 
     public void subscribe(String parentId, MediaBrowserCompat.SubscriptionCallback callback) {
@@ -145,7 +148,7 @@ public class MediaSessionConnection {
         public void onConnected() {
             super.onConnected();
             try {
-                mediaController = new MediaControllerCompat(mContext, mediaBrowser.getSessionToken());
+                mediaController = new MediaControllerCompat(sContext, mediaBrowser.getSessionToken());
                 mediaController.registerCallback(mMediaControllerCallback);
                 transportControls = mediaController.getTransportControls();
                 rootMediaId = mediaBrowser.getRoot();

@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         mSeekBar = findViewById(R.id.seekBar);
 
         mTimerTask = new TimerTaskManager();
-        mMediaSessionConnection = MediaSessionConnection.getInstance(this);
+        mMediaSessionConnection = MediaSessionConnection.getInstance();
 
         SongInfo s1 = new SongInfo();
         s1.setSongId("111");
