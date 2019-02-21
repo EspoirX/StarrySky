@@ -11,7 +11,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.lzx.starrysky.manager.MediaSessionConnection;
 import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.manager.OnPlayerEventListener;
@@ -252,8 +251,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 MusicManager.getInstance().seekTo(seekBar.getProgress());
             }
         });
-        Glide.with(this);
-        Glide.get(this);
+
     }
 
     @Override
