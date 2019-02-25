@@ -152,13 +152,13 @@ public class MediaSessionConnection {
                 mediaController.registerCallback(mMediaControllerCallback);
                 transportControls = mediaController.getTransportControls();
                 rootMediaId = mediaBrowser.getRoot();
+                isConnected = true;           
                 if (mConnectListener != null) {
                     mConnectListener.onConnected();
                 }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-            isConnected = true;
         }
 
         @Override
