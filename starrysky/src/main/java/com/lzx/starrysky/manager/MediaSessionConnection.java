@@ -152,7 +152,7 @@ public class MediaSessionConnection {
                 mediaController.registerCallback(mMediaControllerCallback);
                 transportControls = mediaController.getTransportControls();
                 rootMediaId = mediaBrowser.getRoot();
-                isConnected = true;           
+                isConnected = true;
                 if (mConnectListener != null) {
                     mConnectListener.onConnected();
                 }
@@ -198,15 +198,8 @@ public class MediaSessionConnection {
                             listener.onError(state.getErrorCode(), state.getErrorMessage().toString());
                             break;
                         case PlaybackStateCompat.STATE_NONE:
-                            SongInfo songInfo = null;
                             String songId = nowPlaying.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                            List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
-                            for (SongInfo info : songInfos) {
-                                if (info.getSongId().equals(songId)) {
-                                    songInfo = info;
-                                    break;
-                                }
-                            }
+                            SongInfo songInfo = MusicProvider.getInstance().getSongInfo(songId);
                             listener.onPlayCompletion(songInfo);
                             break;
                         case PlaybackStateCompat.STATE_BUFFERING:
@@ -217,7 +210,6 @@ public class MediaSessionConnection {
                     }
                 }
             }
-
         }
 
         @Override
@@ -228,19 +220,12 @@ public class MediaSessionConnection {
             //状态监听
             CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = MusicManager.getInstance().getPlayerEventListeners();
             if (metadata != null) {
-                SongInfo songInfo = null;
                 for (OnPlayerEventListener listener : mPlayerEventListeners) {
-                    List<SongInfo> songInfos = MusicProvider.getInstance().getSongInfos();
-                    for (SongInfo info : songInfos) {
-                        if (info.getSongId().equals(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
-                            songInfo = info;
-                            break;
-                        }
-                    }
+                    String songId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+                    SongInfo songInfo = MusicProvider.getInstance().getSongInfo(songId);
                     listener.onMusicSwitch(songInfo);
                 }
             }
-
         }
 
         @Override
