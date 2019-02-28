@@ -71,6 +71,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         Bundle mSessionExtras = new Bundle();
         mediaSession.setExtras(mSessionExtras);
+
         try {
             mediaController = new MediaControllerCompat(this, mediaSession.getSessionToken());
         } catch (RemoteException e) {
