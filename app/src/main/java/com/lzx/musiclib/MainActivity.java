@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
 
         SongInfo s1 = new SongInfo();
         s1.setSongId("111");
-        s1.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3");
+        s1.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3&a=我");
         s1.setSongCover("https://www.qqkw.com/d/file/p/2018/04-21/c24fd86006670f964e63cb8f9c129fc6.jpg");
         s1.setSongName("心雨");
         s1.setArtist("贤哥");

@@ -74,9 +74,19 @@ demo 代码请点击这里 [NiceMusic](https://github.com/lizixian18/NiceMusic)�
 
 
 ## QQ群
+
+微信同号
+
 <a href="art/qq_qun.jpg"><img src="art/qq_qun.jpg" width="30%"/></a>
 
 <br><br>
+
+
+
+你的打赏是我的动力，愿意的话可以佛性打赏，我会非常开心。
+
+<a href="art/biaoqing.gif"><img src="art/biaoqing.gif"/></a>
+<a href="art/WechatIMG1.jpeg"><img src="art/WechatIMG1.jpeg" width="30%"/></a>
 
 
 ## 关于我

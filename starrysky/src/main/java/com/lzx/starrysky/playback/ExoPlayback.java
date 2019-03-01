@@ -171,13 +171,15 @@ public final class ExoPlayback implements Playback {
             MediaMetadataCompat track = mMusicProvider.getMusic(item.getDescription().getMediaId());
 
             String source = track.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI);
-            if (source != null) {
-                source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
+            if (TextUtils.isEmpty(source)) {
+                return;
             }
+            source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
             //缓存歌曲
             if (ExoDownload.getInstance().isOpenCache()) {
                 ExoDownload.getInstance().getDownloadTracker().toggleDownload(mediaId, Uri.parse(source), "");
             }
+
             if (mExoPlayer == null) {
                 //轨道选择
                 TrackSelection.Factory trackSelectionFactory;
@@ -211,7 +213,7 @@ public final class ExoPlayback implements Playback {
             mExoPlayer.setAudioAttributes(audioAttributes, true); //第二个参数能使ExoPlayer自动管理焦点
 
             DataSource.Factory dataSourceFactory = ExoDownload.getInstance().buildDataSourceFactory(mContext);
-            //buildDataSourceFactory();
+
             MediaSource mediaSource = buildMediaSource(dataSourceFactory, Uri.parse(source), null);
 
             mExoPlayer.prepare(mediaSource);
