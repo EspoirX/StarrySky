@@ -75,7 +75,6 @@ demo 代码请点击这里 [NiceMusic](https://github.com/lizixian18/NiceMusic)�
 
 ## QQ群
 
-微信同号
 
 <a href="art/qq_qun.jpg"><img src="art/qq_qun.jpg" width="30%"/></a>
 
