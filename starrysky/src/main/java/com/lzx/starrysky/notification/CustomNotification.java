@@ -97,9 +97,6 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         setClosePendingIntent(mConstructor.getCloseIntent());
         setPlayOrPauseIntent(mConstructor.getPlayOrPauseIntent());
 
-        mRemoteView = createRemoteViews(false);
-        mBigRemoteView = createRemoteViews(true);
-
         if (mNotificationManager != null) {
             mNotificationManager.cancelAll();
         }
@@ -260,6 +257,10 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
                 notificationBuilder.setContentIntent(NotificationUtils.createContentIntent(mService, mConstructor, songId, null, clazz));
             }
         }
+        //这里不能复用，会导致内存泄漏，需要每次都创建
+        mRemoteView = createRemoteViews(false);
+        mBigRemoteView = createRemoteViews(true);
+
         //setCustomContentView and setCustomBigContentView
         if (Build.VERSION.SDK_INT >= 24) {
             notificationBuilder.setCustomContentView(mRemoteView);
