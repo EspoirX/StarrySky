@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -19,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 public class MusicProvider {
 
     //使用Map在查找方面会效率高一点
-    private ConcurrentMap<String, SongInfo> mSongInfoListById;
-    private ConcurrentMap<String, MediaMetadataCompat> mMusicListById;
+    private LinkedHashMap<String, SongInfo> mSongInfoListById;
+    private LinkedHashMap<String, MediaMetadataCompat> mMusicListById;
 
     public static MusicProvider getInstance() {
         return SingletonHolder.sInstance;
@@ -31,8 +32,8 @@ public class MusicProvider {
     }
 
     private MusicProvider() {
-        mSongInfoListById = new ConcurrentHashMap<>();
-        mMusicListById = new ConcurrentHashMap<>();
+        mSongInfoListById = new LinkedHashMap<>();
+        mMusicListById = new LinkedHashMap<>();
     }
 
     /**
@@ -140,8 +141,8 @@ public class MusicProvider {
     /**
      * List<SongInfo> 转 ConcurrentMap<String, MediaMetadataCompat>
      */
-    private synchronized static ConcurrentMap<String, MediaMetadataCompat> toMediaMetadata(List<SongInfo> songInfos) {
-        ConcurrentMap<String, MediaMetadataCompat> map = new ConcurrentHashMap<>();
+    private synchronized static LinkedHashMap<String, MediaMetadataCompat> toMediaMetadata(List<SongInfo> songInfos) {
+        LinkedHashMap<String, MediaMetadataCompat> map = new LinkedHashMap<>();
         for (SongInfo info : songInfos) {
             MediaMetadataCompat metadataCompat = toMediaMetadata(info);
             map.put(info.getSongId(), metadataCompat);
