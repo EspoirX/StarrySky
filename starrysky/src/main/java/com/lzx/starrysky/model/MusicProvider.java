@@ -176,8 +176,7 @@ public class MusicProvider {
             builder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, info.getArtist());
         }
         if (info.getDuration() != -1) {
-            long durationMs = TimeUnit.SECONDS.toMillis(info.getDuration());
-            builder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, durationMs);
+            builder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, info.getDuration());
         }
         if (!TextUtils.isEmpty(info.getGenre())) {
             builder.putString(MediaMetadataCompat.METADATA_KEY_GENRE, info.getGenre());
