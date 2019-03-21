@@ -82,7 +82,7 @@ demo 代码请点击这里 [NiceMusic](https://github.com/lizixian18/NiceMusic)�
 
 
 
-你的打赏是我的动力，愿意的话可以佛性打赏，我会非常开心。
+你的打赏是我的动力，感谢每一位付出的人，愿意的话可以佛性打赏，我会非常开心。
 <a href="art/biaoqing.gif"><img src="art/biaoqing.gif"/></a>
 
 <a href="art/WechatIMG1.jpeg"><img src="art/WechatIMG1.jpeg" width="30%"/></a>
