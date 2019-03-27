@@ -220,6 +220,16 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
             List<SongInfo> list = MusicManager.getInstance().querySongInfoInLocal();
             Toast.makeText(MainActivity.this, "list.size = " + list.size(), Toast.LENGTH_SHORT).show();
         });
+        //连接
+        findViewById(R.id.connect).setOnClickListener(v -> {
+            mMediaSessionConnection.connect();
+            Toast.makeText(this, "连接", Toast.LENGTH_SHORT).show();
+        });
+        //断开连接
+        findViewById(R.id.disconnect).setOnClickListener(v -> {
+            mMediaSessionConnection.disconnect();
+            Toast.makeText(this, "断开连接", Toast.LENGTH_SHORT).show();
+        });
         //添加监听
         MusicManager.getInstance().addPlayerEventListener(this);
         //进度更新

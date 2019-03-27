@@ -33,16 +33,11 @@ public class TestApplication extends Application {
         super.onCreate();
         //初始化
         MusicManager.initMusicManager(this);
+
         //配置通知栏
         NotificationConstructor constructor = new NotificationConstructor.Builder()
-                .setCreateSystemNotification(false)
-//                .setPlayOrPauseIntent(getPendingIntent(ACTION_PLAY_OR_PAUSE))
-//                .setNextIntent(getPendingIntent(ACTION_NEXT))
-//                .setPreIntent(getPendingIntent(ACTION_PRE))
-//                .setFavoriteIntent(getPendingIntent(ACTION_FAVORITE))
-//                .setLyricsIntent(getPendingIntent(ACTION_LYRICS))
+                .setCreateSystemNotification(true)
                 .bulid();
-
         MusicManager.getInstance().setNotificationConstructor(constructor);
 
         //设置缓存

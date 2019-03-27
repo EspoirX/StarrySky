@@ -186,7 +186,6 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
     @Override
     public void onPlaybackStateUpdated(PlaybackStateCompat newState, MediaMetadataCompat currMetadata) {
         mediaSession.setPlaybackState(newState);
-
         if (newState.getState() == PlaybackStateCompat.STATE_BUFFERING ||
                 newState.getState() == PlaybackStateCompat.STATE_PLAYING) {
             mBecomingNoisyReceiver.register();
