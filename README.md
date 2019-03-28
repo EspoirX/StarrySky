@@ -28,7 +28,7 @@ StarrySky 是一个全新的版本，基于媒体浏览器服务(MediaBrowserSer
 - 提供丰富的API方法来轻松实现各种功能。
 - 方便集成自定义通知栏和系统通知栏。
 - 使用ExoPlayer作为底层播放器。
-- 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS，rtmp)。
+- 支持多种音频格式并支持音频直播流(DASH, SmoothStreaming, HLS，rtmp，flac)。
 - 支持边播边存功能，没网也能播。
 - 支持改变播放速度
 - 等等等等
