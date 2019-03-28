@@ -28,12 +28,17 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.Renderer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
 import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
+import com.google.android.exoplayer2.ext.flac.FlacExtractor;
+import com.google.android.exoplayer2.ext.flac.LibflacAudioRenderer;
 import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.offline.FilteringManifestParser;
 import com.google.android.exoplayer2.offline.StreamKey;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -201,7 +206,9 @@ public final class ExoPlayback implements Playback {
 
                 DefaultDrmSessionManager<FrameworkMediaCrypto> drmSessionManager = null;
 
-                mExoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, renderersFactory, trackSelector, drmSessionManager);
+                mExoPlayer = ExoPlayerFactory.newSimpleInstance(mContext, renderersFactory,
+                        trackSelector, drmSessionManager);
+
                 mExoPlayer.addListener(mEventListener);
                 mExoPlayer.addAnalyticsListener(new EventLogger(trackSelector));
             }
@@ -241,8 +248,16 @@ public final class ExoPlayback implements Playback {
                         .createMediaSource(uri);
             case C.TYPE_OTHER:
                 boolean isRtmpSource = uri.toString().toLowerCase().startsWith("rtmp://");
-                return new ExtractorMediaSource.Factory(isRtmpSource ? new RtmpDataSourceFactory() : dataSourceFactory)
-                        .createMediaSource(uri);
+                boolean isFlacSource = uri.toString().toLowerCase().endsWith(".flac");
+                if (isFlacSource) {
+                    DefaultExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+                    return new ExtractorMediaSource(uri, dataSourceFactory, extractorsFactory,
+                            null, null);
+                } else {
+                    return new ExtractorMediaSource
+                            .Factory(isRtmpSource ? new RtmpDataSourceFactory() : dataSourceFactory)
+                            .createMediaSource(uri);
+                }
             default: {
                 throw new IllegalStateException("Unsupported type: " + type);
             }

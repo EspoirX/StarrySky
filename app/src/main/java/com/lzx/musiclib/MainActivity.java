@@ -46,6 +46,13 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         mTimerTask = new TimerTaskManager();
         mMediaSessionConnection = MediaSessionConnection.getInstance();
 
+        SongInfo s0 = new SongInfo();
+        s0.setSongId("111");
+        s0.setSongUrl("file:///android_asset/庄心妍 - 想不到 [mqms2].flac");
+        s0.setSongCover("https://www.qqkw.com/d/file/p/2018/04-21/c24fd86006670f964e63cb8f9c129fc6.jpg");
+        s0.setSongName("庄心妍 - 想不到");
+        s0.setArtist("贤哥");
+
         SongInfo s1 = new SongInfo();
         s1.setSongId("111");
         s1.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3&a=我");
@@ -68,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         s3.setArtist("陈奕迅");
 
         List<SongInfo> songInfos = new ArrayList<>();
+        songInfos.add(s0);
         songInfos.add(s1);
         songInfos.add(s2);
         songInfos.add(s3);
