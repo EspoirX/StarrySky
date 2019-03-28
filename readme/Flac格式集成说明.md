@@ -6,7 +6,7 @@
 
 ## 第一步
 如果你需要播放 Flac 音频，就不能通过依赖的方式使用该库了，原因如上，所以第一步下载源代码。在项目文件夹下
-有一个 resource 的文件夹，里面有一个 extension-flac.aar 的文件，请把它引入到 starrysky library 里面。  
+有一个 resource 的文件夹，里面有一个 extension-flac.aar 的文件，请把它引入到 starrysky 里面。  
 
 如果不会引入，可以参考下面（会的可以忽略）：
 
