@@ -24,12 +24,6 @@ android {
         targetCompatibility 1.8
     }
 
-    repositories {
-        flatDir {
-            dirs project(':starrysky').file('libs')
-        }
-    }
-
     dependencies {
         implementation fileTree(dir: 'libs', include: ['*.jar'])
         //noinspection GradleCompatible
