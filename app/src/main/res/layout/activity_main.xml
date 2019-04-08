@@ -208,6 +208,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="断开连接" />
+
+                <Button
+                    android:id="@+id/getStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="获取状态" />
             </com.google.android.flexbox.FlexboxLayout>
         </FrameLayout>
     </android.support.v4.widget.NestedScrollView>

@@ -231,6 +231,11 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
             mMediaSessionConnection.disconnect();
             Toast.makeText(this, "断开连接", Toast.LENGTH_SHORT).show();
         });
+        //获取状态
+        findViewById(R.id.getStatus).setOnClickListener(v -> {
+            int state = MusicManager.getInstance().getState();
+            Toast.makeText(MainActivity.this, "state = " + state, Toast.LENGTH_SHORT).show();
+        });
         //添加监听
         MusicManager.getInstance().addPlayerEventListener(this);
         //进度更新
@@ -280,11 +285,18 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onBackPressed() {
+        MusicManager.getInstance().stopMusic();
         //回收资源
         MusicManager.getInstance().removePlayerEventListener(this);
         mTimerTask.removeUpdateProgressTask();
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -343,6 +355,8 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         mTimerTask.stopToUpdateProgress();
         LogUtil.i("= onError = errorCode:" + errorCode + " errorMsg:" + errorMsg);
     }
+
+
 
     public static String formatMusicTime(long duration) {
         String time = "";

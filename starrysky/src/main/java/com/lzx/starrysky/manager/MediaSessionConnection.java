@@ -166,6 +166,7 @@ public class MediaSessionConnection {
         @Override
         public void onConnectionSuspended() {
             super.onConnectionSuspended();
+            disconnect();
             isConnected = false;
         }
 

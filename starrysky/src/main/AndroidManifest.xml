@@ -14,7 +14,7 @@
         <service
             android:name=".MusicService"
             android:enabled="true"
-            android:exported="true"
+            android:exported="false"
             tools:ignore="ExportedService">
 
             <intent-filter>
