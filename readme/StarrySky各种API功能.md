@@ -41,6 +41,8 @@ MusicManager.getInstance().playMusicByInfo(s1);
 
 `播放，传入播放列表和要播放的歌曲在播放列表中的索引`
 
+</br>
+
 **3. void playMusicById(String songId)**
 
 `描述：  根据 songId 播放,调用前请确保已经设置了播放列表`
