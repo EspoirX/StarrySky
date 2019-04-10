@@ -47,11 +47,15 @@ MusicManager.getInstance().playMusicByInfo(s1);
 
 `描述：  根据 songId 播放,调用前请确保已经设置了播放列表`
 
+</br>
+
 **4. void playMusicByInfo(SongInfo info)**
 
 `描述：  `
 
 `根据 SongInfo 播放，如果 SongInfo 没有在已有的播放列表中，会把当前的 SongInfo 添加到播放列表，再播放，如果存在，则实际也是根据 songId 播放`
+
+</br>
 
 **5. void playMusicByIndex(int index)**
 
@@ -59,55 +63,101 @@ MusicManager.getInstance().playMusicByInfo(s1);
 
 `根据要播放的歌曲在播放列表中的下标播放,调用前请确保已经设置了播放列表`
 
+</br>
+
+
 **6. void pauseMusic()**
 
 `描述：  暂停播放`
+
+</br>
+
 
 **7. void playMusic()**
 
 `描述：  恢复播放，比如暂停后恢复播放。`
 
+</br>
+
+
 **8. void stopMusic()**
 
 `描述：  停止播放`
+
+</br>
+
 
 **9. void prepare()**
 
 `描述：  播放准备，这可以减少在接收到播放命令时开始播放所花费的时间，不需要准备。`
 
+</br>
+
+
 **10.  void prepareFromSongId(String songId)**
 
 `描述：  根据 songId 给某个媒体播放准备`
+
+</br>
+
 
 **11. void skipToNext()**
 
 `描述：  转跳到下一首`
 
+</br>
+
+
 **12. void skipToPrevious()**
 
 `描述：  转跳到上一首`
+
+</br>
+
 
 **13. boolean isSkipToNextEnabled()**
 
 `描述：  是否有下一首`
 
+</br>
+
+
 **14. boolean isSkipToPreviousEnabled()**
 
 `描述：  是否有上一首`
+
+</br>
+
 
 **15. void fastForward()**
 
 `描述：  快进，每调用一次增加 0.5 倍`
 
+</br>
+
+
 **16. void rewind()**
 
 `描述：  快退，每调用一次减少 0.5 倍，最小为 0 ，0 的时候就会暂停`
 
-**17. void seekTo(long pos)**
+</br>
+
+**17. void onDerailleur(boolean refer, float multiple)**
+
+`描述：  指定语速,通过此方法可配置任意倍速，注意结果要大于0`
+`refer 是否已当前速度为基数`
+`multiple 倍率`
+
+</br>
+    
+**18. void seekTo(long pos)**
 
 `描述：  移动到媒体流中的新位置,以毫秒为单位。`
 
-**18. void setShuffleMode(int shuffleMode)**
+</br>
+
+
+**19. void setShuffleMode(int shuffleMode)**
 
 `描述：  `
 
@@ -115,11 +165,17 @@ MusicManager.getInstance().playMusicByInfo(s1);
 `PlaybackStateCompat.SHUFFLE_MODE_NONE 顺序播放 `   
 `PlaybackStateCompat.SHUFFLE_MODE_ALL  随机播放`
 
-**19. int getShuffleMode()**
+</br>
+
+
+**20. int getShuffleMode()**
 
 `描述：  获取随机播放模式`
 
-**20. setRepeatMode(int repeatMode)**
+</br>
+
+
+**21. setRepeatMode(int repeatMode)**
 
 `描述：  `
 
@@ -127,56 +183,93 @@ MusicManager.getInstance().playMusicByInfo(s1);
 `PlaybackStateCompat.REPEAT_MODE_NONE  顺序播放`  
 `PlaybackStateCompat.REPEAT_MODE_ONE   单曲循环`    
 `PlaybackStateCompat.REPEAT_MODE_ALL   列表循环`
+`PlaybackStateCompatExt.SINGLE_MODE_ONE   单曲播放(播放当前就结束,不会自动播下一首)`
 
-**21. int getRepeatMode()**
+</br>
+
+
+**22. int getRepeatMode()**
 
 `描述：  获取播放模式`
 
-**22. List<SongInfo> getPlayList()**
+</br>
+
+
+**23. List<SongInfo> getPlayList()**
 
 `描述：  获取播放列表`
 
-**23. void updatePlayList(List<SongInfo> songInfos)**
+</br>
+
+
+**24. void updatePlayList(List<SongInfo> songInfos)**
 
 `描述：  更新播放列表，此方法会重新刷新和加载播放数据`
 
-**24. SongInfo getNowPlayingSongInfo()**
+</br>
+
+
+**25. SongInfo getNowPlayingSongInfo()**
 
 `描述：  获取当前播放的歌曲信息，有可能为 null，所以使用时最好判断一下`
 
-**25. String getNowPlayingSongId()**
+</br>
+
+
+**26. String getNowPlayingSongId()**
 
 `描述：  获取当前播放的歌曲信息的 songId`
 
-**26. int getNowPlayingIndex()**
+</br>
+
+
+**27. int getNowPlayingIndex()**
 
 `描述：  获取当前播放歌曲在播放列表中的下标，获取不到时默认值为 -1`
 
-**27. long getBufferedPosition()**
+</br>
+
+
+**28. long getBufferedPosition()**
 
 `描述：  以 ms 为单位获取当前缓冲的位置`
 
-**28. long getPlayingPosition()**
+</br>
+
+
+**29. long getPlayingPosition()**
 
 `描述：  获取播放位置 毫秒为单位`
 
-**29. float getPlaybackSpeed()**
+</br>
+
+
+**30. float getPlaybackSpeed()**
 
 `描述：  `
 
 `获取当前的播放速度，播放速度应该时正常播放的倍数，快退时这应该是负数，值为 1 表示正常播放，0 表示暂停。`
 
-**30. Object getPlaybackState()**
+</br>
+
+
+**31. Object getPlaybackState()**
 
 `描述：  `
 
 `获取底层框架{@link android.media.session.PlaybackState}对象。此方法仅在API 21+上受支持。`
 
-**31. CharSequence getErrorMessage()**
+</br>
+
+
+**32. CharSequence getErrorMessage()**
 
 `描述：  获取发送错误时的错误信息`
 
-**32. int getErrorCode()**
+</br>
+
+
+**33. int getErrorCode()**
 
 `描述：`
   
@@ -194,7 +287,10 @@ MusicManager.getInstance().playMusicByInfo(s1);
 `10: 由于某些外部事件而导致操作中断时的错误代码。`    
 `11: 由于队列耗尽而无法播放导航（上一首，下一首）时出现错误代码。`  
 
-**33. int getState()**
+</br>
+
+
+**34. int getState()**
 
 `描述：  `
 
@@ -212,43 +308,71 @@ MusicManager.getInstance().playMusicByInfo(s1);
 `PlaybackStateCompat.STATE_SKIPPING_TO_NEXT       正在转跳到下一首`    
 `PlaybackStateCompat.STATE_SKIPPING_TO_QUEUE_ITEM 正在切歌`
 
-**34. long getDuration()**
+</br>
+
+
+**35. long getDuration()**
 
 `描述：  获取媒体时长，单位毫秒`
 
-**35. List<SongInfo> querySongInfoInLocal()**
+</br>
+
+
+**36. List<SongInfo> querySongInfoInLocal()**
 
 `描述：  扫描本地媒体信息，并转化为 List<SongInfo> 返回`
 
-**36. boolean isPlaying()**
+</br>
+
+
+**37. boolean isPlaying()**
 
 `描述：  比较方便的判断当前媒体是否在播放`
 
-**37. boolean isPaused()**
+</br>
+
+
+**38. boolean isPaused()**
 
 `描述：  比较方便的判断当前媒体是否暂停中`
 
-**38. boolean isIdea()**
+</br>
+
+
+**39. boolean isIdea()**
 
 `描述：  比较方便的判断当前媒体是否空闲`
 
-**39. boolean isCurrMusicIsPlayingMusic(String songId)**
+</br>
+
+
+**40. boolean isCurrMusicIsPlayingMusic(String songId)**
 
 `描述：  判断传入的音乐是不是正在播放的音乐，在Adapter中判断状态比较有用`
 
-**40. boolean isCurrMusicIsPlaying(String songId)**
+</br>
+
+
+**41. boolean isCurrMusicIsPlaying(String songId)**
 
 `描述：  判断传入的音乐是否正在播放`
 
-**41. boolean isCurrMusicIsPaused(String songId)**
+</br>
+
+
+**42. boolean isCurrMusicIsPaused(String songId)**
 
 `描述：  判断传入的音乐是否正在暂停`
 
-**42. setVolume(float audioVolume)**
+</br>
+
+
+**43. setVolume(float audioVolume)**
 
 `描述：  设置音量`
 
 
+</br>
 
 
 **播放监听相关**
@@ -271,9 +395,15 @@ public interface OnPlayerEventListener {
 
 `描述：  添加一个播放状态监听器`
 
+</br>
+
+
 **2. void removePlayerEventListener(OnPlayerEventListener listener)**
 
 `描述：  移除一个播放状态监听器`
+
+</br>
+
 
 **3. void clearPlayerEventListener()**
 
@@ -351,13 +481,22 @@ mTimerTask.cancelCountDownTask();
 
 `描述：  设置通知栏配置,应该在 Application 中创建并调用`
 
+</br>
+
+
 **2. NotificationConstructor getConstructor()**
 
 `描述：  获取通知栏配置`
 
+</br>
+
+
 **3. void updateFavoriteUI(boolean isFavorite)**
 
 `描述：  如果通知栏中有喜欢或者收藏按钮，可调用此方法来改变按钮是否选中的 UI 显示状态`
+
+</br>
+
 
 **4. void updateLyricsUI(boolean isChecked)**
 

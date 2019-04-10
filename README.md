@@ -31,6 +31,7 @@ StarrySky 是一个全新的版本，基于媒体浏览器服务(MediaBrowserSer
 - 支持多种普通音频格式并支持多种流式音频格式(DASH, SmoothStreaming, HLS，rtmp，flac)。
 - 支持边播边存功能，没网也能播。
 - 支持改变播放速度
+- 超级丰富的 API
 - 等等等等
 
 若在使用中发现 Bug 或者有什么建议问题的可以在 issues 中提出或者添加 QQ 群交流，欢迎反馈。
