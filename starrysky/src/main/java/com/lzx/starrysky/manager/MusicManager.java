@@ -17,6 +17,7 @@ import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.playback.ExoPlayback;
 import com.lzx.starrysky.playback.Playback;
 import com.lzx.starrysky.playback.download.ExoDownload;
+import com.lzx.starrysky.utils.MD5;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -227,6 +228,22 @@ public class MusicManager {
     }
 
     /**
+     * 指定语速,通过此方法可配置任意倍速，注意结果要大于0
+     *
+     * @param refer    refer 是否已当前速度为基数
+     * @param multiple multiple 倍率
+     */
+    public void onDerailleur(boolean refer, float multiple) {
+        MediaSessionConnection connection = MediaSessionConnection.getInstance();
+        if (connection.isConnected()) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("refer", refer);
+            bundle.putFloat("multiple", multiple);
+            connection.getMediaController().sendCommand(ExoPlayback.ACTION_DERAILLEUR, bundle, null);
+        }
+    }
+
+    /**
      * 移动到媒体流中的新位置,以毫秒为单位。
      */
     public void seekTo(long pos) {
@@ -266,6 +283,7 @@ public class MusicManager {
      * PlaybackStateCompat.REPEAT_MODE_NONE  顺序播放
      * PlaybackStateCompat.REPEAT_MODE_ONE   单曲循环
      * PlaybackStateCompat.REPEAT_MODE_ALL   列表循环
+     * PlaybackStateCompatExt.SINGLE_MODE_ONE   单曲播放(播放当前就结束,不会自动播下一首)
      */
     public void setRepeatMode(int repeatMode) {
         MediaSessionConnection connection = MediaSessionConnection.getInstance();
@@ -625,6 +643,9 @@ public class MusicManager {
             song.setSize(String.valueOf(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.SIZE))));
             song.setPublishTime(String.valueOf(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_ADDED))));
             song.setModifiedTime(String.valueOf(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_MODIFIED))));
+            String songId = !TextUtils.isEmpty(song.getSongUrl()) ? MD5.hexdigest(song.getSongUrl())
+                    : MD5.hexdigest(String.valueOf(System.currentTimeMillis()));
+            song.setSongId(songId);
             songInfos.add(song);
         }
         cursor.close();

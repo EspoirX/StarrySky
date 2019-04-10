@@ -71,6 +71,7 @@ public final class ExoPlayback implements Playback {
     private static final String TAG = "ExoPlayback";
 
     public static final String ACTION_CHANGE_VOLUME = "ACTION_CHANGE_VOLUME";
+    public static final String ACTION_DERAILLEUR = "ACTION_DERAILLEUR";
 
     public static final String ABR_ALGORITHM_DEFAULT = "default";
     public static final String ABR_ALGORITHM_RANDOM = "random";
@@ -320,6 +321,21 @@ public final class ExoPlayback implements Playback {
                 newSpeed = 0;
             }
             mExoPlayer.setPlaybackParameters(new PlaybackParameters(newSpeed, currPitch));
+        }
+    }
+
+    /**
+     * 指定语速 refer 是否已当前速度为基数  multiple 倍率
+     */
+    @Override
+    public void onDerailleur(boolean refer, float multiple) {
+        if (mExoPlayer != null) {
+            float currSpeed = mExoPlayer.getPlaybackParameters().speed;
+            float currPitch = mExoPlayer.getPlaybackParameters().pitch;
+            float newSpeed = refer ? currSpeed * multiple : multiple;
+            if (newSpeed > 0) {
+                mExoPlayer.setPlaybackParameters(new PlaybackParameters(newSpeed, currPitch));
+            }
         }
     }
 

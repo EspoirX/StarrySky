@@ -61,6 +61,8 @@ public interface Playback {
 
     float getVolume();
 
+    void onDerailleur(boolean refer, float multiple);
+
     interface Callback {
         void onCompletion();
 

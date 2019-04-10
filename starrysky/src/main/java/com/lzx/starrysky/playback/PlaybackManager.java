@@ -25,6 +25,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.lzx.starrysky.ext.PlaybackStateCompatExt;
 import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.notification.factory.INotification;
@@ -101,7 +102,7 @@ public class PlaybackManager implements Playback.Callback {
     public void handleStopRequest(String withError) {
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
-        updatePlaybackState(false,withError);
+        updatePlaybackState(false, withError);
     }
 
     /**
@@ -119,6 +120,13 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     /**
+     * 指定语速 refer 是否已当前速度为基数  multiple 倍率
+     */
+    public void handleDerailleur(boolean refer, float multiple) {
+        mPlayback.onDerailleur(refer, multiple);
+    }
+
+    /**
      * 更新播放状态
      */
     public void updatePlaybackState(boolean isOnlyUpdateActions, String error) {
@@ -126,7 +134,7 @@ public class PlaybackManager implements Playback.Callback {
             //单独更新 Actions
             stateBuilder.setActions(getAvailableActions());
             mServiceCallback.onPlaybackStateUpdated(stateBuilder.build(), null);
-        }else {
+        } else {
             long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
             if (mPlayback != null && mPlayback.isConnected()) {
                 position = mPlayback.getCurrentStreamPosition();
@@ -203,8 +211,11 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void onCompletion() {
-        updatePlaybackState(false,null);
-
+        updatePlaybackState(false, null);
+        //单曲模式(播放当前就结束)
+        if (currRepeatMode == PlaybackStateCompatExt.SINGLE_MODE_ONE) {
+            return;
+        }
         if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
             //顺序播放
             shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1
@@ -216,7 +227,7 @@ public class PlaybackManager implements Playback.Callback {
                 handleStopRequest(null);
             }
         } else if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
-            //单曲播放
+            //单曲循环
             shouldPlayNext = false;
             mPlayback.setCurrentMediaId("");
             handlePlayRequest();
@@ -237,7 +248,7 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void onPlaybackStatusChanged(int state) {
-        updatePlaybackState(false,null);
+        updatePlaybackState(false, null);
     }
 
     /**
@@ -245,7 +256,7 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void onError(String error) {
-        updatePlaybackState(false,error);
+        updatePlaybackState(false, error);
     }
 
     /**
@@ -326,7 +337,7 @@ public class PlaybackManager implements Playback.Callback {
             if (shouldPlayPre) {
                 //当前的媒体如果是在第二首点击到上一首的时候，如果不重新判断，会用于为 true
                 if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-                    shouldPlayPre =  mQueueManager.getCurrentIndex() != 0;
+                    shouldPlayPre = mQueueManager.getCurrentIndex() != 0;
                 }
                 shouldPlayNext = true;
                 handlePlayRequest();
@@ -370,7 +381,7 @@ public class PlaybackManager implements Playback.Callback {
                 shouldPlayNext = true;
                 shouldPlayPre = true;
             }
-            updatePlaybackState(true,null);  //更新状态
+            updatePlaybackState(true, null);  //更新状态
         }
 
         /**
@@ -397,6 +408,11 @@ public class PlaybackManager implements Playback.Callback {
             if (ExoPlayback.ACTION_CHANGE_VOLUME.equals(command)) {
                 float audioVolume = extras.getFloat("AudioVolume");
                 mPlayback.setVolume(audioVolume);
+            }
+            if (ExoPlayback.ACTION_DERAILLEUR.equals(command)) {
+                boolean refer = extras.getBoolean("refer");
+                float multiple = extras.getFloat("multiple");
+                handleDerailleur(refer, multiple);
             }
         }
     }
