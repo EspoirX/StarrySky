@@ -38,5 +38,10 @@
             </intent-filter>
         </receiver>
 
+        <!--修复缓存中把网断了的崩溃-->
+        <service
+            android:name="com.google.android.exoplayer2.scheduler.PlatformScheduler$PlatformSchedulerService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 </manifest>
