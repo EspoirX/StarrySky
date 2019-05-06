@@ -1,4 +1,4 @@
-package com.lzx.starrysky.utils;
+package com.lzx.musiclib.imageloader;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

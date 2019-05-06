@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Environment;
 
+import com.lzx.musiclib.imageloader.GlideLoader;
 import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.playback.download.ExoDownload;
@@ -33,13 +34,13 @@ public class TestApplication extends Application {
         super.onCreate();
         //初始化
         MusicManager.initMusicManager(this);
-
+        //设置图片加载器
+        MusicManager.setImageLoader(new GlideLoader());
         //配置通知栏
         NotificationConstructor constructor = new NotificationConstructor.Builder()
                 .setCreateSystemNotification(true)
                 .bulid();
         MusicManager.getInstance().setNotificationConstructor(constructor);
-
         //设置缓存
         String destFileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/11ExoCacheDir";
         ExoDownload.getInstance().setOpenCache(true); //打开缓存开关

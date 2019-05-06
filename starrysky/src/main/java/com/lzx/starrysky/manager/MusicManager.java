@@ -18,6 +18,8 @@ import com.lzx.starrysky.playback.ExoPlayback;
 import com.lzx.starrysky.playback.Playback;
 import com.lzx.starrysky.playback.download.ExoDownload;
 import com.lzx.starrysky.utils.MD5;
+import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
+import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,13 @@ public class MusicManager {
         sContext = context;
         ExoDownload.initExoDownload(sContext);
         MediaSessionConnection.initConnection(sContext);
+    }
+
+    /**
+     * 设置图片加载器
+     */
+    public static void setImageLoader(ILoaderStrategy loader){
+        ImageLoader.getInstance().setGlobalImageLoader(loader);
     }
 
     private MusicManager() {

@@ -43,9 +43,6 @@ dependencies {
 x.x.x is the current version number。
 
 
-In addition to ExoPlayer, the third-party library that StarrySky relies on is Glide:4.8.0, which is used for downloading the cover. If the version conflicts with the version in your project, it is recommended to import the source code.
-The way to modify it yourself.
-
 Please use Java8.
 
 

@@ -19,19 +19,15 @@ package com.lzx.starrysky.playback;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
+import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -207,17 +203,19 @@ public class QueueManager {
         //更新封面 bitmap
         String coverUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
         if (!TextUtils.isEmpty(coverUrl)) {
-            Glide.with(mContext).applyDefaultRequestOptions(
-                    new RequestOptions()
-                            .fallback(R.drawable.default_art)
-                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE))
-                    .asBitmap().load(coverUrl).into(new SimpleTarget<Bitmap>(144, 144) {
-                @Override
-                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                    mMusicProvider.updateMusicArt(musicId, metadata, resource, resource);
-                    mListener.onMetadataChanged(metadata);
-                }
-            });
+            ImageLoader.getInstance()
+                    .load(coverUrl)
+                    .context(mContext)
+                    .placeholder(R.drawable.default_art)
+                    .resize(144,144)
+                    .bitmap(new BitmapCallBack.SimperCallback() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap resource) {
+                            super.onBitmapLoaded(resource);
+                            mMusicProvider.updateMusicArt(musicId, metadata, resource, resource);
+                            mListener.onMetadataChanged(metadata);
+                        }
+                    });
         }
     }
 

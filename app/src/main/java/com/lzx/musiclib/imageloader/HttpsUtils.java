@@ -1,4 +1,4 @@
-package com.lzx.starrysky.utils;
+package com.lzx.musiclib.imageloader;
 
 import java.io.IOException;
 import java.io.InputStream;

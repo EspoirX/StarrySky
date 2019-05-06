@@ -13,8 +13,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -24,11 +22,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.model.MusicProvider;
@@ -36,6 +29,8 @@ import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.utils.NotificationColorUtils;
 import com.lzx.starrysky.notification.utils.NotificationUtils;
+import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
+import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
 import java.util.List;
 
@@ -417,18 +412,20 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
      * 加载封面
      */
     private void fetchBitmapFromURLAsync(String fetchArtUrl, Notification notification) {
-        Glide.with(mService).applyDefaultRequestOptions(
-                new RequestOptions()
-                        .fallback(R.drawable.default_art)
-                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE))
-                .asBitmap().load(fetchArtUrl).into(new SimpleTarget<Bitmap>(144, 144) {
-            @Override
-            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                mRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), resource);
-                mBigRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), resource);
-                mNotificationManager.notify(NOTIFICATION_ID, notification);
-            }
-        });
+        ImageLoader.getInstance()
+                .load(fetchArtUrl)
+                .context(mService)
+                .placeholder(R.drawable.default_art)
+                .resize(144,144)
+                .bitmap(new BitmapCallBack.SimperCallback() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap resource) {
+                        super.onBitmapLoaded(resource);
+                        mRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), resource);
+                        mBigRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), resource);
+                        mNotificationManager.notify(NOTIFICATION_ID, notification);
+                    }
+                });
     }
 
     /**

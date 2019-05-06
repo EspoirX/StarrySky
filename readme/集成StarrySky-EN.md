@@ -53,4 +53,44 @@ Please be flexible in applying for these permissions.
 
 After completing these three steps, StarrySky has been successfully integrated into your project.
 
+# Custom image loader
 
+The loading of the cover image in StarrySky, the loading of the cover in the notification bar requires the image loader.
+The image loading does not limit the fixed frame, which can be defined by itself. The steps are as follows:
+
+**First step**
+
+Implement the [ILoaderStrategy](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/utils/imageloader/ILoaderStrategy.java) interface, implement the loadImage method, and loadImage is your image loading method:
+
+```java
+public interface ILoaderStrategy {
+    void loadImage(LoaderOptions options);
+}
+```
+
+The parameter [LoaderOptions](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/utils/imageloader/LoaderOptions.java) is the parameter required for image loading. You can use it to get the image loading:
+
+```java
+public class LoaderOptions {
+    public Context mContext; //上下文
+    public int placeholderResId; //占位图
+    public int targetWidth; //图片宽
+    public int targetHeight; //图片高
+    public BitmapCallBack bitmapCallBack; //返回 bitmap 回调
+    public String url; //图片连接
+}
+```
+
+If you want to load with Glide, you can refer to the [GlideLoader](https://github.com/EspoirX/StarrySky/blob/StarrySkyJava/app/src/main/java/com/lzx/musiclib/imageloader/GlideLoader.java) in the project. If you are another framework, just implement the loadImage method.
+
+**Second step**
+
+Set the custom image loader by calling the setImageLoader method in the Application.
+
+```java
+MusicManager.setImageLoader(new GlideLoader());
+```
+
+Of course, if you don't set it, StarrySky will use the default image loader to load the image. The default image loader class is called [DefaultImageLoader](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/utils/imageloader/DefaultImageLoader.java).
+
+In order to better load the effect, it is recommended to use some mature third-party framework to achieve image loading.
