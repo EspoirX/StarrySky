@@ -55,7 +55,7 @@ public class MusicManager {
     /**
      * 设置图片加载器
      */
-    public static void setImageLoader(ILoaderStrategy loader){
+    public static void setImageLoader(ILoaderStrategy loader) {
         ImageLoader.getInstance().setGlobalImageLoader(loader);
     }
 
@@ -340,8 +340,30 @@ public class MusicManager {
             if (metadataCompat != null) {
                 String songId = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
                 songInfo = MusicProvider.getInstance().getSongInfo(songId);
+                //播放列表改变了或者清空了，如果还在播放歌曲，这时候 getSongInfo 就会获取不到，
+                //此时需要从 metadataCompat 中获取
+                if (songInfo == null && !TextUtils.isEmpty(songId)) {
+                    songInfo = getSongInfoFromMediaMetadata(metadataCompat);
+                }
             }
         }
+        return songInfo;
+    }
+
+    private SongInfo getSongInfoFromMediaMetadata(MediaMetadataCompat metadata) {
+        SongInfo songInfo = new SongInfo();
+        songInfo.setSongId(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID));
+        songInfo.setSongUrl(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI));
+        songInfo.setAlbumName(metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM));
+        songInfo.setArtist(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
+        songInfo.setDuration(metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+        songInfo.setGenre(metadata.getString(MediaMetadataCompat.METADATA_KEY_GENRE));
+        songInfo.setSongCover(metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
+        songInfo.setAlbumCover(metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI));
+        songInfo.setSongName(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+        songInfo.setTrackNumber((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER));
+        songInfo.setAlbumSongCount((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS));
+        songInfo.setSongCoverBitmap(metadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART));
         return songInfo;
     }
 
