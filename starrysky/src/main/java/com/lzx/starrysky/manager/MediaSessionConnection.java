@@ -122,6 +122,9 @@ public class MediaSessionConnection {
      */
     public void connect() {
         if (!isConnected) {
+            //进程被异常杀死时，App 被外部链接唤起时，connect 状态为 CONNECT_STATE_CONNECTING，
+            //导致崩溃，所以要先执行 disconnect
+            disconnectImpl();
             mediaBrowser.connect();
         }
     }
@@ -131,12 +134,16 @@ public class MediaSessionConnection {
      */
     public void disconnect() {
         if (isConnected) {
-            if (mediaController != null) {
-                mediaController.unregisterCallback(mMediaControllerCallback);
-            }
-            mediaBrowser.disconnect();
+            disconnectImpl();
             isConnected = false;
         }
+    }
+
+    private void disconnectImpl() {
+        if (mediaController != null) {
+            mediaController.unregisterCallback(mMediaControllerCallback);
+        }
+        mediaBrowser.disconnect();
     }
 
     /**
