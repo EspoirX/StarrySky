@@ -57,7 +57,7 @@ x.x.x 填的是当前的版本号。
 - [快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)
 - [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/媒体缓存功能.md)
 - [Flac音频格式集成说明](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/Flac格式集成说明.md)
-
+- [播放前需求先请求接口获取url时的处理方法](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/播放前需求先请求接口获取url时的处理方法.md)
 
 PS：
 - 如果有兴趣，建议稍微阅读一下源码，这样对使用或者解决问题有很大帮助。

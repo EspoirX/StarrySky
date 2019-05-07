@@ -7,6 +7,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +18,8 @@ import com.lzx.starrysky.manager.OnPlayerEventListener;
 import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.playback.download.ExoDownload;
 import com.lzx.starrysky.utils.TimerTaskManager;
+import com.lzx.starrysky.utils.delayaction.Action;
+import com.lzx.starrysky.utils.delayaction.DelayAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -236,6 +239,16 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
             int state = MusicManager.getInstance().getState();
             Toast.makeText(MainActivity.this, "state = " + state, Toast.LENGTH_SHORT).show();
         });
+        //请求接口后再播放示例
+        findViewById(R.id.validPlay).setOnClickListener(v -> {
+            RequestMusicUrlValid valid = new RequestMusicUrlValid(MainActivity.this);
+            DelayAction.getInstance()
+                    .addAction(() -> {
+                        MusicManager.getInstance().playMusicByInfo(valid.getSongInfo());
+                    })
+                    .addValid(valid)
+                    .doCall();
+        });
         //添加监听
         MusicManager.getInstance().addPlayerEventListener(this);
         //进度更新
@@ -355,7 +368,6 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         mTimerTask.stopToUpdateProgress();
         LogUtil.i("= onError = errorCode:" + errorCode + " errorMsg:" + errorMsg);
     }
-
 
 
     public static String formatMusicTime(long duration) {
