@@ -21,6 +21,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -161,7 +162,7 @@ public final class ExoPlayback implements Playback {
     }
 
     @Override
-    public void play(QueueItem item) {
+    public void play(QueueItem item, boolean isPlayWhenReady) {
         mPlayOnFocusGain = true;
         String mediaId = item.getDescription().getMediaId();
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
@@ -222,7 +223,9 @@ public final class ExoPlayback implements Playback {
 
             mExoPlayer.prepare(mediaSource);
         }
-        mExoPlayer.setPlayWhenReady(true);
+        if (isPlayWhenReady) {
+            mExoPlayer.setPlayWhenReady(true);
+        }
     }
 
     private MediaSource buildMediaSource(DataSource.Factory dataSourceFactory, Uri uri, @Nullable String overrideExtension) {

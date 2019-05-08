@@ -140,7 +140,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
      */
     @Override
     public void onCurrentQueueIndexUpdated(int queueIndex) {
-        mPlaybackManager.handlePlayRequest();
+        mPlaybackManager.handlePlayRequest(true);
     }
 
     /**

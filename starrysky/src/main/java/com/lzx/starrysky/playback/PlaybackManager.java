@@ -78,11 +78,13 @@ public class PlaybackManager implements Playback.Callback {
     /**
      * 播放
      */
-    public void handlePlayRequest() {
+    public void handlePlayRequest(boolean isPlayWhenReady) {
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
-            mServiceCallback.onPlaybackStart();
-            mPlayback.play(currentMusic);
+            if (isPlayWhenReady) {
+                mServiceCallback.onPlaybackStart();
+            }
+            mPlayback.play(currentMusic, isPlayWhenReady);
         }
     }
 
@@ -221,7 +223,7 @@ public class PlaybackManager implements Playback.Callback {
             shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1
                     && mQueueManager.skipQueuePosition(1);
             if (shouldPlayNext) {
-                handlePlayRequest();
+                handlePlayRequest(true);
                 mQueueManager.updateMetadata();
             } else {
                 handleStopRequest(null);
@@ -230,12 +232,12 @@ public class PlaybackManager implements Playback.Callback {
             //单曲循环
             shouldPlayNext = false;
             mPlayback.setCurrentMediaId("");
-            handlePlayRequest();
+            handlePlayRequest(true);
         } else if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
             //列表循环
             shouldPlayNext = mQueueManager.skipQueuePosition(1);
             if (shouldPlayNext) {
-                handlePlayRequest();
+                handlePlayRequest(true);
                 mQueueManager.updateMetadata();
             } else {
                 handleStopRequest(null);
@@ -273,11 +275,24 @@ public class PlaybackManager implements Playback.Callback {
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
 
         @Override
+        public void onPrepare() {
+            super.onPrepare();
+            handlePlayRequest(false);
+        }
+
+        @Override
+        public void onPrepareFromMediaId(String mediaId, Bundle extras) {
+            super.onPrepareFromMediaId(mediaId, extras);
+            mQueueManager.setQueueFromMusic(mediaId);
+            handlePlayRequest(false);
+        }
+
+        @Override
         public void onPlay() {
             if (mQueueManager.getCurrentMusic() == null) {
                 mQueueManager.setRandomQueue();
             }
-            handlePlayRequest();
+            handlePlayRequest(true);
         }
 
         @Override
@@ -294,7 +309,7 @@ public class PlaybackManager implements Playback.Callback {
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
             mQueueManager.setQueueFromMusic(mediaId);
-            handlePlayRequest();
+            handlePlayRequest(true);
         }
 
         @Override
@@ -322,7 +337,7 @@ public class PlaybackManager implements Playback.Callback {
                     shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1;
                 }
                 shouldPlayPre = true;
-                handlePlayRequest();
+                handlePlayRequest(true);
                 mQueueManager.updateMetadata();
             }
         }
@@ -340,7 +355,7 @@ public class PlaybackManager implements Playback.Callback {
                     shouldPlayPre = mQueueManager.getCurrentIndex() != 0;
                 }
                 shouldPlayNext = true;
-                handlePlayRequest();
+                handlePlayRequest(true);
                 mQueueManager.updateMetadata();
             }
         }

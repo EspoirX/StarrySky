@@ -220,6 +220,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="获取状态" />
+
+                <Button
+                    android:id="@+id/onPrepare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="准备但不播放" />
+
+                <Button
+                    android:id="@+id/seekTo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="seekTo" />
             </com.google.android.flexbox.FlexboxLayout>
         </FrameLayout>
     </android.support.v4.widget.NestedScrollView>

@@ -249,6 +249,12 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                     .addValid(valid)
                     .doCall();
         });
+        //准备但不播放
+        findViewById(R.id.onPrepare).setOnClickListener(v -> {
+            MusicManager.getInstance().updatePlayList(songInfos);
+            MusicManager.getInstance().prepareFromSongId("111");
+        });
+
         //添加监听
         MusicManager.getInstance().addPlayerEventListener(this);
         //进度更新

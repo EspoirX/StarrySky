@@ -43,7 +43,7 @@ public interface Playback {
 
     void updateLastKnownStreamPosition();
 
-    void play(QueueItem item);
+    void play(QueueItem item, boolean isPlayWhenReady);
 
     void pause();
 
