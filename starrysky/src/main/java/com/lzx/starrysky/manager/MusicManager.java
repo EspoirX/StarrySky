@@ -618,6 +618,10 @@ public class MusicManager {
                     duration = mPlayback.getDuration();
                 }
             }
+            //当切换歌曲的时候偶尔回调为 -9223372036854775807  Long.MIN_VALUE
+            if (duration < -1){
+                return -1;
+            }
         }
         return duration;
     }
