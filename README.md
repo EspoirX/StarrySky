@@ -48,6 +48,12 @@ x.x.x 填的是当前的版本号。
 
 请使用 Java8。
 
+如果导入不了可以试试加上这个：
+```groovy
+maven{
+    url "https://dl.bintray.com/lizixian/StarrySky/"
+}
+```
 
 
 ## 使用文档
