@@ -22,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 与服务端连接的管理类
  */
 public class MediaSessionConnection {
-    private static Context sContext;
+    private Context sContext;
     private ComponentName serviceComponent;
     private MediaBrowserCompat mediaBrowser;
     private boolean isConnected;
@@ -35,24 +35,24 @@ public class MediaSessionConnection {
     private MediaControllerCallback mMediaControllerCallback;
     private OnConnectListener mConnectListener;
 
-    public static void initConnection(Context context) {
-        sContext = context;
-    }
+//    public static void initConnection(Context context) {
+//        sContext = context;
+//    }
 
-    private static volatile MediaSessionConnection sInstance;
+//    private static volatile MediaSessionConnection sInstance;
+//
+//    public static MediaSessionConnection getInstance() {
+//        if (sInstance == null) {
+//            synchronized (MediaSessionConnection.class) {
+//                if (sInstance == null) {
+//                    sInstance = new MediaSessionConnection(new ComponentName(sContext, MusicService.class));
+//                }
+//            }
+//        }
+//        return sInstance;
+//    }
 
-    public static MediaSessionConnection getInstance() {
-        if (sInstance == null) {
-            synchronized (MediaSessionConnection.class) {
-                if (sInstance == null) {
-                    sInstance = new MediaSessionConnection(new ComponentName(sContext, MusicService.class));
-                }
-            }
-        }
-        return sInstance;
-    }
-
-    private MediaSessionConnection(ComponentName serviceComponent) {
+    public MediaSessionConnection(ComponentName serviceComponent) {
         this.serviceComponent = serviceComponent;
         mediaBrowserConnectionCallback = new MediaBrowserConnectionCallback();
         mMediaControllerCallback = new MediaControllerCallback();

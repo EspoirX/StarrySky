@@ -43,6 +43,9 @@ public class MusicManager {
         private static final MusicManager sInstance = new MusicManager();
     }
 
+
+
+
     /**
      * 在Application调用
      */
