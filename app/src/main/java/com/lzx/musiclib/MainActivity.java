@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.lzx.starrysky.manager.MediaSessionConnection;
 import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.manager.OnPlayerEventListener;
+import com.lzx.starrysky.manager.StarrySky;
 import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.playback.download.ExoDownload;
 import com.lzx.starrysky.utils.TimerTaskManager;
@@ -50,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
 
         mTimerTask = new TimerTaskManager();
         mMediaSessionConnection = MediaSessionConnection.getInstance();
-
 
         SongInfo s1 = new SongInfo();
         s1.setSongId("111");

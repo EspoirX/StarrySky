@@ -17,6 +17,7 @@ public class StarrySky {
     private StarrySkyActivityLifecycle mLifecycle;
     private MediaSessionConnection mConnection;
     private ILoaderStrategy mImageLoader;
+    private PlayerControl mPlayerControl;
 
     public static void init(Application application) {
         if (alreadyInit) {
@@ -46,6 +47,10 @@ public class StarrySky {
         return sStarrySky;
     }
 
+    public static PlayerControl with() {
+        return get().getPlayerControl();
+    }
+
     private static void checkAndInitializeStarrySky(@NonNull Context context) {
         if (isInitializing) {
             throw new IllegalStateException("checkAndInitializeStarrySky");
@@ -64,8 +69,32 @@ public class StarrySky {
         sStarrySky = starrySky;
     }
 
-    StarrySky(MediaSessionConnection connection, ILoaderStrategy imageLoader) {
+    StarrySky(
+            MediaSessionConnection connection,
+            ILoaderStrategy imageLoader,
+            PlayerControl playerControl) {
         mConnection = connection;
         mImageLoader = imageLoader;
+        mPlayerControl = playerControl;
+
+
+        mConnection.connect();
+    }
+
+    public MediaSessionConnection getConnection() {
+        return mConnection;
+    }
+
+    public ILoaderStrategy getImageLoader() {
+        return mImageLoader;
+    }
+
+
+    public PlayerControl getPlayerControl() {
+        if (getConnection().isConnected()) {
+            return mPlayerControl;
+        }
+        getConnection().connect();
+        return mPlayerControl;
     }
 }

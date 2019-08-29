@@ -11,6 +11,7 @@ public class StarrySkyBuilder {
 
     private MediaSessionConnection mConnection;
     private ILoaderStrategy mImageLoader;
+    private PlayerControl mPlayerControl;
 
     public void setConnection(MediaSessionConnection connection) {
         mConnection = connection;
@@ -20,17 +21,25 @@ public class StarrySkyBuilder {
         mImageLoader = imageLoader;
     }
 
+    public void setPlayerControl(PlayerControl playerControl) {
+        mPlayerControl = playerControl;
+    }
+
     StarrySky build(Context context) {
         if (mConnection == null) {
             ComponentName componentName = new ComponentName(context, MusicService.class);
-            mConnection = new MediaSessionConnection(componentName);
+            mConnection = new MediaSessionConnection(context, componentName);
         }
         if (mImageLoader == null) {
             mImageLoader = new DefaultImageLoader();
         }
+        if (mPlayerControl == null) {
+            mPlayerControl = new StarrySkyPlayerControl(context, mConnection);
+        }
         return new StarrySky(
                 mConnection,
-                mImageLoader);
+                mImageLoader,
+                mPlayerControl);
     }
 
 

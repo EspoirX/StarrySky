@@ -8,9 +8,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
-import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.model.SongInfo;
 
@@ -52,8 +50,9 @@ public class MediaSessionConnection {
 //        return sInstance;
 //    }
 
-    public MediaSessionConnection(ComponentName serviceComponent) {
+    public MediaSessionConnection(Context context, ComponentName serviceComponent) {
         this.serviceComponent = serviceComponent;
+        this.sContext = context;
         mediaBrowserConnectionCallback = new MediaBrowserConnectionCallback();
         mMediaControllerCallback = new MediaControllerCallback();
         mediaBrowser = new MediaBrowserCompat(sContext, serviceComponent, mediaBrowserConnectionCallback, null);
