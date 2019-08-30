@@ -22,6 +22,7 @@ import com.lzx.starrysky.manager.StarrySky;
 import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.playback.download.ExoDownload;
 import com.lzx.starrysky.utils.TimerTaskManager;
+import com.lzx.starrysky.utils.delayaction.Action;
 import com.lzx.starrysky.utils.delayaction.DelayAction;
 
 import java.util.ArrayList;
@@ -250,11 +251,9 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         findViewById(R.id.validPlay).setOnClickListener(v -> {
             RequestMusicUrlValid valid = new RequestMusicUrlValid(MainActivity.this);
             DelayAction.getInstance()
-                    .addAction(() -> {
-                        MusicManager.getInstance().playMusicByInfo(valid.getSongInfo());
-                    })
+                    .addAction(songInfo -> MusicManager.getInstance().playMusicByInfo(valid.getSongInfo()))
                     .addValid(valid)
-                    .doCall();
+                    .doCall(s1);
         });
         //准备但不播放
         findViewById(R.id.onPrepare).setOnClickListener(v -> {

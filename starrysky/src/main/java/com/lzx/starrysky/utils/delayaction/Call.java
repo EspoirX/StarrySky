@@ -1,5 +1,7 @@
 package com.lzx.starrysky.utils.delayaction;
 
+import com.lzx.starrysky.model.SongInfo;
+
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -38,8 +40,8 @@ public class Call {
         }
     }
 
-    public void doCall() {
-        MultipleCall.getInstance().postCall(this);
+    public void doCall(SongInfo songInfo) {
+        MultipleCall.getInstance().postCall(this, songInfo);
     }
 
     public Action getAction() {

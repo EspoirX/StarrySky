@@ -1,5 +1,7 @@
 package com.lzx.starrysky.utils.delayaction;
 
+import com.lzx.starrysky.model.SongInfo;
+
 /**
  * 目标方法前置检验模型设计与实现
  * https://github.com/feelschaotic/DelayAction
@@ -30,7 +32,7 @@ public class DelayAction {
         return this;
     }
 
-    public void doCall() {
+    public void doCall(SongInfo songInfo) {
         //如果上一条valid没有通过，是不允许再发起call的
         if (mCall.getLastValid() != null && !mCall.getLastValid().preCheck()) {
             return;
@@ -38,7 +40,7 @@ public class DelayAction {
         //执行action
         if (mCall.getValidQueue().size() == 0) {
             if (mCall.getAction() != null) {
-                mCall.getAction().call();
+                mCall.getAction().call(songInfo);
                 clear();
             }
         } else {
@@ -46,7 +48,7 @@ public class DelayAction {
             Valid valid = mCall.getValidQueue().poll();
             if (valid != null) {
                 mCall.setLastValid(valid);
-                valid.doValid();
+                valid.doValid(songInfo);
             }
         }
     }

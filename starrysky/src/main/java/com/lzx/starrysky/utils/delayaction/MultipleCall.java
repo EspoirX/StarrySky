@@ -1,5 +1,7 @@
 package com.lzx.starrysky.utils.delayaction;
 
+import com.lzx.starrysky.model.SongInfo;
+
 import java.util.Queue;
 import java.util.Stack;
 
@@ -18,11 +20,11 @@ public class MultipleCall {
         private static MultipleCall mInstance = new MultipleCall();
     }
 
-    public MultipleCall postCall(Call call) {
+    public MultipleCall postCall(Call call, SongInfo songInfo) {
         call.check();
         if (call.getValidQueue().size() == 0 && call.getAction() != null) {
             //如果全部满足，则跳到目标方法
-            call.getAction().call();
+            call.getAction().call(songInfo);
         } else {
             //加入到延迟执行体中来
             mDelaysCallStack.push(call);
@@ -30,13 +32,13 @@ public class MultipleCall {
             Valid peekValid = call.getValidQueue().peek();
             if (peekValid != null) {
                 call.setLastValid(peekValid);
-                peekValid.doValid();
+                peekValid.doValid(songInfo);
             }
         }
         return this;
     }
 
-    public void reCheckValid() {
+    public void reCheckValid(SongInfo songInfo) {
         if (mDelaysCallStack.size() <= 0) {
             return;
         }
@@ -49,14 +51,14 @@ public class MultipleCall {
         validQueue.remove(call.getLastValid());
         if (validQueue.size() == 0) {
             if (call.getAction() != null) {
-                call.getAction().call();
+                call.getAction().call(songInfo);
                 mDelaysCallStack.remove(call);
             }
         } else {
             Valid peekValid = call.getValidQueue().peek();
             if (peekValid != null) {
                 call.setLastValid(peekValid);
-                peekValid.doValid();
+                peekValid.doValid(songInfo);
             }
         }
     }

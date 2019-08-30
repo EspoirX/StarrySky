@@ -1,5 +1,6 @@
 package com.lzx.starrysky.manager;
 
+import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.utils.delayaction.DelayAction;
 import com.lzx.starrysky.utils.delayaction.Valid;
 
@@ -32,9 +33,9 @@ public class ValidRegistry {
         }
 
         @Override
-        public void doValid() {
+        public void doValid(SongInfo songInfo) {
             //empty do
-            DelayAction.getInstance().doCall();
+            DelayAction.getInstance().doCall(songInfo);
         }
     }
 }

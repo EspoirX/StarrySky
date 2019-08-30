@@ -1,5 +1,7 @@
 package com.lzx.starrysky.utils.delayaction;
 
+import com.lzx.starrysky.model.SongInfo;
+
 public interface Valid {
 
     /**
@@ -11,5 +13,5 @@ public interface Valid {
      * 去执行验证前置行为，例如跳转到登录界面。
      * 但并未完成验证。所以需要在登陆成功时调用preCheck()再次检查）
      */
-    void doValid();
+    void doValid(SongInfo songInfo);
 }

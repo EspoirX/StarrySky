@@ -60,7 +60,6 @@ import com.lzx.starrysky.playback.download.ExoDownload;
 
 import java.util.List;
 
-import static android.support.v4.media.session.MediaSessionCompat.QueueItem;
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
 

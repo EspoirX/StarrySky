@@ -30,7 +30,7 @@ public class RequestMusicUrlValid implements Valid {
     }
 
     @Override
-    public void doValid() {
+    public void doValid(SongInfo songInfo) {
         //这里模拟请求接口操作，请求完成后修改 preCheck 的状态，然后做自己要做的操作，做完后调用一下 doCall 方方法
 
         //模拟接口请求成功
@@ -48,6 +48,6 @@ public class RequestMusicUrlValid implements Valid {
         mSongInfo.setArtist("贤哥");
 
         //调用一下 doCall ，继续执行，才会执行后续的 Action
-        DelayAction.getInstance().doCall();
+        DelayAction.getInstance().doCall(songInfo);
     }
 }

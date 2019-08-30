@@ -31,6 +31,7 @@ import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.manager.StarrySky;
 import com.lzx.starrysky.manager.ValidRegistry;
 import com.lzx.starrysky.model.MediaQueueProviderImpl;
+import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
 import com.lzx.starrysky.utils.delayaction.Action;
@@ -90,9 +91,13 @@ public class PlaybackManager implements Playback.Callback {
             for (Valid valid : validRegistry.getValids()) {
                 delayAction.addValid(valid != null ? valid : new ValidRegistry.DefaultValid());
             }
-            delayAction.addAction(() -> {
-                handPlayRequestImpl(isPlayWhenReady);
-            }).doCall();
+            delayAction.addAction(new Action() {
+                @Override
+                public void call(SongInfo songInfo) {
+                    PlaybackManager.this.handPlayRequestImpl(isPlayWhenReady);
+                }
+            });
+            delayAction.doCall(null);
         } else {
             handPlayRequestImpl(isPlayWhenReady);
         }
@@ -174,8 +179,8 @@ public class PlaybackManager implements Playback.Callback {
             //设置播放状态
             stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
             //设置当前活动的 songId
-           // MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
-           MediaResource currentMusic = mQueueManager.getCurrentMusic();
+            // MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
+            MediaResource currentMusic = mQueueManager.getCurrentMusic();
             MediaMetadataCompat currMetadata = null;
             if (currentMusic != null) {
                 stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
