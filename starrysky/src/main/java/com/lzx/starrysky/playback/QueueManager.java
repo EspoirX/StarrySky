@@ -25,7 +25,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
 import com.lzx.starrysky.R;
-import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.manager.MediaQueueProvider;
+import com.lzx.starrysky.model.MediaQueueProviderImpl;
 import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
@@ -38,7 +39,7 @@ public class QueueManager {
     private static final String TAG = "QueueManager";
 
     private Context mContext;
-    private MusicProvider mMusicProvider;
+    private MediaQueueProvider mMusicProvider;
     private MetadataUpdateListener mListener;
 
     //正在播放的队列
@@ -46,7 +47,7 @@ public class QueueManager {
     //下标
     private int mCurrentIndex;
 
-    public QueueManager(Context context, @NonNull MusicProvider musicProvider,
+    public QueueManager(Context context, @NonNull MediaQueueProvider musicProvider,
                         @NonNull MetadataUpdateListener listener) {
         mContext = context;
         this.mMusicProvider = musicProvider;

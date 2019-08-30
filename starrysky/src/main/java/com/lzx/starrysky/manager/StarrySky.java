@@ -73,7 +73,8 @@ public class StarrySky {
     StarrySky(
             MediaSessionConnection connection,
             ILoaderStrategy imageLoader,
-            PlayerControl playerControl) {
+            PlayerControl playerControl,
+            MediaQueueProvider mediaQueueProvider) {
         mConnection = connection;
         mImageLoader = imageLoader;
         mPlayerControl = playerControl;
@@ -81,6 +82,7 @@ public class StarrySky {
         mRegistry = new StarrySkyRegistry();
         mRegistry.registryImageLoader(mImageLoader);
         mRegistry.registryPlayerControl(mPlayerControl);
+        mRegistry.registryMediaQueueProvider(mediaQueueProvider);
 
         mConnection.connect();
     }

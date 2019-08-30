@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 
 import com.lzx.starrysky.MusicService;
+import com.lzx.starrysky.model.MediaQueueProviderImpl;
 import com.lzx.starrysky.utils.imageloader.DefaultImageLoader;
 import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
 
@@ -12,6 +13,7 @@ public class StarrySkyBuilder {
     private MediaSessionConnection mConnection;
     private ILoaderStrategy mImageLoader;
     private PlayerControl mPlayerControl;
+    private MediaQueueProvider mMediaQueueProvider;
 
     public void setConnection(MediaSessionConnection connection) {
         mConnection = connection;
@@ -25,6 +27,10 @@ public class StarrySkyBuilder {
         mPlayerControl = playerControl;
     }
 
+    public void setMediaQueueProvider(MediaQueueProvider mediaQueueProvider) {
+        mMediaQueueProvider = mediaQueueProvider;
+    }
+
     StarrySky build(Context context) {
         if (mConnection == null) {
             ComponentName componentName = new ComponentName(context, MusicService.class);
@@ -33,14 +39,16 @@ public class StarrySkyBuilder {
         if (mImageLoader == null) {
             mImageLoader = new DefaultImageLoader();
         }
+        if (mMediaQueueProvider == null) {
+            mMediaQueueProvider = new MediaQueueProviderImpl();
+        }
         if (mPlayerControl == null) {
-            mPlayerControl = new StarrySkyPlayerControl(context, mConnection);
+            mPlayerControl = new StarrySkyPlayerControl(context, mConnection, mMediaQueueProvider);
         }
         return new StarrySky(
                 mConnection,
                 mImageLoader,
-                mPlayerControl);
+                mPlayerControl,
+                mMediaQueueProvider);
     }
-
-
 }

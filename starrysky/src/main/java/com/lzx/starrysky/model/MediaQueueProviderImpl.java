@@ -5,33 +5,24 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
 
+import com.lzx.starrysky.manager.MediaQueueProvider;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 
 
 /**
  * 媒体信息提供类
  */
-public class MusicProvider {
+public class MediaQueueProviderImpl implements MediaQueueProvider {
 
     //使用Map在查找方面会效率高一点
     private LinkedHashMap<String, SongInfo> mSongInfoListById;
     private LinkedHashMap<String, MediaMetadataCompat> mMusicListById;
 
-    public static MusicProvider getInstance() {
-        return SingletonHolder.sInstance;
-    }
-
-    private static class SingletonHolder {
-        private static final MusicProvider sInstance = new MusicProvider();
-    }
-
-    private MusicProvider() {
+    public MediaQueueProviderImpl() {
         mSongInfoListById = new LinkedHashMap<>();
         mMusicListById = new LinkedHashMap<>();
     }
@@ -39,6 +30,7 @@ public class MusicProvider {
     /**
      * 获取List#SongInfo
      */
+    @Override
     public List<SongInfo> getSongInfos() {
         return new ArrayList<>(mSongInfoListById.values());
     }
@@ -46,6 +38,7 @@ public class MusicProvider {
     /**
      * 设置播放列表
      */
+    @Override
     public synchronized void setSongInfos(List<SongInfo> songInfos) {
         mSongInfoListById.clear();
         for (SongInfo info : songInfos) {
@@ -57,6 +50,7 @@ public class MusicProvider {
     /**
      * 添加一首歌
      */
+    @Override
     public synchronized void addSongInfo(SongInfo songInfo) {
         mSongInfoListById.put(songInfo.getSongId(), songInfo);
         mMusicListById.put(songInfo.getSongId(), toMediaMetadata(songInfo));
@@ -65,6 +59,7 @@ public class MusicProvider {
     /**
      * 根据检查是否有某首音频
      */
+    @Override
     public boolean hasSongInfo(String songId) {
         return mSongInfoListById.containsKey(songId);
     }
@@ -72,6 +67,7 @@ public class MusicProvider {
     /**
      * 根据songId获取SongInfo
      */
+    @Override
     public SongInfo getSongInfo(String songId) {
         if (mSongInfoListById.containsKey(songId)) {
             return mSongInfoListById.get(songId);
@@ -83,6 +79,7 @@ public class MusicProvider {
     /**
      * 根据songId获取索引
      */
+    @Override
     public int getIndexBySongInfo(String songId) {
         SongInfo songInfo = getSongInfo(songId);
         return songInfo != null ? getSongInfos().indexOf(songInfo) : -1;
@@ -91,6 +88,7 @@ public class MusicProvider {
     /**
      * 获取List#MediaMetadataCompat
      */
+    @Override
     public List<MediaMetadataCompat> getMusicList() {
         return new ArrayList<>(mMusicListById.values());
     }
@@ -98,6 +96,7 @@ public class MusicProvider {
     /**
      * 获取 List#MediaBrowserCompat.MediaItem 用于 onLoadChildren 回调
      */
+    @Override
     public List<MediaBrowserCompat.MediaItem> getChildrenResult() {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
         List<MediaMetadataCompat> list = new ArrayList<>(mMusicListById.values());
@@ -113,6 +112,7 @@ public class MusicProvider {
     /**
      * 获取乱序列表
      */
+    @Override
     public Iterable<MediaMetadataCompat> getShuffledMusic() {
         List<MediaMetadataCompat> shuffled = new ArrayList<>(mMusicListById.size());
         shuffled.addAll(mMusicListById.values());
@@ -123,6 +123,7 @@ public class MusicProvider {
     /**
      * 根据id获取对应的MediaMetadataCompat对象
      */
+    @Override
     public MediaMetadataCompat getMusic(String songId) {
         return mMusicListById.containsKey(songId) ? mMusicListById.get(songId) : null;
     }
@@ -130,6 +131,7 @@ public class MusicProvider {
     /**
      * 更新封面art
      */
+    @Override
     public synchronized void updateMusicArt(String songId, MediaMetadataCompat changeData, Bitmap albumArt, Bitmap icon) {
         MediaMetadataCompat metadata = new MediaMetadataCompat.Builder(changeData)
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)

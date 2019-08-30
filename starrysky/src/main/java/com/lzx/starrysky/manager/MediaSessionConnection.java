@@ -9,7 +9,7 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.model.MediaQueueProviderImpl;
 import com.lzx.starrysky.model.SongInfo;
 
 import java.util.List;
@@ -208,7 +208,7 @@ public class MediaSessionConnection {
                             break;
                         case PlaybackStateCompat.STATE_NONE:
                             String songId = nowPlaying.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                            SongInfo songInfo = MusicProvider.getInstance().getSongInfo(songId);
+                            SongInfo songInfo = StarrySky.get().getRegistry().getMediaQueueProvider().getSongInfo(songId);
                             listener.onPlayCompletion(songInfo);
                             break;
                         case PlaybackStateCompat.STATE_BUFFERING:
@@ -231,7 +231,7 @@ public class MediaSessionConnection {
             if (metadata != null) {
                 for (OnPlayerEventListener listener : mPlayerEventListeners) {
                     String songId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                    SongInfo songInfo = MusicProvider.getInstance().getSongInfo(songId);
+                    SongInfo songInfo = StarrySky.get().getRegistry().getMediaQueueProvider().getSongInfo(songId);
                     listener.onMusicSwitch(songInfo);
                 }
             }

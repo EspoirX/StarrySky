@@ -21,7 +21,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -55,7 +54,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.Util;
-import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.manager.MediaQueueProvider;
+import com.lzx.starrysky.model.MediaQueueProviderImpl;
 import com.lzx.starrysky.playback.download.ExoDownload;
 
 import java.util.List;
@@ -85,7 +85,7 @@ public final class ExoPlayback implements Playback {
     private final Context mContext;
     private boolean mPlayOnFocusGain;
     private Callback mCallback;
-    private final MusicProvider mMusicProvider;
+    private final MediaQueueProvider mMusicProvider;
     private String mCurrentMediaId;
 
     private SimpleExoPlayer mExoPlayer;
@@ -96,7 +96,7 @@ public final class ExoPlayback implements Playback {
     private DefaultTrackSelector trackSelector;
     private DefaultTrackSelector.Parameters trackSelectorParameters;
 
-    public ExoPlayback(Context context, MusicProvider musicProvider) {
+    public ExoPlayback(Context context, MediaQueueProvider musicProvider) {
         this.mContext = context.getApplicationContext();
         this.mMusicProvider = musicProvider;
         trackSelectorParameters = new DefaultTrackSelector.ParametersBuilder().build();

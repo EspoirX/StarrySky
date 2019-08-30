@@ -19,10 +19,12 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.lzx.starrysky.manager.MediaQueueProvider;
 import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.manager.PlayerControl;
 import com.lzx.starrysky.manager.StarrySky;
-import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.manager.StarrySkyRegistry;
+import com.lzx.starrysky.model.MediaQueueProviderImpl;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
 import com.lzx.starrysky.playback.ExoPlayback;
@@ -53,15 +55,21 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
     private static final int STOP_DELAY = 30000;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
 
+    private StarrySkyRegistry mRegistry;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        MusicProvider musicProvider = MusicProvider.getInstance();
+        mRegistry = StarrySky.get().getRegistry();
+
+        MediaQueueProvider musicProvider = mRegistry.getMediaQueueProvider();
+        PlayerControl playerControl = mRegistry.getPlayerControl();
+
         QueueManager queueManager = new QueueManager(this, musicProvider, this);
         ExoPlayback playback = new ExoPlayback(this, musicProvider);
 
         mPlaybackManager = new PlaybackManager(this, this, queueManager, playback);
-        PlayerControl playerControl = StarrySky.get().getRegistry().getPlayerControl();
+
         playerControl.setPlayBack(playback);
 
         Intent sessionIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());

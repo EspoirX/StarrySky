@@ -9,7 +9,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
-import com.lzx.starrysky.model.MusicProvider;
+import com.lzx.starrysky.model.MediaQueueProviderImpl;
 import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.playback.ExoPlayback;
@@ -24,29 +24,33 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     private Context mContext;
     private MediaSessionConnection connection;
+    private MediaQueueProvider mMediaQueueProvider;
     private Playback mPlayback;
 
-    public StarrySkyPlayerControl(Context context, MediaSessionConnection connection) {
+    public StarrySkyPlayerControl(Context context, 
+                                  MediaSessionConnection connection, 
+                                  MediaQueueProvider mediaQueueProvider) {
         this.connection = connection;
         mContext = context;
+        this.mMediaQueueProvider = mediaQueueProvider;
     }
 
     @Override
     public void playMusicById(String songId) {
-        if (MusicProvider.getInstance().hasSongInfo(songId)) {
+        if (mMediaQueueProvider.hasSongInfo(songId)) {
             connection.getTransportControls().playFromMediaId(songId, null);
         }
     }
 
     @Override
     public void playMusicByInfo(SongInfo info) {
-        MusicProvider.getInstance().addSongInfo(info);
+        mMediaQueueProvider.addSongInfo(info);
         connection.getTransportControls().playFromMediaId(info.getSongId(), null);
     }
 
     @Override
     public void playMusicByIndex(int index) {
-        List<SongInfo> list = MusicProvider.getInstance().getSongInfos();
+        List<SongInfo> list = mMediaQueueProvider.getSongInfos();
         if (list != null && index >= 0 && index < list.size()) {
             connection.getTransportControls().playFromMediaId(list.get(index).getSongId(), null);
         }
@@ -54,7 +58,7 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public void playMusic(List<SongInfo> songInfos, int index) {
-        MusicProvider.getInstance().setSongInfos(songInfos);
+        mMediaQueueProvider.setSongInfos(songInfos);
         connection.getTransportControls().playFromMediaId(songInfos.get(index).getSongId(), null);
     }
 
@@ -138,12 +142,12 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public List<SongInfo> getPlayList() {
-        return MusicProvider.getInstance().getSongInfos();
+        return mMediaQueueProvider.getSongInfos();
     }
 
     @Override
     public void updatePlayList(List<SongInfo> songInfos) {
-        MusicProvider.getInstance().setSongInfos(songInfos);
+        mMediaQueueProvider.setSongInfos(songInfos);
     }
 
     @Override
@@ -152,7 +156,7 @@ public class StarrySkyPlayerControl implements PlayerControl {
         MediaMetadataCompat metadataCompat = connection.getNowPlaying();
         if (metadataCompat != null) {
             String songId = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-            songInfo = MusicProvider.getInstance().getSongInfo(songId);
+            songInfo = mMediaQueueProvider.getSongInfo(songId);
             //播放列表改变了或者清空了，如果还在播放歌曲，这时候 getSongInfo 就会获取不到，
             //此时需要从 metadataCompat 中获取
             if (songInfo == null && !TextUtils.isEmpty(songId)) {
@@ -194,7 +198,7 @@ public class StarrySkyPlayerControl implements PlayerControl {
         int index = -1;
         String songId = getNowPlayingSongId();
         if (!TextUtils.isEmpty(songId)) {
-            index = MusicProvider.getInstance().getIndexBySongInfo(songId);
+            index = mMediaQueueProvider.getIndexBySongInfo(songId);
         }
         return index;
     }

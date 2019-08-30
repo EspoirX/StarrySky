@@ -2,26 +2,12 @@ package com.lzx.starrysky.manager;
 
 
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
-import android.text.TextUtils;
 
-import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.notification.NotificationConstructor;
-import com.lzx.starrysky.notification.factory.INotification;
-import com.lzx.starrysky.playback.ExoPlayback;
-import com.lzx.starrysky.playback.Playback;
-import com.lzx.starrysky.playback.download.ExoDownload;
-import com.lzx.starrysky.utils.MD5;
 import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 

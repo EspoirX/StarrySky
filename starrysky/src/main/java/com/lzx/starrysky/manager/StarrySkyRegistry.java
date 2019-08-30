@@ -5,6 +5,7 @@ import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
 public class StarrySkyRegistry {
     private ImageLoaderRegistry mImageLoaderRegistry;
     private PlayerControl mPlayerControl;
+    private MediaQueueProvider mMediaQueueProvider;
 
     public StarrySkyRegistry() {
         mImageLoaderRegistry = new ImageLoaderRegistry();
@@ -22,11 +23,21 @@ public class StarrySkyRegistry {
         }
     }
 
+    public void registryMediaQueueProvider(MediaQueueProvider mediaQueueProvider) {
+        if (mediaQueueProvider != null) {
+            mMediaQueueProvider = mediaQueueProvider;
+        }
+    }
+
     public ImageLoaderRegistry getImageLoaderRegistry() {
         return mImageLoaderRegistry;
     }
 
     public PlayerControl getPlayerControl() {
         return mPlayerControl;
+    }
+
+    public MediaQueueProvider getMediaQueueProvider() {
+        return mMediaQueueProvider;
     }
 }
