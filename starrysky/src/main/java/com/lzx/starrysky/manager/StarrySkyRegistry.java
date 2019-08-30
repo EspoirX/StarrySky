@@ -1,14 +1,19 @@
 package com.lzx.starrysky.manager;
 
+import com.lzx.starrysky.MediaResource;
+import com.lzx.starrysky.utils.delayaction.Valid;
 import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
 
 public class StarrySkyRegistry {
     private ImageLoaderRegistry mImageLoaderRegistry;
     private PlayerControl mPlayerControl;
     private MediaQueueProvider mMediaQueueProvider;
+    private ValidRegistry mValidRegistry;
+    private MediaResource mMediaResource;
 
     public StarrySkyRegistry() {
         mImageLoaderRegistry = new ImageLoaderRegistry();
+        mValidRegistry = new ValidRegistry();
     }
 
     public void registryImageLoader(ILoaderStrategy strategy) {
@@ -39,5 +44,21 @@ public class StarrySkyRegistry {
 
     public MediaQueueProvider getMediaQueueProvider() {
         return mMediaQueueProvider;
+    }
+
+    public void appendValidRegistry(Valid valid) {
+        mValidRegistry.append(valid);
+    }
+
+    public ValidRegistry getValidRegistry() {
+        return mValidRegistry;
+    }
+
+    public MediaResource getMediaResource() {
+        return mMediaResource;
+    }
+
+    public void registryMediaResource(MediaResource mediaResource) {
+        mMediaResource = mediaResource;
     }
 }

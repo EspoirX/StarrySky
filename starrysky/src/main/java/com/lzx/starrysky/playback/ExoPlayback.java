@@ -54,8 +54,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.Util;
+import com.lzx.starrysky.MediaResource;
 import com.lzx.starrysky.manager.MediaQueueProvider;
-import com.lzx.starrysky.model.MediaQueueProviderImpl;
 import com.lzx.starrysky.playback.download.ExoDownload;
 
 import java.util.List;
@@ -162,16 +162,16 @@ public final class ExoPlayback implements Playback {
     }
 
     @Override
-    public void play(QueueItem item, boolean isPlayWhenReady) {
+    public void play(MediaResource resource, boolean isPlayWhenReady) {
         mPlayOnFocusGain = true;
-        String mediaId = item.getDescription().getMediaId();
+        String mediaId = resource.getMediaId();
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
         if (mediaHasChanged) {
             mCurrentMediaId = mediaId;
         }
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false); // release everything except the player
-            MediaMetadataCompat track = mMusicProvider.getMusic(item.getDescription().getMediaId());
+            MediaMetadataCompat track = mMusicProvider.getMusic(resource.getMediaId());
 
             String source = track.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI);
             if (TextUtils.isEmpty(source)) {

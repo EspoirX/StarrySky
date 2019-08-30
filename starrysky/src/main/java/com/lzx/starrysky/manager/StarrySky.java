@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.lzx.starrysky.MediaResource;
 import com.lzx.starrysky.StarrySkyActivityLifecycle;
 import com.lzx.starrysky.playback.download.ExoDownload;
 import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
@@ -83,6 +84,8 @@ public class StarrySky {
         mRegistry.registryImageLoader(mImageLoader);
         mRegistry.registryPlayerControl(mPlayerControl);
         mRegistry.registryMediaQueueProvider(mediaQueueProvider);
+        mRegistry.registryMediaResource(new MediaResource());
+
 
         mConnection.connect();
     }

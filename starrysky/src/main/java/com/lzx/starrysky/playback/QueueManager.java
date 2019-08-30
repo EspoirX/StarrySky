@@ -24,8 +24,11 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
+import com.lzx.starrysky.MediaResource;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.manager.MediaQueueProvider;
+import com.lzx.starrysky.manager.StarrySky;
+import com.lzx.starrysky.manager.StarrySkyRegistry;
 import com.lzx.starrysky.model.MediaQueueProviderImpl;
 import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
@@ -41,9 +44,11 @@ public class QueueManager {
     private Context mContext;
     private MediaQueueProvider mMusicProvider;
     private MetadataUpdateListener mListener;
+    private MediaResource mMediaResource;
 
     //正在播放的队列
     private List<MediaSessionCompat.QueueItem> mPlayingQueue;
+
     //下标
     private int mCurrentIndex;
 
@@ -55,17 +60,20 @@ public class QueueManager {
 
         mPlayingQueue = Collections.synchronizedList(new ArrayList<>());
         mCurrentIndex = 0;
+        mMediaResource = StarrySky.get().getRegistry().getMediaResource();
     }
 
     /**
      * 判断传入的媒体跟正在播放的媒体是否一样
      */
     public boolean isSameBrowsingCategory(@NonNull String mediaId) {
-        MediaSessionCompat.QueueItem current = getCurrentMusic();
+        //MediaSessionCompat.QueueItem current = getCurrentMusic();
+        MediaResource current = getCurrentMusic();
         if (current == null) {
             return false;
         }
-        return mediaId.equals(current.getDescription().getMediaId());
+        //return mediaId.equals(current.getDescription().getMediaId());
+        return mediaId.equals(current.getMediaId());
     }
 
     /**
@@ -149,12 +157,20 @@ public class QueueManager {
     /**
      * 获取当前播放的媒体
      */
-    public MediaSessionCompat.QueueItem getCurrentMusic() {
+//    public MediaSessionCompat.QueueItem getCurrentMusic() {
+//        if (!QueueHelper.isIndexPlayable(mCurrentIndex, mPlayingQueue)) {
+//            return null;
+//        }
+//        return mPlayingQueue.get(mCurrentIndex);
+//    }
+    public MediaResource getCurrentMusic() {
         if (!QueueHelper.isIndexPlayable(mCurrentIndex, mPlayingQueue)) {
             return null;
         }
-        return mPlayingQueue.get(mCurrentIndex);
+        MediaSessionCompat.QueueItem queueItem = mPlayingQueue.get(mCurrentIndex);
+        return mMediaResource.obtain(queueItem.getDescription().getMediaId(), queueItem.getQueueId());
     }
+
 
     /**
      * 获取队列大小
@@ -190,12 +206,14 @@ public class QueueManager {
      * 更新媒体信息
      */
     public void updateMetadata() {
-        MediaSessionCompat.QueueItem currentMusic = getCurrentMusic();
+        // MediaSessionCompat.QueueItem currentMusic = getCurrentMusic();
+        MediaResource currentMusic = getCurrentMusic();
         if (currentMusic == null) {
             mListener.onMetadataRetrieveError();
             return;
         }
-        final String musicId = currentMusic.getDescription().getMediaId();
+        //final String musicId = currentMusic.getDescription().getMediaId();
+        final String musicId = currentMusic.getMediaId();
         MediaMetadataCompat metadata = mMusicProvider.getMusic(musicId);
         if (metadata == null) {
             throw new IllegalArgumentException("Invalid musicId " + musicId);
@@ -208,7 +226,7 @@ public class QueueManager {
                     .load(coverUrl)
                     .context(mContext)
                     .placeholder(R.drawable.default_art)
-                    .resize(144,144)
+                    .resize(144, 144)
                     .bitmap(new BitmapCallBack.SimperCallback() {
                         @Override
                         public void onBitmapLoaded(Bitmap resource) {

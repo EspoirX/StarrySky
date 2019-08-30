@@ -16,6 +16,8 @@
 package com.lzx.starrysky.playback;
 
 
+import com.lzx.starrysky.MediaResource;
+
 import static android.support.v4.media.session.MediaSessionCompat.QueueItem;
 
 /**
@@ -43,7 +45,7 @@ public interface Playback {
 
     void updateLastKnownStreamPosition();
 
-    void play(QueueItem item, boolean isPlayWhenReady);
+    void play(MediaResource mediaResource, boolean isPlayWhenReady);
 
     void pause();
 

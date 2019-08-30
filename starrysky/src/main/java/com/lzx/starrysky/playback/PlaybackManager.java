@@ -25,11 +25,17 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.lzx.starrysky.MediaResource;
 import com.lzx.starrysky.ext.PlaybackStateCompatExt;
+import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.manager.StarrySky;
+import com.lzx.starrysky.manager.ValidRegistry;
 import com.lzx.starrysky.model.MediaQueueProviderImpl;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
+import com.lzx.starrysky.utils.delayaction.Action;
+import com.lzx.starrysky.utils.delayaction.DelayAction;
+import com.lzx.starrysky.utils.delayaction.Valid;
 
 
 /**
@@ -78,7 +84,22 @@ public class PlaybackManager implements Playback.Callback {
      * 播放
      */
     public void handlePlayRequest(boolean isPlayWhenReady) {
-        MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
+        ValidRegistry validRegistry = StarrySky.get().getRegistry().getValidRegistry();
+        if (validRegistry.hasValid()) {
+            DelayAction delayAction = DelayAction.getInstance();
+            for (Valid valid : validRegistry.getValids()) {
+                delayAction.addValid(valid != null ? valid : new ValidRegistry.DefaultValid());
+            }
+            delayAction.addAction(() -> {
+                handPlayRequestImpl(isPlayWhenReady);
+            }).doCall();
+        } else {
+            handPlayRequestImpl(isPlayWhenReady);
+        }
+    }
+
+    private void handPlayRequestImpl(boolean isPlayWhenReady) {
+        MediaResource currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
             if (isPlayWhenReady) {
                 mServiceCallback.onPlaybackStart();
@@ -153,11 +174,13 @@ public class PlaybackManager implements Playback.Callback {
             //设置播放状态
             stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
             //设置当前活动的 songId
-            MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
+           // MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
+           MediaResource currentMusic = mQueueManager.getCurrentMusic();
             MediaMetadataCompat currMetadata = null;
             if (currentMusic != null) {
                 stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
-                final String musicId = currentMusic.getDescription().getMediaId();
+                //final String musicId = currentMusic.getDescription().getMediaId();
+                final String musicId = currentMusic.getMediaId();
                 currMetadata = StarrySky.get().getRegistry().getMediaQueueProvider().getMusic(musicId);
             }
             //把状态回调出去
