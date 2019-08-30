@@ -1,6 +1,7 @@
 package com.lzx.starrysky.manager;
 
 import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.playback.Playback;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -288,4 +289,6 @@ public interface PlayerControl {
     void clearPlayerEventListener();
 
     CopyOnWriteArrayList<OnPlayerEventListener> getPlayerEventListeners();
+
+    void setPlayBack(Playback playBack);
 }

@@ -13,6 +13,7 @@ import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.model.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.playback.ExoPlayback;
+import com.lzx.starrysky.playback.Playback;
 import com.lzx.starrysky.utils.MD5;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     private Context mContext;
     private MediaSessionConnection connection;
+    private Playback mPlayback;
 
     public StarrySkyPlayerControl(Context context, MediaSessionConnection connection) {
         this.connection = connection;
@@ -199,12 +201,12 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public long getBufferedPosition() {
-        return 0;
+        return mPlayback != null ? mPlayback.getBufferedPosition() : 0;
     }
 
     @Override
     public long getPlayingPosition() {
-        return 0;
+        return mPlayback != null ? mPlayback.getCurrentStreamPosition() : 0;
     }
 
     @Override
@@ -292,12 +294,23 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public float getVolume() {
-        return 0;
+        return mPlayback != null ? mPlayback.getVolume() : -1;
     }
 
     @Override
     public long getDuration() {
-        return 0;
+        long duration = connection.getNowPlaying().getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+        //如果没设置duration
+        if (duration == 0) {
+            if (mPlayback != null) {
+                duration = mPlayback.getDuration();
+            }
+        }
+        //当切换歌曲的时候偶尔回调为 -9223372036854775807  Long.MIN_VALUE
+        if (duration < -1) {
+            return -1;
+        }
+        return duration;
     }
 
     @Override
@@ -386,5 +399,10 @@ public class StarrySkyPlayerControl implements PlayerControl {
     @Override
     public CopyOnWriteArrayList<OnPlayerEventListener> getPlayerEventListeners() {
         return null;
+    }
+
+    @Override
+    public void setPlayBack(Playback playBack) {
+        mPlayback = playBack;
     }
 }

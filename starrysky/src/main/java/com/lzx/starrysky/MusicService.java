@@ -20,6 +20,8 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.lzx.starrysky.manager.MusicManager;
+import com.lzx.starrysky.manager.PlayerControl;
+import com.lzx.starrysky.manager.StarrySky;
 import com.lzx.starrysky.model.MusicProvider;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
@@ -59,6 +61,8 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         ExoPlayback playback = new ExoPlayback(this, musicProvider);
 
         mPlaybackManager = new PlaybackManager(this, this, queueManager, playback);
+        PlayerControl playerControl = StarrySky.get().getRegistry().getPlayerControl();
+        playerControl.setPlayBack(playback);
 
         Intent sessionIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
         PendingIntent sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, 0);

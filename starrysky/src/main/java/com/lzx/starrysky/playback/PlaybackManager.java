@@ -59,7 +59,6 @@ public class PlaybackManager implements Playback.Callback {
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
         mPlayback.setCallback(this);
-        MusicManager.getInstance().setPlayback(mPlayback);
         currRepeatMode = PlaybackStateCompat.REPEAT_MODE_NONE;
     }
 

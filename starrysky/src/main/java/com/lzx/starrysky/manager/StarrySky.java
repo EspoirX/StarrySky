@@ -18,6 +18,7 @@ public class StarrySky {
     private MediaSessionConnection mConnection;
     private ILoaderStrategy mImageLoader;
     private PlayerControl mPlayerControl;
+    private StarrySkyRegistry mRegistry;
 
     public static void init(Application application) {
         if (alreadyInit) {
@@ -77,6 +78,9 @@ public class StarrySky {
         mImageLoader = imageLoader;
         mPlayerControl = playerControl;
 
+        mRegistry = new StarrySkyRegistry();
+        mRegistry.registryImageLoader(mImageLoader);
+        mRegistry.registryPlayerControl(mPlayerControl);
 
         mConnection.connect();
     }
@@ -89,12 +93,15 @@ public class StarrySky {
         return mImageLoader;
     }
 
-
     public PlayerControl getPlayerControl() {
         if (getConnection().isConnected()) {
             return mPlayerControl;
         }
         getConnection().connect();
         return mPlayerControl;
+    }
+
+    public StarrySkyRegistry getRegistry() {
+        return mRegistry;
     }
 }

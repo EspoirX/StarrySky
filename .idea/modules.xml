@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MusicLibrary.iml" filepath="$PROJECT_DIR$/MusicLibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/StarrySky.iml" filepath="$PROJECT_DIR$/StarrySky.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/starrysky/starrysky.iml" filepath="$PROJECT_DIR$/starrysky/starrysky.iml" />

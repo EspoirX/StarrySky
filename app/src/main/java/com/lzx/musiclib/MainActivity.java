@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
     TextView currInfo, currTime;
     SeekBar mSeekBar;
 
-    MediaSessionConnection mMediaSessionConnection;
+//    MediaSessionConnection mMediaSessionConnection;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         mSeekBar = findViewById(R.id.seekBar);
 
         mTimerTask = new TimerTaskManager();
-        mMediaSessionConnection = MediaSessionConnection.getInstance();
+//        mMediaSessionConnection = MediaSessionConnection.getInstance();
 
         SongInfo s1 = new SongInfo();
         s1.setSongId("111");
@@ -233,12 +233,12 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         });
         //连接
         findViewById(R.id.connect).setOnClickListener(v -> {
-            mMediaSessionConnection.connect();
+//            mMediaSessionConnection.connect();
             Toast.makeText(this, "连接", Toast.LENGTH_SHORT).show();
         });
         //断开连接
         findViewById(R.id.disconnect).setOnClickListener(v -> {
-            mMediaSessionConnection.disconnect();
+//            mMediaSessionConnection.disconnect();
             Toast.makeText(this, "断开连接", Toast.LENGTH_SHORT).show();
         });
         //获取状态
@@ -318,14 +318,14 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
     protected void onStart() {
         super.onStart();
         //连接音频服务
-        mMediaSessionConnection.connect();
+//        mMediaSessionConnection.connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         //断开音频服务
-        mMediaSessionConnection.disconnect();
+//        mMediaSessionConnection.disconnect();
     }
 
     @Override
