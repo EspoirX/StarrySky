@@ -22,8 +22,7 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.text.TextUtils;
 
-import com.lzx.starrysky.manager.MediaQueueProvider;
-import com.lzx.starrysky.model.MediaQueueProviderImpl;
+import com.lzx.starrysky.provider.MediaQueueProvider;
 
 import java.util.ArrayList;
 import java.util.List;

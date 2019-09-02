@@ -1,9 +1,10 @@
-package com.lzx.starrysky.manager;
+package com.lzx.starrysky;
 
 
 import android.content.Context;
 
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.control.OnPlayerEventListener;
+import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;

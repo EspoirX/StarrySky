@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
-import com.lzx.starrysky.manager.MusicManager;
+import com.lzx.starrysky.MusicManager;
 
 public class NotificationReceiver extends BroadcastReceiver {
 

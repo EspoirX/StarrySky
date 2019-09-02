@@ -1,4 +1,4 @@
-package com.lzx.starrysky.manager;
+package com.lzx.starrysky.registry;
 
 import android.support.annotation.NonNull;
 

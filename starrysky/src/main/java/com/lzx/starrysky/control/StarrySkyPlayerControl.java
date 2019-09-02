@@ -1,5 +1,6 @@
-package com.lzx.starrysky.manager;
+package com.lzx.starrysky.control;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -9,8 +10,10 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
-import com.lzx.starrysky.model.MediaQueueProviderImpl;
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.common.MediaSessionConnection;
+import com.lzx.starrysky.common.PlaybackStage;
+import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.playback.ExoPlayback;
 import com.lzx.starrysky.playback.Playback;
@@ -27,8 +30,8 @@ public class StarrySkyPlayerControl implements PlayerControl {
     private MediaQueueProvider mMediaQueueProvider;
     private Playback mPlayback;
 
-    public StarrySkyPlayerControl(Context context, 
-                                  MediaSessionConnection connection, 
+    public StarrySkyPlayerControl(Context context,
+                                  MediaSessionConnection connection,
                                   MediaQueueProvider mediaQueueProvider) {
         this.connection = connection;
         mContext = context;
@@ -112,7 +115,7 @@ public class StarrySkyPlayerControl implements PlayerControl {
         Bundle bundle = new Bundle();
         bundle.putBoolean("refer", refer);
         bundle.putFloat("multiple", multiple);
-        connection.getMediaController().sendCommand(ExoPlayback.ACTION_DERAILLEUR, bundle, null);
+        connection.sendCommand(ExoPlayback.ACTION_DERAILLEUR, bundle);
     }
 
     @Override
@@ -127,7 +130,7 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public int getShuffleMode() {
-        return connection.getMediaController().getShuffleMode();
+        return connection.getShuffleMode();
     }
 
     @Override
@@ -137,7 +140,7 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public int getRepeatMode() {
-        return connection.getMediaController().getRepeatMode();
+        return connection.getRepeatMode();
     }
 
     @Override
@@ -215,37 +218,44 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public boolean isSkipToNextEnabled() {
-        return (connection.getPlaybackState().getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0;
+        PlaybackStateCompat stateCompat = connection.getPlaybackStateCompat();
+        return (stateCompat.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0;
     }
 
     @Override
     public boolean isSkipToPreviousEnabled() {
-        return (connection.getPlaybackState().getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0;
+        PlaybackStateCompat stateCompat = connection.getPlaybackStateCompat();
+        return (stateCompat.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0;
     }
 
     @Override
     public float getPlaybackSpeed() {
-        return connection.getPlaybackState().getPlaybackSpeed();
+        PlaybackStateCompat stateCompat = connection.getPlaybackStateCompat();
+        return stateCompat.getPlaybackSpeed();
     }
 
     @Override
     public Object getPlaybackState() {
-        return connection.getPlaybackState().getPlaybackState();
+        PlaybackStateCompat stateCompat = connection.getPlaybackStateCompat();
+        return stateCompat.getPlaybackState();
     }
 
     @Override
     public CharSequence getErrorMessage() {
-        return connection.getPlaybackState().getErrorMessage();
+        PlaybackStateCompat stateCompat = connection.getPlaybackStateCompat();
+        return stateCompat.getErrorMessage();
     }
 
     @Override
     public int getErrorCode() {
-        return connection.getPlaybackState().getErrorCode();
+        PlaybackStateCompat stateCompat = connection.getPlaybackStateCompat();
+        return stateCompat.getErrorCode();
     }
 
     @Override
     public int getState() {
-        return connection.getPlaybackState().getState();
+        PlaybackStateCompat stateCompat = connection.getPlaybackStateCompat();
+        return stateCompat.getState();
     }
 
     @Override
@@ -293,7 +303,7 @@ public class StarrySkyPlayerControl implements PlayerControl {
         }
         Bundle bundle = new Bundle();
         bundle.putFloat("AudioVolume", audioVolume);
-        connection.getMediaController().sendCommand(ExoPlayback.ACTION_CHANGE_VOLUME, bundle, null);
+        connection.sendCommand(ExoPlayback.ACTION_CHANGE_VOLUME, bundle);
     }
 
     @Override
@@ -321,14 +331,14 @@ public class StarrySkyPlayerControl implements PlayerControl {
     public void updateFavoriteUI(boolean isFavorite) {
         Bundle bundle = new Bundle();
         bundle.putBoolean("isFavorite", isFavorite);
-        connection.getMediaController().sendCommand(INotification.ACTION_UPDATE_FAVORITE_UI, bundle, null);
+        connection.sendCommand(INotification.ACTION_UPDATE_FAVORITE_UI, bundle);
     }
 
     @Override
     public void updateLyricsUI(boolean isChecked) {
         Bundle bundle = new Bundle();
         bundle.putBoolean("isChecked", isChecked);
-        connection.getMediaController().sendCommand(INotification.ACTION_UPDATE_LYRICS_UI, bundle, null);
+        connection.sendCommand(INotification.ACTION_UPDATE_LYRICS_UI, bundle);
     }
 
     @Override
@@ -408,5 +418,10 @@ public class StarrySkyPlayerControl implements PlayerControl {
     @Override
     public void setPlayBack(Playback playBack) {
         mPlayback = playBack;
+    }
+
+    @Override
+    public MutableLiveData<PlaybackStage> playbackState() {
+        return connection.getPlaybackState();
     }
 }

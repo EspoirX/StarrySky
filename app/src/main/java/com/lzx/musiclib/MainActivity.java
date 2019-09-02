@@ -15,14 +15,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lzx.starrysky.manager.MediaSessionConnection;
-import com.lzx.starrysky.manager.MusicManager;
-import com.lzx.starrysky.manager.OnPlayerEventListener;
-import com.lzx.starrysky.manager.StarrySky;
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.MusicManager;
+import com.lzx.starrysky.control.OnPlayerEventListener;
+import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.playback.download.ExoDownload;
 import com.lzx.starrysky.utils.TimerTaskManager;
-import com.lzx.starrysky.utils.delayaction.Action;
 import com.lzx.starrysky.utils.delayaction.DelayAction;
 
 import java.util.ArrayList;
@@ -292,7 +289,6 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
                 MusicManager.getInstance().seekTo(seekBar.getProgress());
             }
         });
-
     }
 
     @Override

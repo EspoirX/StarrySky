@@ -1,10 +1,10 @@
-package com.lzx.starrysky.model;
+package com.lzx.starrysky.provider;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.lzx.starrysky.manager.StarrySkyBuilder;
-import com.lzx.starrysky.manager.StarrySkyRegistry;
+import com.lzx.starrysky.StarrySkyBuilder;
+import com.lzx.starrysky.registry.StarrySkyRegistry;
 
 public abstract class StarrySkyModule {
 

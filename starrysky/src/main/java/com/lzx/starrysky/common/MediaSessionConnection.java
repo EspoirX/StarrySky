@@ -1,16 +1,22 @@
-package com.lzx.starrysky.manager;
+package com.lzx.starrysky.common;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.content.ComponentName;
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.RemoteException;
+import android.os.ResultReceiver;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.lzx.starrysky.model.MediaQueueProviderImpl;
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.MusicManager;
+import com.lzx.starrysky.control.OnPlayerEventListener;
+import com.lzx.starrysky.StarrySky;
+import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -20,42 +26,33 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 与服务端连接的管理类
  */
 public class MediaSessionConnection {
-    private Context sContext;
+    private Context mContext;
     private ComponentName serviceComponent;
     private MediaBrowserCompat mediaBrowser;
-    private boolean isConnected;
     private String rootMediaId;
-    private PlaybackStateCompat playbackState = EMPTY_PLAYBACK_STATE;
-    private MediaMetadataCompat nowPlaying = NOTHING_PLAYING;
+    private MutableLiveData<Boolean> isConnected = new MutableLiveData<>();
+    private MutableLiveData<PlaybackStage> playbackState = new MutableLiveData<>();
+    private MutableLiveData<MediaMetadataCompat> nowPlaying = new MutableLiveData<>();
+    private MutableLiveData<PlaybackStateCompat> playbackStateCompat = new MutableLiveData<>();
+
     private MediaControllerCompat.TransportControls transportControls;
     private MediaControllerCompat mediaController;
     private MediaBrowserConnectionCallback mediaBrowserConnectionCallback;
     private MediaControllerCallback mMediaControllerCallback;
     private OnConnectListener mConnectListener;
 
-//    public static void initConnection(Context context) {
-//        sContext = context;
-//    }
-
-//    private static volatile MediaSessionConnection sInstance;
-//
-//    public static MediaSessionConnection getInstance() {
-//        if (sInstance == null) {
-//            synchronized (MediaSessionConnection.class) {
-//                if (sInstance == null) {
-//                    sInstance = new MediaSessionConnection(new ComponentName(sContext, MusicService.class));
-//                }
-//            }
-//        }
-//        return sInstance;
-//    }
 
     public MediaSessionConnection(Context context, ComponentName serviceComponent) {
         this.serviceComponent = serviceComponent;
-        this.sContext = context;
+        this.mContext = context;
         mediaBrowserConnectionCallback = new MediaBrowserConnectionCallback();
         mMediaControllerCallback = new MediaControllerCallback();
-        mediaBrowser = new MediaBrowserCompat(sContext, serviceComponent, mediaBrowserConnectionCallback, null);
+        mediaBrowser = new MediaBrowserCompat(mContext, serviceComponent, mediaBrowserConnectionCallback, null);
+
+        isConnected.postValue(false);
+        playbackState.postValue(PlaybackStage.buildNone());
+        nowPlaying.postValue(NOTHING_PLAYING);
+        playbackStateCompat.postValue(EMPTY_PLAYBACK_STATE);
     }
 
     public void subscribe(String parentId, MediaBrowserCompat.SubscriptionCallback callback) {
@@ -66,6 +63,17 @@ public class MediaSessionConnection {
         mediaBrowser.unsubscribe(parentId, callback);
     }
 
+    /**
+     * 给服务发消息
+     */
+    public void sendCommand(String command, Bundle parameters) {
+        if (mediaBrowser.isConnected()) {
+            mediaController.sendCommand(command, parameters, new ResultReceiver(new Handler()) {
+
+            });
+        }
+    }
+
     public void setConnectListener(OnConnectListener connectListener) {
         mConnectListener = connectListener;
     }
@@ -73,7 +81,7 @@ public class MediaSessionConnection {
     /**
      * 是否已连接
      */
-    public boolean isConnected() {
+    public MutableLiveData<Boolean> isConnected() {
         return isConnected;
     }
 
@@ -91,19 +99,30 @@ public class MediaSessionConnection {
         return mediaBrowser;
     }
 
-    /**
-     * 获取当前播放的 PlaybackStateCompat
-     */
-    public PlaybackStateCompat getPlaybackState() {
-        return playbackState;
+
+    public int getShuffleMode() {
+        return mediaController.getShuffleMode();
+    }
+
+    public int getRepeatMode() {
+        return mediaController.getRepeatMode();
     }
 
     /**
      * 获取当前播放的 MediaMetadataCompat
      */
     public MediaMetadataCompat getNowPlaying() {
-        return nowPlaying;
+        return nowPlaying.getValue();
     }
+
+    public PlaybackStateCompat getPlaybackStateCompat() {
+        return playbackStateCompat.getValue();
+    }
+
+    public MutableLiveData<PlaybackStage> getPlaybackState() {
+        return playbackState;
+    }
+
 
     /**
      * 获取播放控制器
@@ -120,7 +139,7 @@ public class MediaSessionConnection {
      * 连接
      */
     public void connect() {
-        if (!isConnected) {
+        if (isConnected.getValue() == null || !isConnected.getValue()) {
             //进程被异常杀死时，App 被外部链接唤起时，connect 状态为 CONNECT_STATE_CONNECTING，
             //导致崩溃，所以要先执行 disconnect
             disconnectImpl();
@@ -132,9 +151,9 @@ public class MediaSessionConnection {
      * 断开连接
      */
     public void disconnect() {
-        if (isConnected) {
+        if (isConnected.getValue() != null && isConnected.getValue()) {
             disconnectImpl();
-            isConnected = false;
+            isConnected.postValue(false);
         }
     }
 
@@ -144,6 +163,7 @@ public class MediaSessionConnection {
         }
         mediaBrowser.disconnect();
     }
+
 
     /**
      * 连接回调
@@ -156,11 +176,11 @@ public class MediaSessionConnection {
         public void onConnected() {
             super.onConnected();
             try {
-                mediaController = new MediaControllerCompat(sContext, mediaBrowser.getSessionToken());
+                mediaController = new MediaControllerCompat(mContext, mediaBrowser.getSessionToken());
                 mediaController.registerCallback(mMediaControllerCallback);
                 transportControls = mediaController.getTransportControls();
                 rootMediaId = mediaBrowser.getRoot();
-                isConnected = true;
+                isConnected.postValue(true);
                 if (mConnectListener != null) {
                     mConnectListener.onConnected();
                 }
@@ -173,58 +193,81 @@ public class MediaSessionConnection {
         public void onConnectionSuspended() {
             super.onConnectionSuspended();
             disconnect();
-            isConnected = false;
+            isConnected.postValue(false);
         }
 
         @Override
         public void onConnectionFailed() {
             super.onConnectionFailed();
-            isConnected = false;
+            isConnected.postValue(false);
         }
     }
 
     private class MediaControllerCallback extends MediaControllerCompat.Callback {
+
+        PlaybackStage playbackStage = PlaybackStage.buildNone();
+
+
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
-            playbackState = state != null ? state : EMPTY_PLAYBACK_STATE;
-
+            if (state == null) {
+                playbackState.postValue(playbackStage);
+                playbackStateCompat.postValue(EMPTY_PLAYBACK_STATE);
+                return;
+            }
+            playbackStateCompat.postValue(state);
+            String songId = getNowPlaying().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
             //状态监听
             CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = MusicManager.getInstance().getPlayerEventListeners();
-            if (state != null) {
-                for (OnPlayerEventListener listener : mPlayerEventListeners) {
-                    switch (state.getState()) {
-                        case PlaybackStateCompat.STATE_PLAYING:
-                            listener.onPlayerStart();
-                            break;
-                        case PlaybackStateCompat.STATE_PAUSED:
-                            listener.onPlayerPause();
-                            break;
-                        case PlaybackStateCompat.STATE_STOPPED:
-                            listener.onPlayerStop();
-                            break;
-                        case PlaybackStateCompat.STATE_ERROR:
-                            listener.onError(state.getErrorCode(), state.getErrorMessage().toString());
-                            break;
-                        case PlaybackStateCompat.STATE_NONE:
-                            String songId = nowPlaying.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                            SongInfo songInfo = StarrySky.get().getRegistry().getMediaQueueProvider().getSongInfo(songId);
-                            listener.onPlayCompletion(songInfo);
-                            break;
-                        case PlaybackStateCompat.STATE_BUFFERING:
-                            listener.onBuffering();
-                            break;
-                        default:
-                            break;
+            switch (state.getState()) {
+                case PlaybackStateCompat.STATE_PLAYING:
+                    for (OnPlayerEventListener listener : mPlayerEventListeners) {
+                        listener.onPlayerStart();
                     }
-                }
+                    playbackState.postValue(playbackStage.buildStart(songId));
+                    break;
+                case PlaybackStateCompat.STATE_PAUSED:
+                    for (OnPlayerEventListener listener : mPlayerEventListeners) {
+                        listener.onPlayerPause();
+                    }
+                    playbackState.postValue(playbackStage.buildPause(songId));
+                    break;
+                case PlaybackStateCompat.STATE_STOPPED:
+                    for (OnPlayerEventListener listener : mPlayerEventListeners) {
+                        listener.onPlayerStop();
+                    }
+                    playbackState.postValue(playbackStage.buildStop(songId));
+                    break;
+                case PlaybackStateCompat.STATE_ERROR:
+                    for (OnPlayerEventListener listener : mPlayerEventListeners) {
+                        listener.onError(state.getErrorCode(), state.getErrorMessage().toString());
+                    }
+                    playbackState.postValue(playbackStage.buildError(songId, state.getErrorCode(), state.getErrorMessage().toString()));
+                    break;
+                case PlaybackStateCompat.STATE_NONE:
+                    for (OnPlayerEventListener listener : mPlayerEventListeners) {
+                        SongInfo songInfo = StarrySky.get().getRegistry().getMediaQueueProvider().getSongInfo(songId);
+                        listener.onPlayCompletion(songInfo);
+                    }
+                    playbackState.postValue(playbackStage.buildCompletion(songId));
+                    break;
+                case PlaybackStateCompat.STATE_BUFFERING:
+                    for (OnPlayerEventListener listener : mPlayerEventListeners) {
+                        listener.onBuffering();
+                    }
+                    playbackState.postValue(playbackStage.buildBuffering(songId));
+                    break;
+                default:
+                    break;
             }
         }
 
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             super.onMetadataChanged(metadata);
-            nowPlaying = metadata != null ? metadata : NOTHING_PLAYING;
+
+            nowPlaying.postValue(metadata != null ? metadata : NOTHING_PLAYING);
 
             //状态监听
             CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = MusicManager.getInstance().getPlayerEventListeners();

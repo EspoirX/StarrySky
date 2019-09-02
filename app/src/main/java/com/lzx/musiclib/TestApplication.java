@@ -3,13 +3,8 @@ package com.lzx.musiclib;
 import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.os.Environment;
 
-import com.lzx.musiclib.imageloader.GlideLoader;
-import com.lzx.starrysky.manager.MusicManager;
-import com.lzx.starrysky.manager.StarrySky;
-import com.lzx.starrysky.notification.NotificationConstructor;
-import com.lzx.starrysky.playback.download.ExoDownload;
+import com.lzx.starrysky.StarrySky;
 
 
 /**

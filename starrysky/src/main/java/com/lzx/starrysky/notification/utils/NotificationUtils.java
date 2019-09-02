@@ -12,9 +12,8 @@ import android.text.TextUtils;
 
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
-import com.lzx.starrysky.manager.StarrySky;
-import com.lzx.starrysky.model.MediaQueueProviderImpl;
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.StarrySky;
+import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.INotification;
 

@@ -1,10 +1,13 @@
-package com.lzx.starrysky.manager;
+package com.lzx.starrysky;
 
 import android.content.ComponentName;
 import android.content.Context;
 
-import com.lzx.starrysky.MusicService;
-import com.lzx.starrysky.model.MediaQueueProviderImpl;
+import com.lzx.starrysky.common.MediaSessionConnection;
+import com.lzx.starrysky.control.PlayerControl;
+import com.lzx.starrysky.control.StarrySkyPlayerControl;
+import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.provider.MediaQueueProviderImpl;
 import com.lzx.starrysky.utils.imageloader.DefaultImageLoader;
 import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
 

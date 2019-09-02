@@ -1,6 +1,6 @@
 package com.lzx.starrysky.utils.delayaction;
 
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.provider.SongInfo;
 
 /**
  * 目标方法前置检验模型设计与实现

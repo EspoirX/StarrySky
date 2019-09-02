@@ -1,6 +1,6 @@
 package com.lzx.starrysky.utils.delayaction;
 
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.Queue;
 import java.util.Stack;

@@ -4,9 +4,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.lzx.musiclib.imageloader.GlideLoader;
-import com.lzx.starrysky.manager.StarrySkyBuilder;
-import com.lzx.starrysky.manager.StarrySkyRegistry;
-import com.lzx.starrysky.model.StarrySkyModule;
+import com.lzx.starrysky.StarrySkyBuilder;
+import com.lzx.starrysky.registry.StarrySkyRegistry;
+import com.lzx.starrysky.provider.StarrySkyModule;
 
 public class MusicModule extends StarrySkyModule {
     @Override

@@ -19,12 +19,9 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.lzx.starrysky.manager.MediaQueueProvider;
-import com.lzx.starrysky.manager.MusicManager;
-import com.lzx.starrysky.manager.PlayerControl;
-import com.lzx.starrysky.manager.StarrySky;
-import com.lzx.starrysky.manager.StarrySkyRegistry;
-import com.lzx.starrysky.model.MediaQueueProviderImpl;
+import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.control.PlayerControl;
+import com.lzx.starrysky.registry.StarrySkyRegistry;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
 import com.lzx.starrysky.playback.ExoPlayback;

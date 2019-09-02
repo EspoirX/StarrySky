@@ -1,4 +1,4 @@
-package com.lzx.starrysky.model;
+package com.lzx.starrysky.provider;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;

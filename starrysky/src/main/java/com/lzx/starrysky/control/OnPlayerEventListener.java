@@ -1,6 +1,6 @@
-package com.lzx.starrysky.manager;
+package com.lzx.starrysky.control;
 
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.provider.SongInfo;
 
 /**
  * 播放监听

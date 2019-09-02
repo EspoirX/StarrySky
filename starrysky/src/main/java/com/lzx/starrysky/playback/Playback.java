@@ -16,9 +16,7 @@
 package com.lzx.starrysky.playback;
 
 
-import com.lzx.starrysky.MediaResource;
-
-import static android.support.v4.media.session.MediaSessionCompat.QueueItem;
+import com.lzx.starrysky.provider.MediaResource;
 
 /**
  * 播放器接口，如果要实现其他播放器，实现该接口即可

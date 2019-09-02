@@ -1,4 +1,4 @@
-package com.lzx.starrysky;
+package com.lzx.starrysky.provider;
 
 import android.text.TextUtils;
 

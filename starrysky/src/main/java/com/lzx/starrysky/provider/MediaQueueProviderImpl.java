@@ -1,11 +1,9 @@
-package com.lzx.starrysky.model;
+package com.lzx.starrysky.provider;
 
 import android.graphics.Bitmap;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
-
-import com.lzx.starrysky.manager.MediaQueueProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,6 +67,9 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
      */
     @Override
     public SongInfo getSongInfo(String songId) {
+        if (TextUtils.isEmpty(songId)) {
+            return null;
+        }
         if (mSongInfoListById.containsKey(songId)) {
             return mSongInfoListById.get(songId);
         } else {

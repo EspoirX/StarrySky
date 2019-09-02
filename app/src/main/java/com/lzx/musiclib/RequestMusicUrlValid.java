@@ -3,7 +3,7 @@ package com.lzx.musiclib;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.utils.delayaction.DelayAction;
 import com.lzx.starrysky.utils.delayaction.Valid;
 

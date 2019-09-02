@@ -1,10 +1,10 @@
-package com.lzx.starrysky.manager;
+package com.lzx.starrysky.provider;
 
 import android.graphics.Bitmap;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.List;
 

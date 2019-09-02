@@ -1,6 +1,8 @@
-package com.lzx.starrysky.manager;
+package com.lzx.starrysky.registry;
 
-import com.lzx.starrysky.MediaResource;
+import com.lzx.starrysky.provider.MediaResource;
+import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.control.PlayerControl;
 import com.lzx.starrysky.utils.delayaction.Valid;
 import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
 

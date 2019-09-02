@@ -54,8 +54,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.Util;
-import com.lzx.starrysky.MediaResource;
-import com.lzx.starrysky.manager.MediaQueueProvider;
+import com.lzx.starrysky.provider.MediaResource;
+import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.playback.download.ExoDownload;
 
 import java.util.List;

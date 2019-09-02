@@ -1,6 +1,9 @@
-package com.lzx.starrysky.manager;
+package com.lzx.starrysky.control;
 
-import com.lzx.starrysky.model.SongInfo;
+import android.arch.lifecycle.MutableLiveData;
+
+import com.lzx.starrysky.common.PlaybackStage;
+import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.playback.Playback;
 
 import java.util.List;
@@ -291,4 +294,6 @@ public interface PlayerControl {
     CopyOnWriteArrayList<OnPlayerEventListener> getPlayerEventListeners();
 
     void setPlayBack(Playback playBack);
+
+    MutableLiveData<PlaybackStage> playbackState();
 }

@@ -24,12 +24,10 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
-import com.lzx.starrysky.MediaResource;
+import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.R;
-import com.lzx.starrysky.manager.MediaQueueProvider;
-import com.lzx.starrysky.manager.StarrySky;
-import com.lzx.starrysky.manager.StarrySkyRegistry;
-import com.lzx.starrysky.model.MediaQueueProviderImpl;
+import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 

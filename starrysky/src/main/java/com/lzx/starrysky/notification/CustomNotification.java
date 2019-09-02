@@ -24,9 +24,8 @@ import android.widget.RemoteViews;
 
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
-import com.lzx.starrysky.manager.StarrySky;
-import com.lzx.starrysky.model.MediaQueueProviderImpl;
-import com.lzx.starrysky.model.SongInfo;
+import com.lzx.starrysky.StarrySky;
+import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.utils.NotificationColorUtils;
 import com.lzx.starrysky.notification.utils.NotificationUtils;

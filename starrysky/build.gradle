@@ -49,7 +49,10 @@ dependencies {
     api "com.google.android.exoplayer:exoplayer-hls:2.9.4"    //hls 支持
     api "com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.4" //smoothstreaming支持
     api "com.google.android.exoplayer:extension-rtmp:2.9.4"  //rtmp 支持
-    api "com.google.android.exoplayer:exoplayer-ui:2.9.4"  //rtmp 支持
+    api "com.google.android.exoplayer:exoplayer-ui:2.9.4"
+}
+repositories {
+    mavenCentral()
 }
 
 
