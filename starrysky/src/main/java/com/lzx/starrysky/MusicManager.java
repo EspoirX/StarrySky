@@ -432,30 +432,24 @@ public class MusicManager {
      * 添加一个状态监听
      */
     public void addPlayerEventListener(OnPlayerEventListener listener) {
-        if (listener != null) {
-            if (!mPlayerEventListeners.contains(listener)) {
-                mPlayerEventListeners.add(listener);
-            }
-        }
+        StarrySky.with().addPlayerEventListener(listener);
     }
 
     /**
      * 删除一个状态监听
      */
     public void removePlayerEventListener(OnPlayerEventListener listener) {
-        if (listener != null) {
-            mPlayerEventListeners.remove(listener);
-        }
+        StarrySky.with().removePlayerEventListener(listener);
     }
 
     /**
      * 删除所有状态监听
      */
     public void clearPlayerEventListener() {
-        mPlayerEventListeners.clear();
+        StarrySky.with().clearPlayerEventListener();
     }
 
     public CopyOnWriteArrayList<OnPlayerEventListener> getPlayerEventListeners() {
-        return mPlayerEventListeners;
+        return StarrySky.with().getPlayerEventListeners();
     }
 }

@@ -23,6 +23,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.text.TextUtils;
 
 import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,17 @@ public class QueueHelper {
         int index = 0;
         for (MediaSessionCompat.QueueItem item : queue) {
             if (mediaId.equals(item.getDescription().getMediaId())) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
+    public static int getMusicIndexOnSongInfos(Iterable<SongInfo> queue, String mediaId) {
+        int index = 0;
+        for (SongInfo item : queue) {
+            if (mediaId.equals(item.getSongId())) {
                 return index;
             }
             index++;
@@ -101,7 +113,7 @@ public class QueueHelper {
     /**
      * 检查下标有没有越界
      */
-    public static boolean isIndexPlayable(int index, List<MediaSessionCompat.QueueItem> queue) {
+    public static <T> boolean isIndexPlayable(int index, List<T> queue) {
         return (queue != null && index >= 0 && index < queue.size());
     }
 

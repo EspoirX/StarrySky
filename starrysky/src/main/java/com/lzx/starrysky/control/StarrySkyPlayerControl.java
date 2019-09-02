@@ -29,6 +29,7 @@ public class StarrySkyPlayerControl implements PlayerControl {
     private MediaSessionConnection connection;
     private MediaQueueProvider mMediaQueueProvider;
     private Playback mPlayback;
+    private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
 
     public StarrySkyPlayerControl(Context context,
                                   MediaSessionConnection connection,
@@ -397,22 +398,28 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public void addPlayerEventListener(OnPlayerEventListener listener) {
-
+        if (listener != null) {
+            if (!mPlayerEventListeners.contains(listener)) {
+                mPlayerEventListeners.add(listener);
+            }
+        }
     }
 
     @Override
     public void removePlayerEventListener(OnPlayerEventListener listener) {
-
+        if (listener != null) {
+            mPlayerEventListeners.remove(listener);
+        }
     }
 
     @Override
     public void clearPlayerEventListener() {
-
+        mPlayerEventListeners.clear();
     }
 
     @Override
     public CopyOnWriteArrayList<OnPlayerEventListener> getPlayerEventListeners() {
-        return null;
+        return mPlayerEventListeners;
     }
 
     @Override

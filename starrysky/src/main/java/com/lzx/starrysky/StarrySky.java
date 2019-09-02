@@ -89,7 +89,6 @@ public class StarrySky {
         mRegistry.registryMediaQueueProvider(mediaQueueProvider);
         mRegistry.registryMediaResource(new MediaResource());
 
-
         mConnection.connect();
     }
 

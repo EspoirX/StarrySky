@@ -8,6 +8,7 @@ import com.lzx.starrysky.control.PlayerControl;
 import com.lzx.starrysky.control.StarrySkyPlayerControl;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaQueueProviderImpl;
+import com.lzx.starrysky.provider.MediaQueueProviderSurface;
 import com.lzx.starrysky.utils.imageloader.DefaultImageLoader;
 import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
 
@@ -45,13 +46,14 @@ public class StarrySkyBuilder {
         if (mMediaQueueProvider == null) {
             mMediaQueueProvider = new MediaQueueProviderImpl();
         }
+        MediaQueueProviderSurface surface = new MediaQueueProviderSurface(mMediaQueueProvider);
         if (mPlayerControl == null) {
-            mPlayerControl = new StarrySkyPlayerControl(context, mConnection, mMediaQueueProvider);
+            mPlayerControl = new StarrySkyPlayerControl(context, mConnection, surface);
         }
         return new StarrySky(
                 mConnection,
                 mImageLoader,
                 mPlayerControl,
-                mMediaQueueProvider);
+                surface);
     }
 }

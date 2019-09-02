@@ -19,6 +19,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
     //使用Map在查找方面会效率高一点
     private LinkedHashMap<String, SongInfo> mSongInfoListById;
     private LinkedHashMap<String, MediaMetadataCompat> mMusicListById;
+    private List<SongInfo> mSongInfos;
 
     public MediaQueueProviderImpl() {
         mSongInfoListById = new LinkedHashMap<>();
@@ -30,7 +31,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
      */
     @Override
     public List<SongInfo> getSongInfos() {
-        return new ArrayList<>(mSongInfoListById.values());
+        return mSongInfos == null ? new ArrayList<>() : mSongInfos;
     }
 
     /**
@@ -39,6 +40,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
     @Override
     public synchronized void setSongInfos(List<SongInfo> songInfos) {
         mSongInfoListById.clear();
+        mSongInfos = songInfos;
         for (SongInfo info : songInfos) {
             mSongInfoListById.put(info.getSongId(), info);
         }
@@ -50,6 +52,9 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
      */
     @Override
     public synchronized void addSongInfo(SongInfo songInfo) {
+        if (!mSongInfos.contains(songInfo)) {
+            mSongInfos.add(songInfo);
+        }
         mSongInfoListById.put(songInfo.getSongId(), songInfo);
         mMusicListById.put(songInfo.getSongId(), toMediaMetadata(songInfo));
     }

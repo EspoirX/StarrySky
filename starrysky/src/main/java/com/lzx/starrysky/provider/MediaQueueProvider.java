@@ -3,6 +3,7 @@ package com.lzx.starrysky.provider;
 import android.graphics.Bitmap;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import com.lzx.starrysky.provider.SongInfo;
 
@@ -65,5 +66,15 @@ public interface MediaQueueProvider {
      */
     void updateMusicArt(String songId, MediaMetadataCompat changeData, Bitmap albumArt, Bitmap icon);
 
+
+    interface MetadataUpdateListener {
+        void onMetadataChanged(MediaMetadataCompat metadata);
+
+        void onMetadataRetrieveError();
+
+        void onCurrentQueueIndexUpdated(int queueIndex);
+
+        void onQueueUpdated(List<MediaSessionCompat.QueueItem> newQueue);
+    }
 
 }

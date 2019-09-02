@@ -27,7 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class MediaSessionConnection {
     private Context mContext;
-    private ComponentName serviceComponent;
+
     private MediaBrowserCompat mediaBrowser;
     private String rootMediaId;
     private MutableLiveData<Boolean> isConnected = new MutableLiveData<>();
@@ -43,7 +43,6 @@ public class MediaSessionConnection {
 
 
     public MediaSessionConnection(Context context, ComponentName serviceComponent) {
-        this.serviceComponent = serviceComponent;
         this.mContext = context;
         mediaBrowserConnectionCallback = new MediaBrowserConnectionCallback();
         mMediaControllerCallback = new MediaControllerCallback();
@@ -266,11 +265,10 @@ public class MediaSessionConnection {
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             super.onMetadataChanged(metadata);
-
             nowPlaying.postValue(metadata != null ? metadata : NOTHING_PLAYING);
 
             //状态监听
-            CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = MusicManager.getInstance().getPlayerEventListeners();
+            CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = StarrySky.with().getPlayerEventListeners();
             if (metadata != null) {
                 for (OnPlayerEventListener listener : mPlayerEventListeners) {
                     String songId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
