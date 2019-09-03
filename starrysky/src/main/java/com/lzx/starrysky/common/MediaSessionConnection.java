@@ -16,6 +16,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.lzx.starrysky.MusicManager;
 import com.lzx.starrysky.control.OnPlayerEventListener;
 import com.lzx.starrysky.StarrySky;
+import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.List;
@@ -246,7 +247,7 @@ public class MediaSessionConnection {
                     break;
                 case PlaybackStateCompat.STATE_NONE:
                     for (OnPlayerEventListener listener : mPlayerEventListeners) {
-                        SongInfo songInfo = StarrySky.get().getRegistry().getMediaQueueProvider().getSongInfo(songId);
+                        SongInfo songInfo = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getSongInfo(songId);
                         listener.onPlayCompletion(songInfo);
                     }
                     playbackState.postValue(playbackStage.buildCompletion(songId));
@@ -272,7 +273,7 @@ public class MediaSessionConnection {
             if (metadata != null) {
                 for (OnPlayerEventListener listener : mPlayerEventListeners) {
                     String songId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                    SongInfo songInfo = StarrySky.get().getRegistry().getMediaQueueProvider().getSongInfo(songId);
+                    SongInfo songInfo = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getSongInfo(songId);
                     listener.onMusicSwitch(songInfo);
                 }
             }

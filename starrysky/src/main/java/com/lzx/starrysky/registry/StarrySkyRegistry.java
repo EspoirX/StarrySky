@@ -1,51 +1,26 @@
 package com.lzx.starrysky.registry;
 
+import android.support.annotation.NonNull;
+import android.util.ArrayMap;
+
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.control.PlayerControl;
 import com.lzx.starrysky.utils.delayaction.Valid;
 import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class StarrySkyRegistry {
-    private ImageLoaderRegistry mImageLoaderRegistry;
-    private PlayerControl mPlayerControl;
-    private MediaQueueProvider mMediaQueueProvider;
+
     private ValidRegistry mValidRegistry;
-    private MediaResource mMediaResource;
+
+    private final List<Entry<?, ?>> entries = new ArrayList<>();
 
     public StarrySkyRegistry() {
-        mImageLoaderRegistry = new ImageLoaderRegistry();
         mValidRegistry = new ValidRegistry();
-    }
-
-    public void registryImageLoader(ILoaderStrategy strategy) {
-        if (strategy != null) {
-            mImageLoaderRegistry.registry(strategy);
-        }
-    }
-
-    public void registryPlayerControl(PlayerControl playerControl) {
-        if (playerControl != null) {
-            mPlayerControl = playerControl;
-        }
-    }
-
-    public void registryMediaQueueProvider(MediaQueueProvider mediaQueueProvider) {
-        if (mediaQueueProvider != null) {
-            mMediaQueueProvider = mediaQueueProvider;
-        }
-    }
-
-    public ImageLoaderRegistry getImageLoaderRegistry() {
-        return mImageLoaderRegistry;
-    }
-
-    public PlayerControl getPlayerControl() {
-        return mPlayerControl;
-    }
-
-    public MediaQueueProvider getMediaQueueProvider() {
-        return mMediaQueueProvider;
     }
 
     public void appendValidRegistry(Valid valid) {
@@ -56,11 +31,54 @@ public class StarrySkyRegistry {
         return mValidRegistry;
     }
 
-    public MediaResource getMediaResource() {
-        return mMediaResource;
+    public synchronized <Z> Z get(@NonNull Class<Z> modelClass) {
+        for (int i = 0, size = entries.size(); i < size; i++) {
+            Entry<?, ?> entry = entries.get(i);
+            if (entry.handles(modelClass)) {
+                return (Z) entry.data;
+            }
+        }
+        return null;
     }
 
-    public void registryMediaResource(MediaResource mediaResource) {
-        mMediaResource = mediaResource;
+    public synchronized <Model, Data> StarrySkyRegistry append(
+            @NonNull Class<Model> modelClass,
+            @NonNull Data data) {
+        Entry<Model, Data> entry = new Entry<>(modelClass, data);
+        entries.add(entries.size(), entry);
+        return this;
+    }
+
+    public <Model, Data> StarrySkyRegistry replace(
+            @NonNull Class<Model> modelClass,
+            @NonNull Data data) {
+        remove(modelClass);
+        append(modelClass, data);
+        return this;
+    }
+
+    public <Model> StarrySkyRegistry remove(@NonNull Class<Model> modelClass) {
+        for (Iterator<Entry<?, ?>> iterator = entries.iterator(); iterator.hasNext(); ) {
+            Entry<?, ?> entry = iterator.next();
+            if (entry.handles(modelClass)) {
+                iterator.remove();
+            }
+        }
+        return this;
+    }
+
+    private static class Entry<Model, Data> {
+        private final Class<Model> modelClass;
+        private final Data data;
+
+        Entry(@NonNull Class<Model> modelClass,
+              @NonNull Data data) {
+            this.modelClass = modelClass;
+            this.data = data;
+        }
+
+        boolean handles(@NonNull Class<?> modelClass) {
+            return this.modelClass.isAssignableFrom(modelClass);
+        }
     }
 }

@@ -16,29 +16,40 @@
 
 package com.lzx.starrysky.playback;
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaMetadataCompat;
+import android.text.TextUtils;
 
+import com.lzx.starrysky.R;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaQueueProviderSurface;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.provider.SongInfo;
+import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
+import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
 import java.util.List;
 
 public class MediaQueueManager extends MediaQueueProviderSurface implements MediaQueue {
 
-
     //下标
     private int mCurrentIndex;
     private MediaResource mMediaResource;
     private MediaQueueProvider.MetadataUpdateListener mUpdateListener;
+    private Context mContext;
 
-    public MediaQueueManager(MediaQueueProvider provider, MediaQueueProvider.MetadataUpdateListener listener) {
+    public MediaQueueManager(MediaQueueProvider provider, Context context) {
         super(provider);
         mCurrentIndex = 0;
+        mContext = context;
+    }
+
+    @Override
+    public void setMetadataUpdateListener(MetadataUpdateListener listener) {
         mUpdateListener = listener;
-        mMediaResource = StarrySky.get().getRegistry().getMediaResource();
     }
 
     @Override
@@ -86,6 +97,10 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
             return null;
         }
         SongInfo queueItem = songInfos.get(mCurrentIndex);
+        //由于MediaQueueManager在构建Starry时初始化，所以这里不能放在构造函数中
+        if (mMediaResource == null) {
+            mMediaResource = StarrySky.get().getRegistry().get(MediaResource.class);
+        }
         return mMediaResource.obtain(queueItem.getSongId(), queueItem.getTrackNumber());
     }
 
@@ -94,13 +109,64 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
         int index = QueueHelper.getMusicIndexOnSongInfos(getSongInfos(), mediaId);
         if (index >= 0 && index < getSongInfos().size()) {
             mCurrentIndex = index;
-            mUpdateListener.onCurrentQueueIndexUpdated(mCurrentIndex);
+            if (mUpdateListener != null) {
+                mUpdateListener.onCurrentQueueIndexUpdated(mCurrentIndex);
+            }
         }
         return index >= 0;
     }
 
+    @Override
+    public void updateCurrPlayingMedia(String mediaId) {
+        boolean canReuseQueue = false;
+        if (isSameBrowsingCategory(mediaId)) {
+            canReuseQueue = setCurrentQueueItem(mediaId);
+        }
+        if (!canReuseQueue) {
+            mCurrentIndex = QueueHelper.getMusicIndexOnSongInfos(getSongInfos(), mediaId);
+        }
+        updateMetadata();
+    }
 
-//    private static final String TAG = "QueueManager";
+    @Override
+    public void updateMetadata() {
+        MediaResource currentMusic = getCurrentMusic();
+        if (currentMusic == null) {
+            if (mUpdateListener != null) {
+                mUpdateListener.onMetadataRetrieveError();
+            }
+            return;
+        }
+        final String musicId = currentMusic.getMediaId();
+        MediaMetadataCompat metadata = getMusic(musicId);
+        if (metadata == null) {
+            throw new IllegalArgumentException("Invalid musicId " + musicId);
+        }
+        if (mUpdateListener != null) {
+            mUpdateListener.onMetadataChanged(metadata);
+        }
+        //更新封面 bitmap
+        String coverUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
+        if (!TextUtils.isEmpty(coverUrl)) {
+            ImageLoader.getInstance()
+                    .load(coverUrl)
+                    .context(mContext)
+                    .placeholder(R.drawable.default_art)
+                    .resize(144, 144)
+                    .bitmap(new BitmapCallBack.SimperCallback() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap resource) {
+                            super.onBitmapLoaded(resource);
+                            updateMusicArt(musicId, metadata, resource, resource);
+                            if (mUpdateListener != null) {
+                                mUpdateListener.onMetadataChanged(metadata);
+                            }
+                        }
+                    });
+        }
+    }
+
+    //    private static final String TAG = "QueueManager";
 //
 //    private Context mContext;
 //    private MediaQueueProvider mMusicProvider;

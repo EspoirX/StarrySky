@@ -59,8 +59,8 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         super.onCreate();
         mRegistry = StarrySky.get().getRegistry();
 
-        MediaQueueProvider musicProvider = mRegistry.getMediaQueueProvider();
-        PlayerControl playerControl = mRegistry.getPlayerControl();
+        MediaQueueProvider musicProvider = mRegistry.get(MediaQueueProvider.class);
+        PlayerControl playerControl = mRegistry.get(PlayerControl.class);
 
         QueueManager queueManager = new QueueManager(this, musicProvider, this);
         ExoPlayback playback = new ExoPlayback(this, musicProvider);

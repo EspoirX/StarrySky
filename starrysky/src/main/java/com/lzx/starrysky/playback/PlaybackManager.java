@@ -25,6 +25,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.ext.PlaybackStateCompatExt;
 import com.lzx.starrysky.StarrySky;
@@ -184,7 +185,7 @@ public class PlaybackManager implements Playback.Callback {
                 stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
                 //final String musicId = currentMusic.getDescription().getMediaId();
                 final String musicId = currentMusic.getMediaId();
-                currMetadata = StarrySky.get().getRegistry().getMediaQueueProvider().getMusic(musicId);
+                currMetadata = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getMusic(musicId);
             }
             //把状态回调出去
             mServiceCallback.onPlaybackStateUpdated(stateBuilder.build(), currMetadata);

@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.StarrySky;
+import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.INotification;
@@ -45,7 +46,7 @@ public class NotificationUtils {
     public static PendingIntent createContentIntent(MusicService mService, NotificationConstructor mBuilder,
                                                     String songId, Bundle bundle, Class targetClass) {
         SongInfo songInfo = null;
-        List<SongInfo> songInfos = StarrySky.get().getRegistry().getMediaQueueProvider().getSongInfos();
+        List<SongInfo> songInfos = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getSongInfos();
         for (SongInfo info : songInfos) {
             if (info.getSongId().equals(songId)) {
                 songInfo = info;

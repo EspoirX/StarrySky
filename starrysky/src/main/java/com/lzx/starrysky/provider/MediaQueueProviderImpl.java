@@ -18,12 +18,12 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
 
     //使用Map在查找方面会效率高一点
     private LinkedHashMap<String, SongInfo> mSongInfoListById;
-    private LinkedHashMap<String, MediaMetadataCompat> mMusicListById;
+    private LinkedHashMap<String, MediaMetadataCompat> mMediaMetadataCompatListById;
     private List<SongInfo> mSongInfos;
 
     public MediaQueueProviderImpl() {
         mSongInfoListById = new LinkedHashMap<>();
-        mMusicListById = new LinkedHashMap<>();
+        mMediaMetadataCompatListById = new LinkedHashMap<>();
     }
 
     /**
@@ -44,7 +44,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
         for (SongInfo info : songInfos) {
             mSongInfoListById.put(info.getSongId(), info);
         }
-        mMusicListById = toMediaMetadata(songInfos);
+        mMediaMetadataCompatListById = toMediaMetadata(songInfos);
     }
 
     /**
@@ -56,7 +56,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
             mSongInfos.add(songInfo);
         }
         mSongInfoListById.put(songInfo.getSongId(), songInfo);
-        mMusicListById.put(songInfo.getSongId(), toMediaMetadata(songInfo));
+        mMediaMetadataCompatListById.put(songInfo.getSongId(), toMediaMetadata(songInfo));
     }
 
     /**
@@ -96,7 +96,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
      */
     @Override
     public List<MediaMetadataCompat> getMusicList() {
-        return new ArrayList<>(mMusicListById.values());
+        return new ArrayList<>(mMediaMetadataCompatListById.values());
     }
 
     /**
@@ -105,7 +105,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
     @Override
     public List<MediaBrowserCompat.MediaItem> getChildrenResult() {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
-        List<MediaMetadataCompat> list = new ArrayList<>(mMusicListById.values());
+        List<MediaMetadataCompat> list = new ArrayList<>(mMediaMetadataCompatListById.values());
         for (MediaMetadataCompat metadata : list) {
             MediaBrowserCompat.MediaItem mediaItem = new MediaBrowserCompat.MediaItem(
                     metadata.getDescription(),
@@ -119,11 +119,21 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
      * 获取乱序列表
      */
     @Override
-    public Iterable<MediaMetadataCompat> getShuffledMusic() {
-        List<MediaMetadataCompat> shuffled = new ArrayList<>(mMusicListById.size());
-        shuffled.addAll(mMusicListById.values());
+    public Iterable<MediaMetadataCompat> getShuffledMediaMetadataCompat() {
+        List<MediaMetadataCompat> shuffled = new ArrayList<>(mMediaMetadataCompatListById.size());
+        shuffled.addAll(mMediaMetadataCompatListById.values());
         Collections.shuffle(shuffled);
         return shuffled;
+    }
+
+    @Override
+    public Iterable<SongInfo> getShuffledSongInfo() {
+        if (mSongInfos != null) {
+            Collections.shuffle(mSongInfos);
+            return mSongInfos;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -131,7 +141,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
      */
     @Override
     public MediaMetadataCompat getMusic(String songId) {
-        return mMusicListById.containsKey(songId) ? mMusicListById.get(songId) : null;
+        return mMediaMetadataCompatListById.containsKey(songId) ? mMediaMetadataCompatListById.get(songId) : null;
     }
 
     /**
@@ -143,7 +153,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, icon)
                 .build();
-        mMusicListById.put(songId, metadata);
+        mMediaMetadataCompatListById.put(songId, metadata);
     }
 
     /**

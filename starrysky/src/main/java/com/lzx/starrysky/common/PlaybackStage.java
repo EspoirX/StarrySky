@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.lzx.starrysky.StarrySky;
+import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.HashMap;
@@ -78,7 +79,7 @@ public class PlaybackStage {
 
         Builder setSongId(String songId) {
             if (!TextUtils.isEmpty(songId)) {
-                this.songInfo = StarrySky.get().getRegistry().getMediaQueueProvider().getSongInfo(songId);
+                this.songInfo = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getSongInfo(songId);
             }
             return this;
         }

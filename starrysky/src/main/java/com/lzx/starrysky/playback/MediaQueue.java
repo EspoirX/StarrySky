@@ -2,9 +2,13 @@ package com.lzx.starrysky.playback;
 
 import android.support.annotation.NonNull;
 
+import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaResource;
 
 public interface MediaQueue {
+
+    void setMetadataUpdateListener(MediaQueueProvider.MetadataUpdateListener listener);
+
     /**
      * 判断传入的媒体跟正在播放的媒体是否一样
      */
@@ -36,4 +40,14 @@ public interface MediaQueue {
      * 根据传入的媒体id来更新此媒体的下标并通知
      */
     boolean setCurrentQueueItem(String mediaId);
+
+    /**
+     * 根据当前传入的 mediaId 更新当前播放媒体下标和信息
+     */
+    void updateCurrPlayingMedia(String mediaId);
+
+    /**
+     * 更新媒体信息
+     */
+    void updateMetadata();
 }

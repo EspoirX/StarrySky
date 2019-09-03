@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.lzx.starrysky.playback.MediaQueue;
+import com.lzx.starrysky.playback.MediaQueueManager;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.common.MediaSessionConnection;
 import com.lzx.starrysky.control.PlayerControl;
@@ -22,6 +24,7 @@ public class StarrySky {
     private MediaSessionConnection mConnection;
     private ILoaderStrategy mImageLoader;
     private PlayerControl mPlayerControl;
+    private MediaQueue mMediaQueue;
     private StarrySkyRegistry mRegistry;
 
     public static void init(Application application) {
@@ -66,7 +69,6 @@ public class StarrySky {
     }
 
     private static void initializeStarrySky(Context context, StarrySkyBuilder builder) {
-
         StarrySky starrySky = builder.build(context);
 
         ExoDownload.initExoDownload(context);
@@ -84,10 +86,12 @@ public class StarrySky {
         mPlayerControl = playerControl;
 
         mRegistry = new StarrySkyRegistry();
-        mRegistry.registryImageLoader(mImageLoader);
-        mRegistry.registryPlayerControl(mPlayerControl);
-        mRegistry.registryMediaQueueProvider(mediaQueueProvider);
-        mRegistry.registryMediaResource(new MediaResource());
+
+        mRegistry
+                .append(ILoaderStrategy.class, mImageLoader)
+                .append(PlayerControl.class, mPlayerControl)
+                .append(MediaQueueProvider.class, mediaQueueProvider)
+                .append(MediaResource.class, new MediaResource());
 
         mConnection.connect();
     }

@@ -54,7 +54,9 @@ public interface MediaQueueProvider {
     /**
      * 获取乱序列表
      */
-    Iterable<MediaMetadataCompat> getShuffledMusic();
+    Iterable<MediaMetadataCompat> getShuffledMediaMetadataCompat();
+
+    Iterable<SongInfo> getShuffledSongInfo();
 
     /**
      * 根据id获取对应的MediaMetadataCompat对象

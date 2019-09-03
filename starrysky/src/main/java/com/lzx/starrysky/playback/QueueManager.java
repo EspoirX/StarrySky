@@ -58,7 +58,7 @@ public class QueueManager {
 
         mPlayingQueue = Collections.synchronizedList(new ArrayList<>());
         mCurrentIndex = 0;
-        mMediaResource = StarrySky.get().getRegistry().getMediaResource();
+        mMediaResource = StarrySky.get().getRegistry().get(MediaResource.class);
     }
 
     /**
@@ -155,12 +155,6 @@ public class QueueManager {
     /**
      * 获取当前播放的媒体
      */
-//    public MediaSessionCompat.QueueItem getCurrentMusic() {
-//        if (!QueueHelper.isIndexPlayable(mCurrentIndex, mPlayingQueue)) {
-//            return null;
-//        }
-//        return mPlayingQueue.get(mCurrentIndex);
-//    }
     public MediaResource getCurrentMusic() {
         if (!QueueHelper.isIndexPlayable(mCurrentIndex, mPlayingQueue)) {
             return null;

@@ -103,7 +103,7 @@ public class QueueHelper {
      */
     public static List<MediaSessionCompat.QueueItem> getRandomQueue(MediaQueueProvider musicProvider) {
         List<MediaMetadataCompat> result = new ArrayList<>();
-        Iterable<MediaMetadataCompat> shuffled = musicProvider.getShuffledMusic();
+        Iterable<MediaMetadataCompat> shuffled = musicProvider.getShuffledMediaMetadataCompat();
         for (MediaMetadataCompat metadata : shuffled) {
             result.add(metadata);
         }

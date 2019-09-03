@@ -25,6 +25,7 @@ import android.widget.RemoteViews;
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.StarrySky;
+import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.utils.NotificationColorUtils;
@@ -271,7 +272,7 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
             mNotification.bigContentView = mBigRemoteView;
         }
         SongInfo songInfo = null;
-        List<SongInfo> songInfos = StarrySky.get().getRegistry().getMediaQueueProvider().getSongInfos();
+        List<SongInfo> songInfos = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getSongInfos();
         for (SongInfo info : songInfos) {
             if (info.getSongId().equals(songId)) {
                 songInfo = info;
