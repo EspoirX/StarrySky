@@ -13,4 +13,4 @@ StarrySky 总体来说可以分为几个模块：
 5. 通知栏
 
 ## StarrySky 结构图
-<a href="art/StarrySky结构图.png"><img src="art/StarrySky结构图.png" width="100%"/></a>
+<a href="../art/StarrySky结构图.png"><img src="../art/StarrySky结构图.png" width="100%"/></a>
