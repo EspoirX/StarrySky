@@ -19,7 +19,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class MusicManager {
 
     private NotificationConstructor mConstructor;
-    private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
 
     public static MusicManager getInstance() {
         return SingletonHolder.sInstance;

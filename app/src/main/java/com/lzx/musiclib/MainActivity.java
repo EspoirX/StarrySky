@@ -309,33 +309,11 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //连接音频服务
-//        mMediaSessionConnection.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        //断开音频服务
-//        mMediaSessionConnection.disconnect();
-    }
-
-    @Override
-    public void onBackPressed() {
-        MusicManager.getInstance().stopMusic();
-        //回收资源
-        MusicManager.getInstance().removePlayerEventListener(this);
-        mTimerTask.removeUpdateProgressTask();
-        super.onBackPressed();
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        mTimerTask.removeUpdateProgressTask();
     }
 
     @SuppressLint("SetTextI18n")

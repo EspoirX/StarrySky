@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lzx.starrysky.playback;
+package com.lzx.starrysky.playback.manager;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -25,14 +25,17 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.lzx.starrysky.provider.MediaQueueProvider;
-import com.lzx.starrysky.provider.MediaResource;
-import com.lzx.starrysky.ext.PlaybackStateCompatExt;
 import com.lzx.starrysky.StarrySky;
-import com.lzx.starrysky.registry.ValidRegistry;
-import com.lzx.starrysky.provider.SongInfo;
+import com.lzx.starrysky.ext.PlaybackStateCompatExt;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
+import com.lzx.starrysky.playback.player.ExoPlayback;
+import com.lzx.starrysky.playback.player.Playback;
+import com.lzx.starrysky.playback.queue.MediaQueue;
+import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.provider.MediaResource;
+import com.lzx.starrysky.provider.SongInfo;
+import com.lzx.starrysky.registry.ValidRegistry;
 import com.lzx.starrysky.utils.delayaction.Action;
 import com.lzx.starrysky.utils.delayaction.DelayAction;
 import com.lzx.starrysky.utils.delayaction.Valid;
@@ -41,12 +44,12 @@ import com.lzx.starrysky.utils.delayaction.Valid;
 /**
  * 播放管理类
  */
-public class PlaybackManager implements Playback.Callback {
+public class PlaybackManager implements IPlaybackManager, Playback.Callback {
 
     private static final String TAG = "PlaybackManager";
 
     private Context mContext;
-    private QueueManager mQueueManager;
+    private MediaQueue mMediaQueue;
     private Playback mPlayback;
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
@@ -56,18 +59,26 @@ public class PlaybackManager implements Playback.Callback {
     private boolean shouldPlayPre = false;  //是否可以播放上一首
     private PlaybackStateCompat.Builder stateBuilder;
 
-    public PlaybackManager(Context context, PlaybackServiceCallback serviceCallback, QueueManager queueManager,
-                           Playback playback) {
+    public PlaybackManager(Context context, MediaQueue mediaQueue, Playback playback) {
         mContext = context;
-
-        mServiceCallback = serviceCallback;
-        mQueueManager = queueManager;
+        mMediaQueue = mediaQueue;
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
         mPlayback.setCallback(this);
         currRepeatMode = PlaybackStateCompat.REPEAT_MODE_NONE;
     }
 
+    @Override
+    public void setServiceCallback(PlaybackServiceCallback serviceCallback) {
+        mServiceCallback = serviceCallback;
+    }
+
+    @Override
+    public void setMetadataUpdateListener(MediaQueueProvider.MetadataUpdateListener listener) {
+        mMediaQueue.setMetadataUpdateListener(listener);
+    }
+
+    @Override
     public void setNotificationFactory(NotificationFactory notificationFactory) {
         mNotificationFactory = notificationFactory;
     }
@@ -76,15 +87,23 @@ public class PlaybackManager implements Playback.Callback {
         return mPlayback;
     }
 
+    @Override
     public MediaSessionCompat.Callback getMediaSessionCallback() {
         return mMediaSessionCallback;
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return mPlayback.isPlaying();
     }
 
     /**
      * 播放
      */
+    @Override
     public void handlePlayRequest(boolean isPlayWhenReady) {
         ValidRegistry validRegistry = StarrySky.get().getRegistry().getValidRegistry();
+
         if (validRegistry.hasValid()) {
             DelayAction delayAction = DelayAction.getInstance();
             for (Valid valid : validRegistry.getValids()) {
@@ -93,17 +112,17 @@ public class PlaybackManager implements Playback.Callback {
             delayAction.addAction(new Action() {
                 @Override
                 public void call(SongInfo songInfo) {
-                    PlaybackManager.this.handPlayRequestImpl(isPlayWhenReady);
+                    PlaybackManager.this.handPlayRequestImpl(songInfo, isPlayWhenReady);
                 }
             });
-            delayAction.doCall(null);
+            delayAction.doCall(mMediaQueue.getCurrSongInfo());
         } else {
-            handPlayRequestImpl(isPlayWhenReady);
+            handPlayRequestImpl(null, isPlayWhenReady);
         }
     }
 
-    private void handPlayRequestImpl(boolean isPlayWhenReady) {
-        MediaResource currentMusic = mQueueManager.getCurrentMusic();
+    private void handPlayRequestImpl(SongInfo songInfo, boolean isPlayWhenReady) {
+        MediaResource currentMusic = mMediaQueue.getCurrentMusic(songInfo);
         if (currentMusic != null) {
             if (isPlayWhenReady) {
                 mServiceCallback.onPlaybackStart();
@@ -115,6 +134,7 @@ public class PlaybackManager implements Playback.Callback {
     /**
      * 暂停
      */
+    @Override
     public void handlePauseRequest() {
         if (mPlayback.isPlaying()) {
             mPlayback.pause();
@@ -125,6 +145,7 @@ public class PlaybackManager implements Playback.Callback {
     /**
      * 停止
      */
+    @Override
     public void handleStopRequest(String withError) {
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
@@ -134,6 +155,7 @@ public class PlaybackManager implements Playback.Callback {
     /**
      * 快进
      */
+    @Override
     public void handleFastForward() {
         mPlayback.onFastForward();
     }
@@ -141,6 +163,7 @@ public class PlaybackManager implements Playback.Callback {
     /**
      * 倒带
      */
+    @Override
     public void handleRewind() {
         mPlayback.onRewind();
     }
@@ -148,6 +171,7 @@ public class PlaybackManager implements Playback.Callback {
     /**
      * 指定语速 refer 是否已当前速度为基数  multiple 倍率
      */
+    @Override
     public void handleDerailleur(boolean refer, float multiple) {
         mPlayback.onDerailleur(refer, multiple);
     }
@@ -155,6 +179,7 @@ public class PlaybackManager implements Playback.Callback {
     /**
      * 更新播放状态
      */
+    @Override
     public void updatePlaybackState(boolean isOnlyUpdateActions, String error) {
         if (isOnlyUpdateActions && stateBuilder != null) {
             //单独更新 Actions
@@ -178,8 +203,8 @@ public class PlaybackManager implements Playback.Callback {
             //设置播放状态
             stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
             //设置当前活动的 songId
-            // MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
-            MediaResource currentMusic = mQueueManager.getCurrentMusic();
+            // MediaSessionCompat.QueueItem currentMusic = mMediaQueue.getCurrentMusic();
+            MediaResource currentMusic = mMediaQueue.getCurrentMusic();
             MediaMetadataCompat currMetadata = null;
             if (currentMusic != null) {
                 stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
@@ -246,11 +271,11 @@ public class PlaybackManager implements Playback.Callback {
         }
         if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
             //顺序播放
-            shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1
-                    && mQueueManager.skipQueuePosition(1);
+            shouldPlayNext = mMediaQueue.getCurrentIndex() != mMediaQueue.getCurrentQueueSize() - 1
+                    && mMediaQueue.skipQueuePosition(1);
             if (shouldPlayNext) {
                 handlePlayRequest(true);
-                mQueueManager.updateMetadata();
+                mMediaQueue.updateMetadata();
             } else {
                 handleStopRequest(null);
             }
@@ -261,10 +286,10 @@ public class PlaybackManager implements Playback.Callback {
             handlePlayRequest(true);
         } else if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
             //列表循环
-            shouldPlayNext = mQueueManager.skipQueuePosition(1);
+            shouldPlayNext = mMediaQueue.skipQueuePosition(1);
             if (shouldPlayNext) {
                 handlePlayRequest(true);
-                mQueueManager.updateMetadata();
+                mMediaQueue.updateMetadata();
             } else {
                 handleStopRequest(null);
             }
@@ -292,7 +317,7 @@ public class PlaybackManager implements Playback.Callback {
      */
     @Override
     public void setCurrentMediaId(String mediaId) {
-        mQueueManager.setQueueFromMusic(mediaId);
+        mMediaQueue.updateCurrPlayingMedia(mediaId);
     }
 
     /**
@@ -309,22 +334,22 @@ public class PlaybackManager implements Playback.Callback {
         @Override
         public void onPrepareFromMediaId(String mediaId, Bundle extras) {
             super.onPrepareFromMediaId(mediaId, extras);
-            mQueueManager.setQueueFromMusic(mediaId);
+            mMediaQueue.updateCurrPlayingMedia(mediaId);
             handlePlayRequest(false);
         }
 
         @Override
         public void onPlay() {
-            if (mQueueManager.getCurrentMusic() == null) {
-                mQueueManager.setRandomQueue();
+            if (mMediaQueue.getCurrentMusic() == null) {
+                return;
             }
             handlePlayRequest(true);
         }
 
         @Override
         public void onSkipToQueueItem(long queueId) {
-            mQueueManager.setCurrentQueueItem(String.valueOf(queueId));
-            mQueueManager.updateMetadata();
+            mMediaQueue.setCurrentQueueItem(String.valueOf(queueId));
+            mMediaQueue.updateMetadata();
         }
 
         @Override
@@ -334,7 +359,7 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
-            mQueueManager.setQueueFromMusic(mediaId);
+            mMediaQueue.updateCurrPlayingMedia(mediaId);
             handlePlayRequest(true);
         }
 
@@ -352,37 +377,37 @@ public class PlaybackManager implements Playback.Callback {
         public void onSkipToNext() {
             if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
                 //顺序播放
-                shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1
-                        && mQueueManager.skipQueuePosition(1);
+                shouldPlayNext = mMediaQueue.getCurrentIndex() != mMediaQueue.getCurrentQueueSize() - 1
+                        && mMediaQueue.skipQueuePosition(1);
             } else {
-                shouldPlayNext = mQueueManager.skipQueuePosition(1);
+                shouldPlayNext = mMediaQueue.skipQueuePosition(1);
             }
             if (shouldPlayNext) {
                 //当前的媒体如果是在倒数第二首点击到最后一首的时候，如果不重新判断，会用于为 true
                 if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-                    shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1;
+                    shouldPlayNext = mMediaQueue.getCurrentIndex() != mMediaQueue.getCurrentQueueSize() - 1;
                 }
                 shouldPlayPre = true;
                 handlePlayRequest(true);
-                mQueueManager.updateMetadata();
+                mMediaQueue.updateMetadata();
             }
         }
 
         @Override
         public void onSkipToPrevious() {
             if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-                shouldPlayPre = mQueueManager.getCurrentIndex() != 0 && mQueueManager.skipQueuePosition(-1);
+                shouldPlayPre = mMediaQueue.getCurrentIndex() != 0 && mMediaQueue.skipQueuePosition(-1);
             } else {
-                shouldPlayPre = mQueueManager.skipQueuePosition(-1);
+                shouldPlayPre = mMediaQueue.skipQueuePosition(-1);
             }
             if (shouldPlayPre) {
                 //当前的媒体如果是在第二首点击到上一首的时候，如果不重新判断，会用于为 true
                 if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-                    shouldPlayPre = mQueueManager.getCurrentIndex() != 0;
+                    shouldPlayPre = mMediaQueue.getCurrentIndex() != 0;
                 }
                 shouldPlayNext = true;
                 handlePlayRequest(true);
-                mQueueManager.updateMetadata();
+                mMediaQueue.updateMetadata();
             }
         }
 
@@ -406,7 +431,7 @@ public class PlaybackManager implements Playback.Callback {
         @Override
         public void onSetShuffleMode(int shuffleMode) {
             super.onSetShuffleMode(shuffleMode);
-            mQueueManager.setQueueByShuffleMode(shuffleMode);
+            mMediaQueue.setQueueByShuffleMode(shuffleMode);
             mServiceCallback.onShuffleModeUpdated(shuffleMode);
         }
 
@@ -416,8 +441,8 @@ public class PlaybackManager implements Playback.Callback {
             currRepeatMode = repeatMode;
             mServiceCallback.onRepeatModeUpdated(repeatMode);
             if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-                shouldPlayNext = mQueueManager.getCurrentIndex() != mQueueManager.getCurrentQueueSize() - 1;
-                shouldPlayPre = mQueueManager.getCurrentIndex() != 0;
+                shouldPlayNext = mMediaQueue.getCurrentIndex() != mMediaQueue.getCurrentQueueSize() - 1;
+                shouldPlayPre = mMediaQueue.getCurrentIndex() != 0;
             } else {
                 shouldPlayNext = true;
                 shouldPlayPre = true;
@@ -458,17 +483,5 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
-    public interface PlaybackServiceCallback {
-        void onPlaybackStart();
 
-        void onNotificationRequired();
-
-        void onPlaybackStop();
-
-        void onPlaybackStateUpdated(PlaybackStateCompat newState, MediaMetadataCompat currMetadata);
-
-        void onShuffleModeUpdated(int shuffleMode);
-
-        void onRepeatModeUpdated(int repeatMode);
-    }
 }

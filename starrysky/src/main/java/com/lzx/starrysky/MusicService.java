@@ -18,21 +18,20 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
-import com.lzx.starrysky.provider.MediaQueueProvider;
-import com.lzx.starrysky.control.PlayerControl;
-import com.lzx.starrysky.registry.StarrySkyRegistry;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
-import com.lzx.starrysky.playback.ExoPlayback;
-import com.lzx.starrysky.playback.PlaybackManager;
-import com.lzx.starrysky.playback.QueueManager;
+import com.lzx.starrysky.playback.manager.IPlaybackManager;
+import com.lzx.starrysky.playback.manager.PlaybackManager;
+import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.registry.StarrySkyRegistry;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
 
-public class MusicService extends MediaBrowserServiceCompat implements QueueManager.MetadataUpdateListener, PlaybackManager.PlaybackServiceCallback {
+public class MusicService extends MediaBrowserServiceCompat implements MediaQueueProvider.MetadataUpdateListener, PlaybackManager.PlaybackServiceCallback {
 
     public static final String UPDATE_PARENT_ID = "update";
     private static final String STARRYSKY_BROWSABLE_ROOT = "/";
@@ -43,7 +42,7 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
     private MediaControllerCompat.TransportControls transportControls;
 
     private PackageValidator mPackageValidator;
-    private PlaybackManager mPlaybackManager;
+    private IPlaybackManager mPlaybackManager;
 
     private NotificationFactory mNotificationFactory;
 
@@ -58,16 +57,9 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
     public void onCreate() {
         super.onCreate();
         mRegistry = StarrySky.get().getRegistry();
-
-        MediaQueueProvider musicProvider = mRegistry.get(MediaQueueProvider.class);
-        PlayerControl playerControl = mRegistry.get(PlayerControl.class);
-
-        QueueManager queueManager = new QueueManager(this, musicProvider, this);
-        ExoPlayback playback = new ExoPlayback(this, musicProvider);
-
-        mPlaybackManager = new PlaybackManager(this, this, queueManager, playback);
-
-        playerControl.setPlayBack(playback);
+        mPlaybackManager = mRegistry.get(IPlaybackManager.class);
+        mPlaybackManager.setServiceCallback(this);
+        mPlaybackManager.setMetadataUpdateListener(this);
 
         Intent sessionIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
         PendingIntent sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, 0);
@@ -229,8 +221,8 @@ public class MusicService extends MediaBrowserServiceCompat implements QueueMana
         @Override
         public void handleMessage(Message msg) {
             MusicService service = mWeakReference.get();
-            if (service != null && service.mPlaybackManager.getPlayback() != null) {
-                if (service.mPlaybackManager.getPlayback().isPlaying()) {
+            if (service != null) {
+                if (service.mPlaybackManager.isPlaying()) {
                     return;
                 }
                 service.stopSelf();

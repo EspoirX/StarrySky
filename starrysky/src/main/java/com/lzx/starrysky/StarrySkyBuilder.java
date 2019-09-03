@@ -6,8 +6,12 @@ import android.content.Context;
 import com.lzx.starrysky.common.MediaSessionConnection;
 import com.lzx.starrysky.control.PlayerControl;
 import com.lzx.starrysky.control.StarrySkyPlayerControl;
-import com.lzx.starrysky.playback.MediaQueue;
-import com.lzx.starrysky.playback.MediaQueueManager;
+import com.lzx.starrysky.playback.manager.IPlaybackManager;
+import com.lzx.starrysky.playback.manager.PlaybackManager;
+import com.lzx.starrysky.playback.player.ExoPlayback;
+import com.lzx.starrysky.playback.queue.MediaQueue;
+import com.lzx.starrysky.playback.queue.MediaQueueManager;
+import com.lzx.starrysky.playback.player.Playback;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaQueueProviderImpl;
 import com.lzx.starrysky.provider.MediaQueueProviderSurface;
@@ -21,6 +25,8 @@ public class StarrySkyBuilder {
     private PlayerControl mPlayerControl;
     private MediaQueueProvider mMediaQueueProvider;
     private MediaQueue mMediaQueue;
+    private Playback mPlayback;
+    private IPlaybackManager mIPlaybackManager;
 
     public void setConnection(MediaSessionConnection connection) {
         mConnection = connection;
@@ -42,6 +48,14 @@ public class StarrySkyBuilder {
         mMediaQueue = mediaQueue;
     }
 
+    public void setPlayback(Playback playback) {
+        mPlayback = playback;
+    }
+
+    public void setIPlaybackManager(IPlaybackManager IPlaybackManager) {
+        mIPlaybackManager = IPlaybackManager;
+    }
+
     StarrySky build(Context context) {
         if (mConnection == null) {
             ComponentName componentName = new ComponentName(context, MusicService.class);
@@ -60,11 +74,20 @@ public class StarrySkyBuilder {
         if (mMediaQueue == null) {
             mMediaQueue = new MediaQueueManager(surface, context);
         }
-
+        if (mPlayback == null) {
+            mPlayback = new ExoPlayback(context, surface);
+        }
+        mPlayerControl.setPlayBack(mPlayback);
+        if (mIPlaybackManager == null) {
+            mIPlaybackManager = new PlaybackManager(context, mMediaQueue, mPlayback);
+        }
         return new StarrySky(
                 mConnection,
                 mImageLoader,
                 mPlayerControl,
-                surface);
+                surface,
+                mMediaQueue,
+                mPlayback,
+                mIPlaybackManager);
     }
 }

@@ -15,8 +15,8 @@ import com.lzx.starrysky.common.PlaybackStage;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
-import com.lzx.starrysky.playback.ExoPlayback;
-import com.lzx.starrysky.playback.Playback;
+import com.lzx.starrysky.playback.player.ExoPlayback;
+import com.lzx.starrysky.playback.player.Playback;
 import com.lzx.starrysky.utils.MD5;
 
 import java.util.ArrayList;

@@ -61,7 +61,7 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
 
     @Override
     public Iterable<SongInfo> getShuffledSongInfo() {
-        return provider.getSongInfos();
+        return provider.getShuffledSongInfo();
     }
 
     @Override

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lzx.starrysky.playback;
+package com.lzx.starrysky.playback.queue;
 
 import android.app.Activity;
 import android.support.v4.media.MediaMetadataCompat;

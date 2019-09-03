@@ -4,8 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.lzx.starrysky.playback.MediaQueue;
-import com.lzx.starrysky.playback.MediaQueueManager;
+import com.lzx.starrysky.playback.manager.IPlaybackManager;
+import com.lzx.starrysky.playback.player.Playback;
+import com.lzx.starrysky.playback.queue.MediaQueue;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.common.MediaSessionConnection;
 import com.lzx.starrysky.control.PlayerControl;
@@ -24,7 +25,6 @@ public class StarrySky {
     private MediaSessionConnection mConnection;
     private ILoaderStrategy mImageLoader;
     private PlayerControl mPlayerControl;
-    private MediaQueue mMediaQueue;
     private StarrySkyRegistry mRegistry;
 
     public static void init(Application application) {
@@ -80,7 +80,11 @@ public class StarrySky {
             MediaSessionConnection connection,
             ILoaderStrategy imageLoader,
             PlayerControl playerControl,
-            MediaQueueProvider mediaQueueProvider) {
+            MediaQueueProvider mediaQueueProvider,
+            MediaQueue mediaQueue,
+            Playback playback,
+            IPlaybackManager playbackManager) {
+
         mConnection = connection;
         mImageLoader = imageLoader;
         mPlayerControl = playerControl;
@@ -91,7 +95,10 @@ public class StarrySky {
                 .append(ILoaderStrategy.class, mImageLoader)
                 .append(PlayerControl.class, mPlayerControl)
                 .append(MediaQueueProvider.class, mediaQueueProvider)
-                .append(MediaResource.class, new MediaResource());
+                .append(MediaResource.class, new MediaResource())
+                .append(MediaQueue.class, mediaQueue)
+                .append(Playback.class, playback)
+                .append(IPlaybackManager.class, playbackManager);
 
         mConnection.connect();
     }

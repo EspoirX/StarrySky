@@ -1,9 +1,10 @@
-package com.lzx.starrysky.playback;
+package com.lzx.starrysky.playback.queue;
 
 import android.support.annotation.NonNull;
 
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaResource;
+import com.lzx.starrysky.provider.SongInfo;
 
 public interface MediaQueue {
 
@@ -36,6 +37,10 @@ public interface MediaQueue {
      */
     MediaResource getCurrentMusic();
 
+    MediaResource getCurrentMusic(SongInfo songInfo);
+
+    SongInfo getCurrSongInfo();
+
     /**
      * 根据传入的媒体id来更新此媒体的下标并通知
      */
@@ -50,4 +55,11 @@ public interface MediaQueue {
      * 更新媒体信息
      */
     void updateMetadata();
+
+    /**
+     * 获取列表大小
+     */
+    int getCurrentQueueSize();
+
+    void setQueueByShuffleMode(int shuffleMode);
 }

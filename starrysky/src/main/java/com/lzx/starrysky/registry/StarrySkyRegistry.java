@@ -3,6 +3,7 @@ package com.lzx.starrysky.registry;
 import android.support.annotation.NonNull;
 import android.util.ArrayMap;
 
+import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.control.PlayerControl;
@@ -81,4 +82,6 @@ public class StarrySkyRegistry {
             return this.modelClass.isAssignableFrom(modelClass);
         }
     }
+
+
 }
