@@ -24,6 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".example.ListPlayExampleActivity"
+            android:screenOrientation="portrait" />
+
         <receiver
             android:name=".NotificationReceiver"
             android:exported="true">

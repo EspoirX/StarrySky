@@ -7,232 +7,31 @@
     android:orientation="vertical"
     tools:ignore="ResourceName">
 
-    <TextView
-        android:id="@+id/currInfo"
+    <Button
+        android:id="@+id/btn1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="当前播放："
-        android:textColor="#000000" />
+        android:text="列表播放例子" />
 
-    <SeekBar
-        android:id="@+id/seekBar"
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:secondaryProgressTint="@color/colorAccent" />
+        android:text="请求url后再播放例子" />
 
-    <TextView
-        android:id="@+id/currTime"
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#000000" />
+        android:text="监听进度和音频长度例子" />
 
-    <android.support.v4.widget.NestedScrollView
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp">
+        android:layout_height="wrap_content"
+        android:text="自定义实现播放器例子" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:alignContent="stretch"
-                app:alignItems="stretch"
-                app:flexWrap="wrap">
-
-                <Button
-                    android:id="@+id/play"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="播放" />
-
-                <Button
-                    android:id="@+id/validPlay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="请求接口获取url后再播放示例" />
-
-                <Button
-                    android:id="@+id/pause"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="暂停" />
-
-                <Button
-                    android:id="@+id/resum"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="继续" />
-
-                <Button
-                    android:id="@+id/stop"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="停止" />
-
-                <Button
-                    android:id="@+id/pre"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="上一首" />
-
-                <Button
-                    android:id="@+id/next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="下一首" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="其他例子" />
 
 
-                <Button
-                    android:id="@+id/currSong"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="当前播放歌曲" />
-
-                <Button
-                    android:id="@+id/currSongId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="当前播放歌曲ID" />
-
-
-                <Button
-                    android:id="@+id/currSongIndex"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="当前播放下标" />
-
-                <Button
-                    android:id="@+id/sendFavorite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="通知栏喜欢" />
-
-                <Button
-                    android:id="@+id/sendLyrics"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="通知栏歌词" />
-
-                <Button
-                    android:id="@+id/cacheSize"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="获取缓存大小" />
-
-                <Button
-                    android:id="@+id/shuffleMode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="随机播放" />
-
-                <Button
-                    android:id="@+id/isShuffleMode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="当前是否随机" />
-
-                <Button
-                    android:id="@+id/playMode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="设置播放模式" />
-
-                <Button
-                    android:id="@+id/currPlayMode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="当前播放模式" />
-
-                <Button
-                    android:id="@+id/hasNext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="是否有下一首" />
-
-                <Button
-                    android:id="@+id/hasPre"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="是否有上一首" />
-
-                <Button
-                    android:id="@+id/fastForward"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="播速度加" />
-
-                <Button
-                    android:id="@+id/rewind"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="播速度减" />
-
-                <Button
-                    android:id="@+id/playSpeed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="当前播放的速度" />
-
-                <Button
-                    android:id="@+id/addvolume"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="音量加" />
-
-                <Button
-                    android:id="@+id/jianvolume"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="音量减" />
-
-                <Button
-                    android:id="@+id/getVolume"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="获取音量" />
-
-                <Button
-                    android:id="@+id/localSong"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="扫描本地媒体信息" />
-
-                <Button
-                    android:id="@+id/connect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="连接" />
-
-                <Button
-                    android:id="@+id/disconnect"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="断开连接" />
-
-                <Button
-                    android:id="@+id/getStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="获取状态" />
-
-                <Button
-                    android:id="@+id/onPrepare"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="准备但不播放" />
-
-                <Button
-                    android:id="@+id/seekTo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="seekTo" />
-            </com.google.android.flexbox.FlexboxLayout>
-        </FrameLayout>
-    </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

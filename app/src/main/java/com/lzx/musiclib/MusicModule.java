@@ -16,6 +16,6 @@ public class MusicModule extends StarrySkyConfig {
     @Override
     public void applyMediaValid(@NonNull Context context, StarrySkyRegistry registry) {
         super.applyMediaValid(context, registry);
-        registry.appendValidRegistry(new RequestMusicUrlValid(context));
+        //registry.appendValidRegistry(new RequestMusicUrlValid(context));
     }
 }
