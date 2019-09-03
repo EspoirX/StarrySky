@@ -24,6 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.ext.PlaybackStateCompatExt;
@@ -103,18 +104,14 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
     @Override
     public void handlePlayRequest(boolean isPlayWhenReady) {
         ValidRegistry validRegistry = StarrySky.get().getRegistry().getValidRegistry();
-
         if (validRegistry.hasValid()) {
             DelayAction delayAction = DelayAction.getInstance();
+            delayAction.addAction(songInfo -> {
+                PlaybackManager.this.handPlayRequestImpl(songInfo, isPlayWhenReady);
+            });
             for (Valid valid : validRegistry.getValids()) {
                 delayAction.addValid(valid != null ? valid : new ValidRegistry.DefaultValid());
             }
-            delayAction.addAction(new Action() {
-                @Override
-                public void call(SongInfo songInfo) {
-                    PlaybackManager.this.handPlayRequestImpl(songInfo, isPlayWhenReady);
-                }
-            });
             delayAction.doCall(mMediaQueue.getCurrSongInfo());
         } else {
             handPlayRequestImpl(null, isPlayWhenReady);

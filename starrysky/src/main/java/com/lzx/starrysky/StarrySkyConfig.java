@@ -1,4 +1,4 @@
-package com.lzx.starrysky.provider;
+package com.lzx.starrysky;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.lzx.starrysky.StarrySkyBuilder;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
 
-public abstract class StarrySkyModule {
+public abstract class StarrySkyConfig {
 
     public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
         // Default empty impl.

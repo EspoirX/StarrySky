@@ -170,9 +170,9 @@ public final class ExoPlayback implements Playback {
         }
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false); // release everything except the player
-            MediaMetadataCompat track = mMusicProvider.getMusic(resource.getMediaId());
+//            MediaMetadataCompat track = mMusicProvider.getMusic(resource.getMediaId());
 
-            String source = track.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI);
+            String source = resource.getMediaUrl();//track.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI);
             if (TextUtils.isEmpty(source)) {
                 return;
             }

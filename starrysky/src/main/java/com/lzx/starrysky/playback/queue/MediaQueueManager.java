@@ -120,7 +120,7 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
     @Override
     public SongInfo getCurrSongInfo() {
         List<SongInfo> songInfos = getSongInfos();
-        if (!QueueHelper.isIndexPlayable(mCurrentIndex, songInfos)) {
+        if (QueueHelper.isIndexPlayable(mCurrentIndex, songInfos)) {
             return songInfos.get(mCurrentIndex);
         }
         return null;

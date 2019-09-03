@@ -52,21 +52,21 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
 
         SongInfo s1 = new SongInfo();
         s1.setSongId("111");
-        s1.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3&a=我");
+       // s1.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3&a=我");
         s1.setSongCover("https://www.qqkw.com/d/file/p/2018/04-21/c24fd86006670f964e63cb8f9c129fc6.jpg");
         s1.setSongName("心雨");
         s1.setArtist("贤哥");
 
         SongInfo s2 = new SongInfo();
         s2.setSongId("222");
-        s2.setSongUrl("http://music.163.com/song/media/outer/url?id=281951.mp3");
+      //  s2.setSongUrl("http://music.163.com/song/media/outer/url?id=281951.mp3");
         s2.setSongCover("https://n.sinaimg.cn/sinacn13/448/w1024h1024/20180504/7b5f-fzyqqiq8228305.jpg");
         s2.setSongName("我曾用心爱着你");
         s2.setArtist("潘美辰");
 
         SongInfo s3 = new SongInfo();
         s3.setSongId("333");
-        s3.setSongUrl("http://music.163.com/song/media/outer/url?id=25906124.mp3");
+      //  s3.setSongUrl("http://music.163.com/song/media/outer/url?id=25906124.mp3");
         s3.setSongCover("http://cn.chinadaily.com.cn/img/attachement/jpg/site1/20180211/509a4c2df41d1bea45f73b.jpg");
         s3.setSongName("不要说话");
         s3.setArtist("陈奕迅");
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements OnPlayerEventList
         });
 
         //添加监听
-        MusicManager.getInstance().addPlayerEventListener(this);
+        //MusicManager.getInstance().addPlayerEventListener(this);
         //进度更新
         mTimerTask.setUpdateProgressTask(() -> {
             long position = MusicManager.getInstance().getPlayingPosition();

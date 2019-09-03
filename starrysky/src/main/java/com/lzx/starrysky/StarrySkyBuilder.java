@@ -6,6 +6,7 @@ import android.content.Context;
 import com.lzx.starrysky.common.MediaSessionConnection;
 import com.lzx.starrysky.control.PlayerControl;
 import com.lzx.starrysky.control.StarrySkyPlayerControl;
+import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.playback.manager.PlaybackManager;
 import com.lzx.starrysky.playback.player.ExoPlayback;
@@ -27,6 +28,7 @@ public class StarrySkyBuilder {
     private MediaQueue mMediaQueue;
     private Playback mPlayback;
     private IPlaybackManager mIPlaybackManager;
+    private NotificationConstructor mNotificationConstructor;
 
     public void setConnection(MediaSessionConnection connection) {
         mConnection = connection;
@@ -54,6 +56,10 @@ public class StarrySkyBuilder {
 
     public void setIPlaybackManager(IPlaybackManager IPlaybackManager) {
         mIPlaybackManager = IPlaybackManager;
+    }
+
+    public void setNotificationConstructor(NotificationConstructor constructor) {
+        mNotificationConstructor = constructor;
     }
 
     StarrySky build(Context context) {
@@ -88,6 +94,7 @@ public class StarrySkyBuilder {
                 surface,
                 mMediaQueue,
                 mPlayback,
-                mIPlaybackManager);
+                mIPlaybackManager,
+                mNotificationConstructor);
     }
 }

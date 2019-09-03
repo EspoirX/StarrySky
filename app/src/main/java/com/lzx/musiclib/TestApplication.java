@@ -28,7 +28,7 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        StarrySky.init(this);
+        StarrySky.init(this, new MusicModule());
 //        //初始化
 //        MusicManager.initMusicManager(this);
 //        //设置图片加载器

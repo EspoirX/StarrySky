@@ -6,13 +6,13 @@ import android.support.annotation.NonNull;
 import com.lzx.musiclib.imageloader.GlideLoader;
 import com.lzx.starrysky.StarrySkyBuilder;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
-import com.lzx.starrysky.provider.StarrySkyModule;
+import com.lzx.starrysky.StarrySkyConfig;
 
-public class MusicModule extends StarrySkyModule {
+public class MusicModule extends StarrySkyConfig {
     @Override
     public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
         super.applyOptions(context, builder);
-        builder.setImageLoader(new GlideLoader());
+
     }
 
     @Override

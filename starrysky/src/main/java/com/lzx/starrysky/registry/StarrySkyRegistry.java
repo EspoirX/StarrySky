@@ -2,6 +2,7 @@ package com.lzx.starrysky.registry;
 
 import android.support.annotation.NonNull;
 import android.util.ArrayMap;
+import android.util.Log;
 
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.provider.MediaResource;
@@ -45,9 +46,14 @@ public class StarrySkyRegistry {
     public synchronized <Model, Data> StarrySkyRegistry append(
             @NonNull Class<Model> modelClass,
             @NonNull Data data) {
+
         Entry<Model, Data> entry = new Entry<>(modelClass, data);
         entries.add(entries.size(), entry);
         return this;
+    }
+
+    public synchronized void clear() {
+        entries.clear();
     }
 
     public <Model, Data> StarrySkyRegistry replace(

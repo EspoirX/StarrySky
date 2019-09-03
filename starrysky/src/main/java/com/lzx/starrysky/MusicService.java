@@ -18,7 +18,6 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.notification.factory.NotificationFactory;
@@ -87,7 +86,7 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
         mPlaybackManager.updatePlaybackState(false, null);
         mPackageValidator = new PackageValidator(this);
         //通知栏相关
-        NotificationConstructor constructor = MusicManager.getInstance().getConstructor();
+        NotificationConstructor constructor = mRegistry.get(NotificationConstructor.class);
         mNotificationFactory = new NotificationFactory(this, constructor);
         mNotificationFactory.createNotification();
         mPlaybackManager.setNotificationFactory(mNotificationFactory);
@@ -141,7 +140,7 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
      */
     @Override
     public void onCurrentQueueIndexUpdated(int queueIndex) {
-        mPlaybackManager.handlePlayRequest(true);
+        //mPlaybackManager.handlePlayRequest(true);
     }
 
     /**

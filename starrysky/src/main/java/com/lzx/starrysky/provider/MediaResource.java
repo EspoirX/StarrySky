@@ -26,6 +26,9 @@ public class MediaResource {
                 resource = new MediaResource(mediaId, mediaUrl, queueId);
                 mCacheMediaResource.put(mediaId, resource);
             }
+            if (!resource.getMediaUrl().equals(mediaUrl)) {
+                resource.mediaUrl = mediaUrl;
+            }
             return resource;
         } else {
             throw new IllegalStateException("songId is null");

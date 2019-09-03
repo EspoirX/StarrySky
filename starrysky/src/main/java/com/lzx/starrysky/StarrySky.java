@@ -3,7 +3,9 @@ package com.lzx.starrysky;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.playback.player.Playback;
 import com.lzx.starrysky.playback.queue.MediaQueue;
@@ -21,6 +23,7 @@ public class StarrySky {
     private volatile static boolean alreadyInit;
 
     private static Application globalContext;
+    private static StarrySkyConfig mStarrySkyConfig;
     private StarrySkyActivityLifecycle mLifecycle;
     private MediaSessionConnection mConnection;
     private ILoaderStrategy mImageLoader;
@@ -28,11 +31,16 @@ public class StarrySky {
     private StarrySkyRegistry mRegistry;
 
     public static void init(Application application) {
+        init(application, null);
+    }
+
+    public static void init(Application application, StarrySkyConfig config) {
         if (alreadyInit) {
             return;
         }
         alreadyInit = true;
         globalContext = application;
+        mStarrySkyConfig = config;
         get().registerLifecycle(globalContext);
     }
 
@@ -69,10 +77,17 @@ public class StarrySky {
     }
 
     private static void initializeStarrySky(Context context, StarrySkyBuilder builder) {
-        StarrySky starrySky = builder.build(context);
-
         ExoDownload.initExoDownload(context);
 
+        if (mStarrySkyConfig != null) {
+            mStarrySkyConfig.applyOptions(context, builder);
+        }
+
+        StarrySky starrySky = builder.build(context);
+
+        if (mStarrySkyConfig != null) {
+            mStarrySkyConfig.applyMediaValid(context, starrySky.mRegistry);
+        }
         sStarrySky = starrySky;
     }
 
@@ -83,14 +98,14 @@ public class StarrySky {
             MediaQueueProvider mediaQueueProvider,
             MediaQueue mediaQueue,
             Playback playback,
-            IPlaybackManager playbackManager) {
-
+            IPlaybackManager playbackManager,
+            NotificationConstructor constructor) {
         mConnection = connection;
         mImageLoader = imageLoader;
         mPlayerControl = playerControl;
 
         mRegistry = new StarrySkyRegistry();
-
+        mRegistry.clear();
         mRegistry
                 .append(ILoaderStrategy.class, mImageLoader)
                 .append(PlayerControl.class, mPlayerControl)
@@ -98,7 +113,8 @@ public class StarrySky {
                 .append(MediaResource.class, new MediaResource())
                 .append(MediaQueue.class, mediaQueue)
                 .append(Playback.class, playback)
-                .append(IPlaybackManager.class, playbackManager);
+                .append(IPlaybackManager.class, playbackManager)
+                .append(NotificationConstructor.class, constructor);
 
         mConnection.connect();
     }
