@@ -10,9 +10,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.lzx.musiclib.R;
+import com.lzx.starrysky.MusicManager;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.common.PlaybackStage;
 import com.lzx.starrysky.provider.SongInfo;
+import com.lzx.starrysky.utils.TimerTaskManager;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -33,6 +35,7 @@ public class ListPlayExampleActivity extends AppCompatActivity {
     OkHttpClient client = new OkHttpClient();
     private ListPlayAdapter mListPlayAdapter;
     private RecyclerView mRecyclerView;
+    private TimerTaskManager mTimerTask;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,6 +45,8 @@ public class ListPlayExampleActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mListPlayAdapter = new ListPlayAdapter(this);
         mRecyclerView.setAdapter(mListPlayAdapter);
+        mTimerTask = new TimerTaskManager();
+
         getMusicList();
 
         StarrySky.with().playbackState().observe(this, playbackStage -> {
@@ -53,20 +58,32 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                     break;
                 case PlaybackStage.START:
                     mListPlayAdapter.notifyDataSetChanged();
+                    mTimerTask.startToUpdateProgress();
                     break;
                 case PlaybackStage.PAUSE:
+                    mTimerTask.stopToUpdateProgress();
                     break;
                 case PlaybackStage.STOP:
+                    mTimerTask.stopToUpdateProgress();
                     break;
                 case PlaybackStage.COMPLETION:
+                    mTimerTask.stopToUpdateProgress();
                     break;
                 case PlaybackStage.BUFFERING:
                     break;
                 case PlaybackStage.ERROR:
+                    mTimerTask.stopToUpdateProgress();
                     break;
                 default:
                     break;
             }
+        });
+
+
+        mTimerTask.setUpdateProgressTask(() -> {
+            SongInfo songInfo = StarrySky.with().getNowPlayingSongInfo();
+            int position = mListPlayAdapter.getSongInfos().indexOf(songInfo);
+            mListPlayAdapter.updateItemProgress(position);
         });
     }
 
@@ -86,13 +103,7 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                 try {
                     JSONObject object = new JSONObject(response.body().string());
                     JSONArray array = object.getJSONArray("playlists");
-                    JSONObject jsonObject = null;
-                    for (int i = 0; i < array.length(); i++) {
-                        jsonObject = array.getJSONObject(i);
-                        if (jsonObject != null) {
-                            break;
-                        }
-                    }
+                    JSONObject jsonObject = array.getJSONObject(1);
                     if (jsonObject == null) {
                         return;
                     }
@@ -132,7 +143,6 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                         info.setSongName(object.optString("name"));
                         info.setDuration(object.optLong("duration"));
                         info.setSongUrl("http://music.163.com/song/media/outer/url?id=" + info.getSongId() + ".mp3");
-                        Log.i("xian", "id = " + info.getSongId());
                         list.add(info);
                     }
                     runOnUiThread(() -> {
@@ -143,5 +153,11 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mTimerTask.removeUpdateProgressTask();
     }
 }

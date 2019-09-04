@@ -1,8 +1,5 @@
 package com.lzx.musiclib.example;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -39,6 +36,10 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
         notifyDataSetChanged();
     }
 
+    public List<SongInfo> getSongInfos() {
+        return mSongInfos;
+    }
+
     @NonNull
     @Override
     public ListPlayHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -51,12 +52,14 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
         SongInfo songInfo = mSongInfos.get(position);
         Glide.with(mContext).load(songInfo.getSongCover()).into(holder.cover);
         holder.title.setText(songInfo.getSongName());
-        holder.state.setText("状态");
         if (StarrySky.with().isCurrMusicIsPlaying(songInfo.getSongId())) {
-            initAnim(holder.itemView, RED, BLUE, CYAN, GREEN);
+            holder.itemView.setBackgroundColor(Color.GREEN);
+            long progress = StarrySky.with().getPlayingPosition();
+            long duration = StarrySky.with().getDuration();
+            holder.state.setText("状态:播放中    " + formatMusicTime(progress) + "/" + formatMusicTime(duration));
         } else {
-            holder.itemView.animate().cancel();
             holder.itemView.setBackgroundColor(Color.WHITE);
+            holder.state.setText("");
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,21 +67,32 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
                 StarrySky.with().playMusic(mSongInfos, position);
             }
         });
+    }
 
+    @Override
+    public void onBindViewHolder(@NonNull ListPlayHolder holder, int position, @NonNull List<Object> payloads) {
+        super.onBindViewHolder(holder, position, payloads);
+        SongInfo songInfo = mSongInfos.get(position);
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            if (StarrySky.with().isCurrMusicIsPlaying(songInfo.getSongId())) {
+                long progress = StarrySky.with().getPlayingPosition();
+                long duration = StarrySky.with().getDuration();
+                holder.state.setText("状态:播放中    " + formatMusicTime(progress) + "/" + formatMusicTime(duration));
+            } else {
+                holder.state.setText("");
+            }
+        }
+    }
+
+    public void updateItemProgress(int position) {
+        notifyItemChanged(position, "position");
     }
 
     @Override
     public int getItemCount() {
         return mSongInfos.size();
-    }
-
-    public void initAnim(View view, int... values) {
-        ValueAnimator colorAnim = ObjectAnimator.ofInt(view, "backgroundColor", values);
-        colorAnim.setDuration(3000);
-        colorAnim.setEvaluator(new ArgbEvaluator());
-        colorAnim.setRepeatCount(ValueAnimator.INFINITE);
-        colorAnim.setRepeatMode(ValueAnimator.REVERSE);
-        colorAnim.start();
     }
 
     class ListPlayHolder extends RecyclerView.ViewHolder {
@@ -94,4 +108,19 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
         }
     }
 
+    public static String formatMusicTime(long duration) {
+        String time = "";
+        long minute = duration / 60000;
+        long seconds = duration % 60000;
+        long second = Math.round((int) seconds / 1000);
+        if (minute < 10) {
+            time += "0";
+        }
+        time += minute + ":";
+        if (second < 10) {
+            time += "0";
+        }
+        time += second;
+        return time;
+    }
 }
