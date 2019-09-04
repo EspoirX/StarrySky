@@ -1,13 +1,17 @@
 package com.lzx.musiclib.example;
 
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.lzx.musiclib.R;
+import com.lzx.starrysky.StarrySky;
+import com.lzx.starrysky.common.PlaybackStage;
 import com.lzx.starrysky.provider.SongInfo;
 
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +43,31 @@ public class ListPlayExampleActivity extends AppCompatActivity {
         mListPlayAdapter = new ListPlayAdapter(this);
         mRecyclerView.setAdapter(mListPlayAdapter);
         getMusicList();
+
+        StarrySky.with().playbackState().observe(this, playbackStage -> {
+            if (playbackStage == null) {
+                return;
+            }
+            switch (playbackStage.getStage()) {
+                case PlaybackStage.NONE:
+                    break;
+                case PlaybackStage.START:
+                    mListPlayAdapter.notifyDataSetChanged();
+                    break;
+                case PlaybackStage.PAUSE:
+                    break;
+                case PlaybackStage.STOP:
+                    break;
+                case PlaybackStage.COMPLETION:
+                    break;
+                case PlaybackStage.BUFFERING:
+                    break;
+                case PlaybackStage.ERROR:
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 
 
@@ -103,6 +132,7 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                         info.setSongName(object.optString("name"));
                         info.setDuration(object.optLong("duration"));
                         info.setSongUrl("http://music.163.com/song/media/outer/url?id=" + info.getSongId() + ".mp3");
+                        Log.i("xian", "id = " + info.getSongId());
                         list.add(info);
                     }
                     runOnUiThread(() -> {

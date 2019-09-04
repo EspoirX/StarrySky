@@ -28,14 +28,14 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
     private static final int BLUE = 0xff8080FF;
     private static final int CYAN = 0xff80ffff;
     private static final int GREEN = 0xff80ff80;
-    private ValueAnimator colorAnim;
 
     public ListPlayAdapter(Context context) {
         mContext = context;
     }
 
     public void setSongInfos(List<SongInfo> songInfos) {
-        mSongInfos = songInfos;
+        mSongInfos.clear();
+        mSongInfos.addAll(songInfos);
         notifyDataSetChanged();
     }
 
@@ -55,13 +55,13 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
         if (StarrySky.with().isCurrMusicIsPlaying(songInfo.getSongId())) {
             initAnim(holder.itemView, RED, BLUE, CYAN, GREEN);
         } else {
+            holder.itemView.animate().cancel();
             holder.itemView.setBackgroundColor(Color.WHITE);
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 StarrySky.with().playMusic(mSongInfos, position);
-                notifyDataSetChanged();
             }
         });
 
@@ -73,10 +73,7 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
     }
 
     public void initAnim(View view, int... values) {
-        if (colorAnim != null) {
-            colorAnim.cancel();
-        }
-        colorAnim = ObjectAnimator.ofInt(view, "backgroundColor", values);
+        ValueAnimator colorAnim = ObjectAnimator.ofInt(view, "backgroundColor", values);
         colorAnim.setDuration(3000);
         colorAnim.setEvaluator(new ArgbEvaluator());
         colorAnim.setRepeatCount(ValueAnimator.INFINITE);
