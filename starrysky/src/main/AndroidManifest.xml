@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <application>
+    <application android:networkSecurityConfig="@xml/network_security_config">
         <service
             android:name=".MusicService"
             android:enabled="true"
