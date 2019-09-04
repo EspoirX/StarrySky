@@ -115,7 +115,7 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
         mNotificationFactory.stopNotification();
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
-
+        mBecomingNoisyReceiver.unregister();
         mediaSession.release();
     }
 
