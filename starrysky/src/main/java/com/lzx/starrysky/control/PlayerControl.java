@@ -9,6 +9,9 @@ import com.lzx.starrysky.playback.player.Playback;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * 播放控制
+ */
 public interface PlayerControl {
 
     /**

@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * 播放控制默认实现类
+ */
 public class StarrySkyPlayerControl implements PlayerControl {
 
     private Context mContext;

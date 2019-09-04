@@ -7,6 +7,7 @@ import com.lzx.starrysky.common.MediaSessionConnection;
 import com.lzx.starrysky.control.PlayerControl;
 import com.lzx.starrysky.control.StarrySkyPlayerControl;
 import com.lzx.starrysky.notification.NotificationConstructor;
+import com.lzx.starrysky.playback.download.ExoDownload;
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.playback.manager.PlaybackManager;
 import com.lzx.starrysky.playback.player.ExoPlayback;
@@ -29,6 +30,9 @@ public class StarrySkyBuilder {
     private Playback mPlayback;
     private IPlaybackManager mIPlaybackManager;
     private NotificationConstructor mNotificationConstructor;
+    private boolean isOpenCache;
+    private boolean isShowNotificationWhenDownload;
+    private String destFileDir;
 
     public void setConnection(MediaSessionConnection connection) {
         mConnection = connection;
@@ -62,6 +66,18 @@ public class StarrySkyBuilder {
         mNotificationConstructor = constructor;
     }
 
+    public void setOpenCache(boolean openCache) {
+        isOpenCache = openCache;
+    }
+
+    public void setShowNotificationWhenDownload(boolean showNotificationWhenDownload) {
+        isShowNotificationWhenDownload = showNotificationWhenDownload;
+    }
+
+    public void setDestFileDir(String destFileDir) {
+        this.destFileDir = destFileDir;
+    }
+
     StarrySky build(Context context) {
         if (mConnection == null) {
             ComponentName componentName = new ComponentName(context, MusicService.class);
@@ -80,8 +96,15 @@ public class StarrySkyBuilder {
         if (mMediaQueue == null) {
             mMediaQueue = new MediaQueueManager(surface, context);
         }
+
+        ExoDownload exoDownload = new ExoDownload.Builder(context)
+                .setCacheDestFileDir(destFileDir)
+                .setOpenCache(isOpenCache)
+                .setShowNotificationWhenDownload(isShowNotificationWhenDownload)
+                .build();
+
         if (mPlayback == null) {
-            mPlayback = new ExoPlayback(context, surface);
+            mPlayback = new ExoPlayback(context, exoDownload);
         }
         mPlayerControl.setPlayBack(mPlayback);
         if (mIPlaybackManager == null) {
@@ -95,6 +118,7 @@ public class StarrySkyBuilder {
                 mMediaQueue,
                 mPlayback,
                 mIPlaybackManager,
-                mNotificationConstructor);
+                mNotificationConstructor,
+                exoDownload);
     }
 }

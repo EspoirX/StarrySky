@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.ui.DownloadNotificationUtil;
 import com.google.android.exoplayer2.util.NotificationUtil;
 import com.google.android.exoplayer2.util.Util;
 import com.lzx.starrysky.R;
+import com.lzx.starrysky.StarrySky;
 
 /**
  * 媒体下载服务
@@ -35,6 +36,7 @@ public class ExoDownloadService extends DownloadService {
     private static final String CHANNEL_ID = "download_channel";
     private static final int JOB_ID = 1;
     private static final int FOREGROUND_NOTIFICATION_ID = 1;
+    private ExoDownload mExoDownload;
 
     /**
      * 传入FOREGROUND_NOTIFICATION_ID，是因为这样服务位于前台需要通知，并且要求服务位于前台以确保进程不会被终止
@@ -43,17 +45,18 @@ public class ExoDownloadService extends DownloadService {
     public ExoDownloadService() {
         super(
                 //传入FOREGROUND_NOTIFICATION_ID_NONE，则下载时不会出现通知栏，如果想要通知栏，则传入FOREGROUND_NOTIFICATION_ID
-                ExoDownload.getInstance().isShowNotificationWhenDownload() ?
+                ExoDownload.isShowNotificationWhenDownload ?
                         FOREGROUND_NOTIFICATION_ID :
                         FOREGROUND_NOTIFICATION_ID_NONE,
                 DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
                 CHANNEL_ID,
                 R.string.exo_download_notification_channel_name);
+        mExoDownload = StarrySky.get().getRegistry().get(ExoDownload.class);
     }
 
     @Override
     protected DownloadManager getDownloadManager() {
-        return ExoDownload.getInstance().getDownloadManager();
+        return mExoDownload.getDownloadManager();
     }
 
     @Override
@@ -75,7 +78,7 @@ public class ExoDownloadService extends DownloadService {
 
     @Override
     protected void onTaskStateChanged(TaskState taskState) {
-        if (!ExoDownload.getInstance().isShowNotificationWhenDownload()) {
+        if (!mExoDownload.isShowNotificationWhenDownload()) {
             return;
         }
         if (taskState.action.isRemoveAction) {

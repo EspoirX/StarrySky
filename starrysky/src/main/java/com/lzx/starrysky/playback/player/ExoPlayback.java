@@ -84,7 +84,7 @@ public final class ExoPlayback implements Playback {
     private final Context mContext;
     private boolean mPlayOnFocusGain;
     private Callback mCallback;
-    private final MediaQueueProvider mMusicProvider;
+    private final ExoDownload mExoDownload;
     private String mCurrentMediaId;
 
     private SimpleExoPlayer mExoPlayer;
@@ -95,9 +95,9 @@ public final class ExoPlayback implements Playback {
     private DefaultTrackSelector trackSelector;
     private DefaultTrackSelector.Parameters trackSelectorParameters;
 
-    public ExoPlayback(Context context, MediaQueueProvider musicProvider) {
+    public ExoPlayback(Context context, ExoDownload exoDownload) {
         this.mContext = context.getApplicationContext();
-        this.mMusicProvider = musicProvider;
+        this.mExoDownload = exoDownload;
         trackSelectorParameters = new DefaultTrackSelector.ParametersBuilder().build();
     }
 
@@ -178,8 +178,8 @@ public final class ExoPlayback implements Playback {
             }
             source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
             //缓存歌曲
-            if (ExoDownload.getInstance().isOpenCache()) {
-                ExoDownload.getInstance().getDownloadTracker().toggleDownload(mediaId, Uri.parse(source), "");
+            if (mExoDownload.isOpenCache()) {
+                mExoDownload.getDownloadTracker().toggleDownload(mediaId, Uri.parse(source), "");
             }
 
             if (mExoPlayer == null) {
@@ -216,7 +216,7 @@ public final class ExoPlayback implements Playback {
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes, true); //第二个参数能使ExoPlayer自动管理焦点
 
-            DataSource.Factory dataSourceFactory = ExoDownload.getInstance().buildDataSourceFactory(mContext);
+            DataSource.Factory dataSourceFactory = mExoDownload.buildDataSourceFactory(mContext);
 
             MediaSource mediaSource = buildMediaSource(dataSourceFactory, Uri.parse(source), null);
 
@@ -264,7 +264,7 @@ public final class ExoPlayback implements Playback {
     }
 
     private List<StreamKey> getOfflineStreamKeys(Uri uri) {
-        return ExoDownload.getInstance().getDownloadTracker().getOfflineStreamKeys(uri);
+        return mExoDownload.getDownloadTracker().getOfflineStreamKeys(uri);
     }
 
     @Override

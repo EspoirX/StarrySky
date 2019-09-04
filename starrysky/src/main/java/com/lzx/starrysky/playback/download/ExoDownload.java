@@ -26,7 +26,7 @@ public class ExoDownload {
     private static final String DOWNLOAD_CONTENT_DIRECTORY = "downloads"; //下载路径子文件夹
     private static final int MAX_SIMULTANEOUS_DOWNLOADS = 2;
 
-    private static Context sContext;
+    private Context mContext;
     private String userAgent;
     private DownloadManager downloadManager;
     private Cache downloadCache;
@@ -34,30 +34,57 @@ public class ExoDownload {
     private DownloadTracker downloadTracker;
     private String destFileDir;
     private boolean isOpenCache = false;
-    private boolean isShowNotificationWhenDownload = false;
+    public static boolean isShowNotificationWhenDownload = false;
 
-    public static ExoDownload getInstance() {
-        return SingletonHolder.sInstance;
+
+    private ExoDownload(Builder builder) {
+        mContext = builder.context;
+        destFileDir = builder.destFileDir;
+        isOpenCache = builder.isOpenCache;
+        isShowNotificationWhenDownload = builder.isShowNotificationWhenDownload;
+        userAgent = Utils.getUserAgent(mContext, "ExoPlayback");
     }
 
-    private static class SingletonHolder {
-        private static final ExoDownload sInstance = new ExoDownload();
+    public static class Builder {
+        private Context context;
+        private String destFileDir;
+        private boolean isOpenCache = false;
+        private boolean isShowNotificationWhenDownload = false;
+
+        public Builder(Context context) {
+            this.context = context;
+        }
+
+        /**
+         * 配置缓存文件夹
+         */
+        public Builder setCacheDestFileDir(String destFileDir) {
+            this.destFileDir = destFileDir;
+            return this;
+        }
+
+        /**
+         * 配置缓存开关
+         */
+        public Builder setOpenCache(boolean openCache) {
+            isOpenCache = openCache;
+            return this;
+        }
+
+        /**
+         * 配置下载时是否显示通知栏
+         */
+        public Builder setShowNotificationWhenDownload(boolean showNotificationWhenDownload) {
+            isShowNotificationWhenDownload = showNotificationWhenDownload;
+            return this;
+        }
+
+        public ExoDownload build() {
+            return new ExoDownload(this);
+        }
+
     }
 
-    public static void initExoDownload(Context context) {
-        sContext = context;
-    }
-
-    private ExoDownload() {
-        userAgent = Utils.getUserAgent(sContext, "ExoPlayback");
-    }
-
-    /**
-     * 配置缓存文件夹
-     */
-    public void setCacheDestFileDir(String destFileDir) {
-        this.destFileDir = destFileDir;
-    }
 
     /**
      * 是否打开缓存功能
@@ -66,12 +93,6 @@ public class ExoDownload {
         return isOpenCache;
     }
 
-    /**
-     * 配置缓存开关
-     */
-    public void setOpenCache(boolean openCache) {
-        isOpenCache = openCache;
-    }
 
     /**
      * 下载时是否显示通知栏
@@ -80,18 +101,12 @@ public class ExoDownload {
         return isShowNotificationWhenDownload;
     }
 
-    /**
-     * 配置下载时是否显示通知栏
-     */
-    public void setShowNotificationWhenDownload(boolean showNotificationWhenDownload) {
-        isShowNotificationWhenDownload = showNotificationWhenDownload;
-    }
 
     /**
      * 获取 DownloadManager
      */
     public DownloadManager getDownloadManager() {
-        initDownloadManager(sContext);
+        initDownloadManager(mContext);
         return downloadManager;
     }
 
@@ -99,7 +114,7 @@ public class ExoDownload {
      * 获取 DownloadTracker
      */
     public DownloadTracker getDownloadTracker() {
-        initDownloadManager(sContext);
+        initDownloadManager(mContext);
         return downloadTracker;
     }
 
@@ -118,8 +133,8 @@ public class ExoDownload {
                             new File(getDownloadDirectory(context), DOWNLOAD_ACTION_FILE));
             downloadTracker =
                     new DownloadTracker(
-                            /* context= */ sContext,
-                            buildDataSourceFactory(sContext),
+                            /* context= */ mContext,
+                            buildDataSourceFactory(mContext),
                             new File(getDownloadDirectory(context), DOWNLOAD_TRACKER_ACTION_FILE));
             downloadManager.addListener(downloadTracker);
         }
@@ -130,7 +145,7 @@ public class ExoDownload {
      */
     public synchronized Cache getDownloadCache() {
         if (downloadCache == null) {
-            File downloadContentDirectory = new File(getDownloadDirectory(sContext), DOWNLOAD_CONTENT_DIRECTORY);
+            File downloadContentDirectory = new File(getDownloadDirectory(mContext), DOWNLOAD_CONTENT_DIRECTORY);
             downloadCache = new SimpleCache(downloadContentDirectory, new NoOpCacheEvictor());
         }
         return downloadCache;
@@ -160,7 +175,7 @@ public class ExoDownload {
      */
     public boolean deleteAllCacheFile() {
         if (downloadDirectory == null) {
-            downloadDirectory = getDownloadDirectory(sContext);
+            downloadDirectory = getDownloadDirectory(mContext);
         }
         for (File file : downloadDirectory.listFiles()) {
             if (file.isFile()) {
@@ -183,7 +198,7 @@ public class ExoDownload {
      * 获取媒体缓存大小
      */
     public long getCachedSize() {
-        return getDownloadDirectory(sContext).length();
+        return getDownloadDirectory(mContext).length();
     }
 
     /**

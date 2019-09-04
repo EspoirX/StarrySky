@@ -6,6 +6,9 @@ import android.support.v4.media.MediaMetadataCompat;
 
 import java.util.List;
 
+/**
+ * 数据提供类
+ */
 public class MediaQueueProviderSurface implements MediaQueueProvider {
 
     private MediaQueueProvider provider;

@@ -14,7 +14,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        android:appComponentFactory="@string/app_name"
+        tools:replace="android:appComponentFactory"
+        tools:targetApi="p">
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">

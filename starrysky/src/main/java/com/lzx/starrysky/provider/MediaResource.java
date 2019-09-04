@@ -4,6 +4,9 @@ import android.text.TextUtils;
 
 import java.util.HashMap;
 
+/**
+ * 播放媒体包装
+ */
 public class MediaResource {
     private String mediaId;
     private long queueId;

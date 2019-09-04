@@ -34,6 +34,9 @@ import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
 import java.util.List;
 
+/**
+ * 播放队列管理实现
+ */
 public class MediaQueueManager extends MediaQueueProviderSurface implements MediaQueue {
 
     //下标

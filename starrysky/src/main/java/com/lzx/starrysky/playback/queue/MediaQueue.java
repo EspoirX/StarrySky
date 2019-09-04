@@ -6,6 +6,9 @@ import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.provider.SongInfo;
 
+/**
+ * 播放队列管理
+ */
 public interface MediaQueue {
 
     void setMetadataUpdateListener(MediaQueueProvider.MetadataUpdateListener listener);

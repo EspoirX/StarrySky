@@ -77,8 +77,6 @@ public class StarrySky {
     }
 
     private static void initializeStarrySky(Context context, StarrySkyBuilder builder) {
-        ExoDownload.initExoDownload(context);
-
         if (mStarrySkyConfig != null) {
             mStarrySkyConfig.applyOptions(context, builder);
         }
@@ -99,7 +97,8 @@ public class StarrySky {
             MediaQueue mediaQueue,
             Playback playback,
             IPlaybackManager playbackManager,
-            NotificationConstructor constructor) {
+            NotificationConstructor constructor,
+            ExoDownload exoDownload) {
         mConnection = connection;
         mImageLoader = imageLoader;
         mPlayerControl = playerControl;
@@ -114,7 +113,9 @@ public class StarrySky {
                 .append(MediaQueue.class, mediaQueue)
                 .append(Playback.class, playback)
                 .append(IPlaybackManager.class, playbackManager)
-                .append(NotificationConstructor.class, constructor);
+                .append(NotificationConstructor.class, constructor)
+                .append(ExoDownload.class, exoDownload);
+
 
         mConnection.connect();
     }

@@ -9,6 +9,9 @@ import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.HashMap;
 
+/**
+ * 播放状态包装类
+ */
 public class PlaybackStage {
 
     public static final String NONE = "NONE";
