@@ -5,6 +5,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
+import com.lzx.starrysky.BaseMediaInfo;
 import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.List;

@@ -24,7 +24,6 @@ public class StarrySkyBuilder {
 
     private MediaSessionConnection mConnection;
     private ILoaderStrategy mImageLoader;
-    private PlayerControl mPlayerControl;
     private MediaQueueProvider mMediaQueueProvider;
     private MediaQueue mMediaQueue;
     private Playback mPlayback;
@@ -40,10 +39,6 @@ public class StarrySkyBuilder {
 
     public void setImageLoader(ILoaderStrategy imageLoader) {
         mImageLoader = imageLoader;
-    }
-
-    public void setPlayerControl(PlayerControl playerControl) {
-        mPlayerControl = playerControl;
     }
 
     public void setMediaQueueProvider(MediaQueueProvider mediaQueueProvider) {
@@ -90,9 +85,7 @@ public class StarrySkyBuilder {
             mMediaQueueProvider = new MediaQueueProviderImpl();
         }
         MediaQueueProviderSurface surface = new MediaQueueProviderSurface(mMediaQueueProvider);
-        if (mPlayerControl == null) {
-            mPlayerControl = new StarrySkyPlayerControl(context, mConnection, surface);
-        }
+
         if (mMediaQueue == null) {
             mMediaQueue = new MediaQueueManager(surface, context);
         }
@@ -106,14 +99,12 @@ public class StarrySkyBuilder {
         if (mPlayback == null) {
             mPlayback = new ExoPlayback(context, exoDownload);
         }
-        mPlayerControl.setPlayBack(mPlayback);
         if (mIPlaybackManager == null) {
             mIPlaybackManager = new PlaybackManager(context, mMediaQueue, mPlayback);
         }
         return new StarrySky(
                 mConnection,
                 mImageLoader,
-                mPlayerControl,
                 surface,
                 mMediaQueue,
                 mPlayback,

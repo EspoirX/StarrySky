@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.lzx.starrysky.control.StarrySkyPlayerControl;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.playback.player.Playback;
@@ -29,6 +30,9 @@ public class StarrySky {
     private ILoaderStrategy mImageLoader;
     private PlayerControl mPlayerControl;
     private StarrySkyRegistry mRegistry;
+    private MediaQueueProvider mMediaQueueProvider;
+    private MediaResource mediaResource;
+    private Playback playback;
 
     public static void init(Application application) {
         init(application, null);
@@ -64,7 +68,11 @@ public class StarrySky {
     }
 
     public static PlayerControl with() {
-        return get().getPlayerControl();
+        return StarrySky.get().getPlayerControl();
+    }
+
+    public void registerPlayerControl(PlayerControl playerControl) {
+        this.mPlayerControl = playerControl;
     }
 
     private static void checkAndInitializeStarrySky(@NonNull Context context) {
@@ -92,7 +100,6 @@ public class StarrySky {
     StarrySky(
             MediaSessionConnection connection,
             ILoaderStrategy imageLoader,
-            PlayerControl playerControl,
             MediaQueueProvider mediaQueueProvider,
             MediaQueue mediaQueue,
             Playback playback,
@@ -101,7 +108,9 @@ public class StarrySky {
             ExoDownload exoDownload) {
         mConnection = connection;
         mImageLoader = imageLoader;
-        mPlayerControl = playerControl;
+        mMediaQueueProvider = mediaQueueProvider;
+        this.playback = playback;
+        mediaResource = new MediaResource();
 
         mRegistry = new StarrySkyRegistry();
         mRegistry.clear();
@@ -116,7 +125,6 @@ public class StarrySky {
                 .append(NotificationConstructor.class, constructor)
                 .append(ExoDownload.class, exoDownload);
 
-
         mConnection.connect();
     }
 
@@ -129,10 +137,28 @@ public class StarrySky {
     }
 
     public PlayerControl getPlayerControl() {
+        if (mPlayerControl == null) {
+            return new StarrySkyPlayerControl(globalContext);
+        }
         return mPlayerControl;
+    }
+
+    public Playback getPlayback() {
+        return playback;
     }
 
     public StarrySkyRegistry getRegistry() {
         return mRegistry;
     }
+
+    public MediaQueueProvider getMediaQueueProvider() {
+        Log.i("xian", "1111111111111 " + mMediaQueueProvider);
+        return mMediaQueueProvider;
+    }
+
+    public MediaResource getMediaResource() {
+        return mediaResource;
+    }
+
+
 }

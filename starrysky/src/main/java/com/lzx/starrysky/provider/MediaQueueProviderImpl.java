@@ -5,6 +5,8 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
 
+import com.lzx.starrysky.BaseMediaInfo;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -25,6 +27,9 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
         mSongInfoListById = new LinkedHashMap<>();
         mMediaMetadataCompatListById = new LinkedHashMap<>();
     }
+
+
+
 
     /**
      * 获取List#SongInfo

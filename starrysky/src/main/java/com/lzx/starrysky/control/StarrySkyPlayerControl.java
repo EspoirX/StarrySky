@@ -6,13 +6,17 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
+import com.lzx.starrysky.BaseMediaInfo;
+import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.common.MediaSessionConnection;
 import com.lzx.starrysky.common.PlaybackStage;
 import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.playback.player.ExoPlayback;
@@ -34,39 +38,53 @@ public class StarrySkyPlayerControl implements PlayerControl {
     private Playback mPlayback;
     private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();
 
-    public StarrySkyPlayerControl(Context context,
-                                  MediaSessionConnection connection,
-                                  MediaQueueProvider mediaQueueProvider) {
-        this.connection = connection;
+    public StarrySkyPlayerControl(Context context) {
         mContext = context;
-        this.mMediaQueueProvider = mediaQueueProvider;
+        StarrySky starrySky = StarrySky.get();
+        this.mMediaQueueProvider = starrySky.getMediaQueueProvider();
+        this.connection = starrySky.getConnection();
+        this.mPlayback = starrySky.getPlayback();
+        starrySky.registerPlayerControl(this);
     }
 
     @Override
     public void playMusicById(String songId) {
-        if (mMediaQueueProvider.hasSongInfo(songId)) {
-            connection.getTransportControls().playFromMediaId(songId, null);
-        }
+        MediaLoader mediaLoader = new IdMediaLoader(songId);
+        playMusicImpl(mediaLoader);
     }
 
     @Override
     public void playMusicByInfo(SongInfo info) {
-        mMediaQueueProvider.addSongInfo(info);
-        connection.getTransportControls().playFromMediaId(info.getSongId(), null);
+        MediaLoader mediaLoader = new InfoMediaLoader(info);
+        playMusicImpl(mediaLoader);
     }
 
     @Override
     public void playMusicByIndex(int index) {
-        List<SongInfo> list = mMediaQueueProvider.getSongInfos();
-        if (list != null && index >= 0 && index < list.size()) {
-            connection.getTransportControls().playFromMediaId(list.get(index).getSongId(), null);
-        }
+        MediaLoader mediaLoader = new IndexMediaLoader(index);
+        playMusicImpl(mediaLoader);
     }
 
     @Override
     public void playMusic(List<SongInfo> songInfos, int index) {
-        mMediaQueueProvider.setSongInfos(songInfos);
-        connection.getTransportControls().playFromMediaId(songInfos.get(index).getSongId(), null);
+        MediaLoader mediaLoader = new ListMediaLoader(songInfos, index);
+        playMusicImpl(mediaLoader);
+    }
+
+    private void playMusicImpl(MediaLoader mediaLoader) {
+        BaseMediaInfo info = mediaLoader.getMediaInfo();
+        Bundle extras = getMediaBundle(info);
+        connection.getTransportControls().playFromMediaId(info.getMediaId(), extras);
+    }
+
+    @NonNull
+    private Bundle getMediaBundle(BaseMediaInfo info) {
+        Bundle extras = new Bundle();
+        extras.putString("mediaUrl", info.getMediaUrl());
+        extras.putString("mediaCover", info.getMediaCover());
+        extras.putString("mediaTitle", info.getMediaTitle());
+        extras.putLong("duration", info.getDuration());
+        return extras;
     }
 
     @Override
@@ -91,7 +109,9 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public void prepareFromSongId(String songId) {
-        connection.getTransportControls().prepareFromMediaId(songId, null);
+        MediaLoader mediaLoader = new IdMediaLoader(songId);
+        Bundle extras = getMediaBundle(mediaLoader.getMediaInfo());
+        connection.getTransportControls().prepareFromMediaId(songId, extras);
     }
 
     @Override

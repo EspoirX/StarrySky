@@ -2,6 +2,7 @@ package com.lzx.starrysky.control;
 
 import android.arch.lifecycle.MutableLiveData;
 
+import com.lzx.starrysky.BaseMediaInfo;
 import com.lzx.starrysky.common.PlaybackStage;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.playback.player.Playback;
@@ -32,10 +33,10 @@ public interface PlayerControl {
     /**
      * 播放
      *
-     * @param songInfos 播放列表
+     * @param mediaList 播放列表
      * @param index     要播放的歌曲在播放列表中的下标
      */
-    void playMusic(List<SongInfo> songInfos, int index);
+    void playMusic(List<SongInfo> mediaList, int index);
 
     /**
      * 暂停
@@ -70,7 +71,7 @@ public interface PlayerControl {
     /**
      * 上一首
      */
-    public void skipToPrevious();
+    void skipToPrevious();
 
     /**
      * 开始快进，每调一次加 0.5 倍

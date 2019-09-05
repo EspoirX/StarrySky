@@ -164,7 +164,6 @@ public class MediaSessionConnection {
         mediaBrowser.disconnect();
     }
 
-
     /**
      * 连接回调
      */
@@ -192,8 +191,8 @@ public class MediaSessionConnection {
         @Override
         public void onConnectionSuspended() {
             super.onConnectionSuspended();
-            disconnect();
             isConnected.postValue(false);
+            disconnect();
         }
 
         @Override
