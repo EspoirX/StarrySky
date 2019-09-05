@@ -266,15 +266,16 @@ public class MediaSessionConnection {
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             super.onMetadataChanged(metadata);
             nowPlaying.postValue(metadata != null ? metadata : NOTHING_PLAYING);
-
+            if (metadata == null) {
+                return;
+            }
+            String songId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+            SongInfo songInfo = StarrySky.get().getMediaQueueProvider().getSongInfo(songId);
+            playbackState.postValue(playbackStage.buildSwitch(songId));
             //状态监听
             CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = StarrySky.with().getPlayerEventListeners();
-            if (metadata != null) {
-                for (OnPlayerEventListener listener : mPlayerEventListeners) {
-                    String songId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                    SongInfo songInfo = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getSongInfo(songId);
-                    listener.onMusicSwitch(songInfo);
-                }
+            for (OnPlayerEventListener listener : mPlayerEventListeners) {
+                listener.onMusicSwitch(songInfo);
             }
         }
 

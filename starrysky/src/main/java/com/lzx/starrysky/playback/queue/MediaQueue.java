@@ -2,6 +2,7 @@ package com.lzx.starrysky.playback.queue;
 
 import android.support.annotation.NonNull;
 
+import com.lzx.starrysky.BaseMediaInfo;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.provider.SongInfo;
@@ -16,7 +17,7 @@ public interface MediaQueue {
     /**
      * 判断传入的媒体跟正在播放的媒体是否一样
      */
-    boolean isSameBrowsingCategory(@NonNull String mediaId);
+    boolean isSameMedia(@NonNull String mediaId);
 
     /**
      * 获取当前下标
@@ -31,23 +32,18 @@ public interface MediaQueue {
     boolean skipQueuePosition(int amount);
 
     /**
-     * 打乱当前的列表顺序
-     */
-    void setRandomQueue();
-
-    /**
      * 获取当前播放的媒体
      */
     MediaResource getCurrentMusic();
 
-    MediaResource getCurrentMusic(SongInfo songInfo);
+    MediaResource getCurrentMusic(BaseMediaInfo songInfo);
 
-    SongInfo getCurrSongInfo();
+    BaseMediaInfo getCurrMediaInfo();
 
     /**
      * 根据传入的媒体id来更新此媒体的下标并通知
      */
-    boolean setCurrentQueueItem(String mediaId);
+    boolean updateIndexByMediaId(String mediaId);
 
     /**
      * 根据当前传入的 mediaId 更新当前播放媒体下标和信息
@@ -64,5 +60,7 @@ public interface MediaQueue {
      */
     int getCurrentQueueSize();
 
-    void setQueueByShuffleMode(int shuffleMode);
+    void setShuffledMode();
+
+    void setNormalMode();
 }

@@ -19,81 +19,120 @@ import java.util.List;
 public class MediaQueueProviderImpl implements MediaQueueProvider {
 
     //使用Map在查找方面会效率高一点
-    private LinkedHashMap<String, SongInfo> mSongInfoListById;
+    private LinkedHashMap<String, BaseMediaInfo> mediaListMap;
     private LinkedHashMap<String, MediaMetadataCompat> mMediaMetadataCompatListById;
-    private List<SongInfo> mSongInfos;
+    private List<BaseMediaInfo> mediaList;
+    private LinkedHashMap<String, SongInfo> songListMap;
+    private List<SongInfo> songList;
 
     public MediaQueueProviderImpl() {
-        mSongInfoListById = new LinkedHashMap<>();
+        mediaListMap = new LinkedHashMap<>();
         mMediaMetadataCompatListById = new LinkedHashMap<>();
+        songListMap = new LinkedHashMap<>();
+        mediaList = new ArrayList<>();
+        songList = new ArrayList<>();
     }
 
-
-
-
-    /**
-     * 获取List#SongInfo
-     */
     @Override
-    public List<SongInfo> getSongInfos() {
-        return mSongInfos == null ? new ArrayList<>() : mSongInfos;
+    public List<BaseMediaInfo> getMediaList() {
+        return mediaList;
     }
 
-    /**
-     * 设置播放列表
-     */
     @Override
-    public synchronized void setSongInfos(List<SongInfo> songInfos) {
-        mSongInfoListById.clear();
-        mSongInfos = songInfos;
-        for (SongInfo info : songInfos) {
-            mSongInfoListById.put(info.getSongId(), info);
+    public List<SongInfo> getSongList() {
+        return songList;
+    }
+
+    @Override
+    public void updateMediaList(List<BaseMediaInfo> mediaInfoList) {
+        mediaList.clear();
+        mediaListMap.clear();
+        mediaList.addAll(mediaInfoList);
+        for (BaseMediaInfo info : mediaInfoList) {
+            mediaListMap.put(info.getMediaId(), info);
         }
-        mMediaMetadataCompatListById = toMediaMetadata(songInfos);
     }
 
-    /**
-     * 添加一首歌
-     */
     @Override
-    public synchronized void addSongInfo(SongInfo songInfo) {
-        if (!mSongInfos.contains(songInfo)) {
-            mSongInfos.add(songInfo);
+    public void updateMediaListBySongInfo(List<SongInfo> songInfos) {
+        songListMap.clear();
+        songList.clear();
+        songList.addAll(songInfos);
+
+        List<BaseMediaInfo> mediaInfos = new ArrayList<>();
+        for (SongInfo songInfo : songInfos) {
+            BaseMediaInfo mediaInfo = new BaseMediaInfo();
+            mediaInfo.setMediaId(songInfo.getSongId());
+            mediaInfo.setMediaTitle(songInfo.getSongName());
+            mediaInfo.setMediaCover(songInfo.getSongCover());
+            mediaInfo.setMediaUrl(songInfo.getSongUrl());
+            mediaInfo.setDuration(songInfo.getDuration());
+            mediaInfos.add(mediaInfo);
+            songListMap.put(songInfo.getSongId(), songInfo);
         }
-        mSongInfoListById.put(songInfo.getSongId(), songInfo);
-        mMediaMetadataCompatListById.put(songInfo.getSongId(), toMediaMetadata(songInfo));
+        updateMediaList(mediaInfos);
     }
 
-    /**
-     * 根据检查是否有某首音频
-     */
     @Override
-    public boolean hasSongInfo(String songId) {
-        return mSongInfoListById.containsKey(songId);
+    public void addMediaInfo(BaseMediaInfo mediaInfo) {
+        if (mediaInfo == null) {
+            return;
+        }
+        if (!mediaList.contains(mediaInfo)) {
+            mediaList.add(mediaInfo);
+        }
+        mediaListMap.put(mediaInfo.getMediaId(), mediaInfo);
     }
 
-    /**
-     * 根据songId获取SongInfo
-     */
     @Override
-    public SongInfo getSongInfo(String songId) {
+    public boolean hasMediaInfo(String songId) {
+        return mediaListMap.containsKey(songId);
+    }
+
+    @Override
+    public BaseMediaInfo getMediaInfo(String songId) {
         if (TextUtils.isEmpty(songId)) {
             return null;
         }
-        if (mSongInfoListById.containsKey(songId)) {
-            return mSongInfoListById.get(songId);
+        if (hasMediaInfo(songId)) {
+            return mediaListMap.get(songId);
         } else {
             return null;
         }
     }
 
-    /**
-     * 根据songId获取索引
-     */
     @Override
-    public int getIndexBySongInfo(String songId) {
-        SongInfo songInfo = getSongInfo(songId);
-        return songInfo != null ? getSongInfos().indexOf(songInfo) : -1;
+    public BaseMediaInfo getMediaInfo(int index) {
+        if (index < 0 || index >= mediaList.size()) {
+            return null;
+        }
+        return mediaList.get(index);
+    }
+
+    @Override
+    public SongInfo getSongInfo(int index) {
+        if (index < 0 || index >= songList.size()) {
+            return null;
+        }
+        return songList.get(index);
+    }
+
+    @Override
+    public SongInfo getSongInfo(String songId) {
+        if (TextUtils.isEmpty(songId)) {
+            return null;
+        }
+        if (songListMap.containsKey(songId)) {
+            return songListMap.get(songId);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public int getIndexByMediaId(String songId) {
+        BaseMediaInfo info = getMediaInfo(songId);
+        return info != null ? getMediaList().indexOf(info) : -1;
     }
 
     /**
@@ -132,13 +171,9 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
     }
 
     @Override
-    public Iterable<SongInfo> getShuffledSongInfo() {
-        if (mSongInfos != null) {
-            Collections.shuffle(mSongInfos);
-            return mSongInfos;
-        } else {
-            return new ArrayList<>();
-        }
+    public Iterable<BaseMediaInfo> getShuffledMediaInfo() {
+        Collections.shuffle(mediaList);
+        return mediaList;
     }
 
     /**

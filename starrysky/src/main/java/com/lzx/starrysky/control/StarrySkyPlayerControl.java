@@ -49,32 +49,34 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public void playMusicById(String songId) {
-        MediaLoader mediaLoader = new IdMediaLoader(songId);
-        playMusicImpl(mediaLoader);
+        if (mMediaQueueProvider.hasMediaInfo(songId)) {
+            playMusicImpl(songId);
+        }
     }
 
     @Override
     public void playMusicByInfo(SongInfo info) {
-        MediaLoader mediaLoader = new InfoMediaLoader(info);
-        playMusicImpl(mediaLoader);
+        if (mMediaQueueProvider.hasMediaInfo(info.getSongId())) {
+            playMusicImpl(info.getSongId());
+        }
     }
 
     @Override
     public void playMusicByIndex(int index) {
-        MediaLoader mediaLoader = new IndexMediaLoader(index);
-        playMusicImpl(mediaLoader);
+        BaseMediaInfo info = mMediaQueueProvider.getMediaInfo(index);
+        if (info != null) {
+            playMusicImpl(info.getMediaId());
+        }
     }
 
     @Override
     public void playMusic(List<SongInfo> songInfos, int index) {
-        MediaLoader mediaLoader = new ListMediaLoader(songInfos, index);
-        playMusicImpl(mediaLoader);
+        mMediaQueueProvider.updateMediaListBySongInfo(songInfos);
+        playMusicByIndex(index);
     }
 
-    private void playMusicImpl(MediaLoader mediaLoader) {
-        BaseMediaInfo info = mediaLoader.getMediaInfo();
-        Bundle extras = getMediaBundle(info);
-        connection.getTransportControls().playFromMediaId(info.getMediaId(), extras);
+    private void playMusicImpl(String mediaId) {
+        connection.getTransportControls().playFromMediaId(mediaId, null);
     }
 
     @NonNull
@@ -109,9 +111,9 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public void prepareFromSongId(String songId) {
-        MediaLoader mediaLoader = new IdMediaLoader(songId);
-        Bundle extras = getMediaBundle(mediaLoader.getMediaInfo());
-        connection.getTransportControls().prepareFromMediaId(songId, extras);
+        if (mMediaQueueProvider.hasMediaInfo(songId)) {
+            connection.getTransportControls().prepareFromMediaId(songId, null);
+        }
     }
 
     @Override
@@ -169,12 +171,12 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     @Override
     public List<SongInfo> getPlayList() {
-        return mMediaQueueProvider.getSongInfos();
+        return mMediaQueueProvider.getSongList();
     }
 
     @Override
     public void updatePlayList(List<SongInfo> songInfos) {
-        mMediaQueueProvider.setSongInfos(songInfos);
+        mMediaQueueProvider.updateMediaListBySongInfo(songInfos);
     }
 
     @Override
@@ -225,7 +227,7 @@ public class StarrySkyPlayerControl implements PlayerControl {
         int index = -1;
         String songId = getNowPlayingSongId();
         if (!TextUtils.isEmpty(songId)) {
-            index = mMediaQueueProvider.getIndexBySongInfo(songId);
+            index = mMediaQueueProvider.getIndexByMediaId(songId);
         }
         return index;
     }

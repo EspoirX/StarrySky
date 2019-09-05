@@ -26,6 +26,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import com.lzx.starrysky.BaseMediaInfo;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.ext.PlaybackStateCompatExt;
 import com.lzx.starrysky.notification.factory.INotification;

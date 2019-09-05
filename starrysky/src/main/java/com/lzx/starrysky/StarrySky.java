@@ -152,7 +152,6 @@ public class StarrySky {
     }
 
     public MediaQueueProvider getMediaQueueProvider() {
-        Log.i("xian", "1111111111111 " + mMediaQueueProvider);
         return mMediaQueueProvider;
     }
 

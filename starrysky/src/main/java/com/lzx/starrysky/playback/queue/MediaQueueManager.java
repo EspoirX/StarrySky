@@ -20,18 +20,19 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
+import com.lzx.starrysky.BaseMediaInfo;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaQueueProviderSurface;
 import com.lzx.starrysky.provider.MediaResource;
-import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,7 +45,10 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
     private MediaResource mMediaResource;
     private MediaQueueProvider.MetadataUpdateListener mUpdateListener;
     private Context mContext;
-    private List<SongInfo> mSongInfosCopy;
+    private List<BaseMediaInfo> mShuffledMediaList = new ArrayList<>();
+    private int currMode = NORMAL_MODE;
+    private final static int NORMAL_MODE = 0;
+    private final static int SHUFFLED_MODE = 1;
 
     public MediaQueueManager(MediaQueueProvider provider, Context context) {
         super(provider);
@@ -58,12 +62,29 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
     }
 
     @Override
-    public boolean isSameBrowsingCategory(@NonNull String mediaId) {
+    public boolean isSameMedia(@NonNull String mediaId) {
         MediaResource current = getCurrentMusic();
         if (current == null) {
             return false;
         }
         return mediaId.equals(current.getMediaId());
+    }
+
+    @Override
+    public void updateMediaList(List<BaseMediaInfo> mediaInfoList) {
+        super.updateMediaList(mediaInfoList);
+    }
+
+    @Override
+    public List<BaseMediaInfo> getMediaList() {
+        if (currMode == NORMAL_MODE) {
+            return super.getMediaList();
+        } else {
+            mShuffledMediaList.clear();
+            mShuffledMediaList.addAll(super.getMediaList());
+            Collections.shuffle(mShuffledMediaList);
+            return mShuffledMediaList;
+        }
     }
 
     @Override
@@ -73,7 +94,7 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
 
     @Override
     public boolean skipQueuePosition(int amount) {
-        List<SongInfo> mPlayingQueue = getSongInfos();
+        List<BaseMediaInfo> mPlayingQueue = getMediaList();
         if (mPlayingQueue.size() == 0) {
             return false;
         }
@@ -91,48 +112,39 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
     }
 
     @Override
-    public void setRandomQueue() {
-
-    }
-
-    @Override
     public MediaResource getCurrentMusic() {
         return getCurrentMusic(null);
     }
 
     @Override
-    public MediaResource getCurrentMusic(SongInfo songInfo) {
-        List<SongInfo> songInfos = getSongInfos();
-        if (!QueueHelper.isIndexPlayable(mCurrentIndex, songInfos)) {
+    public MediaResource getCurrentMusic(BaseMediaInfo mediaInfo) {
+        List<BaseMediaInfo> mediaList = getMediaList();
+        if (!QueueHelper.isIndexPlayable(mCurrentIndex, mediaList)) {
             return null;
         }
-        SongInfo queueItem;
-        if (songInfo != null) {
-            songInfos.set(mCurrentIndex, songInfo);
-            queueItem = songInfo;
+        BaseMediaInfo info;
+        if (mediaInfo != null) {
+            mediaList.set(mCurrentIndex, mediaInfo);
+            info = mediaInfo;
         } else {
-            queueItem = songInfos.get(mCurrentIndex);
+            info = mediaList.get(mCurrentIndex);
         }
         //由于MediaQueueManager在构建Starry时初始化，所以这里不能放在构造函数中
         if (mMediaResource == null) {
-            mMediaResource = StarrySky.get().getRegistry().get(MediaResource.class);
+            mMediaResource = StarrySky.get().getMediaResource();
         }
-        return mMediaResource.obtain(queueItem.getSongId(), queueItem.getSongUrl(), queueItem.getTrackNumber());
+        return mMediaResource.obtain(info.getMediaId(), info.getMediaUrl(), System.currentTimeMillis());
     }
 
     @Override
-    public SongInfo getCurrSongInfo() {
-        List<SongInfo> songInfos = getSongInfos();
-        if (QueueHelper.isIndexPlayable(mCurrentIndex, songInfos)) {
-            return songInfos.get(mCurrentIndex);
-        }
-        return null;
+    public BaseMediaInfo getCurrMediaInfo() {
+        return getMediaInfo(mCurrentIndex);
     }
 
     @Override
-    public boolean setCurrentQueueItem(String mediaId) {
-        int index = QueueHelper.getMusicIndexOnSongInfos(getSongInfos(), mediaId);
-        if (index >= 0 && index < getSongInfos().size()) {
+    public boolean updateIndexByMediaId(String mediaId) {
+        int index = getIndexByMediaId(mediaId);
+        if (QueueHelper.isIndexPlayable(index, getMediaList())) {
             mCurrentIndex = index;
             if (mUpdateListener != null) {
                 mUpdateListener.onCurrentQueueIndexUpdated(mCurrentIndex);
@@ -144,11 +156,11 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
     @Override
     public void updateCurrPlayingMedia(String mediaId) {
         boolean canReuseQueue = false;
-        if (isSameBrowsingCategory(mediaId)) {
-            canReuseQueue = setCurrentQueueItem(mediaId);
+        if (isSameMedia(mediaId)) {
+            canReuseQueue = updateIndexByMediaId(mediaId);
         }
         if (!canReuseQueue) {
-            mCurrentIndex = QueueHelper.getMusicIndexOnSongInfos(getSongInfos(), mediaId);
+            mCurrentIndex = getIndexByMediaId(mediaId);
         }
         updateMetadata();
     }
@@ -193,18 +205,16 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
 
     @Override
     public int getCurrentQueueSize() {
-        return getSongInfos().size();
+        return getMediaList().size();
     }
 
     @Override
-    public void setQueueByShuffleMode(int shuffleMode) {
-        if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_NONE) {
-            if (mSongInfosCopy != null) {
-                setSongInfos(mSongInfosCopy);
-            }
-        } else if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
-            mSongInfosCopy = getSongInfos();
-            getShuffledSongInfo();
-        }
+    public void setShuffledMode() {
+        currMode = SHUFFLED_MODE;
+    }
+
+    @Override
+    public void setNormalMode() {
+        currMode = NORMAL_MODE;
     }
 }

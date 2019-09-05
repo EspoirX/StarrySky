@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
+import com.lzx.starrysky.BaseMediaInfo;
+
 import java.util.List;
 
 /**
@@ -18,23 +20,43 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
     }
 
     @Override
-    public List<SongInfo> getSongInfos() {
-        return provider.getSongInfos();
+    public List<BaseMediaInfo> getMediaList() {
+        return provider.getMediaList();
     }
 
     @Override
-    public void setSongInfos(List<SongInfo> songInfos) {
-        provider.setSongInfos(songInfos);
+    public List<SongInfo> getSongList() {
+        return provider.getSongList();
     }
 
     @Override
-    public void addSongInfo(SongInfo songInfo) {
-        provider.addSongInfo(songInfo);
+    public void updateMediaList(List<BaseMediaInfo> mediaInfoList) {
+        provider.updateMediaList(mediaInfoList);
     }
 
     @Override
-    public boolean hasSongInfo(String songId) {
-        return provider.hasSongInfo(songId);
+    public void updateMediaListBySongInfo(List<SongInfo> songInfos) {
+        provider.updateMediaListBySongInfo(songInfos);
+    }
+
+    @Override
+    public void addMediaInfo(BaseMediaInfo mediaInfo) {
+        provider.addMediaInfo(mediaInfo);
+    }
+
+    @Override
+    public boolean hasMediaInfo(String songId) {
+        return provider.hasMediaInfo(songId);
+    }
+
+    @Override
+    public BaseMediaInfo getMediaInfo(String songId) {
+        return provider.getMediaInfo(songId);
+    }
+
+    @Override
+    public BaseMediaInfo getMediaInfo(int index) {
+        return provider.getMediaInfo(index);
     }
 
     @Override
@@ -43,8 +65,13 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
     }
 
     @Override
-    public int getIndexBySongInfo(String songId) {
-        return provider.getIndexBySongInfo(songId);
+    public SongInfo getSongInfo(int index) {
+        return provider.getSongInfo(index);
+    }
+
+    @Override
+    public int getIndexByMediaId(String songId) {
+        return provider.getIndexByMediaId(songId);
     }
 
     @Override
@@ -63,8 +90,8 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
     }
 
     @Override
-    public Iterable<SongInfo> getShuffledSongInfo() {
-        return provider.getShuffledSongInfo();
+    public Iterable<BaseMediaInfo> getShuffledMediaInfo() {
+        return provider.getShuffledMediaInfo();
     }
 
     @Override
@@ -76,4 +103,5 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
     public void updateMusicArt(String songId, MediaMetadataCompat changeData, Bitmap albumArt, Bitmap icon) {
         provider.updateMusicArt(songId, changeData, albumArt, icon);
     }
+
 }

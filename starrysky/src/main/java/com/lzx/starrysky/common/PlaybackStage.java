@@ -18,6 +18,7 @@ public class PlaybackStage {
     public static final String START = "START";
     public static final String PAUSE = "PAUSE";
     public static final String STOP = "STOP";
+    public static final String SWITCH = "SWITCH";
     public static final String COMPLETION = "COMPLETION";
     public static final String BUFFERING = "BUFFERING";
     public static final String ERROR = "ERROR";
@@ -199,6 +200,23 @@ public class PlaybackStage {
                     .setSongId(songId)
                     .setErrorCode(errorCode)
                     .setErrorMsg(errorMsg)
+                    .build();
+        } else {
+            key.offer();
+        }
+        return stage;
+    }
+
+    PlaybackStage buildSwitch(String songId) {
+        if (TextUtils.isEmpty(songId)) {
+            throw new IllegalStateException("songId is null");
+        }
+        Key key = stateKey.get(SWITCH, songId);
+        PlaybackStage stage = cacheMap.get(key);
+        if (stage == null) {
+            stage = new Builder()
+                    .setState(SWITCH)
+                    .setSongId(songId)
                     .build();
         } else {
             key.offer();

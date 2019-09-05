@@ -15,32 +15,42 @@ public interface MediaQueueProvider {
     /**
      * 获取List#SongInfo
      */
-    List<SongInfo> getSongInfos();
+    List<BaseMediaInfo> getMediaList();
+
+    List<SongInfo> getSongList();
 
     /**
-     * 设置播放列表
+     * 更新播放列表
      */
-    void setSongInfos(List<SongInfo> songInfos);
+    void updateMediaList(List<BaseMediaInfo> mediaInfoList);
+
+    void updateMediaListBySongInfo(List<SongInfo> songInfos);
 
     /**
      * 添加一首歌
      */
-    void addSongInfo(SongInfo songInfo);
+    void addMediaInfo(BaseMediaInfo mediaInfo);
 
     /**
      * 根据检查是否有某首音频
      */
-    boolean hasSongInfo(String songId);
+    boolean hasMediaInfo(String songId);
 
     /**
-     * 根据songId获取SongInfo
+     * 根据songId获取MediaInfo
      */
+    BaseMediaInfo getMediaInfo(String songId);
+
+    BaseMediaInfo getMediaInfo(int index);
+
     SongInfo getSongInfo(String songId);
+
+    SongInfo getSongInfo(int index);
 
     /**
      * 根据songId获取索引
      */
-    int getIndexBySongInfo(String songId);
+    int getIndexByMediaId(String songId);
 
     /**
      * 获取List#MediaMetadataCompat
@@ -57,7 +67,7 @@ public interface MediaQueueProvider {
      */
     Iterable<MediaMetadataCompat> getShuffledMediaMetadataCompat();
 
-    Iterable<SongInfo> getShuffledSongInfo();
+    Iterable<BaseMediaInfo> getShuffledMediaInfo();
 
     /**
      * 根据id获取对应的MediaMetadataCompat对象

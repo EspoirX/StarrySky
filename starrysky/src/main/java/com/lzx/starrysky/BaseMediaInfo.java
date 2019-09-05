@@ -1,5 +1,7 @@
 package com.lzx.starrysky;
 
+import android.support.annotation.Nullable;
+
 public class BaseMediaInfo {
     private String mediaId;
     private String mediaUrl;
@@ -45,5 +47,15 @@ public class BaseMediaInfo {
 
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof BaseMediaInfo) {
+            BaseMediaInfo info = (BaseMediaInfo) obj;
+            return info.getMediaId().equals(mediaId);
+        } else {
+            return false;
+        }
     }
 }
