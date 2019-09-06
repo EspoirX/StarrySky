@@ -246,7 +246,7 @@ public class MediaSessionConnection {
                     break;
                 case PlaybackStateCompat.STATE_NONE:
                     for (OnPlayerEventListener listener : mPlayerEventListeners) {
-                        SongInfo songInfo = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getSongInfo(songId);
+                        SongInfo songInfo = StarrySky.get().getMediaQueueProvider().getSongInfo(songId);
                         listener.onPlayCompletion(songInfo);
                     }
                     playbackState.postValue(playbackStage.buildCompletion(songId));

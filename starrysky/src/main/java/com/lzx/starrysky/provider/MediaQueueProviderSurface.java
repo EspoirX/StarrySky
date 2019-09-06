@@ -79,7 +79,6 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
         return provider.getMediaMetadataCompatList();
     }
 
-
     @Override
     public List<MediaBrowserCompat.MediaItem> getChildrenResult() {
         return provider.getChildrenResult();

@@ -83,7 +83,7 @@ public class PlaybackStage {
 
         Builder setSongId(String songId) {
             if (!TextUtils.isEmpty(songId)) {
-                this.songInfo = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getSongInfo(songId);
+                this.songInfo = StarrySky.get().getMediaQueueProvider().getSongInfo(songId);
             }
             return this;
         }

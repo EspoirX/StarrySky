@@ -117,8 +117,6 @@ public class StarrySky {
         mRegistry
                 .append(ILoaderStrategy.class, mImageLoader)
                 .append(PlayerControl.class, mPlayerControl)
-                .append(MediaQueueProvider.class, mediaQueueProvider)
-                .append(MediaResource.class, new MediaResource())
                 .append(MediaQueue.class, mediaQueue)
                 .append(Playback.class, playback)
                 .append(IPlaybackManager.class, playbackManager)

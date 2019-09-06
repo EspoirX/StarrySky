@@ -52,20 +52,22 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
         SongInfo songInfo = mSongInfos.get(position);
         Glide.with(mContext).load(songInfo.getSongCover()).into(holder.cover);
         holder.title.setText(songInfo.getSongName());
+
+        long progress = StarrySky.with().getPlayingPosition();
+        long duration = StarrySky.with().getDuration();
+
         if (StarrySky.with().isCurrMusicIsPlaying(songInfo.getSongId())) {
             holder.itemView.setBackgroundColor(Color.GREEN);
-            long progress = StarrySky.with().getPlayingPosition();
-            long duration = StarrySky.with().getDuration();
             holder.state.setText("状态:播放中    " + formatMusicTime(progress) + "/" + formatMusicTime(duration));
+        } else if (StarrySky.with().isCurrMusicIsPaused(songInfo.getSongId())) {
+            holder.itemView.setBackgroundColor(Color.GREEN);
+            holder.state.setText("状态:暂停中    " + formatMusicTime(progress) + "/" + formatMusicTime(duration));
         } else {
             holder.itemView.setBackgroundColor(Color.WHITE);
             holder.state.setText("");
         }
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                StarrySky.with().playMusic(mSongInfos, position);
-            }
+        holder.itemView.setOnClickListener(v -> {
+            StarrySky.with().playMusic(mSongInfos, position);
         });
     }
 
@@ -76,10 +78,12 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position);
         } else {
+            long progress = StarrySky.with().getPlayingPosition();
+            long duration = StarrySky.with().getDuration();
             if (StarrySky.with().isCurrMusicIsPlaying(songInfo.getSongId())) {
-                long progress = StarrySky.with().getPlayingPosition();
-                long duration = StarrySky.with().getDuration();
                 holder.state.setText("状态:播放中    " + formatMusicTime(progress) + "/" + formatMusicTime(duration));
+            } else if (StarrySky.with().isCurrMusicIsPaused(songInfo.getSongId())) {
+                holder.state.setText("状态:暂停中    " + formatMusicTime(progress) + "/" + formatMusicTime(duration));
             } else {
                 holder.state.setText("");
             }

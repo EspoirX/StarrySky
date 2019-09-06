@@ -76,6 +76,7 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
         super.updateMediaList(mediaInfoList);
     }
 
+
     @Override
     public List<BaseMediaInfo> getMediaList() {
         if (currMode == NORMAL_MODE) {

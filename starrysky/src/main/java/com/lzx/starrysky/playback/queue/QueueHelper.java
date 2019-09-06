@@ -16,14 +16,9 @@
 
 package com.lzx.starrysky.playback.queue;
 
-import android.app.Activity;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.text.TextUtils;
-
-import com.lzx.starrysky.provider.MediaQueueProvider;
-import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,50 +30,6 @@ import java.util.List;
 public class QueueHelper {
 
     private static final String TAG = "QueueHelper";
-
-    /**
-     * 获取正在播放的队列
-     */
-    public static List<MediaSessionCompat.QueueItem> getPlayingQueue(MediaQueueProvider musicProvider) {
-        List<MediaMetadataCompat> tracks = musicProvider.getMediaMetadataCompatList();
-        return convertToQueue(tracks);
-    }
-
-    /**
-     * 获取 id 为 mediaId 的媒体在播放队列中的下标
-     */
-    public static int getMusicIndexOnQueue(Iterable<MediaSessionCompat.QueueItem> queue, String mediaId) {
-        int index = 0;
-        for (MediaSessionCompat.QueueItem item : queue) {
-            if (mediaId.equals(item.getDescription().getMediaId())) {
-                return index;
-            }
-            index++;
-        }
-        return -1;
-    }
-
-    public static int getMusicIndexOnSongInfos(Iterable<SongInfo> queue, String mediaId) {
-        int index = 0;
-        for (SongInfo item : queue) {
-            if (mediaId.equals(item.getSongId())) {
-                return index;
-            }
-            index++;
-        }
-        return -1;
-    }
-
-    public static int getMusicIndexOnQueue(Iterable<MediaSessionCompat.QueueItem> queue, long queueId) {
-        int index = 0;
-        for (MediaSessionCompat.QueueItem item : queue) {
-            if (queueId == item.getQueueId()) {
-                return index;
-            }
-            index++;
-        }
-        return -1;
-    }
 
     /**
      * List<MediaMetadataCompat> 转 List<MediaSessionCompat.QueueItem>
@@ -96,18 +47,6 @@ public class QueueHelper {
         }
         return queue;
 
-    }
-
-    /**
-     * 获取乱序的 List#MediaSessionCompat.QueueItem
-     */
-    public static List<MediaSessionCompat.QueueItem> getRandomQueue(MediaQueueProvider musicProvider) {
-        List<MediaMetadataCompat> result = new ArrayList<>();
-        Iterable<MediaMetadataCompat> shuffled = musicProvider.getShuffledMediaMetadataCompat();
-        for (MediaMetadataCompat metadata : shuffled) {
-            result.add(metadata);
-        }
-        return convertToQueue(result);
     }
 
     /**
@@ -141,22 +80,5 @@ public class QueueHelper {
             }
         }
         return true;
-    }
-
-
-    /**
-     * 判断当前的媒体是否在播放
-     */
-    public static boolean isQueueItemPlaying(Activity context, MediaSessionCompat.QueueItem queueItem) {
-        MediaControllerCompat controller = MediaControllerCompat.getMediaController(context);
-        if (controller != null && controller.getPlaybackState() != null) {
-            long currentPlayingQueueId = controller.getPlaybackState().getActiveQueueItemId();
-            String currentPlayingMediaId = controller.getMetadata().getDescription().getMediaId();
-            String itemMusicId = queueItem.getDescription().getMediaId();
-            return queueItem.getQueueId() == currentPlayingQueueId
-                    && currentPlayingMediaId != null
-                    && TextUtils.equals(currentPlayingMediaId, itemMusicId);
-        }
-        return false;
     }
 }
