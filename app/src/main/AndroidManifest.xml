@@ -32,6 +32,9 @@
         <activity
             android:name=".example.RequestBeforePlayActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".example.PlayDetailActivity"
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name=".NotificationReceiver"
