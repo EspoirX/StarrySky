@@ -46,7 +46,7 @@ public class NotificationUtils {
     public static PendingIntent createContentIntent(MusicService mService, NotificationConstructor mBuilder,
                                                     String songId, Bundle bundle, Class targetClass) {
         SongInfo songInfo = null;
-        List<SongInfo> songInfos = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getSongInfos();
+        List<SongInfo> songInfos = StarrySky.get().getMediaQueueProvider().getSongList();
         for (SongInfo info : songInfos) {
             if (info.getSongId().equals(songId)) {
                 songInfo = info;

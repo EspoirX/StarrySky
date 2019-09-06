@@ -75,9 +75,10 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
     }
 
     @Override
-    public List<MediaMetadataCompat> getMusicList() {
-        return provider.getMusicList();
+    public List<MediaMetadataCompat> getMediaMetadataCompatList() {
+        return provider.getMediaMetadataCompatList();
     }
+
 
     @Override
     public List<MediaBrowserCompat.MediaItem> getChildrenResult() {
@@ -95,8 +96,8 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
     }
 
     @Override
-    public MediaMetadataCompat getMusic(String songId) {
-        return provider.getMusic(songId);
+    public MediaMetadataCompat getMediaMetadataCompatById(String songId) {
+        return provider.getMediaMetadataCompatById(songId);
     }
 
     @Override

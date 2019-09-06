@@ -103,7 +103,7 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                 try {
                     JSONObject object = new JSONObject(response.body().string());
                     JSONArray array = object.getJSONArray("playlists");
-                    JSONObject jsonObject = array.getJSONObject(1);
+                    JSONObject jsonObject = array.getJSONObject(2);
                     if (jsonObject == null) {
                         return;
                     }

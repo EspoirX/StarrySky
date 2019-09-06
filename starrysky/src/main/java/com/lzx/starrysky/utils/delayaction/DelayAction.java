@@ -2,6 +2,7 @@ package com.lzx.starrysky.utils.delayaction;
 
 import android.util.Log;
 
+import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.provider.SongInfo;
 
 /**
@@ -53,6 +54,11 @@ public class DelayAction {
                 valid.doValid(songInfo);
             }
         }
+    }
+
+    public void doCall(String mediaId) {
+        SongInfo songInfo = StarrySky.get().getMediaQueueProvider().getSongInfo(mediaId);
+        doCall(songInfo);
     }
 
     private void clear() {

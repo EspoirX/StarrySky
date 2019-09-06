@@ -28,6 +28,7 @@ import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaQueueProviderSurface;
 import com.lzx.starrysky.provider.MediaResource;
+import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
@@ -166,6 +167,30 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
     }
 
     @Override
+    public BaseMediaInfo songInfoToMediaInfo(SongInfo songInfo) {
+        if (songInfo == null || TextUtils.isEmpty(songInfo.getSongId())) {
+            throw new IllegalStateException("songInfo is null or song Id is Empty");
+        }
+        BaseMediaInfo mediaInfo = getMediaInfo(songInfo.getSongId());
+        if (mediaInfo == null) {
+            throw new NullPointerException("can find mediaInfo by songId:" + songInfo.getSongId());
+        }
+        if (!mediaInfo.getMediaUrl().equals(songInfo.getSongUrl())) {
+            mediaInfo.setMediaUrl(songInfo.getSongUrl());
+        }
+        if (!mediaInfo.getMediaTitle().equals(songInfo.getSongName())) {
+            mediaInfo.setMediaTitle(songInfo.getSongName());
+        }
+        if (!mediaInfo.getMediaCover().equals(songInfo.getSongCover())) {
+            mediaInfo.setMediaCover(songInfo.getSongCover());
+        }
+        if (mediaInfo.getDuration() != songInfo.getDuration()) {
+            mediaInfo.setDuration(songInfo.getDuration());
+        }
+        return mediaInfo;
+    }
+
+    @Override
     public void updateMetadata() {
         MediaResource currentMusic = getCurrentMusic();
         if (currentMusic == null) {
@@ -175,7 +200,7 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
             return;
         }
         final String musicId = currentMusic.getMediaId();
-        MediaMetadataCompat metadata = getMusic(musicId);
+        MediaMetadataCompat metadata = getMediaMetadataCompatById(musicId);
         if (metadata == null) {
             throw new IllegalArgumentException("Invalid musicId " + musicId);
         }

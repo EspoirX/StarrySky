@@ -100,7 +100,7 @@ public class StarrySkyBuilder {
             mPlayback = new ExoPlayback(context, exoDownload);
         }
         if (mIPlaybackManager == null) {
-            mIPlaybackManager = new PlaybackManager(context, mMediaQueue, mPlayback);
+            mIPlaybackManager = new PlaybackManager(mMediaQueue, mPlayback);
         }
         return new StarrySky(
                 mConnection,

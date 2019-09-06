@@ -55,7 +55,7 @@ public interface MediaQueueProvider {
     /**
      * 获取List#MediaMetadataCompat
      */
-    List<MediaMetadataCompat> getMusicList();
+    List<MediaMetadataCompat> getMediaMetadataCompatList();
 
     /**
      * 获取 List#MediaBrowserCompat.MediaItem 用于 onLoadChildren 回调
@@ -72,7 +72,7 @@ public interface MediaQueueProvider {
     /**
      * 根据id获取对应的MediaMetadataCompat对象
      */
-    MediaMetadataCompat getMusic(String songId);
+    MediaMetadataCompat getMediaMetadataCompatById(String songId);
 
     /**
      * 更新封面art

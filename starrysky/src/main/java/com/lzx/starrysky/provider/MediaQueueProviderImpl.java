@@ -20,14 +20,14 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
 
     //使用Map在查找方面会效率高一点
     private LinkedHashMap<String, BaseMediaInfo> mediaListMap;
-    private LinkedHashMap<String, MediaMetadataCompat> mMediaMetadataCompatListById;
+    private LinkedHashMap<String, MediaMetadataCompat> mMediaMetadataCompatMap;
     private List<BaseMediaInfo> mediaList;
     private LinkedHashMap<String, SongInfo> songListMap;
     private List<SongInfo> songList;
 
     public MediaQueueProviderImpl() {
         mediaListMap = new LinkedHashMap<>();
-        mMediaMetadataCompatListById = new LinkedHashMap<>();
+        mMediaMetadataCompatMap = new LinkedHashMap<>();
         songListMap = new LinkedHashMap<>();
         mediaList = new ArrayList<>();
         songList = new ArrayList<>();
@@ -56,9 +56,9 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
     @Override
     public void updateMediaListBySongInfo(List<SongInfo> songInfos) {
         songListMap.clear();
+        mMediaMetadataCompatMap.clear();
         songList.clear();
         songList.addAll(songInfos);
-
         List<BaseMediaInfo> mediaInfos = new ArrayList<>();
         for (SongInfo songInfo : songInfos) {
             BaseMediaInfo mediaInfo = new BaseMediaInfo();
@@ -70,6 +70,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
             mediaInfos.add(mediaInfo);
             songListMap.put(songInfo.getSongId(), songInfo);
         }
+        mMediaMetadataCompatMap = toMediaMetadata(songInfos);
         updateMediaList(mediaInfos);
     }
 
@@ -139,8 +140,8 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
      * 获取List#MediaMetadataCompat
      */
     @Override
-    public List<MediaMetadataCompat> getMusicList() {
-        return new ArrayList<>(mMediaMetadataCompatListById.values());
+    public List<MediaMetadataCompat> getMediaMetadataCompatList() {
+        return new ArrayList<>(mMediaMetadataCompatMap.values());
     }
 
     /**
@@ -149,7 +150,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
     @Override
     public List<MediaBrowserCompat.MediaItem> getChildrenResult() {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
-        List<MediaMetadataCompat> list = new ArrayList<>(mMediaMetadataCompatListById.values());
+        List<MediaMetadataCompat> list = getMediaMetadataCompatList();
         for (MediaMetadataCompat metadata : list) {
             MediaBrowserCompat.MediaItem mediaItem = new MediaBrowserCompat.MediaItem(
                     metadata.getDescription(),
@@ -164,8 +165,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
      */
     @Override
     public Iterable<MediaMetadataCompat> getShuffledMediaMetadataCompat() {
-        List<MediaMetadataCompat> shuffled = new ArrayList<>(mMediaMetadataCompatListById.size());
-        shuffled.addAll(mMediaMetadataCompatListById.values());
+        List<MediaMetadataCompat> shuffled = new ArrayList<>(mMediaMetadataCompatMap.values());
         Collections.shuffle(shuffled);
         return shuffled;
     }
@@ -180,8 +180,8 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
      * 根据id获取对应的MediaMetadataCompat对象
      */
     @Override
-    public MediaMetadataCompat getMusic(String songId) {
-        return mMediaMetadataCompatListById.containsKey(songId) ? mMediaMetadataCompatListById.get(songId) : null;
+    public MediaMetadataCompat getMediaMetadataCompatById(String songId) {
+        return mMediaMetadataCompatMap.containsKey(songId) ? mMediaMetadataCompatMap.get(songId) : null;
     }
 
     /**
@@ -193,7 +193,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, icon)
                 .build();
-        mMediaMetadataCompatListById.put(songId, metadata);
+        mMediaMetadataCompatMap.put(songId, metadata);
     }
 
     /**

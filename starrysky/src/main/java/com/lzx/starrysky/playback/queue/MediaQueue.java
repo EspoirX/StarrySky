@@ -50,6 +50,8 @@ public interface MediaQueue {
      */
     void updateCurrPlayingMedia(String mediaId);
 
+    BaseMediaInfo songInfoToMediaInfo(SongInfo songInfo);
+
     /**
      * 更新媒体信息
      */

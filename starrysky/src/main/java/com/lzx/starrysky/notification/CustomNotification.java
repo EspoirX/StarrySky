@@ -272,7 +272,7 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
             mNotification.bigContentView = mBigRemoteView;
         }
         SongInfo songInfo = null;
-        List<SongInfo> songInfos = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getSongInfos();
+        List<SongInfo> songInfos = StarrySky.get().getMediaQueueProvider().getSongList();
         for (SongInfo info : songInfos) {
             if (info.getSongId().equals(songId)) {
                 songInfo = info;

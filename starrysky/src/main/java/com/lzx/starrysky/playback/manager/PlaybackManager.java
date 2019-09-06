@@ -50,7 +50,6 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
 
     private static final String TAG = "PlaybackManager";
 
-    private Context mContext;
     private MediaQueue mMediaQueue;
     private Playback mPlayback;
     private PlaybackServiceCallback mServiceCallback;
@@ -61,8 +60,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
     private boolean shouldPlayPre = false;  //是否可以播放上一首
     private PlaybackStateCompat.Builder stateBuilder;
 
-    public PlaybackManager(Context context, MediaQueue mediaQueue, Playback playback) {
-        mContext = context;
+    public PlaybackManager(MediaQueue mediaQueue, Playback playback) {
         mMediaQueue = mediaQueue;
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
@@ -108,19 +106,20 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
         if (validRegistry.hasValid()) {
             DelayAction delayAction = DelayAction.getInstance();
             delayAction.addAction(songInfo -> {
-                PlaybackManager.this.handPlayRequestImpl(songInfo, isPlayWhenReady);
+                BaseMediaInfo mediaInfo = mMediaQueue.songInfoToMediaInfo(songInfo);
+                PlaybackManager.this.handPlayRequestImpl(mediaInfo, isPlayWhenReady);
             });
             for (Valid valid : validRegistry.getValids()) {
                 delayAction.addValid(valid != null ? valid : new ValidRegistry.DefaultValid());
             }
-            delayAction.doCall(mMediaQueue.getCurrSongInfo());
+            delayAction.doCall(mMediaQueue.getCurrMediaInfo().getMediaId());
         } else {
             handPlayRequestImpl(null, isPlayWhenReady);
         }
     }
 
-    private void handPlayRequestImpl(SongInfo songInfo, boolean isPlayWhenReady) {
-        MediaResource currentMusic = mMediaQueue.getCurrentMusic(songInfo);
+    private void handPlayRequestImpl(BaseMediaInfo mediaInfo, boolean isPlayWhenReady) {
+        MediaResource currentMusic = mMediaQueue.getCurrentMusic(mediaInfo);
         if (currentMusic != null) {
             if (isPlayWhenReady) {
                 mServiceCallback.onPlaybackStart();
@@ -201,14 +200,12 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
             //设置播放状态
             stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
             //设置当前活动的 songId
-            // MediaSessionCompat.QueueItem currentMusic = mMediaQueue.getCurrentMusic();
             MediaResource currentMusic = mMediaQueue.getCurrentMusic();
             MediaMetadataCompat currMetadata = null;
             if (currentMusic != null) {
                 stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
-                //final String musicId = currentMusic.getDescription().getMediaId();
                 final String musicId = currentMusic.getMediaId();
-                currMetadata = StarrySky.get().getRegistry().get(MediaQueueProvider.class).getMusic(musicId);
+                currMetadata = StarrySky.get().getMediaQueueProvider().getMediaMetadataCompatById(musicId);
             }
             //把状态回调出去
             mServiceCallback.onPlaybackStateUpdated(stateBuilder.build(), currMetadata);
@@ -346,7 +343,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
 
         @Override
         public void onSkipToQueueItem(long queueId) {
-            mMediaQueue.setCurrentQueueItem(String.valueOf(queueId));
+            mMediaQueue.updateIndexByMediaId(String.valueOf(queueId));
             mMediaQueue.updateMetadata();
         }
 
@@ -429,7 +426,11 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
         @Override
         public void onSetShuffleMode(int shuffleMode) {
             super.onSetShuffleMode(shuffleMode);
-            mMediaQueue.setQueueByShuffleMode(shuffleMode);
+            if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_NONE) {
+                mMediaQueue.setNormalMode();
+            } else if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
+                mMediaQueue.setShuffledMode();
+            }
             mServiceCallback.onShuffleModeUpdated(shuffleMode);
         }
 
