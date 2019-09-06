@@ -6,22 +6,27 @@ import com.lzx.starrysky.StarrySkyActivityLifecycle;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
 
-public class ImageLoaderRegistry {
+class ImageLoaderRegistry {
     private ImageLoader mImageLoader;
     private StarrySkyActivityLifecycle lifecycle;
 
-    public ImageLoaderRegistry(StarrySkyActivityLifecycle lifecycle) {
+    ImageLoaderRegistry(StarrySkyActivityLifecycle lifecycle) {
         this.lifecycle = lifecycle;
     }
 
-    public synchronized void registry(@NonNull ImageLoaderStrategy strategy) {
-        if (mImageLoader == null) {
-            mImageLoader = new ImageLoader(lifecycle.getActivity());
-        }
+    synchronized void registry(@NonNull ImageLoaderStrategy strategy) {
+        initImageLoader();
         mImageLoader.init(strategy);
     }
 
-    public ImageLoader getImageLoader() {
+    private void initImageLoader() {
+        if (mImageLoader == null) {
+            mImageLoader = new ImageLoader(lifecycle.getActivity());
+        }
+    }
+
+    synchronized ImageLoader getImageLoader() {
+        initImageLoader();
         return mImageLoader;
     }
 }
