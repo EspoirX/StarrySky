@@ -40,7 +40,6 @@ public class RequestMusicUrlValid implements Valid {
         isGetUrl = true;
 
         //请求完后做自己的操作，这里举例把接口信息包装成songInfo
-
         songInfo.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3&a=我");
 
         //调用一下 doCall ，继续执行，才会执行后续的 Action

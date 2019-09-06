@@ -13,6 +13,13 @@ import com.lzx.starrysky.StarrySky;
  */
 public class TestApplication extends Application {
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        StarrySky.init(this);
+    }
+
+
     public static String ACTION_PLAY_OR_PAUSE = "ACTION_PLAY_OR_PAUSE";
     public static String ACTION_NEXT = "ACTION_NEXT";
     public static String ACTION_PRE = "ACTION_PRE";
@@ -25,23 +32,5 @@ public class TestApplication extends Application {
         return PendingIntent.getBroadcast(this, 0, intent, 0);
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        StarrySky.init(this, new MusicModule());
-//        //初始化
-//        MusicManager.initMusicManager(this);
-//        //设置图片加载器
-//        MusicManager.setImageLoader(new GlideLoader());
-//        //配置通知栏
-//        NotificationConfig constructor = new NotificationConfig.Builder()
-//                .setCreateSystemNotification(true)
-//                .bulid();
-//        MusicManager.getInstance().setNotificationConstructor(constructor);
-//        //设置缓存
-//        String destFileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/11ExoCacheDir";
-//        ExoDownload.getInstance().setOpenCache(true); //打开缓存开关
-//        ExoDownload.getInstance().setShowNotificationWhenDownload(true);
-//        ExoDownload.getInstance().setCacheDestFileDir(destFileDir); //设置缓存文件夹
-    }
+
 }

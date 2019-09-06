@@ -52,7 +52,6 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
         SongInfo songInfo = mSongInfos.get(position);
         Glide.with(mContext).load(songInfo.getSongCover()).into(holder.cover);
         holder.title.setText(songInfo.getSongName());
-
         long progress = StarrySky.with().getPlayingPosition();
         long duration = StarrySky.with().getDuration();
 
