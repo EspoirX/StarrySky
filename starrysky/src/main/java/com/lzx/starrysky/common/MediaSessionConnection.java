@@ -14,9 +14,8 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.lzx.starrysky.MusicManager;
-import com.lzx.starrysky.control.OnPlayerEventListener;
 import com.lzx.starrysky.StarrySky;
-import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.control.OnPlayerEventListener;
 import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.List;

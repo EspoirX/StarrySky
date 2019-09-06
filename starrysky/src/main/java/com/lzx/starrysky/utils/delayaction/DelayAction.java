@@ -1,7 +1,5 @@
 package com.lzx.starrysky.utils.delayaction;
 
-import android.util.Log;
-
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.provider.SongInfo;
 

@@ -5,9 +5,7 @@ import android.content.Context;
 
 import com.lzx.starrysky.control.OnPlayerEventListener;
 import com.lzx.starrysky.provider.SongInfo;
-import com.lzx.starrysky.notification.NotificationConstructor;
-import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
-import com.lzx.starrysky.utils.imageloader.ImageLoader;
+import com.lzx.starrysky.notification.NotificationConfig;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -18,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Deprecated
 public class MusicManager {
 
-    private NotificationConstructor mConstructor;
+    private NotificationConfig mConstructor;
 
     public static MusicManager getInstance() {
         return SingletonHolder.sInstance;
@@ -51,7 +49,7 @@ public class MusicManager {
     /**
      * 设置通知栏配置,在Application创建并调用
      */
-    public void setNotificationConstructor(NotificationConstructor constructor) {
+    public void setNotificationConstructor(NotificationConfig constructor) {
         mConstructor = constructor;
     }
 
@@ -60,7 +58,7 @@ public class MusicManager {
      *
      * @return
      */
-    public NotificationConstructor getConstructor() {
+    public NotificationConfig getConstructor() {
         return mConstructor;
     }
 

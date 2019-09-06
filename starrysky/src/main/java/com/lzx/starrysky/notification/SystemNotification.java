@@ -24,7 +24,6 @@ import android.text.TextUtils;
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.StarrySky;
-import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.utils.NotificationUtils;
 import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
@@ -51,22 +50,28 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
     private final NotificationManager mNotificationManager;
     private String packageName;
     private boolean mStarted = false;
-    private NotificationConstructor mConstructor;
+    private NotificationConfig mConfig;
 
-    public SystemNotification(MusicService service, NotificationConstructor constructor) throws RemoteException {
+    public SystemNotification(MusicService service, NotificationConfig constructor) {
         mService = service;
-        mConstructor = constructor;
-
-        updateSessionToken();
+        mConfig = constructor;
+        if (mConfig == null) {
+            mConfig = new NotificationConfig.Builder().bulid();
+        }
+        try {
+            updateSessionToken();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
         mNotificationManager = (NotificationManager) mService.getSystemService(Service.NOTIFICATION_SERVICE);
         packageName = mService.getApplicationContext().getPackageName();
 
-        setStopIntent(mConstructor.getStopIntent());
-        setNextPendingIntent(mConstructor.getNextIntent());
-        setPrePendingIntent(mConstructor.getPreIntent());
-        setPlayPendingIntent(mConstructor.getPlayIntent());
-        setPausePendingIntent(mConstructor.getPauseIntent());
+        setStopIntent(mConfig.getStopIntent());
+        setNextPendingIntent(mConfig.getNextIntent());
+        setPrePendingIntent(mConfig.getPreIntent());
+        setPlayPendingIntent(mConfig.getPlayIntent());
+        setPausePendingIntent(mConfig.getPauseIntent());
 
         if (mNotificationManager != null) {
             mNotificationManager.cancelAll();
@@ -229,18 +234,20 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
                 .setDeleteIntent(mStopIntent)
                 //.setColor(mNotificationColor)
                 .setColorized(true)
-                .setSmallIcon(mConstructor.getSmallIconRes() != -1 ? mConstructor.getSmallIconRes() : R.drawable.ic_notification)
+                .setSmallIcon(mConfig.getSmallIconRes() != -1
+                        ? mConfig.getSmallIconRes()
+                        : R.drawable.ic_notification)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOnlyAlertOnce(true)
                 .setContentTitle(description.getTitle()) //歌名
                 .setContentText(description.getSubtitle()) //艺术家
                 .setLargeIcon(art);
 
-        if (!TextUtils.isEmpty(mConstructor.getTargetClass())) {
-            Class clazz = NotificationUtils.getTargetClass(mConstructor.getTargetClass());
+        if (!TextUtils.isEmpty(mConfig.getTargetClass())) {
+            Class clazz = NotificationUtils.getTargetClass(mConfig.getTargetClass());
             if (clazz != null) {
                 String songId = mMetadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                notificationBuilder.setContentIntent(NotificationUtils.createContentIntent(mService, mConstructor, songId, null, clazz));
+                notificationBuilder.setContentIntent(NotificationUtils.createContentIntent(mService, mConfig, songId, null, clazz));
             }
         }
 
@@ -288,10 +295,13 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         // 如果有上一首
         if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
             notificationBuilder.addAction(
-                    mConstructor.getSkipPreviousDrawableRes() != -1 ? mConstructor.getSkipPreviousDrawableRes() : R.drawable.ic_skip_previous_white_24dp,
-                    !TextUtils.isEmpty(mConstructor.getSkipPreviousTitle()) ? mConstructor.getSkipPreviousTitle() : mService.getString(R.string.label_previous),
+                    mConfig.getSkipPreviousDrawableRes() != -1
+                            ? mConfig.getSkipPreviousDrawableRes()
+                            : R.drawable.ic_skip_previous_white_24dp,
+                    !TextUtils.isEmpty(mConfig.getSkipPreviousTitle())
+                            ? mConfig.getSkipPreviousTitle()
+                            : mService.getString(R.string.label_previous),
                     mPreviousIntent);
-
             playPauseButtonPosition = 1;
         }
 
@@ -301,12 +311,12 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         final PendingIntent intent;
 
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-            label = !TextUtils.isEmpty(mConstructor.getLabelPlay()) ? mConstructor.getLabelPlay() : mService.getString(R.string.label_pause);
-            icon = mConstructor.getPauseDrawableRes() != -1 ? mConstructor.getPauseDrawableRes() : R.drawable.ic_pause_white_24dp;
+            label = !TextUtils.isEmpty(mConfig.getLabelPlay()) ? mConfig.getLabelPlay() : mService.getString(R.string.label_pause);
+            icon = mConfig.getPauseDrawableRes() != -1 ? mConfig.getPauseDrawableRes() : R.drawable.ic_pause_white_24dp;
             intent = mPauseIntent;
         } else {
-            label = !TextUtils.isEmpty(mConstructor.getLabelPause()) ? mConstructor.getLabelPause() : mService.getString(R.string.label_play);
-            icon = mConstructor.getPlayDrawableRes() != -1 ? mConstructor.getPlayDrawableRes() : R.drawable.ic_play_arrow_white_24dp;
+            label = !TextUtils.isEmpty(mConfig.getLabelPause()) ? mConfig.getLabelPause() : mService.getString(R.string.label_play);
+            icon = mConfig.getPlayDrawableRes() != -1 ? mConfig.getPlayDrawableRes() : R.drawable.ic_play_arrow_white_24dp;
             intent = mPlayIntent;
         }
 
@@ -315,8 +325,8 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         // 如果有下一首
         if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
             notificationBuilder.addAction(
-                    mConstructor.getSkipNextDrawableRes() != -1 ? mConstructor.getSkipNextDrawableRes() : R.drawable.ic_skip_next_white_24dp,
-                    !TextUtils.isEmpty(mConstructor.getSkipNextTitle()) ? mConstructor.getSkipNextTitle() : mService.getString(R.string.label_next),
+                    mConfig.getSkipNextDrawableRes() != -1 ? mConfig.getSkipNextDrawableRes() : R.drawable.ic_skip_next_white_24dp,
+                    !TextUtils.isEmpty(mConfig.getSkipNextTitle()) ? mConfig.getSkipNextTitle() : mService.getString(R.string.label_next),
                     mNextIntent);
         }
 

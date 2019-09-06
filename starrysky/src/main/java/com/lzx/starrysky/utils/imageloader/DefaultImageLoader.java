@@ -7,8 +7,6 @@ import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.text.TextUtils;
 
-import com.lzx.starrysky.R;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,26 +60,6 @@ public class DefaultImageLoader implements ImageLoaderStrategy {
         }
         new BitmapAsyncTask(url, callBack, mCache)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    @Override
-    public int getPlaceholderResId() {
-        return R.drawable.default_art;
-    }
-
-    @Override
-    public int getErrorResId() {
-        return R.drawable.default_art;
-    }
-
-    @Override
-    public int getTargetWidth() {
-        return 144;
-    }
-
-    @Override
-    public int getTargetHeight() {
-        return 144;
     }
 
     private static class BitmapAsyncTask extends AsyncTask<Void, Void, Bitmap[]> {

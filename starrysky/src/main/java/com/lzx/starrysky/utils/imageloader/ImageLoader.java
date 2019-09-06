@@ -19,14 +19,10 @@ public class ImageLoader {
         this.mLoader = loader;
     }
 
-    public void load(  String url, ImageLoaderCallBack callBack) {
-        if (ensureLoader()) {
-            throw new IllegalStateException("init method should be called first");
+    public void load(String url, ImageLoaderCallBack callBack) {
+        if (mLoader == null) {
+            mLoader = new DefaultImageLoader();
         }
         mLoader.loadImage(context, url, callBack);
-    }
-
-    private boolean ensureLoader() {
-        return mLoader == null;
     }
 }

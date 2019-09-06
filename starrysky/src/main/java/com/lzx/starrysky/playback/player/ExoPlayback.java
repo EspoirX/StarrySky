@@ -18,7 +18,6 @@ package com.lzx.starrysky.playback.player;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
@@ -54,9 +53,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.Util;
-import com.lzx.starrysky.provider.MediaResource;
-import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.playback.download.ExoDownload;
+import com.lzx.starrysky.provider.MediaResource;
 
 import java.util.List;
 

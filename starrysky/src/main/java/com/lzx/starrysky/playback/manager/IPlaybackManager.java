@@ -4,7 +4,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.lzx.starrysky.notification.factory.NotificationFactory;
+import com.lzx.starrysky.notification.INotification;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 
 public interface IPlaybackManager {
@@ -14,8 +14,6 @@ public interface IPlaybackManager {
     void setMetadataUpdateListener(MediaQueueProvider.MetadataUpdateListener listener);
 
     MediaSessionCompat.Callback getMediaSessionCallback();
-
-    void setNotificationFactory(NotificationFactory notificationFactory);
 
     /**
      * 播放
@@ -56,6 +54,8 @@ public interface IPlaybackManager {
      * 是否在播放
      */
     boolean isPlaying();
+
+    void registerNotification(INotification notification);
 
     interface PlaybackServiceCallback {
         void onPlaybackStart();

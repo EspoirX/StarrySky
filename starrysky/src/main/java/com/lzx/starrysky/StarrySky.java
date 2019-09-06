@@ -4,16 +4,16 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.lzx.starrysky.control.StarrySkyPlayerControl;
-import com.lzx.starrysky.playback.manager.IPlaybackManager;
-import com.lzx.starrysky.playback.player.Playback;
-import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.common.MediaSessionConnection;
 import com.lzx.starrysky.control.PlayerControl;
+import com.lzx.starrysky.control.StarrySkyPlayerControl;
+import com.lzx.starrysky.notification.StarrySkyNotificationManager;
 import com.lzx.starrysky.playback.download.ExoDownload;
+import com.lzx.starrysky.playback.manager.IPlaybackManager;
+import com.lzx.starrysky.playback.player.Playback;
 import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
-import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
 
 public class StarrySky {
     private static volatile StarrySky sStarrySky;
@@ -43,6 +43,7 @@ public class StarrySky {
         alreadyInit = true;
         globalContext = application;
         mStarrySkyConfig = config;
+        get();
     }
 
     private void registerLifecycle(Application context) {
@@ -85,12 +86,19 @@ public class StarrySky {
         if (mStarrySkyConfig != null) {
             mStarrySkyConfig.applyOptions(context, builder);
         }
-
         StarrySky starrySky = builder.build(context);
 
         if (mStarrySkyConfig != null) {
             mStarrySkyConfig.applyMediaValid(context, starrySky.mRegistry);
         }
+
+        starrySky.getRegistry().initImageLoaderRegistry(starrySky.mLifecycle);
+
+        StarrySkyNotificationManager.NotificationFactory factory = mStarrySkyConfig != null
+                ? mStarrySkyConfig.getNotificationFactory() : null;
+        StarrySkyNotificationManager notificationManager = new StarrySkyNotificationManager(factory);
+        starrySky.getRegistry().registryNotificationManager(notificationManager);
+
         sStarrySky = starrySky;
     }
 
@@ -110,8 +118,9 @@ public class StarrySky {
 
         registerLifecycle(globalContext);
 
-        mRegistry = new StarrySkyRegistry(mLifecycle);
+        mRegistry = new StarrySkyRegistry();
 
+        //链接服务
         connection.connect();
     }
 

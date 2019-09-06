@@ -27,7 +27,6 @@ import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.provider.SongInfo;
-import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.utils.NotificationColorUtils;
 import com.lzx.starrysky.notification.utils.NotificationUtils;
 import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
@@ -65,33 +64,39 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
     private final NotificationManager mNotificationManager;
     private String packageName;
     private boolean mStarted = false;
-    private NotificationConstructor mConstructor;
+    private NotificationConfig mConfig;
     private Notification mNotification;
 
     private Resources res;
     private NotificationColorUtils mColorUtils;
 
-    public CustomNotification(MusicService service, NotificationConstructor constructor) throws RemoteException {
+    public CustomNotification(MusicService service, NotificationConfig config) {
         mService = service;
-        mConstructor = constructor;
-
-        updateSessionToken();
+        mConfig = config;
+        if (mConfig == null) {
+            mConfig = new NotificationConfig.Builder().bulid();
+        }
+        try {
+            updateSessionToken();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
         mNotificationManager = (NotificationManager) mService.getSystemService(Service.NOTIFICATION_SERVICE);
         packageName = mService.getApplicationContext().getPackageName();
         res = mService.getApplicationContext().getResources();
         mColorUtils = new NotificationColorUtils();
 
-        setStopIntent(mConstructor.getStopIntent());
-        setNextPendingIntent(mConstructor.getNextIntent());
-        setPrePendingIntent(mConstructor.getPreIntent());
-        setPlayPendingIntent(mConstructor.getPlayIntent());
-        setPausePendingIntent(mConstructor.getPauseIntent());
-        setFavoritePendingIntent(mConstructor.getFavoriteIntent());
-        setLyricsPendingIntent(mConstructor.getLyricsIntent());
-        setDownloadPendingIntent(mConstructor.getDownloadIntent());
-        setClosePendingIntent(mConstructor.getCloseIntent());
-        setPlayOrPauseIntent(mConstructor.getPlayOrPauseIntent());
+        setStopIntent(mConfig.getStopIntent());
+        setNextPendingIntent(mConfig.getNextIntent());
+        setPrePendingIntent(mConfig.getPreIntent());
+        setPlayPendingIntent(mConfig.getPlayIntent());
+        setPausePendingIntent(mConfig.getPauseIntent());
+        setFavoritePendingIntent(mConfig.getFavoriteIntent());
+        setLyricsPendingIntent(mConfig.getLyricsIntent());
+        setDownloadPendingIntent(mConfig.getDownloadIntent());
+        setClosePendingIntent(mConfig.getCloseIntent());
+        setPlayOrPauseIntent(mConfig.getPlayOrPauseIntent());
 
         if (mNotificationManager != null) {
             mNotificationManager.cancelAll();
@@ -234,7 +239,7 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         MediaDescriptionCompat description = mMetadata.getDescription();
 
         String songId = mMetadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-        int smallIcon = mConstructor.getSmallIconRes() != -1 ? mConstructor.getSmallIconRes() : R.drawable.ic_notification;
+        int smallIcon = mConfig.getSmallIconRes() != -1 ? mConfig.getSmallIconRes() : R.drawable.ic_notification;
         //适配8.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationUtils.createNotificationChannel(mService, mNotificationManager);
@@ -247,10 +252,10 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
                 .setContentTitle(description.getTitle()) //歌名
                 .setContentText(description.getSubtitle()); //艺术家
         //setContentIntent
-        if (!TextUtils.isEmpty(mConstructor.getTargetClass())) {
-            Class clazz = NotificationUtils.getTargetClass(mConstructor.getTargetClass());
+        if (!TextUtils.isEmpty(mConfig.getTargetClass())) {
+            Class clazz = NotificationUtils.getTargetClass(mConfig.getTargetClass());
             if (clazz != null) {
-                notificationBuilder.setContentIntent(NotificationUtils.createContentIntent(mService, mConstructor, songId, null, clazz));
+                notificationBuilder.setContentIntent(NotificationUtils.createContentIntent(mService, mConfig, songId, null, clazz));
             }
         }
         //这里不能复用，会导致内存泄漏，需要每次都创建

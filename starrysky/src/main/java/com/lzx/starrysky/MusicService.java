@@ -19,18 +19,18 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.lzx.starrysky.notification.NotificationConstructor;
-import com.lzx.starrysky.notification.factory.NotificationFactory;
+import com.lzx.starrysky.notification.StarrySkyNotificationManager;
+import com.lzx.starrysky.notification.INotification;
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.playback.manager.PlaybackManager;
 import com.lzx.starrysky.provider.MediaQueueProvider;
-import com.lzx.starrysky.registry.StarrySkyRegistry;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
 
-public class MusicService extends MediaBrowserServiceCompat implements MediaQueueProvider.MetadataUpdateListener, PlaybackManager.PlaybackServiceCallback {
+public class MusicService extends MediaBrowserServiceCompat implements MediaQueueProvider.MetadataUpdateListener,
+        PlaybackManager.PlaybackServiceCallback {
 
     public static final String UPDATE_PARENT_ID = "update";
     private static final String STARRYSKY_BROWSABLE_ROOT = "/";
@@ -42,9 +42,7 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
 
     private PackageValidator mPackageValidator;
     private IPlaybackManager mPlaybackManager;
-
-    private NotificationFactory mNotificationFactory;
-
+    private INotification notification;
     private BecomingNoisyReceiver mBecomingNoisyReceiver;
 
     private static final int STOP_DELAY = 30000;
@@ -83,10 +81,10 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
         mPlaybackManager.updatePlaybackState(false, null);
         mPackageValidator = new PackageValidator(this);
         //通知栏相关
-        NotificationConstructor constructor = mRegistry.get(NotificationConstructor.class);
-        mNotificationFactory = new NotificationFactory(this, constructor);
-        mNotificationFactory.createNotification();
-        mPlaybackManager.setNotificationFactory(mNotificationFactory);
+
+        StarrySkyNotificationManager manager = StarrySky.get().getRegistry().getNotificationManager();
+        notification = manager.getNotification(this);
+        mPlaybackManager.registerNotification(notification);
     }
 
     @Override
@@ -109,7 +107,7 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
     public void onDestroy() {
         super.onDestroy();
         mPlaybackManager.handleStopRequest(null);
-        mNotificationFactory.stopNotification();
+        notification.stopNotification();
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mBecomingNoisyReceiver.unregister();
@@ -163,7 +161,7 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
      */
     @Override
     public void onNotificationRequired() {
-        mNotificationFactory.startNotification();
+        notification.startNotification();
     }
 
     /**

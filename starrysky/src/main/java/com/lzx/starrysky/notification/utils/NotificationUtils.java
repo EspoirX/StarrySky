@@ -13,10 +13,9 @@ import android.text.TextUtils;
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.StarrySky;
-import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.SongInfo;
-import com.lzx.starrysky.notification.NotificationConstructor;
-import com.lzx.starrysky.notification.factory.INotification;
+import com.lzx.starrysky.notification.NotificationConfig;
+import com.lzx.starrysky.notification.INotification;
 
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class NotificationUtils {
     /**
      * 设置content点击事件
      */
-    public static PendingIntent createContentIntent(MusicService mService, NotificationConstructor mBuilder,
+    public static PendingIntent createContentIntent(MusicService mService, NotificationConfig mBuilder,
                                                     String songId, Bundle bundle, Class targetClass) {
         SongInfo songInfo = null;
         List<SongInfo> songInfos = StarrySky.get().getMediaQueueProvider().getSongList();
@@ -65,13 +64,13 @@ public class NotificationUtils {
         @SuppressLint("WrongConstant")
         PendingIntent pendingIntent;
         switch (mBuilder.getPendingIntentMode()) {
-            case NotificationConstructor.MODE_ACTIVITY:
+            case NotificationConfig.MODE_ACTIVITY:
                 pendingIntent = PendingIntent.getActivity(mService, INotification.REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
                 break;
-            case NotificationConstructor.MODE_BROADCAST:
+            case NotificationConfig.MODE_BROADCAST:
                 pendingIntent = PendingIntent.getBroadcast(mService, INotification.REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
                 break;
-            case NotificationConstructor.MODE_SERVICE:
+            case NotificationConfig.MODE_SERVICE:
                 pendingIntent = PendingIntent.getService(mService, INotification.REQUEST_CODE, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
                 break;
             default:

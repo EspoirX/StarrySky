@@ -24,14 +24,13 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
 
 import com.lzx.starrysky.BaseMediaInfo;
-import com.lzx.starrysky.R;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaQueueProviderSurface;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.provider.SongInfo;
-import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
+import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
 
 import java.util.ArrayList;
 import java.util.Collections;

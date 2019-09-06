@@ -4,19 +4,16 @@ import android.content.ComponentName;
 import android.content.Context;
 
 import com.lzx.starrysky.common.MediaSessionConnection;
-import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.playback.download.ExoDownload;
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.playback.manager.PlaybackManager;
 import com.lzx.starrysky.playback.player.ExoPlayback;
+import com.lzx.starrysky.playback.player.Playback;
 import com.lzx.starrysky.playback.queue.MediaQueue;
 import com.lzx.starrysky.playback.queue.MediaQueueManager;
-import com.lzx.starrysky.playback.player.Playback;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaQueueProviderImpl;
 import com.lzx.starrysky.provider.MediaQueueProviderSurface;
-import com.lzx.starrysky.utils.imageloader.DefaultImageLoader;
-import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
 
 public class StarrySkyBuilder {
 
@@ -25,7 +22,6 @@ public class StarrySkyBuilder {
     private MediaQueue mMediaQueue;
     private Playback mPlayback;
     private IPlaybackManager mIPlaybackManager;
-    private NotificationConstructor mNotificationConstructor;
     private boolean isOpenCache;
     private boolean isShowNotificationWhenDownload;
     private String destFileDir;
@@ -48,10 +44,6 @@ public class StarrySkyBuilder {
 
     public void setIPlaybackManager(IPlaybackManager IPlaybackManager) {
         mIPlaybackManager = IPlaybackManager;
-    }
-
-    public void setNotificationConstructor(NotificationConstructor constructor) {
-        mNotificationConstructor = constructor;
     }
 
     public void setOpenCache(boolean openCache) {

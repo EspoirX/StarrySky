@@ -1,4 +1,4 @@
-package com.lzx.starrysky.notification.factory;
+package com.lzx.starrysky.notification;
 
 public interface INotification {
     int NOTIFICATION_ID = 412;

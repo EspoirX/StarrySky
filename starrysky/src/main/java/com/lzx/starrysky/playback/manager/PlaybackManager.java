@@ -27,8 +27,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.lzx.starrysky.BaseMediaInfo;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.ext.PlaybackStateCompatExt;
-import com.lzx.starrysky.notification.factory.INotification;
-import com.lzx.starrysky.notification.factory.NotificationFactory;
+import com.lzx.starrysky.notification.INotification;
 import com.lzx.starrysky.playback.player.ExoPlayback;
 import com.lzx.starrysky.playback.player.Playback;
 import com.lzx.starrysky.playback.queue.MediaQueue;
@@ -50,7 +49,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
     private Playback mPlayback;
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
-    private NotificationFactory mNotificationFactory;
+    private INotification notification;
     private int currRepeatMode;
     private boolean shouldPlayNext = true; //是否可以播放下一首
     private boolean shouldPlayPre = true;  //是否可以播放上一首
@@ -75,8 +74,8 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
     }
 
     @Override
-    public void setNotificationFactory(NotificationFactory notificationFactory) {
-        mNotificationFactory = notificationFactory;
+    public void registerNotification(INotification notification) {
+        this.notification = notification;
     }
 
     public Playback getPlayback() {
@@ -460,14 +459,14 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
             }
             if (INotification.ACTION_UPDATE_FAVORITE_UI.equals(command)) {
                 boolean isFavorite = extras.getBoolean("isFavorite");
-                if (mNotificationFactory != null) {
-                    mNotificationFactory.updateFavoriteUI(isFavorite);
+                if (notification != null) {
+                    notification.updateFavoriteUI(isFavorite);
                 }
             }
             if (INotification.ACTION_UPDATE_LYRICS_UI.equals(command)) {
                 boolean isChecked = extras.getBoolean("isChecked");
-                if (mNotificationFactory != null) {
-                    mNotificationFactory.updateLyricsUI(isChecked);
+                if (notification != null) {
+                    notification.updateLyricsUI(isChecked);
                 }
             }
             if (ExoPlayback.ACTION_CHANGE_VOLUME.equals(command)) {

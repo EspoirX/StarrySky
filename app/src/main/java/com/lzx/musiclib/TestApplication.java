@@ -34,7 +34,7 @@ public class TestApplication extends Application {
 //        //设置图片加载器
 //        MusicManager.setImageLoader(new GlideLoader());
 //        //配置通知栏
-//        NotificationConstructor constructor = new NotificationConstructor.Builder()
+//        NotificationConfig constructor = new NotificationConfig.Builder()
 //                .setCreateSystemNotification(true)
 //                .bulid();
 //        MusicManager.getInstance().setNotificationConstructor(constructor);

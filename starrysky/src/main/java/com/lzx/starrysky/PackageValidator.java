@@ -21,8 +21,6 @@ import android.content.pm.PackageManager;
 import android.content.res.XmlResourceParser;
 import android.os.Process;
 import android.util.Base64;
-import android.util.Log;
-
 
 import org.xmlpull.v1.XmlPullParserException;
 

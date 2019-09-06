@@ -6,13 +6,11 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lzx.musiclib.MainActivity;
 import com.lzx.musiclib.R;
-import com.lzx.starrysky.MusicManager;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.common.PlaybackStage;
 import com.lzx.starrysky.provider.SongInfo;
@@ -165,7 +163,7 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                 try {
                     JSONObject object = new JSONObject(response.body().string());
                     JSONArray array = object.getJSONArray("playlists");
-                    JSONObject jsonObject = array.getJSONObject(0);
+                    JSONObject jsonObject = array.getJSONObject(1);
                     if (jsonObject == null) {
                         return;
                     }
@@ -208,6 +206,7 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                         list.add(info);
                     }
                     runOnUiThread(() -> {
+                        Log.i("xian", "list = " + list.size());
                         mListPlayAdapter.setSongInfos(list);
                     });
                 } catch (JSONException e) {

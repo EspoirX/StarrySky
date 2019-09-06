@@ -4,7 +4,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.lzx.starrysky.StarrySky;
-import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.HashMap;

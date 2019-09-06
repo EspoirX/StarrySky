@@ -5,7 +5,7 @@ import android.app.PendingIntent;
 /**
  * 通知栏构建者，可设置各种通知栏配置
  */
-public class NotificationConstructor {
+public class NotificationConfig {
 
     public static final int MODE_ACTIVITY = 0;
     public static final int MODE_BROADCAST = 1;
@@ -39,7 +39,7 @@ public class NotificationConstructor {
     private int playDrawableRes = -1;
     private int smallIconRes = -1;
 
-    private NotificationConstructor(Builder builder) {
+    private NotificationConfig(Builder builder) {
         isCreateSystemNotification = builder.isCreateSystemNotification;
         isNotificationCanClearBySystemBtn = builder.isNotificationCanClearBySystemBtn;
         targetClass = builder.targetClass;
@@ -227,8 +227,8 @@ public class NotificationConstructor {
             return this;
         }
 
-        public NotificationConstructor bulid() {
-            return new NotificationConstructor(this);
+        public NotificationConfig bulid() {
+            return new NotificationConfig(this);
         }
     }
 

@@ -1,22 +1,25 @@
 package com.lzx.starrysky.registry;
 
 import com.lzx.starrysky.StarrySkyActivityLifecycle;
+import com.lzx.starrysky.notification.NotificationConfig;
+import com.lzx.starrysky.notification.StarrySkyNotificationManager;
 import com.lzx.starrysky.utils.delayaction.Valid;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
 
 public class StarrySkyRegistry {
-    //图片加载
-    //通知栏
-    //播放前验证
+
     private ValidRegistry mValidRegistry;
     private ImageLoaderRegistry mImageLoaderRegistry;
-    private StarrySkyActivityLifecycle mLifecycle;
+    private NotificationRegistry mNotificationRegistry;
 
-    public StarrySkyRegistry(StarrySkyActivityLifecycle lifecycle) {
-        mLifecycle = lifecycle;
+    public StarrySkyRegistry() {
         mValidRegistry = new ValidRegistry();
-        mImageLoaderRegistry = new ImageLoaderRegistry(mLifecycle);
+        mNotificationRegistry = new NotificationRegistry();
+    }
+
+    public void initImageLoaderRegistry(StarrySkyActivityLifecycle lifecycle) {
+        mImageLoaderRegistry = new ImageLoaderRegistry(lifecycle);
     }
 
     public void appendValidRegistry(Valid valid) {
@@ -33,6 +36,22 @@ public class StarrySkyRegistry {
 
     public ImageLoader getImageLoader() {
         return mImageLoaderRegistry.getImageLoader();
+    }
+
+    public void registryNotificationConfig(NotificationConfig config) {
+        mNotificationRegistry.setConfig(config);
+    }
+
+    public void registryNotificationManager(StarrySkyNotificationManager manager) {
+        mNotificationRegistry.setNotificationManager(manager);
+    }
+
+    public NotificationConfig getNotificationConfig() {
+        return mNotificationRegistry.getConfig();
+    }
+
+    public StarrySkyNotificationManager getNotificationManager() {
+        return mNotificationRegistry.getNotificationManager();
     }
 
 }

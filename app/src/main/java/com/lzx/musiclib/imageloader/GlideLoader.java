@@ -31,7 +31,7 @@ public class GlideLoader implements ImageLoaderStrategy {
             return;
         }
         RequestOptions requestOptions = new RequestOptions()
-                .override(getTargetWidth(), getTargetHeight())
+                .override(144, 144)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
         Glide.with(context)
                 .applyDefaultRequestOptions(requestOptions)
@@ -54,25 +54,5 @@ public class GlideLoader implements ImageLoaderStrategy {
                         callBack.onBitmapFailed(errorDrawable);
                     }
                 });
-    }
-
-    @Override
-    public int getPlaceholderResId() {
-        return R.drawable.default_art;
-    }
-
-    @Override
-    public int getErrorResId() {
-        return R.drawable.default_art;
-    }
-
-    @Override
-    public int getTargetWidth() {
-        return 144;
-    }
-
-    @Override
-    public int getTargetHeight() {
-        return 144;
     }
 }

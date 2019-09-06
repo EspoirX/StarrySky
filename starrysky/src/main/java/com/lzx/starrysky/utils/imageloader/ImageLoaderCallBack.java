@@ -7,17 +7,4 @@ public interface ImageLoaderCallBack {
     void onBitmapLoaded(Bitmap bitmap);
 
     void onBitmapFailed(Drawable errorDrawable);
-
-    class SimperCallback implements ImageLoaderCallBack {
-
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap) {
-
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-
-        }
-    }
 }
