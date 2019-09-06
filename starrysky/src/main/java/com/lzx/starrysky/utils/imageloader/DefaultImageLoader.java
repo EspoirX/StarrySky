@@ -1,10 +1,13 @@
 package com.lzx.starrysky.utils.imageloader;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.text.TextUtils;
+
+import com.lzx.starrysky.R;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -15,7 +18,7 @@ import java.net.URL;
 /**
  * 默认图片加载器
  */
-public class DefaultImageLoader implements ILoaderStrategy {
+public class DefaultImageLoader implements ImageLoaderStrategy {
 
     private static final int MAX_READ_LIMIT_PER_IMG = 1024 * 1024;
     private static final int MAX_ALBUM_ART_CACHE_SIZE = 12 * 1024 * 1024;  // 12 MB
@@ -46,27 +49,47 @@ public class DefaultImageLoader implements ILoaderStrategy {
     }
 
     @Override
-    public void loadImage(LoaderOptions options) {
-        if (TextUtils.isEmpty(options.url)) {
+    public void loadImage(Context context, String url, ImageLoaderCallBack callBack) {
+        if (TextUtils.isEmpty(url)) {
             return;
         }
-        Bitmap[] bitmap = mCache.get(options.url);
+        Bitmap[] bitmap = mCache.get(url);
         if (bitmap != null) {
-            if (options.bitmapCallBack != null) {
-                options.bitmapCallBack.onBitmapLoaded(bitmap[BIG_BITMAP_INDEX]);
+            if (callBack != null) {
+                callBack.onBitmapLoaded(bitmap[BIG_BITMAP_INDEX]);
             }
             return;
         }
-        new BitmapAsyncTask(options.url, options.bitmapCallBack, mCache)
+        new BitmapAsyncTask(url, callBack, mCache)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @Override
+    public int getPlaceholderResId() {
+        return R.drawable.default_art;
+    }
+
+    @Override
+    public int getErrorResId() {
+        return R.drawable.default_art;
+    }
+
+    @Override
+    public int getTargetWidth() {
+        return 144;
+    }
+
+    @Override
+    public int getTargetHeight() {
+        return 144;
     }
 
     private static class BitmapAsyncTask extends AsyncTask<Void, Void, Bitmap[]> {
         private String artUrl;
-        private BitmapCallBack listener;
+        private ImageLoaderCallBack listener;
         private LruCache<String, Bitmap[]> mCache;
 
-        BitmapAsyncTask(String artUrl, BitmapCallBack listener, LruCache<String, Bitmap[]> cache) {
+        BitmapAsyncTask(String artUrl, ImageLoaderCallBack listener, LruCache<String, Bitmap[]> cache) {
             this.artUrl = artUrl;
             this.listener = listener;
             mCache = cache;
@@ -94,7 +117,7 @@ public class DefaultImageLoader implements ILoaderStrategy {
                 return;
             }
             if (bitmaps == null) {
-                listener.onBitmapFailed(new IllegalArgumentException("got null bitmaps"), null);
+                listener.onBitmapFailed(null);
             } else {
                 listener.onBitmapLoaded(bitmaps[BIG_BITMAP_INDEX]);
             }

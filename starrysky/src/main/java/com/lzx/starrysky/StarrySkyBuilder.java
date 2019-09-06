@@ -4,8 +4,6 @@ import android.content.ComponentName;
 import android.content.Context;
 
 import com.lzx.starrysky.common.MediaSessionConnection;
-import com.lzx.starrysky.control.PlayerControl;
-import com.lzx.starrysky.control.StarrySkyPlayerControl;
 import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.playback.download.ExoDownload;
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
@@ -18,12 +16,11 @@ import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaQueueProviderImpl;
 import com.lzx.starrysky.provider.MediaQueueProviderSurface;
 import com.lzx.starrysky.utils.imageloader.DefaultImageLoader;
-import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
+import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
 
 public class StarrySkyBuilder {
 
     private MediaSessionConnection mConnection;
-    private ILoaderStrategy mImageLoader;
     private MediaQueueProvider mMediaQueueProvider;
     private MediaQueue mMediaQueue;
     private Playback mPlayback;
@@ -35,10 +32,6 @@ public class StarrySkyBuilder {
 
     public void setConnection(MediaSessionConnection connection) {
         mConnection = connection;
-    }
-
-    public void setImageLoader(ILoaderStrategy imageLoader) {
-        mImageLoader = imageLoader;
     }
 
     public void setMediaQueueProvider(MediaQueueProvider mediaQueueProvider) {
@@ -78,9 +71,6 @@ public class StarrySkyBuilder {
             ComponentName componentName = new ComponentName(context, MusicService.class);
             mConnection = new MediaSessionConnection(context, componentName);
         }
-        if (mImageLoader == null) {
-            mImageLoader = new DefaultImageLoader();
-        }
         if (mMediaQueueProvider == null) {
             mMediaQueueProvider = new MediaQueueProviderImpl();
         }
@@ -104,12 +94,9 @@ public class StarrySkyBuilder {
         }
         return new StarrySky(
                 mConnection,
-                mImageLoader,
                 surface,
-                mMediaQueue,
                 mPlayback,
                 mIPlaybackManager,
-                mNotificationConstructor,
                 exoDownload);
     }
 }

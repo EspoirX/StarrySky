@@ -11,7 +11,7 @@ public class ValidRegistry {
 
     private List<Valid> mValids = new ArrayList<>();
 
-    public void append(Valid valid) {
+    void append(Valid valid) {
         if (!mValids.contains(valid)) {
             mValids.add(valid);
         }

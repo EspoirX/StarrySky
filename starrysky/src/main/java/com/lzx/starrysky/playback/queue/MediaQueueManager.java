@@ -18,6 +18,7 @@ package com.lzx.starrysky.playback.queue;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
@@ -29,7 +30,7 @@ import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaQueueProviderSurface;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.provider.SongInfo;
-import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
+import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
 import java.util.ArrayList;
@@ -211,21 +212,21 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
         //更新封面 bitmap
         String coverUrl = currentMusic.getMediaUrl();
         if (!TextUtils.isEmpty(coverUrl)) {
-            ImageLoader.getInstance()
-                    .load(coverUrl)
-                    .context(mContext)
-                    .placeholder(R.drawable.default_art)
-                    .resize(144, 144)
-                    .bitmap(new BitmapCallBack.SimperCallback() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap resource) {
-                            super.onBitmapLoaded(resource);
-                            updateMusicArt(musicId, metadata, resource, resource);
-                            if (mUpdateListener != null) {
-                                mUpdateListener.onMetadataChanged(metadata);
-                            }
-                        }
-                    });
+            ImageLoader imageLoader = StarrySky.get().getRegistry().getImageLoader();
+            imageLoader.load(coverUrl, new ImageLoaderCallBack() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap) {
+                    updateMusicArt(musicId, metadata, bitmap, bitmap);
+                    if (mUpdateListener != null) {
+                        mUpdateListener.onMetadataChanged(metadata);
+                    }
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+
+                }
+            });
         }
     }
 

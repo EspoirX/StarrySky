@@ -3,20 +3,17 @@ package com.lzx.starrysky;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.lzx.starrysky.control.StarrySkyPlayerControl;
-import com.lzx.starrysky.notification.NotificationConstructor;
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.playback.player.Playback;
-import com.lzx.starrysky.playback.queue.MediaQueue;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.common.MediaSessionConnection;
 import com.lzx.starrysky.control.PlayerControl;
 import com.lzx.starrysky.playback.download.ExoDownload;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
-import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
+import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
 
 public class StarrySky {
     private static volatile StarrySky sStarrySky;
@@ -26,13 +23,14 @@ public class StarrySky {
     private static Application globalContext;
     private static StarrySkyConfig mStarrySkyConfig;
     private StarrySkyActivityLifecycle mLifecycle;
-    private MediaSessionConnection mConnection;
-    private ILoaderStrategy mImageLoader;
+    private MediaSessionConnection connection;
     private PlayerControl mPlayerControl;
     private StarrySkyRegistry mRegistry;
-    private MediaQueueProvider mMediaQueueProvider;
+    private MediaQueueProvider mediaQueueProvider;
     private MediaResource mediaResource;
     private Playback playback;
+    private IPlaybackManager playbackManager;
+    private ExoDownload exoDownload;
 
     public static void init(Application application) {
         init(application, null);
@@ -45,7 +43,6 @@ public class StarrySky {
         alreadyInit = true;
         globalContext = application;
         mStarrySkyConfig = config;
-        get().registerLifecycle(globalContext);
     }
 
     private void registerLifecycle(Application context) {
@@ -99,42 +96,30 @@ public class StarrySky {
 
     StarrySky(
             MediaSessionConnection connection,
-            ILoaderStrategy imageLoader,
             MediaQueueProvider mediaQueueProvider,
-            MediaQueue mediaQueue,
             Playback playback,
             IPlaybackManager playbackManager,
-            NotificationConstructor constructor,
             ExoDownload exoDownload) {
-        mConnection = connection;
-        mImageLoader = imageLoader;
-        mMediaQueueProvider = mediaQueueProvider;
+        this.connection = connection;
+
+        this.mediaQueueProvider = mediaQueueProvider;
         this.playback = playback;
+        this.playbackManager = playbackManager;
+        this.exoDownload = exoDownload;
         mediaResource = new MediaResource();
 
-        mRegistry = new StarrySkyRegistry();
-        mRegistry.clear();
-        mRegistry
-                .append(ILoaderStrategy.class, mImageLoader)
-                .append(PlayerControl.class, mPlayerControl)
-                .append(MediaQueue.class, mediaQueue)
-                .append(Playback.class, playback)
-                .append(IPlaybackManager.class, playbackManager)
-                .append(NotificationConstructor.class, constructor)
-                .append(ExoDownload.class, exoDownload);
+        registerLifecycle(globalContext);
 
-        mConnection.connect();
+        mRegistry = new StarrySkyRegistry(mLifecycle);
+
+        connection.connect();
     }
 
     public MediaSessionConnection getConnection() {
-        return mConnection;
+        return connection;
     }
 
-    public ILoaderStrategy getImageLoader() {
-        return mImageLoader;
-    }
-
-    public PlayerControl getPlayerControl() {
+    private PlayerControl getPlayerControl() {
         if (mPlayerControl == null) {
             return new StarrySkyPlayerControl(globalContext);
         }
@@ -150,12 +135,18 @@ public class StarrySky {
     }
 
     public MediaQueueProvider getMediaQueueProvider() {
-        return mMediaQueueProvider;
+        return mediaQueueProvider;
+    }
+
+    IPlaybackManager getPlaybackManager() {
+        return playbackManager;
+    }
+
+    public ExoDownload getExoDownload() {
+        return exoDownload;
     }
 
     public MediaResource getMediaResource() {
         return mediaResource;
     }
-
-
 }

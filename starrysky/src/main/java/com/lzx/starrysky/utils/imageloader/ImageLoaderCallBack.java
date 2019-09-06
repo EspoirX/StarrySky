@@ -3,12 +3,12 @@ package com.lzx.starrysky.utils.imageloader;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
-public interface BitmapCallBack {
+public interface ImageLoaderCallBack {
     void onBitmapLoaded(Bitmap bitmap);
 
-    void onBitmapFailed(Exception e, Drawable errorDrawable);
+    void onBitmapFailed(Drawable errorDrawable);
 
-    class SimperCallback implements BitmapCallBack {
+    class SimperCallback implements ImageLoaderCallBack {
 
         @Override
         public void onBitmapLoaded(Bitmap bitmap) {
@@ -16,7 +16,7 @@ public interface BitmapCallBack {
         }
 
         @Override
-        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+        public void onBitmapFailed(Drawable errorDrawable) {
 
         }
     }

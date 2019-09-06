@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
@@ -25,12 +26,11 @@ import android.widget.RemoteViews;
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.StarrySky;
-import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.utils.NotificationColorUtils;
 import com.lzx.starrysky.notification.utils.NotificationUtils;
-import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
+import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
 import java.util.List;
@@ -413,20 +413,20 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
      * 加载封面
      */
     private void fetchBitmapFromURLAsync(String fetchArtUrl, Notification notification) {
-        ImageLoader.getInstance()
-                .load(fetchArtUrl)
-                .context(mService)
-                .placeholder(R.drawable.default_art)
-                .resize(144,144)
-                .bitmap(new BitmapCallBack.SimperCallback() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap resource) {
-                        super.onBitmapLoaded(resource);
-                        mRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), resource);
-                        mBigRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), resource);
-                        mNotificationManager.notify(NOTIFICATION_ID, notification);
-                    }
-                });
+        ImageLoader imageLoader = StarrySky.get().getRegistry().getImageLoader();
+        imageLoader.load(fetchArtUrl, new ImageLoaderCallBack() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap) {
+                mRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), bitmap);
+                mBigRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), bitmap);
+                mNotificationManager.notify(NOTIFICATION_ID, notification);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+        });
     }
 
     /**

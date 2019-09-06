@@ -50,13 +50,10 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
     private static final int STOP_DELAY = 30000;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
 
-    private StarrySkyRegistry mRegistry;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        mRegistry = StarrySky.get().getRegistry();
-        mPlaybackManager = mRegistry.get(IPlaybackManager.class);
+        mPlaybackManager = StarrySky.get().getPlaybackManager();
         mPlaybackManager.setServiceCallback(this);
         mPlaybackManager.setMetadataUpdateListener(this);
 

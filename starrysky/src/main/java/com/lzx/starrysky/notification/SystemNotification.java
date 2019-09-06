@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
@@ -22,9 +23,10 @@ import android.text.TextUtils;
 
 import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.R;
+import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.notification.factory.INotification;
 import com.lzx.starrysky.notification.utils.NotificationUtils;
-import com.lzx.starrysky.utils.imageloader.BitmapCallBack;
+import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
 
@@ -263,19 +265,19 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
      * 封面加载
      */
     private void fetchBitmapFromURLAsync(String fetchArtUrl, NotificationCompat.Builder notificationBuilder) {
-        ImageLoader.getInstance()
-                .load(fetchArtUrl)
-                .context(mService)
-                .placeholder(R.drawable.default_art)
-                .resize(144,144)
-                .bitmap(new BitmapCallBack.SimperCallback() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap resource) {
-                        super.onBitmapLoaded(resource);
-                        notificationBuilder.setLargeIcon(resource);
-                        mNotificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
-                    }
-                });
+        ImageLoader imageLoader = StarrySky.get().getRegistry().getImageLoader();
+        imageLoader.load(fetchArtUrl, new ImageLoaderCallBack() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap) {
+                notificationBuilder.setLargeIcon(bitmap);
+                mNotificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+        });
     }
 
     /**

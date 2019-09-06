@@ -6,7 +6,7 @@ import android.content.Context;
 import com.lzx.starrysky.control.OnPlayerEventListener;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.NotificationConstructor;
-import com.lzx.starrysky.utils.imageloader.ILoaderStrategy;
+import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 
 import java.util.List;
@@ -37,13 +37,6 @@ public class MusicManager {
         //Empty
     }
 
-    /**
-     * 设置图片加载器
-     */
-    public static void setImageLoader(ILoaderStrategy loader) {
-        ImageLoader.getInstance().setGlobalImageLoader(loader);
-    }
-
     private MusicManager() {
     }
 
@@ -52,8 +45,6 @@ public class MusicManager {
      */
     public void onRelease() {
         clearPlayerEventListener();
-//        sContext = null;
-//        mPlayback = null;
         mConstructor = null;
     }
 
