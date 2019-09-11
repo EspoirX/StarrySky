@@ -2,9 +2,16 @@ package com.lzx.musiclib;
 
 import android.app.Application;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import com.lzx.starrysky.StarrySky;
+import com.lzx.starrysky.StarrySkyBuilder;
+import com.lzx.starrysky.StarrySkyConfig;
+import com.lzx.starrysky.notification.StarrySkyNotificationManager;
+import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
+import com.lzx.starrysky.registry.StarrySkyRegistry;
 
 
 /**
@@ -17,6 +24,28 @@ public class TestApplication extends Application {
     public void onCreate() {
         super.onCreate();
         StarrySky.init(this);
+    }
+
+    private static class TestConfig extends StarrySkyConfig {
+        @Override
+        public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
+            super.applyOptions(context, builder);
+        }
+
+        @Override
+        public void applyMediaValid(@NonNull Context context, StarrySkyRegistry registry) {
+            super.applyMediaValid(context, registry);
+        }
+
+        @Override
+        public StarrySkyNotificationManager.NotificationFactory getNotificationFactory() {
+            return super.getNotificationFactory();
+        }
+
+        @Override
+        public StarrySkyCacheManager.CacheFactory getCacheFactory() {
+            return super.getCacheFactory();
+        }
     }
 
 

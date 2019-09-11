@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.lzx.starrysky.playback.download;
+package com.lzx.starrysky.playback.offline;
 
 import android.app.Notification;
 
@@ -22,7 +22,6 @@ import com.google.android.exoplayer2.offline.DownloadManager.TaskState;
 import com.google.android.exoplayer2.offline.DownloadService;
 import com.google.android.exoplayer2.scheduler.PlatformScheduler;
 import com.google.android.exoplayer2.ui.DownloadNotificationUtil;
-import com.google.android.exoplayer2.util.NotificationUtil;
 import com.google.android.exoplayer2.util.Util;
 import com.lzx.starrysky.R;
 import com.lzx.starrysky.StarrySky;
@@ -36,7 +35,7 @@ public class ExoDownloadService extends DownloadService {
     private static final String CHANNEL_ID = "download_channel";
     private static final int JOB_ID = 1;
     private static final int FOREGROUND_NOTIFICATION_ID = 1;
-    private ExoDownload mExoDownload;
+    private StarrySkyCache mStarrySkyCache;
 
     /**
      * 传入FOREGROUND_NOTIFICATION_ID，是因为这样服务位于前台需要通知，并且要求服务位于前台以确保进程不会被终止
@@ -45,18 +44,20 @@ public class ExoDownloadService extends DownloadService {
     public ExoDownloadService() {
         super(
                 //传入FOREGROUND_NOTIFICATION_ID_NONE，则下载时不会出现通知栏，如果想要通知栏，则传入FOREGROUND_NOTIFICATION_ID
-                ExoDownload.isShowNotificationWhenDownload ?
-                        FOREGROUND_NOTIFICATION_ID :
-                        FOREGROUND_NOTIFICATION_ID_NONE,
+                FOREGROUND_NOTIFICATION_ID_NONE,
                 DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
                 CHANNEL_ID,
                 R.string.exo_download_notification_channel_name);
-        mExoDownload = StarrySky.get().getExoDownload();
+        mStarrySkyCache = StarrySky.get().getRegistry().getStarrySkyCacheManager().getStarrySkyCache(this);
     }
 
     @Override
     protected DownloadManager getDownloadManager() {
-        return mExoDownload.getDownloadManager();
+        if (mStarrySkyCache != null && mStarrySkyCache instanceof ExoCache) {
+            ExoCache cache = (ExoCache) mStarrySkyCache;
+            return cache.getDownloadManager();
+        }
+        throw new IllegalStateException("当前的缓存实现不是 ExoCache 或者 mStarrySkyCache 为 null");
     }
 
     @Override
@@ -78,33 +79,30 @@ public class ExoDownloadService extends DownloadService {
 
     @Override
     protected void onTaskStateChanged(TaskState taskState) {
-        if (!mExoDownload.isShowNotificationWhenDownload()) {
-            return;
-        }
-        if (taskState.action.isRemoveAction) {
-            return;
-        }
-        Notification notification = null;
-        //下载完成时通知栏提示
-        if (taskState.state == TaskState.STATE_COMPLETED) {
-            notification =
-                    DownloadNotificationUtil.buildDownloadCompletedNotification(
-                            /* context= */ this,
-                            R.drawable.exo_controls_play,
-                            CHANNEL_ID,
-                            /* contentIntent= */ null,
-                            Util.fromUtf8Bytes(taskState.action.data));
-        } else if (taskState.state == TaskState.STATE_FAILED) {
-            //下载失败时通知栏提示
-            notification =
-                    DownloadNotificationUtil.buildDownloadFailedNotification(
-                            /* context= */ this,
-                            R.drawable.exo_controls_play,
-                            CHANNEL_ID,
-                            /* contentIntent= */ null,
-                            Util.fromUtf8Bytes(taskState.action.data));
-        }
-        int notificationId = FOREGROUND_NOTIFICATION_ID + 1 + taskState.taskId;
-        NotificationUtil.setNotification(this, notificationId, notification);
+//        if (taskState.action.isRemoveAction) {
+//            return;
+//        }
+//        Notification notification = null;
+//        //下载完成时通知栏提示
+//        if (taskState.state == TaskState.STATE_COMPLETED) {
+//            notification =
+//                    DownloadNotificationUtil.buildDownloadCompletedNotification(
+//                            /* context= */ this,
+//                            R.drawable.exo_controls_play,
+//                            CHANNEL_ID,
+//                            /* contentIntent= */ null,
+//                            Util.fromUtf8Bytes(taskState.action.data));
+//        } else if (taskState.state == TaskState.STATE_FAILED) {
+//            //下载失败时通知栏提示
+//            notification =
+//                    DownloadNotificationUtil.buildDownloadFailedNotification(
+//                            /* context= */ this,
+//                            R.drawable.exo_controls_play,
+//                            CHANNEL_ID,
+//                            /* contentIntent= */ null,
+//                            Util.fromUtf8Bytes(taskState.action.data));
+//        }
+//        int notificationId = FOREGROUND_NOTIFICATION_ID + 1 + taskState.taskId;
+//        NotificationUtil.setNotification(this, notificationId, notification);
     }
 }

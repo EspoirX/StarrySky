@@ -23,7 +23,7 @@
         </service>
 
         <service
-            android:name=".playback.download.ExoDownloadService"
+            android:name=".playback.offline.ExoDownloadService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.lzx.starrysky.downloadService.action.RESTART" />

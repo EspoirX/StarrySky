@@ -10,15 +10,23 @@ public class StarrySkyNotificationManager {
 
     private INotification notification;
     private NotificationFactory factory;
+    private boolean isOpenNotification;
 
-    public StarrySkyNotificationManager(@Nullable NotificationFactory factory) {
-        this.factory = factory != null ? factory : SYSTEM_NOTIFICATION_FACTORY;
+    public StarrySkyNotificationManager(boolean isOpenNotification, @Nullable NotificationFactory factory) {
+        this.isOpenNotification = isOpenNotification;
+        if (isOpenNotification) {
+            this.factory = factory == null ? SYSTEM_NOTIFICATION_FACTORY : factory;
+        }
+    }
+
+    public boolean isOpenNotification() {
+        return isOpenNotification;
     }
 
     public INotification getNotification(MusicService musicService) {
         if (notification == null) {
             synchronized (this) {
-                if (notification == null) {
+                if (notification == null && factory != null) {
                     NotificationConfig config = StarrySky.get().getRegistry().getNotificationConfig();
                     notification = factory.build(musicService, config);
                 }

@@ -3,6 +3,7 @@ package com.lzx.starrysky.registry;
 import com.lzx.starrysky.StarrySkyActivityLifecycle;
 import com.lzx.starrysky.notification.NotificationConfig;
 import com.lzx.starrysky.notification.StarrySkyNotificationManager;
+import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
 import com.lzx.starrysky.utils.delayaction.Valid;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
@@ -12,10 +13,12 @@ public class StarrySkyRegistry {
     private ValidRegistry mValidRegistry;
     private ImageLoaderRegistry mImageLoaderRegistry;
     private NotificationRegistry mNotificationRegistry;
+    private CacheRegistry mCacheRegistry;
 
     public StarrySkyRegistry() {
         mValidRegistry = new ValidRegistry();
         mNotificationRegistry = new NotificationRegistry();
+        mCacheRegistry = new CacheRegistry();
     }
 
     public void initImageLoaderRegistry(StarrySkyActivityLifecycle lifecycle) {
@@ -54,4 +57,11 @@ public class StarrySkyRegistry {
         return mNotificationRegistry.getNotificationManager();
     }
 
+    public void registryStarryCache(StarrySkyCacheManager starrySkyCacheManager){
+        mCacheRegistry.setCacheManager(starrySkyCacheManager);
+    }
+
+    public StarrySkyCacheManager getStarrySkyCacheManager() {
+        return mCacheRegistry.getCacheManager();
+    }
 }

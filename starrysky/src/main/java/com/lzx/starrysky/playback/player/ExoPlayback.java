@@ -34,17 +34,12 @@ import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
 import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.offline.FilteringManifestParser;
-import com.google.android.exoplayer2.offline.StreamKey;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.source.dash.manifest.DashManifestParser;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
-import com.google.android.exoplayer2.source.hls.playlist.DefaultHlsPlaylistParserFactory;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
-import com.google.android.exoplayer2.source.smoothstreaming.manifest.SsManifestParser;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.RandomTrackSelection;
@@ -53,10 +48,9 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.Util;
-import com.lzx.starrysky.playback.download.ExoDownload;
+import com.lzx.starrysky.playback.offline.StarrySkyCache;
+import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
 import com.lzx.starrysky.provider.MediaResource;
-
-import java.util.List;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
@@ -82,20 +76,20 @@ public final class ExoPlayback implements Playback {
     private final Context mContext;
     private boolean mPlayOnFocusGain;
     private Callback mCallback;
-    private final ExoDownload mExoDownload;
     private String mCurrentMediaId;
-
+    private StarrySkyCache mStarrySkyCache;
+    private StarrySkyCacheManager mCacheManager;
     private SimpleExoPlayer mExoPlayer;
     private final ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
 
     private boolean mExoPlayerNullIsStopped = false;
 
-    private DefaultTrackSelector trackSelector;
     private DefaultTrackSelector.Parameters trackSelectorParameters;
 
-    public ExoPlayback(Context context, ExoDownload exoDownload) {
+    public ExoPlayback(Context context,StarrySkyCacheManager cacheManager) {
         this.mContext = context.getApplicationContext();
-        this.mExoDownload = exoDownload;
+        mCacheManager = cacheManager;
+        mStarrySkyCache = mCacheManager.getStarrySkyCache(context);
         trackSelectorParameters = new DefaultTrackSelector.ParametersBuilder().build();
     }
 
@@ -176,10 +170,9 @@ public final class ExoPlayback implements Playback {
             }
             source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
             //缓存歌曲
-            if (mExoDownload.isOpenCache()) {
-                mExoDownload.getDownloadTracker().toggleDownload(mediaId, Uri.parse(source), "");
+            if (mStarrySkyCache != null) {
+                mStarrySkyCache.startCache(mediaId, source, "");
             }
-
             if (mExoPlayer == null) {
                 //轨道选择
                 TrackSelection.Factory trackSelectionFactory;
@@ -196,7 +189,7 @@ public final class ExoPlayback implements Playback {
                 DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(mContext, extensionRendererMode);
 
                 //轨道选择
-                trackSelector = new DefaultTrackSelector(trackSelectionFactory);
+                DefaultTrackSelector trackSelector = new DefaultTrackSelector(trackSelectionFactory);
                 trackSelector.setParameters(trackSelectorParameters);
 
                 DefaultDrmSessionManager<FrameworkMediaCrypto> drmSessionManager = null;
@@ -214,7 +207,7 @@ public final class ExoPlayback implements Playback {
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes, true); //第二个参数能使ExoPlayer自动管理焦点
 
-            DataSource.Factory dataSourceFactory = mExoDownload.buildDataSourceFactory(mContext);
+            DataSource.Factory dataSourceFactory = mCacheManager.buildDataSourceFactory(mContext);
 
             MediaSource mediaSource = buildMediaSource(dataSourceFactory, Uri.parse(source), null);
 
@@ -229,20 +222,11 @@ public final class ExoPlayback implements Playback {
         @C.ContentType int type = Util.inferContentType(uri, overrideExtension);
         switch (type) {
             case C.TYPE_DASH:
-                return new DashMediaSource.Factory(dataSourceFactory)
-                        .setManifestParser(
-                                new FilteringManifestParser<>(new DashManifestParser(), getOfflineStreamKeys(uri)))
-                        .createMediaSource(uri);
+                return new DashMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
             case C.TYPE_SS:
-                return new SsMediaSource.Factory(dataSourceFactory)
-                        .setManifestParser(
-                                new FilteringManifestParser<>(new SsManifestParser(), getOfflineStreamKeys(uri)))
-                        .createMediaSource(uri);
+                return new SsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
             case C.TYPE_HLS:
-                return new HlsMediaSource.Factory(dataSourceFactory)
-                        .setPlaylistParserFactory(
-                                new DefaultHlsPlaylistParserFactory(getOfflineStreamKeys(uri)))
-                        .createMediaSource(uri);
+                return new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
             case C.TYPE_OTHER:
                 boolean isRtmpSource = uri.toString().toLowerCase().startsWith("rtmp://");
                 boolean isFlacSource = uri.toString().toLowerCase().endsWith(".flac");
@@ -259,10 +243,6 @@ public final class ExoPlayback implements Playback {
                 throw new IllegalStateException("Unsupported type: " + type);
             }
         }
-    }
-
-    private List<StreamKey> getOfflineStreamKeys(Uri uri) {
-        return mExoDownload.getDownloadTracker().getOfflineStreamKeys(uri);
     }
 
     @Override

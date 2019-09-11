@@ -19,8 +19,8 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.lzx.starrysky.notification.StarrySkyNotificationManager;
 import com.lzx.starrysky.notification.INotification;
+import com.lzx.starrysky.notification.StarrySkyNotificationManager;
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.playback.manager.PlaybackManager;
 import com.lzx.starrysky.provider.MediaQueueProvider;
@@ -84,7 +84,9 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
 
         StarrySkyNotificationManager manager = StarrySky.get().getRegistry().getNotificationManager();
         notification = manager.getNotification(this);
-        mPlaybackManager.registerNotification(notification);
+        if (notification != null) {
+            mPlaybackManager.registerNotification(notification);
+        }
     }
 
     @Override
@@ -161,7 +163,9 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
      */
     @Override
     public void onNotificationRequired() {
-        notification.startNotification();
+        if (notification != null) {
+            notification.startNotification();
+        }
     }
 
     /**
