@@ -17,12 +17,15 @@
 package com.lzx.starrysky.playback.manager;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.lzx.starrysky.BaseMediaInfo;
 import com.lzx.starrysky.StarrySky;
@@ -34,7 +37,7 @@ import com.lzx.starrysky.playback.queue.MediaQueue;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.registry.ValidRegistry;
-import com.lzx.starrysky.utils.delayaction.DelayAction;
+import com.lzx.starrysky.utils.delayaction.PlayValidManager;
 import com.lzx.starrysky.utils.delayaction.Valid;
 
 
@@ -54,6 +57,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
     private boolean shouldPlayNext = true; //是否可以播放下一首
     private boolean shouldPlayPre = true;  //是否可以播放上一首
     private PlaybackStateCompat.Builder stateBuilder;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     public PlaybackManager(MediaQueue mediaQueue, Playback playback) {
         mMediaQueue = mediaQueue;
@@ -99,17 +103,25 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
     public void handlePlayRequest(boolean isPlayWhenReady) {
         ValidRegistry validRegistry = StarrySky.get().getRegistry().getValidRegistry();
         if (validRegistry.hasValid()) {
-            DelayAction delayAction = DelayAction.getInstance();
-            delayAction.addAction(songInfo -> {
+            PlayValidManager validManager = PlayValidManager.get();
+            validManager.setAction(songInfo -> {
                 BaseMediaInfo mediaInfo = mMediaQueue.songInfoToMediaInfo(songInfo);
-                PlaybackManager.this.handPlayRequestImpl(mediaInfo, isPlayWhenReady);
+                PlaybackManager.this.checkThreadHandPlayRequest(mediaInfo, isPlayWhenReady);
             });
             for (Valid valid : validRegistry.getValids()) {
-                delayAction.addValid(valid != null ? valid : new ValidRegistry.DefaultValid());
+                validManager.addValid(valid != null ? valid : new ValidRegistry.DefaultValid());
             }
-            delayAction.doCall(mMediaQueue.getCurrMediaInfo().getMediaId());
+            validManager.doCall(mMediaQueue.getCurrMediaInfo().getMediaId());
         } else {
-            handPlayRequestImpl(null, isPlayWhenReady);
+            checkThreadHandPlayRequest(null, isPlayWhenReady);
+        }
+    }
+
+    private void checkThreadHandPlayRequest(BaseMediaInfo mediaInfo, boolean isPlayWhenReady) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            mHandler.post(() -> handPlayRequestImpl(mediaInfo, isPlayWhenReady));
+        } else {
+            handPlayRequestImpl(mediaInfo, isPlayWhenReady);
         }
     }
 
@@ -254,6 +266,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
      */
     @Override
     public void onCompletion() {
+        Log.i("xian", "currRepeatMode = " + currRepeatMode);
         updatePlaybackState(false, null);
         //单曲模式(播放当前就结束)
         if (currRepeatMode == PlaybackStateCompatExt.SINGLE_MODE_ONE) {
@@ -261,9 +274,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
         }
         if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
             //顺序播放
-//            shouldPlayNext = mMediaQueue.getCurrentIndex() != mMediaQueue.getCurrentQueueSize() - 1
-//                    && mMediaQueue.skipQueuePosition(1);
-            if (shouldPlayNext) {
+            if (shouldPlayNext && mMediaQueue.skipQueuePosition(1)) {
                 handlePlayRequest(true);
                 mMediaQueue.updateMetadata();
             } else {
@@ -271,13 +282,11 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
             }
         } else if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
             //单曲循环
-            //shouldPlayNext = false;
             mPlayback.setCurrentMediaId("");
             handlePlayRequest(true);
         } else if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
             //列表循环
-            // shouldPlayNext = mMediaQueue.skipQueuePosition(1);
-            if (shouldPlayNext) {
+            if (shouldPlayNext && mMediaQueue.skipQueuePosition(1)) {
                 handlePlayRequest(true);
                 mMediaQueue.updateMetadata();
             } else {

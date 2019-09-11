@@ -13,7 +13,7 @@ import com.lzx.musiclib.R;
 import com.lzx.starrysky.StarrySkyConfig;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
-import com.lzx.starrysky.utils.delayaction.DelayAction;
+import com.lzx.starrysky.utils.delayaction.PlayValidManager;
 import com.lzx.starrysky.utils.delayaction.Valid;
 
 /**
@@ -91,7 +91,7 @@ public class RequestBeforePlayActivity extends AppCompatActivity {
                 //请求完后做自己的操作，这里举例把请求到的url设置给songInfo更新信息
                 songInfo.setSongUrl("http://music.163.com/song/media/outer/url?id=" + songInfo.getSongId() + ".mp3");
                 //调用一下 doCall ，继续执行，才会执行后续的播放操作
-                DelayAction.getInstance().doCall(songInfo);
+                PlayValidManager.get().doCall(songInfo);
             }
         }
     }

@@ -93,6 +93,7 @@ public class PlayDetailActivity extends AppCompatActivity {
             mSeekBar.setSecondaryProgress((int) buffered);
             progress_text.setText(ListPlayAdapter.formatMusicTime(position) + "/" + ListPlayAdapter.formatMusicTime(duration));
             time_text.setText(ListPlayAdapter.formatMusicTime(duration));
+            mListPlayAdapter.notifyDataSetChanged();
         });
         //进度条滑动
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

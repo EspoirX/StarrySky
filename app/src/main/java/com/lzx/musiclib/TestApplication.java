@@ -1,17 +1,21 @@
 package com.lzx.musiclib;
 
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
 
+import com.lzx.musiclib.example.MusicRequest;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.StarrySkyBuilder;
 import com.lzx.starrysky.StarrySkyConfig;
 import com.lzx.starrysky.notification.StarrySkyNotificationManager;
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
+import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
+import com.lzx.starrysky.utils.delayaction.PlayValidManager;
+import com.lzx.starrysky.utils.delayaction.Valid;
 
 
 /**
@@ -23,7 +27,7 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        StarrySky.init(this);
+        StarrySky.init(this, new TestConfig());
     }
 
     private static class TestConfig extends StarrySkyConfig {
@@ -35,6 +39,7 @@ public class TestApplication extends Application {
         @Override
         public void applyMediaValid(@NonNull Context context, StarrySkyRegistry registry) {
             super.applyMediaValid(context, registry);
+            registry.appendValidRegistry(new RequestSongInfoValid());
         }
 
         @Override
@@ -48,17 +53,41 @@ public class TestApplication extends Application {
         }
     }
 
+    public static class RequestSongInfoValid implements Valid {
+        private boolean isRequest;
+        private String mediaId;
+        private MusicRequest mMusicRequest;
 
-    public static String ACTION_PLAY_OR_PAUSE = "ACTION_PLAY_OR_PAUSE";
-    public static String ACTION_NEXT = "ACTION_NEXT";
-    public static String ACTION_PRE = "ACTION_PRE";
-    public static String ACTION_FAVORITE = "ACTION_FAVORITE";
-    public static String ACTION_LYRICS = "ACTION_LYRICS";
+        RequestSongInfoValid() {
+            mMusicRequest = new MusicRequest();
+        }
 
-    private PendingIntent getPendingIntent(String action) {
-        Intent intent = new Intent(action);
-        intent.setClass(this, NotificationReceiver.class);
-        return PendingIntent.getBroadcast(this, 0, intent, 0);
+        @Override
+        public boolean preCheck() {
+            return isRequest;  //是否需要执行 doValid
+        }
+
+        @Override
+        public void doValid(SongInfo songInfo) {
+            if (TextUtils.isEmpty(songInfo.getSongUrl())) {
+                mMusicRequest.getSongInfoDetail(songInfo.getSongId(), songUrl -> {
+                    songInfo.setSongUrl(songUrl); //给songInfo设置Url
+                    Log.i("xian", "---getSongInfoDetail---");
+                    //判断音频是否有改变
+                    boolean mediaHasChanged = !TextUtils.equals(mediaId, songInfo.getSongId());
+                    if (mediaHasChanged) {
+                        mediaId = songInfo.getSongId();
+                    }
+                    isRequest = !mediaHasChanged;
+
+                    PlayValidManager.get().doCall(songInfo);
+                });
+            } else {
+                Log.i("xian", "---doCall---");
+                isRequest = true;
+                PlayValidManager.get().doCall(songInfo);
+            }
+        }
     }
 
 

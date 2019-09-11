@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -86,7 +87,7 @@ public final class ExoPlayback implements Playback {
 
     private DefaultTrackSelector.Parameters trackSelectorParameters;
 
-    public ExoPlayback(Context context,StarrySkyCacheManager cacheManager) {
+    public ExoPlayback(Context context, StarrySkyCacheManager cacheManager) {
         this.mContext = context.getApplicationContext();
         mCacheManager = cacheManager;
         mStarrySkyCache = mCacheManager.getStarrySkyCache(context);
@@ -160,9 +161,9 @@ public final class ExoPlayback implements Playback {
         if (mediaHasChanged) {
             mCurrentMediaId = mediaId;
         }
+        Log.i("xian", "resource = " + resource.getMediaUrl() + " mediaHasChanged = " + mediaHasChanged + " isPlayWhenReady = " + isPlayWhenReady);
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false); // release everything except the player
-//            MediaMetadataCompat track = mMusicProvider.getMusic(resource.getMediaId());
 
             String source = resource.getMediaUrl();//track.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI);
             if (TextUtils.isEmpty(source)) {

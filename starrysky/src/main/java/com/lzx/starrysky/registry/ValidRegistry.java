@@ -1,7 +1,7 @@
 package com.lzx.starrysky.registry;
 
 import com.lzx.starrysky.provider.SongInfo;
-import com.lzx.starrysky.utils.delayaction.DelayAction;
+import com.lzx.starrysky.utils.delayaction.PlayValidManager;
 import com.lzx.starrysky.utils.delayaction.Valid;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class ValidRegistry {
         @Override
         public void doValid(SongInfo songInfo) {
             //empty do
-            DelayAction.getInstance().doCall(songInfo);
+            PlayValidManager.get().doCall(songInfo);
         }
     }
 }

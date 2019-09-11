@@ -1,7 +1,6 @@
 package com.lzx.musiclib.example;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.lzx.starrysky.provider.SongInfo;
@@ -23,32 +22,56 @@ import okhttp3.Response;
 
 public class MusicRequest {
 
-    private OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client;
+
+    public MusicRequest() {
+        OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
+        builder.addInterceptor(chain -> {
+            Request newRequest = chain.request().newBuilder()
+                    .removeHeader("User-Agent")
+                    .addHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:0.9.4)")
+                    .build();
+            return chain.proceed(newRequest);
+        });
+        client = builder.build();
+    }
 
     /**
      * 获取数据
      */
     public void getMusicList(Context context, RequestCallback callback) {
         Request request = new Request.Builder()
-                .url("https://music.163.com/api/playlist/highquality/list?limit=50")
+                .url("http://tingapi.ting.baidu.com/v1/restserver/ting?" +
+                        "format=json" +
+                        "&calback=" +
+                        "&from=webapp_music" +
+                        "&method=baidu.ting.billboard.billList" +
+                        "&type=2" +
+                        "&size=20" +
+                        "&offset=0")
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Toast.makeText(context, "网易云接口请求失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "接口请求失败", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try {
-                    JSONObject object = new JSONObject(response.body().string());
-                    JSONArray array = object.getJSONArray("playlists");
-                    JSONObject jsonObject = array.getJSONObject(1);
-                    if (jsonObject == null) {
-                        return;
+                    String json = response.body().string();
+                    JSONObject jsonObject = new JSONObject(json);
+                    JSONArray jsonArray = jsonObject.getJSONArray("song_list");
+                    List<SongInfo> list = new ArrayList<>();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject object = jsonArray.getJSONObject(i);
+                        SongInfo info = new SongInfo();
+                        info.setSongId(object.getString("song_id"));
+                        info.setSongCover(object.getString("pic_big"));
+                        info.setSongName(object.getString("title"));
+                        list.add(info);
+                        callback.onSuccess(list);
                     }
-                    String playlistId = jsonObject.getString("id");
-                    getPlayList(context, playlistId, callback);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -56,37 +79,25 @@ public class MusicRequest {
         });
     }
 
-    private void getPlayList(Context context, String playlistId, RequestCallback callback) {
+    /**
+     * 获取音频url
+     */
+    public void getSongInfoDetail(String songId, RequestInfoCallback callback) {
         Request request = new Request.Builder()
-                .url("https://music.163.com/api/playlist/detail?id=" + playlistId)
+                .url("http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.play&songid=" + songId)
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Toast.makeText(context, "网易云接口请求失败", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try {
-                    JSONObject jsonObject = new JSONObject(response.body().string()).getJSONObject("result");
-                    JSONObject creator = jsonObject.getJSONObject("creator");
-                    JSONArray tracks = jsonObject.getJSONArray("tracks");
-                    List<SongInfo> list = new ArrayList<>();
-                    for (int i = 0; i < tracks.length(); i++) {
-                        JSONObject object = tracks.getJSONObject(i);
-                        SongInfo info = new SongInfo();
-                        info.setAlbumName(object.optString("name"));
-                        info.setAlbumArtist(object.optString("nickname"));
-                        info.setSongCover(object.optJSONObject("album").optString("picUrl"));
-                        info.setSongId(object.optString("id"));
-                        info.setSongName(object.optString("name"));
-                        info.setDuration(object.optLong("duration"));
-                        info.setSongUrl("http://music.163.com/song/media/outer/url?id=" + info.getSongId() + ".mp3");
-                        list.add(info);
-                    }
-                    Log.i("xian", "list = " + list.size());
-                    callback.onSuccess(list);
+                    JSONObject jsonObject = new JSONObject(response.body().string()).getJSONObject("bitrate");
+                    String url = jsonObject.getString("file_link");
+                    callback.onSuccess(url);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -98,4 +109,7 @@ public class MusicRequest {
         void onSuccess(List<SongInfo> list);
     }
 
+    public interface RequestInfoCallback {
+        void onSuccess(String songUrl);
+    }
 }
