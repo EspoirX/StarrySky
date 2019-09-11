@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.lzx.musiclib.example.MusicRequest;
 import com.lzx.starrysky.StarrySky;
@@ -72,7 +71,6 @@ public class TestApplication extends Application {
             if (TextUtils.isEmpty(songInfo.getSongUrl())) {
                 mMusicRequest.getSongInfoDetail(songInfo.getSongId(), songUrl -> {
                     songInfo.setSongUrl(songUrl); //给songInfo设置Url
-                    Log.i("xian", "---getSongInfoDetail---");
                     //判断音频是否有改变
                     boolean mediaHasChanged = !TextUtils.equals(mediaId, songInfo.getSongId());
                     if (mediaHasChanged) {
@@ -83,9 +81,8 @@ public class TestApplication extends Application {
                     PlayValidManager.get().doCall(songInfo);
                 });
             } else {
-                Log.i("xian", "---doCall---");
                 isRequest = true;
-                PlayValidManager.get().doCall(songInfo);
+                PlayValidManager.get().doAction(songInfo); //直接执行
             }
         }
     }

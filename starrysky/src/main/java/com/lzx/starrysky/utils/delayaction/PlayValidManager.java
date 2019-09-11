@@ -12,7 +12,6 @@ public class PlayValidManager {
     private List<Valid> mValidQueue = new ArrayList<>();
     private Action action;
     private int validIndex = 0;
-    private boolean hasCall;
 
     public static PlayValidManager get() {
         if (playValidManager == null) {
@@ -52,11 +51,14 @@ public class PlayValidManager {
             }
         } else {
             //执行action
-            if (action != null) {
-                action.call(songInfo);
-                hasCall = true;
-                validIndex = 0;
-            }
+            doAction(songInfo);
+        }
+    }
+
+    public void doAction(SongInfo songInfo) {
+        if (action != null) {
+            action.call(songInfo);
+            validIndex = 0;
         }
     }
 

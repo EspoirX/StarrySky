@@ -105,6 +105,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
         if (validRegistry.hasValid()) {
             PlayValidManager validManager = PlayValidManager.get();
             validManager.setAction(songInfo -> {
+                Log.i("xian", "do action");
                 BaseMediaInfo mediaInfo = mMediaQueue.songInfoToMediaInfo(songInfo);
                 PlaybackManager.this.checkThreadHandPlayRequest(mediaInfo, isPlayWhenReady);
             });
@@ -266,7 +267,6 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
      */
     @Override
     public void onCompletion() {
-        Log.i("xian", "currRepeatMode = " + currRepeatMode);
         updatePlaybackState(false, null);
         //单曲模式(播放当前就结束)
         if (currRepeatMode == PlaybackStateCompatExt.SINGLE_MODE_ONE) {
