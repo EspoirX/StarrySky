@@ -25,7 +25,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import com.lzx.starrysky.BaseMediaInfo;
 import com.lzx.starrysky.StarrySky;
@@ -58,6 +57,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
     private boolean shouldPlayPre = true;  //是否可以播放上一首
     private PlaybackStateCompat.Builder stateBuilder;
     private Handler mHandler = new Handler(Looper.getMainLooper());
+
 
     public PlaybackManager(MediaQueue mediaQueue, Playback playback) {
         mMediaQueue = mediaQueue;
@@ -105,7 +105,6 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
         if (validRegistry.hasValid()) {
             PlayValidManager validManager = PlayValidManager.get();
             validManager.setAction(songInfo -> {
-                Log.i("xian", "do action");
                 BaseMediaInfo mediaInfo = mMediaQueue.songInfoToMediaInfo(songInfo);
                 PlaybackManager.this.checkThreadHandPlayRequest(mediaInfo, isPlayWhenReady);
             });
@@ -374,19 +373,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
 
         @Override
         public void onSkipToNext() {
-//            if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-//                //顺序播放
-//                shouldPlayNext = mMediaQueue.getCurrentIndex() != mMediaQueue.getCurrentQueueSize() - 1
-//                        && mMediaQueue.skipQueuePosition(1);
-//            } else {
-//                shouldPlayNext = mMediaQueue.skipQueuePosition(1);
-//            }
             if (shouldPlayNext) {
-                //当前的媒体如果是在倒数第二首点击到最后一首的时候，如果不重新判断，会用于为 true
-//                if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-//                    shouldPlayNext = mMediaQueue.getCurrentIndex() != mMediaQueue.getCurrentQueueSize() - 1;
-//                }
-//                shouldPlayPre = true;
                 if (mMediaQueue.skipQueuePosition(1)) {
                     handlePlayRequest(true);
                     mMediaQueue.updateMetadata();
@@ -396,17 +383,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
 
         @Override
         public void onSkipToPrevious() {
-//            if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-//                shouldPlayPre = mMediaQueue.getCurrentIndex() != 0 && mMediaQueue.skipQueuePosition(-1);
-//            } else {
-//                shouldPlayPre = mMediaQueue.skipQueuePosition(-1);
-//            }
             if (shouldPlayPre) {
-                //当前的媒体如果是在第二首点击到上一首的时候，如果不重新判断，会用于为 true
-//                if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-//                    shouldPlayPre = mMediaQueue.getCurrentIndex() != 0;
-//                }
-//                shouldPlayNext = true;
                 if (mMediaQueue.skipQueuePosition(-1)) {
                     handlePlayRequest(true);
                     mMediaQueue.updateMetadata();
@@ -447,13 +424,6 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
             super.onSetRepeatMode(repeatMode);
             currRepeatMode = repeatMode;
             mServiceCallback.onRepeatModeUpdated(repeatMode);
-//            if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-//                shouldPlayNext = mMediaQueue.getCurrentIndex() != mMediaQueue.getCurrentQueueSize() - 1;
-//                shouldPlayPre = mMediaQueue.getCurrentIndex() != 0;
-//            } else {
-//                shouldPlayNext = true;
-//                shouldPlayPre = true;
-//            }
             updatePlaybackState(true, null);  //更新状态
         }
 

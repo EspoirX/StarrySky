@@ -33,6 +33,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
         songList = new ArrayList<>();
     }
 
+
     @Override
     public List<BaseMediaInfo> getMediaList() {
         return mediaList;

@@ -62,7 +62,7 @@ public class StarrySkyBuilder {
         MediaQueueProviderSurface surface = new MediaQueueProviderSurface(mMediaQueueProvider);
 
         if (mMediaQueue == null) {
-            mMediaQueue = new MediaQueueManager(surface, context);
+            mMediaQueue = new MediaQueueManager(surface);
         }
 
         return new StarrySky(

@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -161,7 +160,7 @@ public final class ExoPlayback implements Playback {
         if (mediaHasChanged) {
             mCurrentMediaId = mediaId;
         }
-        Log.i("xian", "resource = " + resource.getMediaUrl() + " mediaHasChanged = " + mediaHasChanged + " isPlayWhenReady = " + isPlayWhenReady);
+        //Log.i("xian", "resource = " + resource.getMediaUrl() + " mediaHasChanged = " + mediaHasChanged + " isPlayWhenReady = " + isPlayWhenReady);
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false); // release everything except the player
 

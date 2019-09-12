@@ -2,7 +2,7 @@ package com.lzx.starrysky;
 
 import android.support.annotation.Nullable;
 
-public class BaseMediaInfo {
+public class BaseMediaInfo implements Cloneable {
     private String mediaId;
     private String mediaUrl;
     private String mediaCover;
@@ -57,5 +57,17 @@ public class BaseMediaInfo {
         } else {
             return false;
         }
+    }
+
+    @Override
+    protected Object clone() {
+        Object obj = null;
+        //调用Object类的clone方法，返回一个Object实例
+        try {
+            obj = super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return obj;
     }
 }

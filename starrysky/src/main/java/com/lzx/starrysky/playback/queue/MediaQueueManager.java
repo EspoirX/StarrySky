@@ -16,7 +16,6 @@
 
 package com.lzx.starrysky.playback.queue;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -32,7 +31,7 @@ import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,16 +44,11 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
     private int mCurrentIndex;
     private MediaResource mMediaResource;
     private MediaQueueProvider.MetadataUpdateListener mUpdateListener;
-    private Context mContext;
-    private List<BaseMediaInfo> mShuffledMediaList = new ArrayList<>();
-    private int currMode = NORMAL_MODE;
-    private final static int NORMAL_MODE = 0;
-    private final static int SHUFFLED_MODE = 1;
+    private List<BaseMediaInfo> backupMediaList;
 
-    public MediaQueueManager(MediaQueueProvider provider, Context context) {
+    public MediaQueueManager(MediaQueueProvider provider) {
         super(provider);
         mCurrentIndex = 0;
-        mContext = context;
     }
 
     @Override
@@ -74,19 +68,6 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
     @Override
     public void updateMediaList(List<BaseMediaInfo> mediaInfoList) {
         super.updateMediaList(mediaInfoList);
-    }
-
-
-    @Override
-    public List<BaseMediaInfo> getMediaList() {
-        if (currMode == NORMAL_MODE) {
-            return super.getMediaList();
-        } else {
-            mShuffledMediaList.clear();
-            mShuffledMediaList.addAll(super.getMediaList());
-            Collections.shuffle(mShuffledMediaList);
-            return mShuffledMediaList;
-        }
     }
 
     @Override
@@ -236,11 +217,21 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
 
     @Override
     public void setShuffledMode() {
-        currMode = SHUFFLED_MODE;
+        List<BaseMediaInfo> mediaInfos = getMediaList();
+        //通过深拷贝备份一个 backupMediaList
+        BaseMediaInfo[] backupArray = new BaseMediaInfo[mediaInfos.size()];
+        mediaInfos.toArray(backupArray);
+        //打乱顺序
+        Collections.shuffle(mediaInfos);
+        //打乱顺序要在这个前面
+        backupMediaList = Arrays.asList(backupArray);
     }
 
     @Override
     public void setNormalMode() {
-        currMode = NORMAL_MODE;
+        //恢复备份
+        if (backupMediaList != null) {
+            updateMediaList(backupMediaList);
+        }
     }
 }

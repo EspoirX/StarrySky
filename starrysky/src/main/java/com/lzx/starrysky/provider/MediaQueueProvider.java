@@ -88,5 +88,4 @@ public interface MediaQueueProvider {
 
         void onQueueUpdated(List<MediaSessionCompat.QueueItem> newQueue);
     }
-
 }

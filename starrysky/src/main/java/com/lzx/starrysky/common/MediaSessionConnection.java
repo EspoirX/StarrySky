@@ -12,6 +12,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 
 import com.lzx.starrysky.MusicManager;
 import com.lzx.starrysky.StarrySky;
@@ -216,6 +217,9 @@ public class MediaSessionConnection {
             }
             playbackStateCompat.postValue(state);
             String songId = getNowPlaying().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+            if (TextUtils.isEmpty(songId)) {
+                return;
+            }
             //状态监听
             CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = MusicManager.getInstance().getPlayerEventListeners();
             switch (state.getState()) {
