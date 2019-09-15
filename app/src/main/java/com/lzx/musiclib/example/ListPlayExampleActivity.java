@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lzx.musiclib.R;
 import com.lzx.starrysky.StarrySky;
@@ -67,6 +68,7 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                 case PlaybackStage.ERROR:
                     mTimerTask.stopToUpdateProgress();
                     playPause.setText("播放/暂停");
+                    Toast.makeText(this, playbackStage.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;

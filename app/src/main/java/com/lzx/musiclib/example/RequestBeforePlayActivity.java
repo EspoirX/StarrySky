@@ -7,13 +7,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.lzx.musiclib.R;
 import com.lzx.starrysky.StarrySkyConfig;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
-import com.lzx.starrysky.utils.delayaction.PlayValidManager;
 import com.lzx.starrysky.utils.delayaction.Valid;
 
 /**
@@ -70,28 +70,25 @@ public class RequestBeforePlayActivity extends AppCompatActivity {
 
         private static class RequestUrlValid implements Valid {
             Context context;
-            boolean isGetUrl; //是否已经得到url
 
             RequestUrlValid(Context context) {
                 this.context = context;
             }
 
             @Override
-            public boolean preCheck() {
-                return isGetUrl;
-            }
-
-            @Override
-            public void doValid(SongInfo songInfo) {
+            public void doValid(SongInfo songInfo, ValidCallback callback) {
                 //TODO 这里执行验证，该方法在播放前执行，例如这里可以请求接口拿到 url
-                //模拟接口请求成功
-                Toast.makeText(context, "请求接口成功", Toast.LENGTH_SHORT).show();
-                //请求成功后修改一下状态，告诉模型请求成功了，不需要再请求
-                isGetUrl = true;
-                //请求完后做自己的操作，这里举例把请求到的url设置给songInfo更新信息
-                songInfo.setSongUrl("http://music.163.com/song/media/outer/url?id=" + songInfo.getSongId() + ".mp3");
-                //调用一下 doCall ，继续执行，才会执行后续的播放操作
-                PlayValidManager.get().doCall(songInfo);
+                if (TextUtils.isEmpty(songInfo.getSongUrl())) {
+                    //模拟接口请求成功
+                    Toast.makeText(context, "请求接口成功", Toast.LENGTH_SHORT).show();
+                    //请求完后做自己的操作，这里举例把请求到的url设置给songInfo更新信息
+                    songInfo.setSongUrl("http://music.163.com/song/media/outer/url?id=" + songInfo.getSongId() + ".mp3");
+                    //调用一下 doCall ，继续执行，才会执行后续的播放操作
+                    callback.finishValid();
+                } else {
+                    //如果有 url，直接执行 action
+                    callback.doActionDirect();
+                }
             }
         }
     }

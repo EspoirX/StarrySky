@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Process;
+import android.util.Log;
 
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +33,7 @@ public class StarrySkyUtils {
     }
 
     public static boolean isPatchProcess(Context context) {
-        ActivityManager am = (ActivityManager)context.getSystemService(ACTIVITY_SERVICE);
+        ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> runningApp = am.getRunningAppProcesses();
         if (runningApp == null) {
             return false;
@@ -45,9 +46,13 @@ public class StarrySkyUtils {
                     return false;
                 }
 
-                info = (ActivityManager.RunningAppProcessInfo)var3.next();
-            } while(info.pid != Process.myPid());
+                info = (ActivityManager.RunningAppProcessInfo) var3.next();
+            } while (info.pid != Process.myPid());
             return info.processName.endsWith("patch");
         }
+    }
+
+    public static void log(String msg) {
+        Log.i("StarrySky", msg);
     }
 }

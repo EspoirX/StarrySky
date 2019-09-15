@@ -104,18 +104,23 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
         ValidRegistry validRegistry = StarrySky.get().getRegistry().getValidRegistry();
         if (validRegistry.hasValid()) {
             PlayValidManager validManager = PlayValidManager.get();
+
             validManager.setAction(songInfo -> {
                 BaseMediaInfo mediaInfo = mMediaQueue.songInfoToMediaInfo(songInfo);
                 PlaybackManager.this.checkThreadHandPlayRequest(mediaInfo, isPlayWhenReady);
             });
+
             for (Valid valid : validRegistry.getValids()) {
                 validManager.addValid(valid != null ? valid : new ValidRegistry.DefaultValid());
             }
+
             validManager.doCall(mMediaQueue.getCurrMediaInfo().getMediaId());
         } else {
             checkThreadHandPlayRequest(null, isPlayWhenReady);
         }
     }
+
+
 
     private void checkThreadHandPlayRequest(BaseMediaInfo mediaInfo, boolean isPlayWhenReady) {
         if (Looper.myLooper() != Looper.getMainLooper()) {

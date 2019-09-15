@@ -51,6 +51,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.lzx.starrysky.playback.offline.StarrySkyCache;
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
 import com.lzx.starrysky.provider.MediaResource;
+import com.lzx.starrysky.utils.StarrySkyUtils;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
@@ -160,12 +161,18 @@ public final class ExoPlayback implements Playback {
         if (mediaHasChanged) {
             mCurrentMediaId = mediaId;
         }
-        //Log.i("xian", "resource = " + resource.getMediaUrl() + " mediaHasChanged = " + mediaHasChanged + " isPlayWhenReady = " + isPlayWhenReady);
+        StarrySkyUtils.log("Playback# resource is empty = " + TextUtils.isEmpty(resource.getMediaUrl()) +
+                " mediaHasChanged = " + mediaHasChanged +
+                " isPlayWhenReady = " + isPlayWhenReady);
+        StarrySkyUtils.log("---------------------------------------");
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false); // release everything except the player
 
-            String source = resource.getMediaUrl();//track.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI);
+            String source = resource.getMediaUrl();
             if (TextUtils.isEmpty(source)) {
+                if (mCallback != null) {
+                    mCallback.onError("播放 url 为空");
+                }
                 return;
             }
             source = source.replaceAll(" ", "%20"); // Escape spaces for URLs

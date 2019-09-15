@@ -1,7 +1,7 @@
 package com.lzx.starrysky.registry;
 
 import com.lzx.starrysky.provider.SongInfo;
-import com.lzx.starrysky.utils.delayaction.PlayValidManager;
+import com.lzx.starrysky.utils.StarrySkyUtils;
 import com.lzx.starrysky.utils.delayaction.Valid;
 
 import java.util.ArrayList;
@@ -28,14 +28,9 @@ public class ValidRegistry {
     public static class DefaultValid implements Valid {
 
         @Override
-        public boolean preCheck() {
-            return false;
-        }
-
-        @Override
-        public void doValid(SongInfo songInfo) {
-            //empty do
-            PlayValidManager.get().doCall(songInfo);
+        public void doValid(SongInfo songInfo, ValidCallback callback) {
+            StarrySkyUtils.log("执行了 DefaultValid");
+            callback.finishValid();
         }
     }
 }

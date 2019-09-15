@@ -3,12 +3,14 @@ package com.lzx.musiclib.example;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lzx.musiclib.R;
@@ -27,6 +29,8 @@ public class PlayDetailActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private ListPlayAdapter mListPlayAdapter;
     private TimerTaskManager mTimerTask;
+    private TextView playMode;
+    private boolean isSettingShuffleMode = false;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -39,6 +43,7 @@ public class PlayDetailActivity extends AppCompatActivity {
         progress_text = findViewById(R.id.progress_text);
         time_text = findViewById(R.id.time_text);
         mRecyclerView = findViewById(R.id.recycle_view);
+        playMode = findViewById(R.id.play_mode);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mListPlayAdapter = new ListPlayAdapter(this);
@@ -75,6 +80,7 @@ public class PlayDetailActivity extends AppCompatActivity {
                     break;
                 case PlaybackStage.ERROR:
                     mTimerTask.stopToUpdateProgress();
+                    Toast.makeText(this, playbackStage.getErrorMessage(), Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -110,6 +116,27 @@ public class PlayDetailActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 StarrySky.with().seekTo(seekBar.getProgress());
+            }
+        });
+
+        playMode.setOnClickListener(v -> {
+            int repeatMode = StarrySky.with().getRepeatMode();
+            int shuffleMode = StarrySky.with().getShuffleMode();
+            if (repeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+                StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+                playMode.setText("单曲循环"); //当前是顺序播放，设置为单曲循环
+            } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
+                StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+                playMode.setText("列表循环"); //当前是单曲循环，设置为列表循环
+            } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL && !isSettingShuffleMode) {
+                playMode.setText("随机播放"); //当前是列表循环，设置为随机播放
+                StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+                isSettingShuffleMode = true;
+            } else if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
+                playMode.setText("顺序播放");  //当前是随机播放，设置为顺序播放
+                StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+                StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
+                isSettingShuffleMode = false;
             }
         });
 

@@ -13,7 +13,6 @@ import com.lzx.starrysky.notification.StarrySkyNotificationManager;
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
-import com.lzx.starrysky.utils.delayaction.PlayValidManager;
 import com.lzx.starrysky.utils.delayaction.Valid;
 
 
@@ -53,7 +52,6 @@ public class TestApplication extends Application {
     }
 
     public static class RequestSongInfoValid implements Valid {
-        private boolean isRequest;
         private String mediaId;
         private MusicRequest mMusicRequest;
 
@@ -62,27 +60,14 @@ public class TestApplication extends Application {
         }
 
         @Override
-        public boolean preCheck() {
-            return isRequest;  //是否需要执行 doValid
-        }
-
-        @Override
-        public void doValid(SongInfo songInfo) {
+        public void doValid(SongInfo songInfo, ValidCallback callback) {
             if (TextUtils.isEmpty(songInfo.getSongUrl())) {
                 mMusicRequest.getSongInfoDetail(songInfo.getSongId(), songUrl -> {
                     songInfo.setSongUrl(songUrl); //给songInfo设置Url
-                    //判断音频是否有改变
-                    boolean mediaHasChanged = !TextUtils.equals(mediaId, songInfo.getSongId());
-                    if (mediaHasChanged) {
-                        mediaId = songInfo.getSongId();
-                    }
-                    isRequest = !mediaHasChanged;
-
-                    PlayValidManager.get().doCall(songInfo);
+                    callback.finishValid();
                 });
             } else {
-                isRequest = true;
-                PlayValidManager.get().doAction(songInfo); //直接执行
+                callback.doActionDirect();
             }
         }
     }

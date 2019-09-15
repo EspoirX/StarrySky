@@ -2,6 +2,7 @@ package com.lzx.starrysky.utils.delayaction;
 
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.provider.SongInfo;
+import com.lzx.starrysky.utils.StarrySkyUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ public class PlayValidManager {
     private List<Valid> mValidQueue = new ArrayList<>();
     private Action action;
     private int validIndex = 0;
+    private boolean doCallAfterAction = true;
 
     public static PlayValidManager get() {
         if (playValidManager == null) {
@@ -25,40 +27,59 @@ public class PlayValidManager {
     }
 
     public void addValid(Valid valid) {
-        //只添加无效的，验证不通过的
-        if (valid.preCheck()) {
-            return;
-        }
         if (!mValidQueue.contains(valid)) {
             mValidQueue.add(valid);
         }
     }
 
     public PlayValidManager setAction(Action action) {
-        this.action = action;
+        if (action != null) {
+            this.action = action;
+        }
         return this;
     }
 
+    public List<Valid> getValidQueue() {
+        return mValidQueue;
+    }
+
     public void doCall(SongInfo songInfo) {
+        StarrySkyUtils.log("doCall#validIndex = " + validIndex);
         //执行验证
         if (validIndex < mValidQueue.size()) {
             Valid valid = mValidQueue.get(0);
             if (valid != null) {
-                if (!valid.preCheck()) {
-                    valid.doValid(songInfo);
-                }
-                validIndex++;
+                valid.doValid(songInfo, new Valid.ValidCallback() {
+                    @Override
+                    public void finishValid() {
+                        validIndex++;
+                        StarrySkyUtils.log("doCall#  validIndex++ ");
+                        doCall(songInfo);
+                    }
+
+                    @Override
+                    public void doActionDirect() {
+                        StarrySkyUtils.log("直接执行 Action");
+                        doAction(songInfo); //直接执行
+                    }
+                });
             }
         } else {
             //执行action
-            doAction(songInfo);
+            doAction(songInfo, true);
         }
     }
 
     public void doAction(SongInfo songInfo) {
+        doAction(songInfo, false);
+    }
+
+    private void doAction(SongInfo songInfo, boolean doCallAfterAction) {
         if (action != null) {
+            this.doCallAfterAction = doCallAfterAction;
             action.call(songInfo);
             validIndex = 0;
+            StarrySkyUtils.log("doAction#validIndex = " + validIndex);
         }
     }
 
@@ -67,6 +88,9 @@ public class PlayValidManager {
         doCall(songInfo);
     }
 
+    public void resetValidIndex() {
+        validIndex = 0;
+    }
 
     public void clear() {
         validIndex = 0;
