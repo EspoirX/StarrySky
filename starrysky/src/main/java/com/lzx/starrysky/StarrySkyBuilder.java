@@ -16,12 +16,9 @@ public class StarrySkyBuilder {
     private MediaQueueProvider mMediaQueueProvider;
     private MediaQueue mMediaQueue;
 
-    private boolean isShowNotificationWhenDownload;
-
     boolean isOpenNotification;
     boolean isOpenCache;
     String cacheDestFileDir;
-
 
     public void setConnection(MediaSessionConnection connection) {
         mConnection = connection;
@@ -37,10 +34,6 @@ public class StarrySkyBuilder {
 
     public void setOpenCache(boolean openCache) {
         isOpenCache = openCache;
-    }
-
-    public void setShowNotificationWhenDownload(boolean showNotificationWhenDownload) {
-        isShowNotificationWhenDownload = showNotificationWhenDownload;
     }
 
     public void setCacheDestFileDir(String cacheDestFileDir) {

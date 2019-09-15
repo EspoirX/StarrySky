@@ -92,7 +92,7 @@ public class StarrySky {
         StarrySky starrySky = builder.build(context);
 
         if (mStarrySkyConfig != null) {
-            mStarrySkyConfig.applyMediaValid(context, starrySky.mRegistry);
+            mStarrySkyConfig.applyStarrySkyRegistry(context, starrySky.mRegistry);
         }
 
         //注册通知栏

@@ -1,9 +1,6 @@
 # 集成 StarrySky
 
-**第一步**
-
-StarrySky 的初始化方法在 MusicManager 类中。
-首先在你的 Application 中调用 initMusicManager 方法并传入上下文即可。
+StarrySky 的初始化方法在 StarrySky 类中。集成它非常简单，一句话即可：
 
 ```java
 public class TestApplication extends Application {
@@ -11,85 +8,198 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        MusicManager.initMusicManager(this);
+        StarrySky.init(this);
     }
 }
 ```
 
-MusicManager 类是一个单例，initMusicManager 方法只是给里面需要用到的 Context 赋值而已，所以不必担心会有什么影响性能的问题。
+集成完成了! ^_^
 
-**第二步**
 
-使用 StarrySky 的时候需要先连接到后台处理服务，任何方法的调用都是连接成功后才会有效。这里提供了一个连接管理类 MediaSessionConnection，里面封装
-了连接服务的相关方法，可以方便使用：
+# StarrySky 相关配置
+
+StarrySky 是一个高扩展性的音频集成框架，你可以自定义实现各种功能，下面一一介绍。
+
+1. 自定义内部的图片加载器
+2. 自定义实现通知栏
+3. 自定义缓存实现
+4. 自定义音频数据管理
+5. 自定义播放队列管理
+6. 自定义播放器实现
+7. 支持播放前操作（比如播放前要先请求接口获取 url 再播放等）
+
+StarrySky 的配置相关信息都在 StarrySkyConfig 这个类里面，如果需要添加相关配置，只需要新建一个类，并继承它。然后
+实现各种配置，在初始化时添加到第二个参数中即可，例如：
 
 ```java
-public class MainActivity extends AppCompatActivity {
+public class TestApplication extends Application {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        MediaSessionConnection.getInstance().connect();
+    public void onCreate() {
+        super.onCreate();
+        StarrySky.init(this, new TestConfig());
     }
 
-  
+    private static class TestConfig extends StarrySkyConfig {
+        //...
+    }
+}
+```
+
+现在可能有点懵逼，现在开始一一说明：
+
+## 1. 自定义内部的图片加载器
+
+StarrySky 内部是需要图片加载的，主要用在音频封面的加载，默认的实现是基于 HttpURLConnection 去下载的，默认的实现类
+是 DefaultImageLoader。
+
+要自己实现图片加载的方法，首先是要实现 ImageLoaderStrategy 接口，这个接口提供图片加载信息的，比如我要用 Glide 去
+替代默认的图片加载，可以这么写：
+
+```java
+public class GlideLoader implements ImageLoaderStrategy {
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        MediaSessionConnection.getInstance().disconnect();
+    public void loadImage(Context context, String url, ImageLoaderCallBack callBack) {
+        Glide.with(context).asBitmap().load(url)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        callBack.onBitmapLoaded(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        super.onLoadFailed(errorDrawable);
+                        callBack.onBitmapFailed(errorDrawable);
+                    }
+                });
     }
 }
 ```
 
-MediaSessionConnection 是一个单例，connect() 是连接方法，disconnect() 是断开连接方法，
-可以按照实际需要调用。MediaSessionConnection 里面还有其他一些方法，大家可以[点开查看](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/manager/MediaSessionConnection.java)，
-里面都有注释说明。
+可以看到，实现 ImageLoaderStrategy 接口，需要实现 loadImage 方法，loadImage 方法有三个参，分别是上下文，图片链接和一个请求回调。
+上下文 context 的来源是初始化时传入的 Application，url 即是图片的 url，callback 有两个回调方法：
 
-**第三步**
-
-一些权限问题，比如你要使用缓存功能，那么就会有一些读写权限申请的问题，因为 StarrySky 里面没有做申请这些权限的逻辑，所以在使用的过程中如果有必要，
-请自己灵活把握申请这些权限。
-
-
-完成了这三步，StarrySky 就已经成功集成到你的项目里面了。
-
-# 自定义图片加载器
-
-StarrySky 中封面图片的加载，通知栏中封面的加载都需要图片加载器，图片加载不限定固定的框架，可以由自己定义，步骤如下：
-
-**第一步**
-
-实现 [ILoaderStrategy](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/utils/imageloader/ILoaderStrategy.java) 接口，实现 loadImage 方法，loadImage 就是你的图片加载方法：
 ```java
-public interface ILoaderStrategy {
-    void loadImage(LoaderOptions options);
+public interface ImageLoaderCallBack {
+    void onBitmapLoaded(Bitmap bitmap);
+
+    void onBitmapFailed(Drawable errorDrawable);
 }
 ```
 
-其中参数 [LoaderOptions](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/utils/imageloader/LoaderOptions.java) 是图片加载所需要的参数，你可以通过它拿到图片加载需要用到的东西：
+图片加载成功时回调 onBitmapLoaded ，需要传入一个 bitmap。失败是传入 onBitmapFailed。内部有对参数做非空判断，所以 null 时也不会蹦。
+
+实现好自己的图片加载后，怎么设置给 StarrySky 呢，这时候需要用到上面说过的 StarrySkyConfig，创建一个类继承 StarrySkyConfig，并重写
+applyStarrySkyRegistry 方法：
 
 ```java
-public class LoaderOptions {
-    public Context mContext; //上下文
-    public int placeholderResId; //占位图
-    public int targetWidth; //图片宽
-    public int targetHeight; //图片高
-    public BitmapCallBack bitmapCallBack; //返回 bitmap 回调
-    public String url; //图片连接
+private static class TestConfig extends StarrySkyConfig {
+
+    @Override
+    public void applyStarrySkyRegistry(@NonNull Context context, StarrySkyRegistry registry) {
+        super.applyStarrySkyRegistry(context, registry);
+        registry.registryImageLoader(new GlideLoader());
+    }
 }
 ```
 
-如果你想用 Glide 去加载，可以参考项目中的 [GlideLoader](https://github.com/EspoirX/StarrySky/blob/StarrySkyJava/app/src/main/java/com/lzx/musiclib/imageloader/GlideLoader.java) 的写法，如果你是其他框架，只要实现 loadImage 方法即可。
+通过 StarrySkyRegistry#registryImageLoader 方法注册刚刚实现好的 GlideLoader 到 StarrySky 即可。
 
-**第二步**
+applyStarrySkyRegistry 是注册组件的方法，StarrySkyRegistry 是注册器。
 
-在 Application 中 调用 setImageLoader 方法设置自定义的图片加载器即可。
+
+## 2. 自定义实现通知栏
+
+通知栏可以分为系统通知栏和自定通知栏，StarrySky 内部默认实现了这两种通知栏，同时也支持用户自己去实现。
+
+
+### NotificationConfig 通知栏配置类
+
+[NotificationConstructor](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/notification/NotificationConstructor.java)
+是通知栏构造者，也是配置类，里面可以配置很多参数去对应配置通知栏的相关操作：
+
+| 变量名  |   功能  |
+| :--------     |   :----------   |
+| String targetClass | 通知栏点击转跳界面，传入的是类的全路径 |
+| String contentTitle       | 通知栏标题    |
+| String contentText        | 通知栏内容    |
+| PendingIntent nextIntent  |  下一首按钮 PendingIntent,如果想自己实现下一首按钮点击，可设置这个 |
+| PendingIntent preIntent      |  上一首按钮 PendingIntent,功能同上    |
+| PendingIntent closeIntent       | 关闭按钮 PendingIntent,功能同上，closeIntent 的默认实现是 stopMusic()  |
+| PendingIntent playIntent        | 播放按钮 PendingIntent,功能同上    |
+| PendingIntent pauseIntent   | 暂停按钮 PendingIntent,功能同上    |
+| PendingIntent playOrPauseIntent    | 播放/暂停按钮 PendingIntent,功能同上    |
+| PendingIntent stopIntent         |  停止按钮 PendingIntent,功能同上    |
+| PendingIntent downloadIntent        | 下载按钮 PendingIntent    |
+| PendingIntent favoriteIntent    | 喜欢或收藏按钮 PendingIntent    |
+| PendingIntent lyricsIntent  | 桌面歌词按钮 PendingIntent，同 喜欢或收藏按钮    |
+
+在系统通知栏中，有默认实现的 PendingIntent 是 nextIntent，preIntent，playIntent，pauseIntent，其他都没有默认实现。
+在自定义通知栏中，有默认实现的 PendingIntent 是 nextIntent，preIntent，playIntent，pauseIntent，playOrPauseIntent，closeIntent，
+其他都没有默认实现。如果你的通知栏中还有其他按钮，则需要自己实现点击事件。
+
+| 变量名  |   功能  |
+| :--------     |   :----------   |
+|pendingIntentMode  |  设置通知栏点击模式，有三种：MODE_ACTIVITY，MODE_BROADCAST，MODE_SERVICE。分别对应 PendingIntent.getActivity()，PendingIntent.getBroadcast()，PendingIntent.getService()，默认是 PendingIntent.getActivity()  |
+|skipPreviousDrawableRes | 在系统通知栏中，上一首按钮的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_skip_previous_white_24dp.png)    |
+|skipNextDrawableRes |在系统通知栏中，下一首按钮的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_skip_next_white_24dp.png)    |
+|pauseDrawableRes |在系统通知栏中，正在播放时，播放按钮显示的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_pause_white_24dp.png) |
+|playDrawableRes |在系统通知栏中，暂停状态时，播放按钮显示的 drawable res，如果不传，则使用默认的 [drawable res](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_play_arrow_white_24dp.png)|
+|smallIconRes |对应通知栏的 smallIcon，不传则使用默认的 [smallIcon](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/res/drawable-xxhdpi/ic_notification.png)|
+
+
+### 打开通知栏开关
+
+无论是什么通知栏，如果不打开通知栏开关的话，是不会显示的，继承 StarrySkyConfig 并重写 applyOptions 方法，这个方法就是配置各种配置用的：
 
 ```java
-MusicManager.setImageLoader(new GlideLoader());
+private static class TestConfig extends StarrySkyConfig {
+    @Override
+    public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
+        super.applyOptions(context, builder);
+        builder.setOpenNotification(true);
+    }
+}
+```
+StarrySkyBuilder 负责构建各种配置，这里通过设置 StarrySkyBuilder#setOpenNotification 为 true 打开通知栏开关。
+
+打开通知栏开关后，默认显示的是系统通知栏。这时候播放时，你会发现已经有系统通知栏显示出来了。
+
+### 自定义通知栏
+
+通知栏是通过工厂模式去创建的，当然自定义通知栏也是在 StarrySkyConfig 中配置，但为了代码清晰，特单独做了个方法出来配置，这个
+方法是 getNotificationFactory：
+
+```java
+private static class TestConfig extends StarrySkyConfig {
+    @Override
+    public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
+        super.applyOptions(context, builder);
+        builder.setOpenNotification(true);
+    }
+
+    @Override
+    public StarrySkyNotificationManager.NotificationFactory getNotificationFactory() {
+        return StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY;
+    }
+}
 ```
 
-当然，如果你不设置的话，StarrySky 内部会使用默认的图片加载器去加载图片，默认的图片加载器的类叫 [DefaultImageLoader](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/utils/imageloader/DefaultImageLoader.java)。
+如上代码所示，StarrySky 内部已经默认实现了一个自定义的通知栏 CUSTOM_NOTIFICATION_FACTORY，当返回这个后，自定义通知栏
+已经实现好了，是不是很快。 当然自定义通知栏还需要自定义一些布局，因为不需要写一句代码，只需要自己实现布局即可，所以布局上
+的控件肯定是要有一些规则才能被 StarrySky 匹配到的。可以看这个文档：
 
-为了更好的加载效果，推荐自己使用一些成熟的第三方框架去实现图片加载。
+快速实现通知栏
+
+
+
+
+
+

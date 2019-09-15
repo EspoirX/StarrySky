@@ -17,9 +17,9 @@ public abstract class StarrySkyConfig {
     }
 
     /**
-     * 添加播放前规则
+     * 添加组件
      */
-    public void applyMediaValid(@NonNull Context context, StarrySkyRegistry registry) {
+    public void applyStarrySkyRegistry(@NonNull Context context, StarrySkyRegistry registry) {
 
     }
 

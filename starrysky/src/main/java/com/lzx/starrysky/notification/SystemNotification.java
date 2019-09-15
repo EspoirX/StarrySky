@@ -276,6 +276,9 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         imageLoader.load(fetchArtUrl, new ImageLoaderCallBack() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap) {
+                if (bitmap == null) {
+                    return;
+                }
                 notificationBuilder.setLargeIcon(bitmap);
                 mNotificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
             }

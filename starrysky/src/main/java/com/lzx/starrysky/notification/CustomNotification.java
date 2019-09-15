@@ -422,6 +422,9 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         imageLoader.load(fetchArtUrl, new ImageLoaderCallBack() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap) {
+                if (bitmap == null) {
+                    return;
+                }
                 mRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), bitmap);
                 mBigRemoteView.setImageViewBitmap(getResourceId(ID_IMG_NOTIFY_ICON, "id"), bitmap);
                 mNotificationManager.notify(NOTIFICATION_ID, notification);

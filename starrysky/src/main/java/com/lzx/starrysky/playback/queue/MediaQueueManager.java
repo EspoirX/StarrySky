@@ -135,7 +135,6 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
                 mUpdateListener.onCurrentQueueIndexUpdated(mCurrentIndex);
             }
         }
-        Log.i("xian", "updateIndexByMediaId#mCurrentIndex=" + mCurrentIndex);
         return index >= 0;
     }
 
@@ -148,7 +147,6 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
         if (!canReuseQueue) {
             mCurrentIndex = getIndexByMediaId(mediaId);
         }
-        Log.i("xian", "updateCurrPlayingMedia#mCurrentIndex=" + mCurrentIndex);
         updateMetadata();
     }
 
@@ -200,7 +198,9 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
             imageLoader.load(coverUrl, new ImageLoaderCallBack() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap) {
-                    updateMusicArt(musicId, metadata, bitmap, bitmap);
+                    if (bitmap != null) {
+                        updateMusicArt(musicId, metadata, bitmap, bitmap);
+                    }
                     if (mUpdateListener != null) {
                         mUpdateListener.onMetadataChanged(metadata);
                     }

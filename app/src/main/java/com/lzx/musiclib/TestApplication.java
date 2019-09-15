@@ -34,12 +34,11 @@ public class TestApplication extends Application {
         public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
             super.applyOptions(context, builder);
             builder.setOpenNotification(true);
-
         }
 
         @Override
-        public void applyMediaValid(@NonNull Context context, StarrySkyRegistry registry) {
-            super.applyMediaValid(context, registry);
+        public void applyStarrySkyRegistry(@NonNull Context context, StarrySkyRegistry registry) {
+            super.applyStarrySkyRegistry(context, registry);
             registry.appendValidRegistry(new RequestSongInfoValid());
             registry.registryImageLoader(new GlideLoader());
         }
