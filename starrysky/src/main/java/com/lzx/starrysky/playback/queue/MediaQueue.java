@@ -64,5 +64,5 @@ public interface MediaQueue {
 
     void setShuffledMode();
 
-    void setNormalMode();
+    void setNormalMode(String mediaId);
 }

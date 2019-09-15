@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.lzx.starrysky.BaseMediaInfo;
 import com.lzx.starrysky.StarrySky;
@@ -91,6 +92,7 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
             return false;
         }
         mCurrentIndex = index;
+        Log.i("xian", "skipQueuePosition#mCurrentIndex=" + mCurrentIndex);
         return true;
     }
 
@@ -133,6 +135,7 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
                 mUpdateListener.onCurrentQueueIndexUpdated(mCurrentIndex);
             }
         }
+        Log.i("xian", "updateIndexByMediaId#mCurrentIndex=" + mCurrentIndex);
         return index >= 0;
     }
 
@@ -145,6 +148,7 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
         if (!canReuseQueue) {
             mCurrentIndex = getIndexByMediaId(mediaId);
         }
+        Log.i("xian", "updateCurrPlayingMedia#mCurrentIndex=" + mCurrentIndex);
         updateMetadata();
     }
 
@@ -228,10 +232,11 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
     }
 
     @Override
-    public void setNormalMode() {
+    public void setNormalMode(String mediaId) {
         //恢复备份
         if (backupMediaList != null) {
             updateMediaList(backupMediaList);
+            updateCurrPlayingMedia(mediaId);  //恢复正常顺序后需要更新一下下标
         }
     }
 }

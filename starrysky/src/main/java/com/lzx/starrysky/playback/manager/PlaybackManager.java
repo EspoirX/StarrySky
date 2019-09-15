@@ -412,7 +412,9 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
         public void onSetShuffleMode(int shuffleMode) {
             super.onSetShuffleMode(shuffleMode);
             if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_NONE) {
-                mMediaQueue.setNormalMode();
+                if (mPlayback != null) {
+                    mMediaQueue.setNormalMode(mPlayback.getCurrentMediaId());
+                }
             } else if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
                 mMediaQueue.setShuffledMode();
             }
