@@ -1,6 +1,7 @@
 package com.lzx.starrysky.registry;
 
-import com.lzx.starrysky.StarrySkyActivityLifecycle;
+import android.content.Context;
+
 import com.lzx.starrysky.notification.NotificationConfig;
 import com.lzx.starrysky.notification.StarrySkyNotificationManager;
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
@@ -15,14 +16,11 @@ public class StarrySkyRegistry {
     private NotificationRegistry mNotificationRegistry;
     private CacheRegistry mCacheRegistry;
 
-    public StarrySkyRegistry() {
+    public StarrySkyRegistry(Context context) {
         mValidRegistry = new ValidRegistry();
         mNotificationRegistry = new NotificationRegistry();
         mCacheRegistry = new CacheRegistry();
-    }
-
-    public void initImageLoaderRegistry(StarrySkyActivityLifecycle lifecycle) {
-        mImageLoaderRegistry = new ImageLoaderRegistry(lifecycle);
+        mImageLoaderRegistry = new ImageLoaderRegistry(context);
     }
 
     public void appendValidRegistry(Valid valid) {

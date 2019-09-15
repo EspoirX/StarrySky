@@ -1,17 +1,17 @@
 package com.lzx.starrysky.registry;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.lzx.starrysky.StarrySkyActivityLifecycle;
 import com.lzx.starrysky.utils.imageloader.ImageLoader;
 import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
 
 class ImageLoaderRegistry {
     private ImageLoader mImageLoader;
-    private StarrySkyActivityLifecycle lifecycle;
+    private Context mContext;
 
-    ImageLoaderRegistry(StarrySkyActivityLifecycle lifecycle) {
-        this.lifecycle = lifecycle;
+    ImageLoaderRegistry(Context context) {
+        this.mContext = context;
     }
 
     synchronized void registry(@NonNull ImageLoaderStrategy strategy) {
@@ -21,7 +21,7 @@ class ImageLoaderRegistry {
 
     private void initImageLoader() {
         if (mImageLoader == null) {
-            mImageLoader = new ImageLoader(lifecycle.getActivity());
+            mImageLoader = new ImageLoader(mContext);
         }
     }
 

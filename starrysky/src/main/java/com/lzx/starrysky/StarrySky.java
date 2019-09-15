@@ -94,8 +94,7 @@ public class StarrySky {
         if (mStarrySkyConfig != null) {
             mStarrySkyConfig.applyMediaValid(context, starrySky.mRegistry);
         }
-        //注册图片加载
-        starrySky.getRegistry().initImageLoaderRegistry(starrySky.mLifecycle);
+
         //注册通知栏
         StarrySkyNotificationManager.NotificationFactory factory = mStarrySkyConfig != null
                 ? mStarrySkyConfig.getNotificationFactory() : null;
@@ -128,7 +127,7 @@ public class StarrySky {
 
         registerLifecycle(globalContext);
 
-        mRegistry = new StarrySkyRegistry();
+        mRegistry = new StarrySkyRegistry(globalContext);
 
         //链接服务
         connection.connect();

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.lzx.musiclib.example.MusicRequest;
+import com.lzx.musiclib.imageloader.GlideLoader;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.StarrySkyBuilder;
 import com.lzx.starrysky.StarrySkyConfig;
@@ -32,17 +33,20 @@ public class TestApplication extends Application {
         @Override
         public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
             super.applyOptions(context, builder);
+            builder.setOpenNotification(true);
+
         }
 
         @Override
         public void applyMediaValid(@NonNull Context context, StarrySkyRegistry registry) {
             super.applyMediaValid(context, registry);
             registry.appendValidRegistry(new RequestSongInfoValid());
+            registry.registryImageLoader(new GlideLoader());
         }
 
         @Override
         public StarrySkyNotificationManager.NotificationFactory getNotificationFactory() {
-            return super.getNotificationFactory();
+            return StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY;
         }
 
         @Override
@@ -52,7 +56,6 @@ public class TestApplication extends Application {
     }
 
     public static class RequestSongInfoValid implements Valid {
-        private String mediaId;
         private MusicRequest mMusicRequest;
 
         RequestSongInfoValid() {

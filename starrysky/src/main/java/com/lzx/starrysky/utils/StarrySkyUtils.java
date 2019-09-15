@@ -13,6 +13,10 @@ import java.util.List;
 import static android.content.Context.ACTIVITY_SERVICE;
 
 public class StarrySkyUtils {
+
+    public static boolean isDebug = false;
+
+
     /**
      * 判断Activity 是否可用
      *
@@ -53,6 +57,8 @@ public class StarrySkyUtils {
     }
 
     public static void log(String msg) {
-        Log.i("StarrySky", msg);
+        if (isDebug) {
+            Log.i("StarrySky", msg);
+        }
     }
 }
