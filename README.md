@@ -88,12 +88,6 @@ PS：
 - 如果发现库中功能满足不了你的需求，建议通过下载源码修改成你要的样子来使用。
 - 如果该项目对你有所帮助，欢迎 star 或 fork，谢谢各位。
 
-## 使用 demo
-StarrySky 的 API 调用 demo 在代码里已经有体现，这里还写了个小 APP 来具体演示一下，写得并非很完善，主要作用是简单演示一下 StarrySky 的使用方法，
-demo 代码请点击这里 [NiceMusic](https://github.com/lizixian18/NiceMusic)，下面是 demo 的截图：  
-<a href="art/art1.png"><img src="art/art1.png" width="30%"/></a>
-<a href="art/art2.png"><img src="art/art2.png" width="30%"/></a> 
-<a href="art/art3.png"><img src="art/art3.png" width="30%"/></a>
 
 
 ## QQ群
