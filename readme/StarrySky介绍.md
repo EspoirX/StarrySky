@@ -16,7 +16,7 @@ StarrySky 总体来说可以分为几个模块：
 
 ## StarrySky 包结构图
 
-<img src="art/starrysky包结构.png"/>
+<img src="https://raw.githubusercontent.com/lizixian18/MusicLibrary/StarrySkyJava/art/starrysky包结构.png">
 
 1. common 包里面主要是与 MusicService 端连接的管理类。
 2. control 包主要是 API 的播放控制类。
