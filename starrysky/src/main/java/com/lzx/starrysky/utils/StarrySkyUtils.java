@@ -14,7 +14,7 @@ import static android.content.Context.ACTIVITY_SERVICE;
 
 public class StarrySkyUtils {
 
-    public static boolean isDebug = false;
+    public static boolean isDebug = true;
 
 
     /**

@@ -34,6 +34,7 @@ android {
         implementation "com.github.bumptech.glide:okhttp3-integration:4.8.0"
         annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
         implementation("com.squareup.okhttp3:okhttp:4.1.0")
+        implementation 'com.qw:soulpermission:1.2.1'
         implementation project(':starrysky')
     }
 }
