@@ -14,11 +14,7 @@
 
 一个丰富的音乐播放封装库，针对快速集成音频播放功能，减少大家搬砖的时间，你值得拥有。
 
->MusicLibrary 改名为 StarrySky，
-StarrySky 是一个全新的版本，基于媒体浏览器服务(MediaBrowserService)实现，
-代码比原来的版本更加精简，注释更全，而且问题更少，欢迎大家继续使用。  
 
-原来版本的代码在 master 分支上（master 分支不想维护了，如果还在用的话建议用新的）。
 
 
 ## 特点
@@ -27,11 +23,12 @@ StarrySky 是一个全新的版本，基于媒体浏览器服务(MediaBrowserSer
 - 集成和调用API非常简单，音频功能几乎可以集成到一个语句中。
 - 提供丰富的API方法来轻松实现各种功能。
 - 方便集成自定义通知栏和系统通知栏。
-- 使用ExoPlayer作为底层播放器。
+- 使用 ExoPlayer 作为底层播放器。
 - 支持多种普通音频格式并支持多种流式音频格式(DASH, SmoothStreaming, HLS，rtmp，flac)。
 - 支持边播边存功能，没网也能播。
-- 支持改变播放速度
-- 超级丰富的 API
+- 支持改变播放速度。
+- 超级丰富的 API。
+- 支持自定义播放组件，高度的扩展性。
 - 等等等等
 
 若在使用中发现 Bug 或者有什么建议问题的可以在 issues 中提出或者添加 QQ 群交流，欢迎反馈。
@@ -55,6 +52,26 @@ maven{
 }
 ```
 
+## 初始化
+
+下面是最简单的初始化以及播放音频代码，更多功能请阅读使用文档。
+
+```java
+public class TestApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        StarrySky.init(this);
+    }
+}
+
+//播放一首歌曲
+SongInfo info = new SongInfo();
+info.setSongId("111");
+info.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3");
+StarrySky.with().playMusicByInfo(info);
+```
 
 ## 使用文档
 

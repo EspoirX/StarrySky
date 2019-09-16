@@ -3,7 +3,6 @@ package com.lzx.starrysky.control;
 import android.arch.lifecycle.MutableLiveData;
 
 import com.lzx.starrysky.common.PlaybackStage;
-import com.lzx.starrysky.playback.player.Playback;
 import com.lzx.starrysky.provider.SongInfo;
 
 import java.util.List;
@@ -295,8 +294,6 @@ public interface PlayerControl {
     void clearPlayerEventListener();
 
     CopyOnWriteArrayList<OnPlayerEventListener> getPlayerEventListeners();
-
-    void setPlayBack(Playback playBack);
 
     MutableLiveData<PlaybackStage> playbackState();
 }

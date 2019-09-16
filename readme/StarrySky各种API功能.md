@@ -2,7 +2,7 @@
 
 ## 媒体信息实体类 SongInfo
 
-首先，在 StarrySky 中用来存储音频信息的实体类叫做 SongInfo，这是指定的，所以在项目中使用时，应该把后台返回的媒体信息都转换成 SongInfo 去使用。
+首先，在 StarrySky 中用户用来存储音频信息的实体类是 SongInfo，这是指定的，所以在项目中使用时，应该把后台返回的媒体信息都转换成 SongInfo 去使用。
 
 因此 SongInfo 里面也有非常多的字段供大家去使用，具体可以[点开查看](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/starrysky/src/main/java/com/lzx/starrysky/model/SongInfo.java)
 ，里面都有一些注释，如果里面的字段不满足使用需求，我的建议是：
@@ -17,35 +17,35 @@
 因为它是每个媒体的唯一标记，songUrl 就是媒体的播放地址。
 
 
-## MusicManager 播放管理类
+## PlayerControl 播放控制
 
-StarrySky API 的使用主要通过 MusicManager 去调用，它是一个单例，举个例子，如何实现简单的播放功能：
+PlayerControl 是一个接口，里面定义了很多播放相关的 API 方法，它的默认实现是 StarrySkyPlayerControl，通过调用
+StarrySky.with() 方法得到实例。StarrySky 是一个单例。
+
+StarrySky API 的使用主要通过 PlayerControl 去控制，举个例子，如何实现简单的播放功能：
 
 ```java
-SongInfo s1 = new SongInfo();
-s1.setSongId("111");
-s1.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3");
-MusicManager.getInstance().playMusicByInfo(s1);
+SongInfo info = new SongInfo();
+info.setSongId("111");
+info.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3");
+StarrySky.with().playMusicByInfo(info);
 ```
 
-### MusicManager的API方法
+### PlayerControl的API方法
 
 **播放相关**
 
-**~~1. playMusic(List<SongInfo> songInfos, int index, boolean isResetPlayList)~~**
-
-
-**2. void playMusic(List<SongInfo> songInfos, int index)**
+**1. void playMusic(List<SongInfo> mediaList, int index)**
 
 `描述：  `
 
-`播放，传入播放列表和要播放的歌曲在播放列表中的索引`
+`播放，传入播放列表和要播放的歌曲在播放列表中的索引，比较适合在列表中使用`
 
 </br>
 
 **3. void playMusicById(String songId)**
 
-`描述：  根据 songId 播放,调用前请确保已经设置了播放列表`
+`描述：  根据 songId 播放，调用前请确保已经设置了播放列表`
 
 </br>
 
@@ -409,6 +409,45 @@ public interface OnPlayerEventListener {
 
 `描述：  移除所有播放状态监听器`
 
+同样地，如果你觉得上面的操作太麻烦，StarrySky 还提供了 LiveData 的方式去监听播放状态：
+
+```java
+//状态监听
+StarrySky.with().playbackState().observe(this, playbackStage -> {
+    if (playbackStage == null) {
+        return;
+    }
+    switch (playbackStage.getStage()) {
+        case PlaybackStage.NONE:
+            //空状态
+            break;
+        case PlaybackStage.START:
+            //开始播放
+            break;
+        case PlaybackStage.PAUSE:
+            //暂停
+            break;
+        case PlaybackStage.STOP:
+            //停止
+            break;
+        case PlaybackStage.COMPLETION:
+            //播放完成
+            break;
+        case PlaybackStage.BUFFERING:
+            //缓冲中
+            break;
+        case PlaybackStage.ERROR:
+            //播放出错
+            break;
+        default:
+            break;
+    }
+});
+```
+代码如上所示，通过调用 playbackState 方法监听，这个方法返回的是 MutableLiveData<PlaybackStage>。播放状态信息都封装在
+了 PlaybackStage 里面。通过 getStage 方法获取状态。如果是播放出错，还可以通过 getErrorCode 和 getErrorMessage 方法
+获取出错信息。
+
 
 添加播放进度监听：  
 
@@ -428,13 +467,15 @@ public class MainActivity extends AppCompatActivity {
         mTimerTask = new TimerTaskManager();
         //设置更新回调
          mTimerTask.setUpdateProgressTask(() -> {
-                    long position = MusicManager.getInstance().getPlayingPosition();
-                    long duration = MusicManager.getInstance().getDuration();
+                    long position = StarrySky.with().getPlayingPosition();
+                    long duration = StarrySky.with().getDuration();
+                    long buffered = StarrySky.with().getBufferedPosition();
                      //SeekBar 设置 Max
                     if (mSeekBar.getMax() != duration) {
                         mSeekBar.setMax((int) duration);
                     }
                     mSeekBar.setProgress((int) position);
+                    mSeekBar.setSecondaryProgress((int) buffered);
                 });
         //开始获取进度，一般可以在 onPlayerStart 中调用
         mTimerTask.startToUpdateProgress();
@@ -458,7 +499,7 @@ mTimerTask.startCountDownTask(10 * 1000, new TimerTaskManager.OnCountDownFinishL
     @Override
     public void onFinish() {
         //定时完成
-        MusicManager.getInstance().stopMusic();
+        StarrySky.with().stopMusic();
     }
 
     @Override
@@ -471,38 +512,5 @@ mTimerTask.startCountDownTask(10 * 1000, new TimerTaskManager.OnCountDownFinishL
 //取消定时
 mTimerTask.cancelCountDownTask();
 ```
-
-
-**通知栏相关**
-
-通知栏相关的 API 可在[快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)中了解具体用法。
-
-**1. void setNotificationConstructor(NotificationConstructor constructor)**
-
-`描述：  设置通知栏配置,应该在 Application 中创建并调用`
-
-</br>
-
-
-**2. NotificationConstructor getConstructor()**
-
-`描述：  获取通知栏配置`
-
-</br>
-
-
-**3. void updateFavoriteUI(boolean isFavorite)**
-
-`描述：  如果通知栏中有喜欢或者收藏按钮，可调用此方法来改变按钮是否选中的 UI 显示状态`
-
-</br>
-
-
-**4. void updateLyricsUI(boolean isChecked)**
-
-`描述：  如果通知栏中有是否显示歌词的按钮，可调用此方法来改变按钮是否选中的 UI 显示状态`
-
-
-MusicManager 中的 API 方法大概就以上这些，以后会慢慢完善添加新的方法。
 
 

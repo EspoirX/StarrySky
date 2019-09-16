@@ -447,11 +447,6 @@ public class StarrySkyPlayerControl implements PlayerControl {
     }
 
     @Override
-    public void setPlayBack(Playback playBack) {
-        mPlayback = playBack;
-    }
-
-    @Override
     public MutableLiveData<PlaybackStage> playbackState() {
         return connection.getPlaybackState();
     }

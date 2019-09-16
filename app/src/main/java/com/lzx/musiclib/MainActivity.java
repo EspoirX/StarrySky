@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn1).setOnClickListener(v -> startListPlayExampleActivity());
         findViewById(R.id.btn2).setOnClickListener(v -> startRequestBeforePlayActivity());
         findViewById(R.id.btn3).setOnClickListener(v -> startPlayDetailActivity());
+
     }
 
     public void startListPlayExampleActivity() {
