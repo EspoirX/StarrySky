@@ -409,6 +409,8 @@ public interface OnPlayerEventListener {
 
 `描述：  移除所有播放状态监听器`
 
+**LiveData方式监听**
+
 同样地，如果你觉得上面的操作太麻烦，StarrySky 还提供了 LiveData 的方式去监听播放状态：
 
 ```java
@@ -444,12 +446,25 @@ StarrySky.with().playbackState().observe(this, playbackStage -> {
     }
 });
 ```
-代码如上所示，通过调用 playbackState 方法监听，这个方法返回的是 MutableLiveData<PlaybackStage>。播放状态信息都封装在
+代码如上所示，通过调用 playbackState 方法监听，这个方法返回的是 MutableLiveData`<PlaybackStage>`。播放状态信息都封装在
 了 PlaybackStage 里面。通过 getStage 方法获取状态。如果是播放出错，还可以通过 getErrorCode 和 getErrorMessage 方法
 获取出错信息。
 
+通过 PlaybackStage 的 getSongInfo 方法可以获取当前播放的歌曲信息：
 
-添加播放进度监听：  
+```java
+private void updateUIInfo(PlaybackStage playbackStage) {
+    SongInfo songInfo = playbackStage.getSongInfo();
+    if (songInfo != null) {
+        //...
+    } else {
+        //...
+    }
+}
+```
+
+
+**添加播放进度监听：**
 
 获取当前播放进度的原理就是一秒钟调用一次 getPlayingPosition()，为了方便，StarrySky 提供了一个工具类 TimerTaskManager ，当然你也可以完全自己去实现，
 看看 TimerTaskManager 的用法：

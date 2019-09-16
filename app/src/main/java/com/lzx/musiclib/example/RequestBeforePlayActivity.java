@@ -59,11 +59,11 @@ public class RequestBeforePlayActivity extends AppCompatActivity {
      */
     public static class RequestUrlConfig extends StarrySkyConfig {
         /**
-         * 重写 applyMediaValid 方法
+         * 重写 applyStarrySkyRegistry 方法
          */
         @Override
-        public void applyMediaValid(@NonNull Context context, StarrySkyRegistry registry) {
-            super.applyMediaValid(context, registry);
+        public void applyStarrySkyRegistry(@NonNull Context context, StarrySkyRegistry registry) {
+            super.applyStarrySkyRegistry(context, registry);
             //调用 appendValidRegistry 方法添加播放前验证操作，可添加多个
             registry.appendValidRegistry(new RequestUrlValid(context));
         }
