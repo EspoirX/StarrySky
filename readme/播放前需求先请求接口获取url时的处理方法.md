@@ -1,85 +1,59 @@
 # 播放音频前需要先请求接口获取url这类需求的解决方案
 
-有些同学可能的需求可能是这样的：音频播放的 url 是动态的，不是固定的，需要播放前先请求一下接口获取，然后再播放。
+有些同学可能的需求可能是这样的：
+1. 音频播放的 url 是动态的，不是固定的，需要播放前先请求一下接口获取，然后再播放。
+2. 播放前需要先请求一些权限或先进行一些埋点等其他播放前的操作。
 
-对于这样的需求，StarrySky 引入了一套 **目标方法前置检验模型** 去解决，让这类需求实现变得更加优雅。
 
-模型Github地址：[DelayAction](https://github.com/feelschaotic/DelayAction)，感谢作者提供的优秀思路，该模型也适合于其他类似的场景。
-建议先阅读 DelayAction 的相关文章，以便更加理解。
-
-## 使用方法
-（这里举一个例子，但不限定就是这样实现，可自己根据实际灵活运用。）
-
-假设音频 A 播放的 url 要先请求接口获取才能得到。
+StarrySky 提供了一个验证接口 Valid 去解决这个问题。
 
 **第一步**
- 
- 新建一个类，实现 Valid 接口：
- 
+新建一个类并实现 Valid 接口：
+
 ```java
-public class RequestMusicUrlValid implements Valid {
+public static class RequestSongInfoValid implements Valid {
+    private MusicRequest mMusicRequest;
 
-    private boolean isGetUrl; //是否已经得到url
-    private SongInfo mSongInfo; //请求完后得到的 songInfo
-    private Context mContext;
-
-    public RequestMusicUrlValid(Context context) {
-        mContext = context;
+    RequestSongInfoValid() {
+        mMusicRequest = new MusicRequest();
     }
 
     @Override
-    public boolean preCheck() {
-        return isGetUrl;
-    }
-
-    public SongInfo getSongInfo() {
-        return mSongInfo;
-    }
-
-    @Override
-    public void doValid() {
-        //这里模拟请求接口操作，请求完成后修改 preCheck 的状态，然后做自己要做的操作，做完后调用一下 doCall 方方法
-        
-        //模拟接口请求成功
-        Toast.makeText(mContext, "请求接口成功", Toast.LENGTH_SHORT).show();
-        
-        //请求成功后修改一下状态，告诉模型请求成功了，不需要再请求
-        isGetUrl = true; 
-
-        //请求完后做自己的操作，这里举例把接口信息包装成songInfo
-        mSongInfo = new SongInfo();
-        mSongInfo.setSongId("111");
-        mSongInfo.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3&a=我");
-        mSongInfo.setSongCover("https://www.qqkw.com/d/file/p/2018/04-21/c24fd86006670f964e63cb8f9c129fc6.jpg");
-        mSongInfo.setSongName("心雨");
-        mSongInfo.setArtist("贤哥");
-
-        //调用一下 doCall ，继续执行，才会执行后续的 Action 
-        DelayAction.getInstance().doCall();
+    public void doValid(SongInfo songInfo, ValidCallback callback) {
+        if (TextUtils.isEmpty(songInfo.getSongUrl())) {
+            mMusicRequest.getSongInfoDetail(songInfo.getSongId(), songUrl -> {
+                songInfo.setSongUrl(songUrl); //给songInfo设置Url
+                callback.finishValid();
+            });
+        } else {
+            callback.doActionDirect();
+        }
     }
 }
 ```
 
-Valid 接口需要实现的有两个方法，preCheck 和 doValid
+Valid 有一个回调方法 doValid，这个方法会在播放前执行，它有两个参数，songInfo 是当前要播放的音频信息，
+由于 doValid 方法里面的逻辑有可能是请求网络等这些异步操作，所以需要一个回调去标识执行完成。
 
-**第二步**
+如上代码所示的是播放前请求 url 的例子，首先判断一下 songInfo 里面的 url 是否为空，如果空的话就调用接口
+去获取 url，获取到之后给 songInfo 赋值，然后调用 callback 的 finishValid 方法告诉验证系统完成验证，可以
+执行下一步了。
 
-````java
-//请求接口后再播放示例
-findViewById(R.id.validPlay).setOnClickListener(v -> {
-    
-    RequestMusicUrlValid valid = new RequestMusicUrlValid(MainActivity.this);
-    DelayAction.getInstance()
-            .addAction(() -> {
-                //添加验证完成后的 action，这里是播放音频
-                MusicManager.getInstance().playMusicByInfo(valid.getSongInfo());
-            })
-            .addValid(valid) //添加验证模型，这里是刚刚的请求接口操作
-            .doCall(); //执行
-    
-});
-````
+如果 url 不为空的话，就不需要请求接口了，直接调用 callback 的 doActionDirect 方法告诉验证系统不需要验证，直接
+执行下一步的 action。
 
-代码就是这样，算是一种比较优雅的实现方式了吧，接口请求和播放操作都得到了封装，解偶了请求和播放的操作，可以复用。
+实现好 Valid 后，通过 applyStarrySkyRegistry 方法注册进 StarrySky 即可：
 
-如果不理解可以先阅读下 [DelayAction](https://github.com/feelschaotic/DelayAction) 。
+```java
+private static class TestConfig extends StarrySkyConfig {
+
+    @Override
+    public void applyStarrySkyRegistry(@NonNull Context context, StarrySkyRegistry registry) {
+        super.applyStarrySkyRegistry(context, registry);
+        registry.appendValidRegistry(new RequestSongInfoValid());
+    }
+}
+```
+
+这样，每当播放前，都会先执行 doValid 去获取 url 后再播放了。
+

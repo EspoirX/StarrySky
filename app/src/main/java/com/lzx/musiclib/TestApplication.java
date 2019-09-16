@@ -7,13 +7,9 @@ import android.text.TextUtils;
 
 import com.lzx.musiclib.example.MusicRequest;
 import com.lzx.musiclib.imageloader.GlideLoader;
-import com.lzx.starrysky.MusicService;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.StarrySkyBuilder;
 import com.lzx.starrysky.StarrySkyConfig;
-import com.lzx.starrysky.notification.INotification;
-import com.lzx.starrysky.notification.NotificationConfig;
-import com.lzx.starrysky.notification.StarrySkyNotificationManager;
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
@@ -29,21 +25,17 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        StarrySky.init(this, new TestConfig(this));
+        StarrySky.init(this, new TestConfig());
     }
 
     private static class TestConfig extends StarrySkyConfig {
-
-        private Context mContext;
-
-        TestConfig(Context context) {
-            mContext = context;
-        }
 
         @Override
         public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
             super.applyOptions(context, builder);
             builder.setOpenNotification(true);
+            builder.setOpenCache(true);
+            //builder.setCacheDestFileDir();
         }
 
         @Override
@@ -51,39 +43,6 @@ public class TestApplication extends Application {
             super.applyStarrySkyRegistry(context, registry);
             registry.appendValidRegistry(new RequestSongInfoValid());
             registry.registryImageLoader(new GlideLoader());
-
-        }
-
-
-        @Override
-        public StarrySkyNotificationManager.NotificationFactory getNotificationFactory() {
-            return new StarrySkyNotificationManager.NotificationFactory() {
-                @NonNull
-                @Override
-                public INotification build(MusicService musicService, NotificationConfig config) {
-                    return new INotification() {
-                        @Override
-                        public void startNotification() {
-
-                        }
-
-                        @Override
-                        public void stopNotification() {
-
-                        }
-
-                        @Override
-                        public void updateFavoriteUI(boolean isFavorite) {
-
-                        }
-
-                        @Override
-                        public void updateLyricsUI(boolean isChecked) {
-
-                        }
-                    };
-                }
-            };
         }
 
         @Override
