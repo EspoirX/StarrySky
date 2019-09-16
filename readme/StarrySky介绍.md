@@ -23,10 +23,12 @@ StarrySky 总体来说可以分为几个模块：
 3. ext 包主要是一些扩展类。
 4. notification 主要是放通知栏相关的东西
 5. playback 是播放相关的东西，里面分了几个包：
+
   （1）manager 是播放管理
   （2）offline 是缓存相关的东西
   （3）player 是播放器的实现
   （4）queue 是播放队列的管理
+
 6. provider 包是放音频数据存储的相关东西。
 7. registry 是一些组件的注册，主要用来配置
 8. unils 就是一些工具类
