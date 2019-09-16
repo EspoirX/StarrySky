@@ -75,7 +75,6 @@ StarrySky.with().playMusicByInfo(info);
 
 ## 使用文档
 
-- [集成StarrySky](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/%E9%9B%86%E6%88%90StarrySky.md)
 - [StarrySky各种API功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky各种API功能.md)
 - [快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)
 - [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/媒体缓存功能.md)
