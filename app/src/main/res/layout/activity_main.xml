@@ -25,15 +25,4 @@
         android:layout_height="wrap_content"
         android:text="播放详情页例子" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="自定义实现播放器例子" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="其他例子" />
-
-
 </LinearLayout>

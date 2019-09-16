@@ -78,9 +78,10 @@ StarrySky.with().playMusicByInfo(info);
 - [StarrySky各种API功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky各种API功能.md)
 - [自定义实现图片加载器](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义图片加载器说明.md)
 - [快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)
+- [播放音频前需要先请求接口获取url这类需求的解决方案](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/播放前需求先请求接口获取url时的处理方法.md)
 - [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/媒体缓存功能.md)
 - [Flac音频格式集成说明](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/Flac格式集成说明.md)
-- [播放音频前需要先请求接口获取url这类需求的解决方案](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/播放前需求先请求接口获取url时的处理方法.md)
+
 
 PS：
 - 如果有兴趣，建议稍微阅读一下源码，这样对使用或者解决问题有很大帮助。
