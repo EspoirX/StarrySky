@@ -13,12 +13,17 @@ import com.lzx.starrysky.provider.MediaQueueProviderSurface;
 
 public class StarrySkyBuilder {
 
+    //客户端与Service链接管理类
     private IMediaConnection mConnection;
+    //媒体信息存储管理类
     private MediaQueueProvider mMediaQueueProvider;
+    //播放队列管理类
     private MediaQueue mMediaQueue;
-
+    //通知栏开关
     boolean isOpenNotification;
+    //缓存开关
     boolean isOpenCache;
+    //缓存文件夹
     String cacheDestFileDir;
 
     /**
