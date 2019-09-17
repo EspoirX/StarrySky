@@ -23,6 +23,12 @@ public interface PlayerControl {
      */
     void playMusicByInfo(SongInfo info);
 
+
+    /**
+     * 保持播放列表里面只有一个音频
+     */
+    void playMusicByInfoDirect(SongInfo info);
+
     /**
      * 根据要播放的歌曲在播放列表中的下标播放,调用前请确保已经设置了播放列表
      */

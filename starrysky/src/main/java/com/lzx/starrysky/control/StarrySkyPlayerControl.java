@@ -61,6 +61,12 @@ public class StarrySkyPlayerControl implements PlayerControl {
     }
 
     @Override
+    public void playMusicByInfoDirect(SongInfo info) {
+        mMediaQueueProvider.addOneMediaBySongInfo(info);
+        playMusicImpl(info.getSongId());
+    }
+
+    @Override
     public void playMusicByIndex(int index) {
         BaseMediaInfo info = mMediaQueueProvider.getMediaInfo(index);
         if (info != null) {

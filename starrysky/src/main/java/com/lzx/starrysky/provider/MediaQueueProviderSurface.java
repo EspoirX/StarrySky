@@ -35,6 +35,11 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
     }
 
     @Override
+    public void addOneMediaBySongInfo(SongInfo songInfo) {
+        provider.addOneMediaBySongInfo(songInfo);
+    }
+
+    @Override
     public void updateMediaListBySongInfo(List<SongInfo> songInfos) {
         provider.updateMediaListBySongInfo(songInfos);
     }

@@ -55,6 +55,13 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
     }
 
     @Override
+    public void addOneMediaBySongInfo(SongInfo songInfo) {
+        List<SongInfo> songInfos = new ArrayList<>();
+        songInfos.add(songInfo);
+        updateMediaListBySongInfo(songInfos);
+    }
+
+    @Override
     public void updateMediaListBySongInfo(List<SongInfo> songInfos) {
         songListMap.clear();
         mMediaMetadataCompatMap.clear();

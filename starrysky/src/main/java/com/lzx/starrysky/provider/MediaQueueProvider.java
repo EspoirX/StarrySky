@@ -23,6 +23,8 @@ public interface MediaQueueProvider {
      */
     void updateMediaList(List<BaseMediaInfo> mediaInfoList);
 
+    void addOneMediaBySongInfo(SongInfo songInfo);
+
     void updateMediaListBySongInfo(List<SongInfo> songInfos);
 
     /**
