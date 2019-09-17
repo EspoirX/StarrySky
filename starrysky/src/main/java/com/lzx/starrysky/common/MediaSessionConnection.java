@@ -14,7 +14,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
-import com.lzx.starrysky.MusicManager;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.control.OnPlayerEventListener;
 import com.lzx.starrysky.provider.SongInfo;
@@ -26,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * 与服务端连接的管理类
  */
-public class MediaSessionConnection {
+public class MediaSessionConnection implements IMediaConnection {
     private Context mContext;
 
     private MediaBrowserCompat mediaBrowser;
@@ -55,10 +54,12 @@ public class MediaSessionConnection {
         playbackStateCompat.postValue(EMPTY_PLAYBACK_STATE);
     }
 
+    @Override
     public void subscribe(String parentId, MediaBrowserCompat.SubscriptionCallback callback) {
         mediaBrowser.subscribe(parentId, callback);
     }
 
+    @Override
     public void unsubscribe(String parentId, MediaBrowserCompat.SubscriptionCallback callback) {
         mediaBrowser.unsubscribe(parentId, callback);
     }
@@ -66,10 +67,11 @@ public class MediaSessionConnection {
     /**
      * 给服务发消息
      */
+    @Override
     public void sendCommand(String command, Bundle parameters) {
         if (mediaBrowser.isConnected()) {
             mediaController.sendCommand(command, parameters, new ResultReceiver(new Handler()) {
-
+                //空实现
             });
         }
     }
@@ -99,11 +101,12 @@ public class MediaSessionConnection {
         return mediaBrowser;
     }
 
-
+    @Override
     public int getShuffleMode() {
         return mediaController.getShuffleMode();
     }
 
+    @Override
     public int getRepeatMode() {
         return mediaController.getRepeatMode();
     }
@@ -111,26 +114,30 @@ public class MediaSessionConnection {
     /**
      * 获取当前播放的 MediaMetadataCompat
      */
+    @Override
     public MediaMetadataCompat getNowPlaying() {
         return nowPlaying.getValue();
     }
 
+    @Override
     public PlaybackStateCompat getPlaybackStateCompat() {
         return playbackStateCompat.getValue();
     }
 
+    @Override
     public MutableLiveData<PlaybackStage> getPlaybackState() {
         return playbackState;
     }
 
-
     /**
      * 获取播放控制器
      */
+    @Override
     public MediaControllerCompat.TransportControls getTransportControls() {
         return transportControls;
     }
 
+    @Override
     public MediaControllerCompat getMediaController() {
         return mediaController;
     }
@@ -138,6 +145,7 @@ public class MediaSessionConnection {
     /**
      * 连接
      */
+    @Override
     public void connect() {
         if (isConnected.getValue() == null || !isConnected.getValue()) {
             //进程被异常杀死时，App 被外部链接唤起时，connect 状态为 CONNECT_STATE_CONNECTING，
@@ -150,6 +158,7 @@ public class MediaSessionConnection {
     /**
      * 断开连接
      */
+    @Override
     public void disconnect() {
         if (isConnected.getValue() != null && isConnected.getValue()) {
             disconnectImpl();
@@ -221,7 +230,7 @@ public class MediaSessionConnection {
                 return;
             }
             //状态监听
-            CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = MusicManager.getInstance().getPlayerEventListeners();
+            CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = StarrySky.with().getPlayerEventListeners();
             switch (state.getState()) {
                 case PlaybackStateCompat.STATE_PLAYING:
                     for (OnPlayerEventListener listener : mPlayerEventListeners) {
@@ -303,7 +312,5 @@ public class MediaSessionConnection {
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
             .build();
 
-    public interface OnConnectListener {
-        void onConnected();
-    }
+
 }

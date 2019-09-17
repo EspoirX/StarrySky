@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.lzx.starrysky.common.MediaSessionConnection;
+import com.lzx.starrysky.common.IMediaConnection;
 import com.lzx.starrysky.control.PlayerControl;
 import com.lzx.starrysky.control.StarrySkyPlayerControl;
 import com.lzx.starrysky.notification.StarrySkyNotificationManager;
@@ -26,7 +26,7 @@ public class StarrySky {
     private static Application globalContext;
     private static StarrySkyConfig mStarrySkyConfig;
     private StarrySkyActivityLifecycle mLifecycle;
-    private MediaSessionConnection connection;
+    private IMediaConnection connection;
     private PlayerControl mPlayerControl;
     private StarrySkyRegistry mRegistry;
     private MediaQueueProvider mediaQueueProvider;
@@ -86,37 +86,50 @@ public class StarrySky {
     }
 
     private static void initializeStarrySky(Context context, StarrySkyBuilder builder) {
+
         if (mStarrySkyConfig != null) {
             mStarrySkyConfig.applyOptions(context, builder);
         }
+
         StarrySky starrySky = builder.build(context);
+        sStarrySky = starrySky;
 
         if (mStarrySkyConfig != null) {
             mStarrySkyConfig.applyStarrySkyRegistry(context, starrySky.mRegistry);
         }
 
         //注册通知栏
-        StarrySkyNotificationManager.NotificationFactory factory = mStarrySkyConfig != null
-                ? mStarrySkyConfig.getNotificationFactory() : null;
+        StarrySkyNotificationManager.NotificationFactory factory =
+                mStarrySkyConfig != null
+                        ? mStarrySkyConfig.getNotificationFactory()
+                        : null;
         StarrySkyNotificationManager notificationManager = new StarrySkyNotificationManager(builder.isOpenNotification, factory);
-        starrySky.getRegistry().registryNotificationManager(notificationManager);
-        //注册缓存
-        StarrySkyCacheManager.CacheFactory cacheFactory = mStarrySkyConfig != null ? mStarrySkyConfig.getCacheFactory() : null;
-        StarrySkyCacheManager cacheManager = new StarrySkyCacheManager(context, builder.isOpenCache, builder.cacheDestFileDir, cacheFactory);
-        starrySky.getRegistry().registryStarryCache(cacheManager);
+        starrySky.mRegistry.registryNotificationManager(notificationManager);
 
+        //注册缓存
+        StarrySkyCacheManager.CacheFactory cacheFactory =
+                mStarrySkyConfig != null
+                        ? mStarrySkyConfig.getCacheFactory()
+                        : null;
+        StarrySkyCacheManager cacheManager = new StarrySkyCacheManager(
+                context,
+                builder.isOpenCache,
+                builder.cacheDestFileDir,
+                cacheFactory);
+        starrySky.mRegistry.registryStarryCache(cacheManager);
+
+        //播放器
+        starrySky.playback = starrySky.mRegistry.getPlayback();
         if (starrySky.playback == null) {
             starrySky.playback = new ExoPlayback(context, cacheManager);
         }
         if (starrySky.playbackManager == null) {
             starrySky.playbackManager = new PlaybackManager(starrySky.mediaQueue, starrySky.playback);
         }
-
-        sStarrySky = starrySky;
     }
 
     StarrySky(
-            MediaSessionConnection connection,
+            IMediaConnection connection,
             MediaQueueProvider mediaQueueProvider,
             MediaQueue mediaQueue) {
         this.connection = connection;
@@ -133,7 +146,7 @@ public class StarrySky {
         connection.connect();
     }
 
-    public MediaSessionConnection getConnection() {
+    public IMediaConnection getConnection() {
         return connection;
     }
 

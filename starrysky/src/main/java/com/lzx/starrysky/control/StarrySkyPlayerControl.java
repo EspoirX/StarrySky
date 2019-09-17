@@ -13,13 +13,13 @@ import android.text.TextUtils;
 
 import com.lzx.starrysky.BaseMediaInfo;
 import com.lzx.starrysky.StarrySky;
-import com.lzx.starrysky.common.MediaSessionConnection;
+import com.lzx.starrysky.common.IMediaConnection;
 import com.lzx.starrysky.common.PlaybackStage;
-import com.lzx.starrysky.provider.MediaQueueProvider;
-import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.INotification;
 import com.lzx.starrysky.playback.player.ExoPlayback;
 import com.lzx.starrysky.playback.player.Playback;
+import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.utils.MD5;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class StarrySkyPlayerControl implements PlayerControl {
 
     private Context mContext;
-    private MediaSessionConnection connection;
+    private IMediaConnection connection;
     private MediaQueueProvider mMediaQueueProvider;
     private Playback mPlayback;
     private CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = new CopyOnWriteArrayList<>();

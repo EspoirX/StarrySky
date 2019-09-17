@@ -3,6 +3,7 @@ package com.lzx.starrysky;
 import android.content.ComponentName;
 import android.content.Context;
 
+import com.lzx.starrysky.common.IMediaConnection;
 import com.lzx.starrysky.common.MediaSessionConnection;
 import com.lzx.starrysky.playback.queue.MediaQueue;
 import com.lzx.starrysky.playback.queue.MediaQueueManager;
@@ -12,7 +13,7 @@ import com.lzx.starrysky.provider.MediaQueueProviderSurface;
 
 public class StarrySkyBuilder {
 
-    private MediaSessionConnection mConnection;
+    private IMediaConnection mConnection;
     private MediaQueueProvider mMediaQueueProvider;
     private MediaQueue mMediaQueue;
 
@@ -20,26 +21,44 @@ public class StarrySkyBuilder {
     boolean isOpenCache;
     String cacheDestFileDir;
 
-    public void setConnection(MediaSessionConnection connection) {
+    /**
+     * 设置链接管理器
+     */
+    public void setConnection(IMediaConnection connection) {
         mConnection = connection;
     }
 
+    /**
+     * 设置媒体信息存储
+     */
     public void setMediaQueueProvider(MediaQueueProvider mediaQueueProvider) {
         mMediaQueueProvider = mediaQueueProvider;
     }
 
+    /**
+     * 设置播放队列管理
+     */
     public void setMediaQueue(MediaQueue mediaQueue) {
         mMediaQueue = mediaQueue;
     }
 
+    /**
+     * 设置缓存开关
+     */
     public void setOpenCache(boolean openCache) {
         isOpenCache = openCache;
     }
 
+    /**
+     * 设置缓存存放文件夹
+     */
     public void setCacheDestFileDir(String cacheDestFileDir) {
         this.cacheDestFileDir = cacheDestFileDir;
     }
 
+    /**
+     * 设置通知栏开关
+     */
     public void setOpenNotification(boolean openNotification) {
         isOpenNotification = openNotification;
     }
