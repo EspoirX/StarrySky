@@ -39,9 +39,9 @@ StarrySky 总体来说可以分为几个模块：
 了解了主要有哪些模块和包结构后可以更快地了解代码结构和解决问题。
 
 
-## StarrySky 初始化配置信息
+## StarrySky 初始化配置信息介绍
 
-在主页时，大家想必现在已经知道了 StarrySky 是通过 init 方法去初始化的。那么如何在初始化时配置一些信息呢（如通知栏，缓存等）？
+在 Github 主页时，大家想必现在已经知道了 StarrySky 是通过 init 方法去初始化的。那么如何在初始化时配置一些信息呢（如通知栏，缓存等）？
 
 那就要用到 init 方法的第二个参数 StarrySkyConfig 了：
 
@@ -75,7 +75,7 @@ public abstract class StarrySkyConfig {
     }
 }
 ```
-StarrySkyConfig 是一个抽象类，使用时需要继承它，然后重写相关方法即可，比如：
+StarrySkyConfig 是一个抽象类，StarrySky 的所有配置都是通过它去实现的，使用时需要继承它，然后重写相关方法即可，比如：
 
 ```java
 public class TestApplication extends Application {
@@ -161,6 +161,7 @@ public class StarrySkyRegistry {
 
 ValidRegistry 是一个叫做播放前验证的组件，它的实现是一个简化的责任链模式，主要作用是可以在播放之前做一些操作，比如
 播放前先请求接口获取 url；播放前先埋点；播放前先获取一下读写文件权限等等。</br>
+
 用法：调用 StarrySkyRegistry#appendValidRegistry 方法添加验证即可：
 
 ```java
