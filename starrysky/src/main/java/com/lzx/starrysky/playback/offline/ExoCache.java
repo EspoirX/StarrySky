@@ -21,7 +21,7 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Log;
 import com.google.android.exoplayer2.util.Util;
-import com.lzx.starrysky.playback.Utils;
+import com.lzx.starrysky.utils.StarrySkyUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +57,7 @@ public class ExoCache implements StarrySkyCache, DownloadHelper.Callback, Downlo
         this.actionFile = new ActionFile(file);
         trackedDownloadStates = new HashMap<>();
         trackKeys = new ArrayList<>();
-        userAgent = Utils.getUserAgent(context, "ExoPlayback");
+        userAgent = StarrySkyUtils.getUserAgent(context, "ExoPlayback");
 
         HandlerThread actionFileWriteThread = new HandlerThread("DownloadTracker");
         actionFileWriteThread.start();

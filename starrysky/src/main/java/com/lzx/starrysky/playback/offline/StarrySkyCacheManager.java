@@ -15,7 +15,7 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
 import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory;
 import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor;
 import com.google.android.exoplayer2.upstream.cache.SimpleCache;
-import com.lzx.starrysky.playback.Utils;
+import com.lzx.starrysky.utils.StarrySkyUtils;
 
 import java.io.File;
 
@@ -45,7 +45,7 @@ public class StarrySkyCacheManager {
         } else {
             this.factory = factory;
         }
-        userAgent = Utils.getUserAgent(context,
+        userAgent = StarrySkyUtils.getUserAgent(context,
                 context.getApplicationInfo() != null
                         ? context.getApplicationInfo().name
                         : "StarrySky");

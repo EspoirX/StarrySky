@@ -29,8 +29,8 @@ import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.notification.utils.NotificationColorUtils;
 import com.lzx.starrysky.notification.utils.NotificationUtils;
-import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
-import com.lzx.starrysky.utils.imageloader.ImageLoader;
+import com.lzx.starrysky.imageloader.ImageLoaderCallBack;
+import com.lzx.starrysky.imageloader.ImageLoader;
 
 import java.util.List;
 

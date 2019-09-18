@@ -3,8 +3,8 @@ package com.lzx.starrysky.registry;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.lzx.starrysky.utils.imageloader.ImageLoader;
-import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
+import com.lzx.starrysky.imageloader.ImageLoader;
+import com.lzx.starrysky.imageloader.ImageLoaderStrategy;
 
 class ImageLoaderRegistry {
     private ImageLoader mImageLoader;

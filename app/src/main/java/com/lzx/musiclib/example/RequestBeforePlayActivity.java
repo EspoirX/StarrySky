@@ -11,10 +11,11 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.lzx.musiclib.R;
+import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.StarrySkyConfig;
+import com.lzx.starrysky.delayaction.Valid;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
-import com.lzx.starrysky.utils.delayaction.Valid;
 
 /**
  * 这里演示播放音频前需要先请求接口获取url这类需求的解决方案，只需要按照下面代码那样实现
@@ -42,7 +43,10 @@ public class RequestBeforePlayActivity extends AppCompatActivity {
             for (SongInfo songInfo : list) {
                 songInfo.setSongUrl("");  //先把url设为空，模拟没有url的情况
             }
-            runOnUiThread(() -> mListPlayAdapter.setSongInfos(list));
+            runOnUiThread(() -> {
+                mListPlayAdapter.setSongInfos(list);
+                StarrySky.with().updatePlayList(list);
+            });
         });
     }
 

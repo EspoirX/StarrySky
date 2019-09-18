@@ -1,4 +1,4 @@
-package com.lzx.starrysky.utils.imageloader;
+package com.lzx.starrysky.imageloader;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

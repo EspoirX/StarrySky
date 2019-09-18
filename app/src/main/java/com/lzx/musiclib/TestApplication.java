@@ -17,7 +17,7 @@ import com.lzx.starrysky.playback.offline.StarrySkyCache;
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
-import com.lzx.starrysky.utils.delayaction.Valid;
+import com.lzx.starrysky.delayaction.Valid;
 import com.qw.soul.permission.SoulPermission;
 import com.qw.soul.permission.bean.Permission;
 import com.qw.soul.permission.bean.Permissions;

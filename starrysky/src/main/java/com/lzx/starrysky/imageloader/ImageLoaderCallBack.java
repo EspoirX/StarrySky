@@ -1,4 +1,4 @@
-package com.lzx.starrysky.utils.imageloader;
+package com.lzx.starrysky.imageloader;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;

@@ -29,8 +29,8 @@ import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaQueueProviderSurface;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.provider.SongInfo;
-import com.lzx.starrysky.utils.imageloader.ImageLoader;
-import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
+import com.lzx.starrysky.imageloader.ImageLoader;
+import com.lzx.starrysky.imageloader.ImageLoaderCallBack;
 
 import java.util.Arrays;
 import java.util.Collections;

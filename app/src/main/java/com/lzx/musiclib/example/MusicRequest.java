@@ -47,7 +47,7 @@ public class MusicRequest {
                         "&from=webapp_music" +
                         "&method=baidu.ting.billboard.billList" +
                         "&type=2" +
-                        "&size=10" +
+                        "&size=20" +
                         "&offset=0")
                 .build();
         client.newCall(request).enqueue(new Callback() {

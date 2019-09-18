@@ -9,8 +9,8 @@ import android.support.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.lzx.starrysky.utils.imageloader.ImageLoaderCallBack;
-import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
+import com.lzx.starrysky.imageloader.ImageLoaderCallBack;
+import com.lzx.starrysky.imageloader.ImageLoaderStrategy;
 
 
 /**

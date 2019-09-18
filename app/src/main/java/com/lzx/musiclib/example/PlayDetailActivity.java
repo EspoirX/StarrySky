@@ -143,7 +143,10 @@ public class PlayDetailActivity extends AppCompatActivity {
         //获取数据
         MusicRequest musicRequest = new MusicRequest();
         musicRequest.getMusicList(this, list -> {
-            runOnUiThread(() -> mListPlayAdapter.setSongInfos(list));
+            runOnUiThread(() -> {
+                mListPlayAdapter.setSongInfos(list);
+                StarrySky.with().updatePlayList(list);
+            });
         });
     }
 

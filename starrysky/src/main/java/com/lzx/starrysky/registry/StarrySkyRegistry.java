@@ -6,9 +6,9 @@ import com.lzx.starrysky.notification.NotificationConfig;
 import com.lzx.starrysky.notification.StarrySkyNotificationManager;
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
 import com.lzx.starrysky.playback.player.Playback;
-import com.lzx.starrysky.utils.delayaction.Valid;
-import com.lzx.starrysky.utils.imageloader.ImageLoader;
-import com.lzx.starrysky.utils.imageloader.ImageLoaderStrategy;
+import com.lzx.starrysky.delayaction.Valid;
+import com.lzx.starrysky.imageloader.ImageLoader;
+import com.lzx.starrysky.imageloader.ImageLoaderStrategy;
 
 public class StarrySkyRegistry {
 

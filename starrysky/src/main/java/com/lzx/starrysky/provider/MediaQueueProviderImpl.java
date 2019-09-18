@@ -68,7 +68,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
         songList.clear();
         songList.addAll(songInfos);
         List<BaseMediaInfo> mediaInfos = new ArrayList<>();
-        for (SongInfo songInfo : songInfos) {
+        for (SongInfo songInfo : songList) {
             BaseMediaInfo mediaInfo = new BaseMediaInfo();
             mediaInfo.setMediaId(songInfo.getSongId());
             mediaInfo.setMediaTitle(songInfo.getSongName());
@@ -78,7 +78,7 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
             mediaInfos.add(mediaInfo);
             songListMap.put(songInfo.getSongId(), songInfo);
         }
-        mMediaMetadataCompatMap = toMediaMetadata(songInfos);
+        mMediaMetadataCompatMap = toMediaMetadata(songList);
         updateMediaList(mediaInfos);
     }
 

@@ -36,8 +36,8 @@ import com.lzx.starrysky.playback.queue.MediaQueue;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.registry.ValidRegistry;
-import com.lzx.starrysky.utils.delayaction.PlayValidManager;
-import com.lzx.starrysky.utils.delayaction.Valid;
+import com.lzx.starrysky.delayaction.PlayValidManager;
+import com.lzx.starrysky.delayaction.Valid;
 
 
 /**

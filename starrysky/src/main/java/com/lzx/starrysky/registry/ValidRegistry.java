@@ -2,7 +2,7 @@ package com.lzx.starrysky.registry;
 
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.utils.StarrySkyUtils;
-import com.lzx.starrysky.utils.delayaction.Valid;
+import com.lzx.starrysky.delayaction.Valid;
 
 import java.util.ArrayList;
 import java.util.List;

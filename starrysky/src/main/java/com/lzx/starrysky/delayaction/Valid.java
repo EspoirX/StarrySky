@@ -1,4 +1,4 @@
-package com.lzx.starrysky.utils.delayaction;
+package com.lzx.starrysky.delayaction;
 
 import com.lzx.starrysky.provider.SongInfo;
 
