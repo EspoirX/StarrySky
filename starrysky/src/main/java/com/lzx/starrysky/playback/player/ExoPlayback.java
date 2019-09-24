@@ -77,7 +77,7 @@ public final class ExoPlayback implements Playback {
     private final Context mContext;
     private boolean mPlayOnFocusGain;
     private Callback mCallback;
-    private String mCurrentMediaId;
+    private String mCurrentMediaId = "";
     private StarrySkyCache mStarrySkyCache;
     private StarrySkyCacheManager mCacheManager;
     private SimpleExoPlayer mExoPlayer;
