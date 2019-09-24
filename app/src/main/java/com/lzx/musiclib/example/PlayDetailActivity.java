@@ -75,6 +75,8 @@ public class PlayDetailActivity extends AppCompatActivity {
                     break;
                 case PlaybackStage.COMPLETION:
                     mTimerTask.stopToUpdateProgress();
+                    mSeekBar.setProgress(0);
+                    progress_text.setText("00:00");
                     break;
                 case PlaybackStage.BUFFERING:
                     break;

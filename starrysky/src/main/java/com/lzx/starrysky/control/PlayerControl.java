@@ -139,6 +139,16 @@ public interface PlayerControl {
     void updatePlayList(List<SongInfo> songInfos);
 
     /**
+     * 添加一首歌
+     */
+    void addSongInfo(SongInfo info);
+
+    /**
+     * 删除
+     */
+    void removeSongInfo(String songId);
+
+    /**
      * 获取当前播放的歌曲信息
      */
     SongInfo getNowPlayingSongInfo();

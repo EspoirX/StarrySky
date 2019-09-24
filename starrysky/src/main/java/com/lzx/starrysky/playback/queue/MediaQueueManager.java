@@ -192,7 +192,7 @@ public class MediaQueueManager extends MediaQueueProviderSurface implements Medi
             mUpdateListener.onMetadataChanged(metadata);
         }
         //更新封面 bitmap
-        String coverUrl = currentMusic.getMediaUrl();
+        String coverUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
         if (!TextUtils.isEmpty(coverUrl)) {
             ImageLoader imageLoader = StarrySky.get().getRegistry().getImageLoader();
             imageLoader.load(coverUrl, new ImageLoaderCallBack() {

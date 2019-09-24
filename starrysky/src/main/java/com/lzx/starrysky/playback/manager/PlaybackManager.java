@@ -121,7 +121,6 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
     }
 
 
-
     private void checkThreadHandPlayRequest(BaseMediaInfo mediaInfo, boolean isPlayWhenReady) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             mHandler.post(() -> handPlayRequestImpl(mediaInfo, isPlayWhenReady));
@@ -274,6 +273,7 @@ public class PlaybackManager implements IPlaybackManager, Playback.Callback {
         updatePlaybackState(false, null);
         //单曲模式(播放当前就结束)
         if (currRepeatMode == PlaybackStateCompatExt.SINGLE_MODE_ONE) {
+            mPlayback.setCurrentMediaId("");
             return;
         }
         if (currRepeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {

@@ -35,8 +35,8 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
     }
 
     @Override
-    public void addOneMediaBySongInfo(SongInfo songInfo) {
-        provider.addOneMediaBySongInfo(songInfo);
+    public void onlyOneMediaBySongInfo(SongInfo songInfo) {
+        provider.onlyOneMediaBySongInfo(songInfo);
     }
 
     @Override
@@ -47,6 +47,16 @@ public class MediaQueueProviderSurface implements MediaQueueProvider {
     @Override
     public void addMediaInfo(BaseMediaInfo mediaInfo) {
         provider.addMediaInfo(mediaInfo);
+    }
+
+    @Override
+    public void addMediaBySongInfo(SongInfo info) {
+        provider.addMediaBySongInfo(info);
+    }
+
+    @Override
+    public void deleteMediaById(String songId) {
+        provider.deleteMediaById(songId);
     }
 
     @Override

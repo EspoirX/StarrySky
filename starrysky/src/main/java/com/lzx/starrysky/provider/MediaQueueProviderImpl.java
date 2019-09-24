@@ -21,8 +21,9 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
     //使用Map在查找方面会效率高一点
     private LinkedHashMap<String, BaseMediaInfo> mediaListMap;
     private LinkedHashMap<String, MediaMetadataCompat> mMediaMetadataCompatMap;
-    private List<BaseMediaInfo> mediaList;
     private LinkedHashMap<String, SongInfo> songListMap;
+
+    private List<BaseMediaInfo> mediaList;
     private List<SongInfo> songList;
 
     public MediaQueueProviderImpl() {
@@ -32,7 +33,6 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
         mediaList = new ArrayList<>();
         songList = new ArrayList<>();
     }
-
 
     @Override
     public List<BaseMediaInfo> getMediaList() {
@@ -46,8 +46,8 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
 
     @Override
     public void updateMediaList(List<BaseMediaInfo> mediaInfoList) {
+        //更新 mediaList，mediaListMap
         mediaList.clear();
-        mediaListMap.clear();
         mediaList.addAll(mediaInfoList);
         for (BaseMediaInfo info : mediaInfoList) {
             mediaListMap.put(info.getMediaId(), info);
@@ -55,14 +55,8 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
     }
 
     @Override
-    public void addOneMediaBySongInfo(SongInfo songInfo) {
-        List<SongInfo> songInfos = new ArrayList<>();
-        songInfos.add(songInfo);
-        updateMediaListBySongInfo(songInfos);
-    }
-
-    @Override
     public void updateMediaListBySongInfo(List<SongInfo> songInfos) {
+        //更新 songListMap，mMediaMetadataCompatMap，songList
         songListMap.clear();
         mMediaMetadataCompatMap.clear();
         songList.clear();
@@ -83,6 +77,13 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
     }
 
     @Override
+    public void onlyOneMediaBySongInfo(SongInfo songInfo) {
+        List<SongInfo> songInfos = new ArrayList<>();
+        songInfos.add(songInfo);
+        updateMediaListBySongInfo(songInfos);
+    }
+
+    @Override
     public void addMediaInfo(BaseMediaInfo mediaInfo) {
         if (mediaInfo == null) {
             return;
@@ -91,6 +92,38 @@ public class MediaQueueProviderImpl implements MediaQueueProvider {
             mediaList.add(mediaInfo);
         }
         mediaListMap.put(mediaInfo.getMediaId(), mediaInfo);
+    }
+
+    @Override
+    public void addMediaBySongInfo(SongInfo info) {
+        if (!hasMediaInfo(info.getSongId())) {
+            songList.add(info);
+            songListMap.put(info.getSongId(), info);
+            MediaMetadataCompat metadataCompat = toMediaMetadata(info);
+            mMediaMetadataCompatMap.put(info.getSongId(), metadataCompat);
+
+            BaseMediaInfo mediaInfo = new BaseMediaInfo();
+            mediaInfo.setMediaId(info.getSongId());
+            mediaInfo.setMediaTitle(info.getSongName());
+            mediaInfo.setMediaCover(info.getSongCover());
+            mediaInfo.setMediaUrl(info.getSongUrl());
+            mediaInfo.setDuration(info.getDuration());
+
+            addMediaInfo(mediaInfo);
+        }
+    }
+
+    @Override
+    public void deleteMediaById(String songId) {
+        if (hasMediaInfo(songId)) {
+            SongInfo info = getSongInfo(songId);
+            BaseMediaInfo mediaInfo = getMediaInfo(songId);
+            mediaList.remove(mediaInfo);
+            mediaListMap.remove(songId);
+            songListMap.remove(songId);
+            mMediaMetadataCompatMap.remove(songId);
+            songList.remove(info);
+        }
     }
 
     @Override

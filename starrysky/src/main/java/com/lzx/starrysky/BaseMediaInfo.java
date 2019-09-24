@@ -53,7 +53,7 @@ public class BaseMediaInfo implements Cloneable {
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof BaseMediaInfo) {
             BaseMediaInfo info = (BaseMediaInfo) obj;
-            return info.getMediaId().equals(mediaId);
+            return info.getMediaId().equals(mediaId) && info.getMediaUrl().equals(mediaUrl);
         } else {
             return false;
         }

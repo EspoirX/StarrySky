@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
@@ -57,12 +56,15 @@ public class StarrySkyPlayerControl implements PlayerControl {
     public void playMusicByInfo(SongInfo info) {
         if (mMediaQueueProvider.hasMediaInfo(info.getSongId())) {
             playMusicImpl(info.getSongId());
+        } else {
+            mMediaQueueProvider.addMediaBySongInfo(info);
+            playMusicImpl(info.getSongId());
         }
     }
 
     @Override
     public void playMusicByInfoDirect(SongInfo info) {
-        mMediaQueueProvider.addOneMediaBySongInfo(info);
+        mMediaQueueProvider.onlyOneMediaBySongInfo(info);
         playMusicImpl(info.getSongId());
     }
 
@@ -82,16 +84,6 @@ public class StarrySkyPlayerControl implements PlayerControl {
 
     private void playMusicImpl(String mediaId) {
         connection.getTransportControls().playFromMediaId(mediaId, null);
-    }
-
-    @NonNull
-    private Bundle getMediaBundle(BaseMediaInfo info) {
-        Bundle extras = new Bundle();
-        extras.putString("mediaUrl", info.getMediaUrl());
-        extras.putString("mediaCover", info.getMediaCover());
-        extras.putString("mediaTitle", info.getMediaTitle());
-        extras.putLong("duration", info.getDuration());
-        return extras;
     }
 
     @Override
@@ -182,6 +174,16 @@ public class StarrySkyPlayerControl implements PlayerControl {
     @Override
     public void updatePlayList(List<SongInfo> songInfos) {
         mMediaQueueProvider.updateMediaListBySongInfo(songInfos);
+    }
+
+    @Override
+    public void addSongInfo(SongInfo info) {
+        mMediaQueueProvider.addMediaBySongInfo(info);
+    }
+
+    @Override
+    public void removeSongInfo(String songId) {
+        mMediaQueueProvider.deleteMediaById(songId);
     }
 
     @Override

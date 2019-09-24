@@ -23,14 +23,24 @@ public interface MediaQueueProvider {
      */
     void updateMediaList(List<BaseMediaInfo> mediaInfoList);
 
-    void addOneMediaBySongInfo(SongInfo songInfo);
+    /**
+     * 一次只添加一首歌曲（播放列表中只有一首）
+     */
+    void onlyOneMediaBySongInfo(SongInfo songInfo);
 
+    /**
+     * 更新列表
+     */
     void updateMediaListBySongInfo(List<SongInfo> songInfos);
 
     /**
      * 添加一首歌
      */
     void addMediaInfo(BaseMediaInfo mediaInfo);
+
+    void addMediaBySongInfo(SongInfo info);
+
+    void deleteMediaById(String songId);
 
     /**
      * 根据检查是否有某首音频

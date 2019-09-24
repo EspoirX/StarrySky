@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lzx.musiclib.R;
@@ -67,6 +68,16 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
         }
         holder.itemView.setOnClickListener(v -> {
             StarrySky.with().playMusicByIndex(position);
+        });
+        holder.itemView.setOnLongClickListener(v -> {
+            if (StarrySky.with().isCurrMusicIsPlaying(songInfo.getSongId())) {
+                StarrySky.with().playMusicByIndex(position + 1);
+            }
+            StarrySky.with().removeSongInfo(songInfo.getSongId());
+            notifyItemRemoved(position);
+            mSongInfos.remove(position);
+            Toast.makeText(mContext, "移除歌曲：" + songInfo.getSongName(), Toast.LENGTH_SHORT).show();
+            return false;
         });
     }
 
