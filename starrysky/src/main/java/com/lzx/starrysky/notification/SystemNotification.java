@@ -240,7 +240,7 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOnlyAlertOnce(true)
                 .setContentTitle(description.getTitle()) //歌名
-                .setContentText(description.getSubtitle()) //艺术家
+                .setContentText(mMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)) //艺术家
                 .setLargeIcon(art);
 
         if (!TextUtils.isEmpty(mConfig.getTargetClass())) {

@@ -69,6 +69,7 @@ public class MusicRequest {
                         info.setSongId(object.getString("song_id"));
                         info.setSongCover(object.getString("pic_big"));
                         info.setSongName(object.getString("title"));
+                        info.setArtist(object.getString("author"));
                         list.add(info);
                         callback.onSuccess(list);
                     }
