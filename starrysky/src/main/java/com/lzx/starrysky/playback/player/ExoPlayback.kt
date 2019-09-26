@@ -41,7 +41,7 @@ open class ExoPlayback internal constructor(
     var context: Context, private var cacheManager: StarrySkyCacheManager
 ) : Playback {
 
-    private val mStarrySkyCache: StarrySkyCache by lazy {
+    private val mStarrySkyCache: StarrySkyCache? by lazy {
         cacheManager.getStarrySkyCache(context)
     }
     private val trackSelectorParameters: DefaultTrackSelector.Parameters by lazy {

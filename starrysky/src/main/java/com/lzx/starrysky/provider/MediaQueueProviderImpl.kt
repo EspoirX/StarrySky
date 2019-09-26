@@ -68,7 +68,6 @@ open class MediaQueueProviderImpl : MediaQueueProvider {
         //更新 mediaList，mediaListMap
         mediaList.clear()
         mediaList.addAll(mediaInfoList)
-        StarrySkyUtils.log("mediaInfoList = $mediaInfoList")
         for (info in mediaInfoList) {
             mediaListMap[info.mediaId] = info
         }

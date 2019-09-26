@@ -45,7 +45,7 @@ public class TestApplication extends Application {
             super.applyOptions(context, builder);
             builder.setOpenNotification(true);
 
-            builder.setOpenCache(false);
+            builder.setOpenCache(true);
             String destFileDir = Environment.getExternalStorageDirectory().getAbsolutePath()
                     + "/111StarrySkyCache/";
             builder.setCacheDestFileDir(destFileDir);
@@ -59,21 +59,9 @@ public class TestApplication extends Application {
             registry.appendValidRegistry(new RequestSongInfoValid(context));
             registry.registryImageLoader(new GlideLoader());
         }
-
-        @Override
-        public StarrySkyCacheManager.CacheFactory getCacheFactory() {
-            return new MyCacheFactory();
-        }
     }
 
-    public static class MyCacheFactory implements StarrySkyCacheManager.CacheFactory {
 
-        @NonNull
-        @Override
-        public StarrySkyCache build(Context context, StarrySkyCacheManager manager) {
-            return null;
-        }
-    }
 
     public static class RequestSongInfoValid implements Valid {
         private MusicRequest mMusicRequest;
