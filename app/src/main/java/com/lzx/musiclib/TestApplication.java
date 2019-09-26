@@ -35,6 +35,7 @@ public class TestApplication extends Application {
     public void onCreate() {
         super.onCreate();
         StarrySky.init(this, new TestConfig());
+        StarrySkyUtils.isDebug = true;
     }
 
     private static class TestConfig extends StarrySkyConfig {
@@ -44,12 +45,12 @@ public class TestApplication extends Application {
             super.applyOptions(context, builder);
             builder.setOpenNotification(true);
 
-            builder.setOpenCache(true);
+            builder.setOpenCache(false);
             String destFileDir = Environment.getExternalStorageDirectory().getAbsolutePath()
                     + "/111StarrySkyCache/";
             builder.setCacheDestFileDir(destFileDir);
 
-            StarrySkyUtils.isDebug = true;
+
         }
 
         @Override

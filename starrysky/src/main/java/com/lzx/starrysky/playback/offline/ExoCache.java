@@ -57,7 +57,7 @@ public class ExoCache implements StarrySkyCache, DownloadHelper.Callback, Downlo
         this.actionFile = new ActionFile(file);
         trackedDownloadStates = new HashMap<>();
         trackKeys = new ArrayList<>();
-        userAgent = StarrySkyUtils.getUserAgent(context, "ExoPlayback");
+        userAgent = StarrySkyUtils.getUserAgent(context, "ExoPlaybackJava");
 
         HandlerThread actionFileWriteThread = new HandlerThread("DownloadTracker");
         actionFileWriteThread.start();

@@ -3,7 +3,7 @@ package com.lzx.starrysky;
 import android.support.annotation.Nullable;
 
 public class BaseMediaInfo implements Cloneable {
-    private String mediaId;
+    private String mediaId = "";
     private String mediaUrl;
     private String mediaCover;
     private String mediaTitle;
@@ -69,5 +69,12 @@ public class BaseMediaInfo implements Cloneable {
             e.printStackTrace();
         }
         return obj;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseMediaInfo{" +
+                "mediaId='" + mediaId + '\'' +
+                '}';
     }
 }
