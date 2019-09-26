@@ -81,7 +81,7 @@ interface MediaQueueProvider {
     /**
      * 根据id获取对应的MediaMetadataCompat对象
      */
-    fun getMediaMetadataCompatById(songId: String): MediaMetadataCompat?
+    fun getMediaMetadataCompatById(songId: String?): MediaMetadataCompat?
 
     /**
      * 更新封面art

@@ -2,6 +2,7 @@ package com.lzx.starrysky.playback.queue
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.support.v4.media.MediaMetadataCompat
 import android.text.TextUtils
 import com.lzx.starrysky.BaseMediaInfo
 import com.lzx.starrysky.StarrySky
@@ -16,6 +17,7 @@ import java.util.Arrays
 
 open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderSurface(provider),
     MediaQueue {
+
 
     private var mMediaResource: MediaResource? = null
     private var mCurrentIndex: Int = 0
@@ -38,7 +40,7 @@ open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderS
 
     override fun isSameMedia(mediaId: String): Boolean {
         val current = getCurrentMusic() ?: return false
-        return mediaId == current.mediaId
+        return mediaId == current.getMediaId()
     }
 
     override fun skipQueuePosition(amount: Int): Boolean {
@@ -132,8 +134,11 @@ open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderS
             mUpdateListener?.onMetadataRetrieveError()
             return
         }
-        val musicId = currentMusic.mediaId
-
+        val musicId = currentMusic.getMediaId()
+        if (musicId.isNullOrEmpty()) {
+            mUpdateListener?.onMetadataRetrieveError()
+            return
+        }
         val metadata = getMediaMetadataCompatById(musicId)
             ?: throw IllegalArgumentException("Invalid musicId $musicId")
 

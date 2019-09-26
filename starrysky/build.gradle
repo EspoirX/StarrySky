@@ -29,6 +29,10 @@ android {
         abortOnError false
     }
 
+    androidExtensions {
+        experimental = true
+    }
+
     publish {
         repoName = 'StarrySky'
         userOrg = 'lizixian'

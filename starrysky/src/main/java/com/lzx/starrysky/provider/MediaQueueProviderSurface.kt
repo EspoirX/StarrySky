@@ -79,7 +79,7 @@ open class MediaQueueProviderSurface(private val provider: MediaQueueProvider) :
         return provider.getIndexByMediaId(songId)
     }
 
-    override fun getMediaMetadataCompatById(songId: String): MediaMetadataCompat? {
+    override fun getMediaMetadataCompatById(songId: String?): MediaMetadataCompat? {
         return provider.getMediaMetadataCompatById(songId)
     }
 

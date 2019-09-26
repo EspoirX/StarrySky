@@ -15,7 +15,6 @@
  */
 package com.lzx.starrysky.playback.player
 
-
 import com.lzx.starrysky.provider.MediaResource
 
 /**

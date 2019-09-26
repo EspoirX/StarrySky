@@ -120,18 +120,21 @@ open class ExoPlayback internal constructor(
 
     override fun play(resource: MediaResource, isPlayWhenReady: Boolean) {
         mPlayOnFocusGain = true
-        val mediaId = resource.mediaId
+        val mediaId = resource.getMediaId()
+        if (mediaId.isNullOrEmpty()){
+            return
+        }
         val mediaHasChanged = mediaId != currentMediaId
         if (mediaHasChanged) {
             currentMediaId = mediaId
         }
-        StarrySkyUtils.log("Playback# resource is empty = " + resource.mediaUrl.isNullOrEmpty() +
+        StarrySkyUtils.log("Playback# resource is empty = " + resource.getMediaUrl().isNullOrEmpty() +
             " mediaHasChanged = " + mediaHasChanged +
             " isPlayWhenReady = " + isPlayWhenReady)
         StarrySkyUtils.log("---------------------------------------")
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false)  // release everything except the player
-            var source = resource.mediaUrl
+            var source = resource.getMediaUrl()
             if (source.isNullOrEmpty()) {
                 mCallback?.onError("播放 url 为空")
                 return

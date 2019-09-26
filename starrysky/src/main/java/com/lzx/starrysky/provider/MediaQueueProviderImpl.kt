@@ -170,7 +170,10 @@ open class MediaQueueProviderImpl : MediaQueueProvider {
         return if (info != null) mediaList.indexOf(info) else -1
     }
 
-    override fun getMediaMetadataCompatById(songId: String): MediaMetadataCompat? {
+    override fun getMediaMetadataCompatById(songId: String?): MediaMetadataCompat? {
+        if (songId.isNullOrEmpty()) {
+            return null
+        }
         return mMediaMetadataCompatMap.getOrElse(songId, { null })
     }
 

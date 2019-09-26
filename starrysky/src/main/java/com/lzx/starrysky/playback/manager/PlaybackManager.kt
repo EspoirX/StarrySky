@@ -142,8 +142,8 @@ class PlaybackManager constructor(
             val currentMusic = mediaQueue.getCurrentMusic()
             var currMetadata: MediaMetadataCompat? = null
             if (currentMusic != null) {
-                stateBuilder!!.setActiveQueueItemId(currentMusic.queueId)
-                val musicId = currentMusic.mediaId
+                stateBuilder!!.setActiveQueueItemId(currentMusic.getQueueId())
+                val musicId = currentMusic.getMediaId()
                 currMetadata =
                     StarrySky.get().mediaQueueProvider.getMediaMetadataCompatById(musicId)
             }
