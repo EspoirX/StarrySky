@@ -21,7 +21,6 @@ import com.lzx.starrysky.provider.SongInfo;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-
 /**
  * 与服务端连接的管理类
  */
@@ -41,12 +40,13 @@ public class MediaSessionConnection implements IMediaConnection {
     private MediaControllerCallback mMediaControllerCallback;
     private OnConnectListener mConnectListener;
 
-
     public MediaSessionConnection(Context context, ComponentName serviceComponent) {
         this.mContext = context;
         mediaBrowserConnectionCallback = new MediaBrowserConnectionCallback();
         mMediaControllerCallback = new MediaControllerCallback();
-        mediaBrowser = new MediaBrowserCompat(mContext, serviceComponent, mediaBrowserConnectionCallback, null);
+        mediaBrowser =
+                new MediaBrowserCompat(mContext, serviceComponent, mediaBrowserConnectionCallback,
+                        null);
 
         isConnected.postValue(false);
         playbackState.postValue(PlaybackStage.buildNone());
@@ -184,7 +184,8 @@ public class MediaSessionConnection implements IMediaConnection {
         public void onConnected() {
             super.onConnected();
             try {
-                mediaController = new MediaControllerCompat(mContext, mediaBrowser.getSessionToken());
+                mediaController =
+                        new MediaControllerCompat(mContext, mediaBrowser.getSessionToken());
                 mediaController.registerCallback(mMediaControllerCallback);
                 transportControls = mediaController.getTransportControls();
                 rootMediaId = mediaBrowser.getRoot();
@@ -215,7 +216,6 @@ public class MediaSessionConnection implements IMediaConnection {
 
         PlaybackStage playbackStage = PlaybackStage.buildNone();
 
-
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
@@ -230,7 +230,8 @@ public class MediaSessionConnection implements IMediaConnection {
                 return;
             }
             //状态监听
-            CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = StarrySky.with().getPlayerEventListeners();
+            List<OnPlayerEventListener> mPlayerEventListeners =
+                    StarrySky.with().getPlayerEventListeners();
             switch (state.getState()) {
                 case PlaybackStateCompat.STATE_PLAYING:
                     for (OnPlayerEventListener listener : mPlayerEventListeners) {
@@ -254,11 +255,13 @@ public class MediaSessionConnection implements IMediaConnection {
                     for (OnPlayerEventListener listener : mPlayerEventListeners) {
                         listener.onError(state.getErrorCode(), state.getErrorMessage().toString());
                     }
-                    playbackState.postValue(playbackStage.buildError(songId, state.getErrorCode(), state.getErrorMessage().toString()));
+                    playbackState.postValue(playbackStage.buildError(songId, state.getErrorCode(),
+                            state.getErrorMessage().toString()));
                     break;
                 case PlaybackStateCompat.STATE_NONE:
                     for (OnPlayerEventListener listener : mPlayerEventListeners) {
-                        SongInfo songInfo = StarrySky.get().getMediaQueueProvider().getSongInfo(songId);
+                        SongInfo songInfo =
+                                StarrySky.get().getMediaQueueProvider().getSongInfo(songId);
                         listener.onPlayCompletion(songInfo);
                     }
                     playbackState.postValue(playbackStage.buildCompletion(songId));
@@ -285,7 +288,8 @@ public class MediaSessionConnection implements IMediaConnection {
             SongInfo songInfo = StarrySky.get().getMediaQueueProvider().getSongInfo(songId);
             playbackState.postValue(playbackStage.buildSwitch(songId));
             //状态监听
-            CopyOnWriteArrayList<OnPlayerEventListener> mPlayerEventListeners = StarrySky.with().getPlayerEventListeners();
+            List<OnPlayerEventListener> mPlayerEventListeners =
+                    StarrySky.with().getPlayerEventListeners();
             for (OnPlayerEventListener listener : mPlayerEventListeners) {
                 listener.onMusicSwitch(songInfo);
             }

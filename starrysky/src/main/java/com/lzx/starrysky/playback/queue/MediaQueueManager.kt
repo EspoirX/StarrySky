@@ -2,7 +2,6 @@ package com.lzx.starrysky.playback.queue
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.support.v4.media.MediaMetadataCompat
 import android.text.TextUtils
 import com.lzx.starrysky.BaseMediaInfo
 import com.lzx.starrysky.StarrySky
@@ -156,7 +155,7 @@ open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderS
                     mUpdateListener?.onMetadataChanged(metadata)
                 }
 
-                override fun onBitmapFailed(errorDrawable: Drawable) {
+                override fun onBitmapFailed(errorDrawable: Drawable?) {
                 }
             })
         }

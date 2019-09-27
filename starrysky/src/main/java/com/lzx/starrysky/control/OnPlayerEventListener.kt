@@ -1,43 +1,43 @@
-package com.lzx.starrysky.control;
+package com.lzx.starrysky.control
 
-import com.lzx.starrysky.provider.SongInfo;
+import com.lzx.starrysky.provider.SongInfo
 
 /**
  * 播放监听
  */
-public interface OnPlayerEventListener {
+interface OnPlayerEventListener {
     /**
      * 切歌回调
      */
-    void onMusicSwitch(SongInfo songInfo);
+    fun onMusicSwitch(songInfo: SongInfo)
 
     /**
      * 开始播放,与 onMusicSwitch 的关系是先回调 onMusicSwitch，再回调 onPlayerStart
      */
-    void onPlayerStart();
+    fun onPlayerStart()
 
     /**
      * 暂停播放
      */
-    void onPlayerPause();
+    fun onPlayerPause()
 
     /**
      * 停止播放
      */
-    void onPlayerStop();
+    fun onPlayerStop()
 
     /**
      * 播放完成
      */
-    void onPlayCompletion(SongInfo songInfo);
+    fun onPlayCompletion(songInfo: SongInfo)
 
     /**
      * 正在缓冲
      */
-    void onBuffering();
+    fun onBuffering()
 
     /**
      * 发生错误
      */
-    void onError(int errorCode, String errorMsg);
+    fun onError(errorCode: Int, errorMsg: String)
 }

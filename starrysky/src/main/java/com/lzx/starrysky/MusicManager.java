@@ -437,7 +437,7 @@ public class MusicManager {
         StarrySky.with().clearPlayerEventListener();
     }
 
-    public CopyOnWriteArrayList<OnPlayerEventListener> getPlayerEventListeners() {
+    public  List<OnPlayerEventListener> getPlayerEventListeners() {
         return StarrySky.with().getPlayerEventListeners();
     }
 }

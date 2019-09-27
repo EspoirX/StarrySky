@@ -10,6 +10,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import com.lzx.starrysky.BaseMediaInfo
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.delayaction.Action
 import com.lzx.starrysky.delayaction.PlayValidManager
 import com.lzx.starrysky.ext.SINGLE_MODE_ONE
 import com.lzx.starrysky.notification.INotification
@@ -17,6 +18,7 @@ import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueue
 import com.lzx.starrysky.provider.MediaQueueProvider
+import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.registry.ValidRegistry
 
 class PlaybackManager constructor(
@@ -58,10 +60,12 @@ class PlaybackManager constructor(
         if (validRegistry.hasValid()) {
             val validManager = PlayValidManager.get()
             //添加执行action
-            validManager.setAction { songInfo ->
-                val mediaInfo = mediaQueue.songInfoToMediaInfo(songInfo)
-                checkThreadHandPlayRequest(mediaInfo, isPlayWhenReady)
-            }
+            validManager.setAction(object : Action {
+                override fun call(songInfo: SongInfo?) {
+                    val mediaInfo = mediaQueue.songInfoToMediaInfo(songInfo)
+                    checkThreadHandPlayRequest(mediaInfo, isPlayWhenReady)
+                }
+            })
             //添加验证
             for (valid in validRegistry.valids) {
                 validManager.addValid(valid ?: ValidRegistry.DefaultValid())

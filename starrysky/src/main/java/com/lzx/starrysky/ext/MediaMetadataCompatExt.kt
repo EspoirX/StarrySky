@@ -98,8 +98,12 @@ inline val MediaMetadataCompat.displayIcon: Bitmap
 inline val MediaMetadataCompat.displayIconUri: Uri
     get() = this.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI).toUri()
 
+inline val MediaMetadataCompat.mediaUrl: String
+    get() = this.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI)
+
+
 inline val MediaMetadataCompat.mediaUri: Uri
-    get() = this.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI).toUri()
+    get() = mediaUrl.toUri()
 
 inline val MediaMetadataCompat.downloadStatus
     get() = getLong(MediaMetadataCompat.METADATA_KEY_DOWNLOAD_STATUS)
