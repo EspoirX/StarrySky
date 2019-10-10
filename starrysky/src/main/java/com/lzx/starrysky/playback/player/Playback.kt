@@ -38,6 +38,8 @@ interface Playback {
 
     var volume: Float
 
+    fun getAudioSessionId():Int
+
     fun start()
 
     fun stop(notifyListeners: Boolean)

@@ -268,6 +268,11 @@ interface PlayerControl {
     fun getDuration(): Long
 
     /**
+     * 获取 AudioSessionId
+     */
+    fun getAudioSessionId():Int
+
+    /**
      * 更新通知栏喜欢或收藏按钮UI
      */
     fun updateFavoriteUI(isFavorite: Boolean)

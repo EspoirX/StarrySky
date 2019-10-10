@@ -36,7 +36,6 @@ import com.lzx.starrysky.playback.offline.StarrySkyCacheManager
 import com.lzx.starrysky.provider.MediaResource
 import com.lzx.starrysky.utils.StarrySkyUtils
 
-
 open class ExoPlayback internal constructor(
     var context: Context, private var cacheManager: StarrySkyCacheManager
 ) : Playback {
@@ -106,6 +105,10 @@ open class ExoPlayback internal constructor(
             mExoPlayer?.volume = value
         }
 
+    override fun getAudioSessionId(): Int {
+        return mExoPlayer?.audioSessionId ?: 0
+    }
+
     override fun start() {
         // Nothing to do.
     }
@@ -121,16 +124,17 @@ open class ExoPlayback internal constructor(
     override fun play(resource: MediaResource, isPlayWhenReady: Boolean) {
         mPlayOnFocusGain = true
         val mediaId = resource.getMediaId()
-        if (mediaId.isNullOrEmpty()){
+        if (mediaId.isNullOrEmpty()) {
             return
         }
         val mediaHasChanged = mediaId != currentMediaId
         if (mediaHasChanged) {
             currentMediaId = mediaId
         }
-        StarrySkyUtils.log("Playback# resource is empty = " + resource.getMediaUrl().isNullOrEmpty() +
-            " mediaHasChanged = " + mediaHasChanged +
-            " isPlayWhenReady = " + isPlayWhenReady)
+        StarrySkyUtils.log(
+            "Playback# resource is empty = " + resource.getMediaUrl().isNullOrEmpty() +
+                " mediaHasChanged = " + mediaHasChanged +
+                " isPlayWhenReady = " + isPlayWhenReady)
         StarrySkyUtils.log("---------------------------------------")
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false)  // release everything except the player

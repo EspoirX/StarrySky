@@ -323,6 +323,10 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         } else duration
     }
 
+    override fun getAudioSessionId(): Int {
+        return mPlayback?.getAudioSessionId() ?: 0
+    }
+
     override fun updateFavoriteUI(isFavorite: Boolean) {
         val bundle = Bundle()
         bundle.putBoolean("isFavorite", isFavorite)
