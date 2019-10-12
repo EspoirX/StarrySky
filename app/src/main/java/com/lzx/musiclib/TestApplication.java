@@ -45,10 +45,10 @@ public class TestApplication extends Application {
             super.applyOptions(context, builder);
             builder.setOpenNotification(true);
 
-            builder.setOpenCache(true);
-            String destFileDir = Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + "/111StarrySkyCache/";
-            builder.setCacheDestFileDir(destFileDir);
+            // builder.setOpenCache(false);
+            // String destFileDir = Environment.getExternalStorageDirectory().getAbsolutePath()
+            //         + "/111StarrySkyCache/";
+            // builder.setCacheDestFileDir(destFileDir);
 
 
         }

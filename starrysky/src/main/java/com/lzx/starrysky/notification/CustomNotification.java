@@ -34,7 +34,6 @@ import com.lzx.starrysky.imageloader.ImageLoader;
 
 import java.util.List;
 
-
 /**
  * 自定义通知栏
  */
@@ -70,6 +69,8 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
     private Resources res;
     private NotificationColorUtils mColorUtils;
 
+    private long lastClickTime;
+
     public CustomNotification(MusicService service, NotificationConfig config) {
         mService = service;
         mConfig = config;
@@ -82,7 +83,8 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
             e.printStackTrace();
         }
 
-        mNotificationManager = (NotificationManager) mService.getSystemService(Service.NOTIFICATION_SERVICE);
+        mNotificationManager =
+                (NotificationManager) mService.getSystemService(Service.NOTIFICATION_SERVICE);
         packageName = mService.getApplicationContext().getPackageName();
         res = mService.getApplicationContext().getResources();
         mColorUtils = new NotificationColorUtils();
@@ -127,6 +129,10 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         if (action == null) {
             return;
         }
+        long nowTime = System.currentTimeMillis();
+        if (nowTime - lastClickTime <= TIME_INTERVAL) {
+            return;
+        }
         switch (action) {
             case ACTION_PAUSE:
                 mTransportControls.pause();
@@ -153,6 +159,7 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
             default:
                 break;
         }
+        lastClickTime = nowTime;
     }
 
     private final MediaControllerCompat.Callback mCb = new MediaControllerCompat.Callback() {
@@ -160,11 +167,13 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
             mPlaybackState = state;
-            if (state.getState() == PlaybackStateCompat.STATE_STOPPED || state.getState() == PlaybackStateCompat.STATE_NONE) {
+            if (state.getState() == PlaybackStateCompat.STATE_STOPPED ||
+                    state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
             } else {
                 Notification notification = createNotification();
-                if (notification != null) {
+                if (notification != null &&
+                        state.getState() != PlaybackStateCompat.STATE_BUFFERING) {
                     mNotificationManager.notify(NOTIFICATION_ID, notification);
                 }
             }
@@ -174,10 +183,6 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             super.onMetadataChanged(metadata);
             mMetadata = metadata;
-            Notification notification = createNotification();
-            if (notification != null) {
-                mNotificationManager.notify(NOTIFICATION_ID, notification);
-            }
         }
 
         @Override
@@ -239,12 +244,14 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         MediaDescriptionCompat description = mMetadata.getDescription();
 
         String songId = mMetadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-        int smallIcon = mConfig.getSmallIconRes() != -1 ? mConfig.getSmallIconRes() : R.drawable.ic_notification;
+        int smallIcon = mConfig.getSmallIconRes() != -1 ? mConfig.getSmallIconRes() :
+                R.drawable.ic_notification;
         //适配8.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationUtils.createNotificationChannel(mService, mNotificationManager);
         }
-        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
+        final NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(mService, CHANNEL_ID);
         notificationBuilder
                 .setOnlyAlertOnce(true)
                 .setSmallIcon(smallIcon)
@@ -255,7 +262,8 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         if (!TextUtils.isEmpty(mConfig.getTargetClass())) {
             Class clazz = NotificationUtils.getTargetClass(mConfig.getTargetClass());
             if (clazz != null) {
-                notificationBuilder.setContentIntent(NotificationUtils.createContentIntent(mService, mConfig, songId, null, clazz));
+                notificationBuilder.setContentIntent(NotificationUtils
+                        .createContentIntent(mService, mConfig, songId, null, clazz));
             }
         }
         //这里不能复用，会导致内存泄漏，需要每次都创建
@@ -303,39 +311,50 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
     private RemoteViews createRemoteViews(boolean isBigRemoteViews) {
         RemoteViews remoteView;
         if (isBigRemoteViews) {
-            remoteView = new RemoteViews(packageName, getResourceId(LAYOUT_NOTIFY_BIG_PLAY, "layout"));
+            remoteView =
+                    new RemoteViews(packageName, getResourceId(LAYOUT_NOTIFY_BIG_PLAY, "layout"));
         } else {
             remoteView = new RemoteViews(packageName, getResourceId(LAYOUT_NOTIFY_PLAY, "layout"));
         }
         if (mPlayIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_PLAY, "id"), mPlayIntent);
+            remoteView
+                    .setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_PLAY, "id"), mPlayIntent);
         }
         if (mPauseIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_PAUSE, "id"), mPauseIntent);
+            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_PAUSE, "id"),
+                    mPauseIntent);
         }
         if (mStopIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_STOP, "id"), mStopIntent);
+            remoteView
+                    .setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_STOP, "id"), mStopIntent);
         }
         if (mFavoriteIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"), mFavoriteIntent);
+            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
+                    mFavoriteIntent);
         }
         if (mLyricsIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_LYRICS, "id"), mLyricsIntent);
+            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
+                    mLyricsIntent);
         }
         if (mDownloadIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_DOWNLOAD, "id"), mDownloadIntent);
+            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_DOWNLOAD, "id"),
+                    mDownloadIntent);
         }
         if (mNextIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_NEXT, "id"), mNextIntent);
+            remoteView
+                    .setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_NEXT, "id"), mNextIntent);
         }
         if (mPreviousIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_PRE, "id"), mPreviousIntent);
+            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_PRE, "id"),
+                    mPreviousIntent);
         }
         if (mCloseIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_CLOSE, "id"), mCloseIntent);
+            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_CLOSE, "id"),
+                    mCloseIntent);
         }
         if (mPlayOrPauseIntent != null) {
-            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"), mPlayOrPauseIntent);
+            remoteView.setOnClickPendingIntent(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
+                    mPlayOrPauseIntent);
         }
         return remoteView;
     }
@@ -392,8 +411,10 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
                         DRAWABLE_NOTIFY_BTN_LIGHT_DOWNLOAD, "drawable"));
 
         //上一首下一首按钮
-        boolean hasNextSong = (mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0;
-        boolean hasPreSong = (mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0;
+        boolean hasNextSong =
+                (mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0;
+        boolean hasPreSong =
+                (mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0;
         disableNextBtn(hasNextSong, isDark);
         disablePreviousBtn(hasPreSong, isDark);
 
@@ -515,7 +536,6 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
         mNotificationManager.notify(NOTIFICATION_ID, mNotification);
     }
 
-
     private int getResourceId(String name, String className) {
         return res.getIdentifier(name, className, packageName);
     }
@@ -557,13 +577,15 @@ public class CustomNotification extends BroadcastReceiver implements INotificati
     }
 
     private void setPlayOrPauseIntent(PendingIntent pendingIntent) {
-        mPlayOrPauseIntent = pendingIntent == null ? getPendingIntent(ACTION_PLAY_OR_PAUSE) : pendingIntent;
+        mPlayOrPauseIntent =
+                pendingIntent == null ? getPendingIntent(ACTION_PLAY_OR_PAUSE) : pendingIntent;
     }
 
     private PendingIntent getPendingIntent(String action) {
         Intent intent = new Intent(action);
         intent.setPackage(packageName);
-        return PendingIntent.getBroadcast(mService, REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent
+                .getBroadcast(mService, REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
 }

@@ -35,6 +35,7 @@ public class ListPlayExampleActivity extends AppCompatActivity {
         recyclerView.setAdapter(mListPlayAdapter);
         mTimerTask = new TimerTaskManager();
 
+
         //状态监听
         StarrySky.with().playbackState().observe(this, playbackStage -> {
             if (playbackStage == null) {
@@ -68,7 +69,8 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                 case PlaybackStage.ERROR:
                     mTimerTask.stopToUpdateProgress();
                     playPause.setText("播放/暂停");
-                    Toast.makeText(this, playbackStage.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, playbackStage.getErrorMessage(), Toast.LENGTH_SHORT)
+                            .show();
                     break;
                 default:
                     break;
@@ -134,7 +136,6 @@ public class ListPlayExampleActivity extends AppCompatActivity {
             });
         });
     }
-
 
     @Override
     protected void onDestroy() {

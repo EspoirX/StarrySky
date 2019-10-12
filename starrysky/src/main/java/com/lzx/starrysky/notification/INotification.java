@@ -63,6 +63,7 @@ public interface INotification {
     String DRAWABLE_NOTIFY_BTN_DARK_PREV_PRESSED = "notify_btn_dark_prev_pressed";   //黑色背景时上一首按钮按下时的图片资源
     String DRAWABLE_NOTIFY_BTN_DARK_PREV_SELECTOR = "notify_btn_dark_prev_selector"; //黑色背景时上一首按钮selector
 
+    int TIME_INTERVAL = 1000;
 
     /**
      * 展示通知栏

@@ -28,7 +28,6 @@ import com.lzx.starrysky.notification.utils.NotificationUtils;
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack;
 import com.lzx.starrysky.imageloader.ImageLoader;
 
-
 /**
  * 系统通知栏
  */
@@ -51,6 +50,7 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
     private String packageName;
     private boolean mStarted = false;
     private NotificationConfig mConfig;
+    private long lastClickTime;
 
     public SystemNotification(MusicService service, NotificationConfig constructor) {
         mService = service;
@@ -64,7 +64,8 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
             e.printStackTrace();
         }
 
-        mNotificationManager = (NotificationManager) mService.getSystemService(Service.NOTIFICATION_SERVICE);
+        mNotificationManager =
+                (NotificationManager) mService.getSystemService(Service.NOTIFICATION_SERVICE);
         packageName = mService.getApplicationContext().getPackageName();
 
         setStopIntent(mConfig.getStopIntent());
@@ -104,11 +105,13 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             super.onPlaybackStateChanged(state);
             mPlaybackState = state;
-            if (state.getState() == PlaybackStateCompat.STATE_STOPPED || state.getState() == PlaybackStateCompat.STATE_NONE) {
+            if (state.getState() == PlaybackStateCompat.STATE_STOPPED ||
+                    state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
             } else {
                 Notification notification = createNotification();
-                if (notification != null) {
+                if (notification != null &&
+                        state.getState() != PlaybackStateCompat.STATE_BUFFERING) {
                     mNotificationManager.notify(NOTIFICATION_ID, notification);
                 }
             }
@@ -118,10 +121,6 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             super.onMetadataChanged(metadata);
             mMetadata = metadata;
-            Notification notification = createNotification();
-            if (notification != null) {
-                mNotificationManager.notify(NOTIFICATION_ID, notification);
-            }
         }
 
         @Override
@@ -174,11 +173,14 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         }
     }
 
-
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
         if (action == null) {
+            return;
+        }
+        long nowTime = System.currentTimeMillis();
+        if (nowTime - lastClickTime <= TIME_INTERVAL) {
             return;
         }
         switch (action) {
@@ -197,6 +199,7 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
             default:
                 break;
         }
+        lastClickTime = nowTime;
     }
 
     private Notification createNotification() {
@@ -221,7 +224,8 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
             NotificationUtils.createNotificationChannel(mService, mNotificationManager);
         }
 
-        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
+        final NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(mService, CHANNEL_ID);
 
         final int playPauseButtonPosition = addActions(notificationBuilder);
         notificationBuilder
@@ -247,7 +251,8 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
             Class clazz = NotificationUtils.getTargetClass(mConfig.getTargetClass());
             if (clazz != null) {
                 String songId = mMetadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                notificationBuilder.setContentIntent(NotificationUtils.createContentIntent(mService, mConfig, songId, null, clazz));
+                notificationBuilder.setContentIntent(NotificationUtils
+                        .createContentIntent(mService, mConfig, songId, null, clazz));
             }
         }
 
@@ -271,7 +276,8 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
     /**
      * 封面加载
      */
-    private void fetchBitmapFromURLAsync(String fetchArtUrl, NotificationCompat.Builder notificationBuilder) {
+    private void fetchBitmapFromURLAsync(String fetchArtUrl,
+                                         NotificationCompat.Builder notificationBuilder) {
         ImageLoader imageLoader = StarrySky.get().getRegistry().getImageLoader();
         imageLoader.load(fetchArtUrl, new ImageLoaderCallBack() {
             @Override
@@ -314,12 +320,16 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         final PendingIntent intent;
 
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-            label = !TextUtils.isEmpty(mConfig.getLabelPlay()) ? mConfig.getLabelPlay() : mService.getString(R.string.label_pause);
-            icon = mConfig.getPauseDrawableRes() != -1 ? mConfig.getPauseDrawableRes() : R.drawable.ic_pause_white_24dp;
+            label = !TextUtils.isEmpty(mConfig.getLabelPlay()) ? mConfig.getLabelPlay() :
+                    mService.getString(R.string.label_pause);
+            icon = mConfig.getPauseDrawableRes() != -1 ? mConfig.getPauseDrawableRes() :
+                    R.drawable.ic_pause_white_24dp;
             intent = mPauseIntent;
         } else {
-            label = !TextUtils.isEmpty(mConfig.getLabelPause()) ? mConfig.getLabelPause() : mService.getString(R.string.label_play);
-            icon = mConfig.getPlayDrawableRes() != -1 ? mConfig.getPlayDrawableRes() : R.drawable.ic_play_arrow_white_24dp;
+            label = !TextUtils.isEmpty(mConfig.getLabelPause()) ? mConfig.getLabelPause() :
+                    mService.getString(R.string.label_play);
+            icon = mConfig.getPlayDrawableRes() != -1 ? mConfig.getPlayDrawableRes() :
+                    R.drawable.ic_play_arrow_white_24dp;
             intent = mPlayIntent;
         }
 
@@ -328,14 +338,15 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
         // 如果有下一首
         if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
             notificationBuilder.addAction(
-                    mConfig.getSkipNextDrawableRes() != -1 ? mConfig.getSkipNextDrawableRes() : R.drawable.ic_skip_next_white_24dp,
-                    !TextUtils.isEmpty(mConfig.getSkipNextTitle()) ? mConfig.getSkipNextTitle() : mService.getString(R.string.label_next),
+                    mConfig.getSkipNextDrawableRes() != -1 ? mConfig.getSkipNextDrawableRes() :
+                            R.drawable.ic_skip_next_white_24dp,
+                    !TextUtils.isEmpty(mConfig.getSkipNextTitle()) ? mConfig.getSkipNextTitle() :
+                            mService.getString(R.string.label_next),
                     mNextIntent);
         }
 
         return playPauseButtonPosition;
     }
-
 
     private void setStopIntent(PendingIntent pendingIntent) {
         mStopIntent = pendingIntent == null ? getPendingIntent(ACTION_STOP) : pendingIntent;
@@ -360,7 +371,8 @@ public class SystemNotification extends BroadcastReceiver implements INotificati
     private PendingIntent getPendingIntent(String action) {
         Intent intent = new Intent(action);
         intent.setPackage(packageName);
-        return PendingIntent.getBroadcast(mService, REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent
+                .getBroadcast(mService, REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     @Override
