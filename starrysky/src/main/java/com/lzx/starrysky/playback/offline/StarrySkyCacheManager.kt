@@ -1,7 +1,6 @@
 package com.lzx.starrysky.playback.offline
 
 import android.content.Context
-import android.text.TextUtils
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
@@ -18,7 +17,7 @@ import java.io.File
 class StarrySkyCacheManager constructor(
     private val context: Context,
     private val isOpenCache: Boolean,
-    private val cacheDestFileDir: String,
+    private val cacheDestFileDir: String?,
     factory: CacheFactory?
 ) {
 
@@ -94,7 +93,7 @@ class StarrySkyCacheManager constructor(
      * 创建缓存文件夹
      */
     fun getDownloadDirectory(context: Context): File {
-        if (!TextUtils.isEmpty(cacheDestFileDir)) {
+        if (!cacheDestFileDir.isNullOrEmpty()) {
             downloadDirectory = File(cacheDestFileDir)
             if (!downloadDirectory!!.exists()) {
                 downloadDirectory!!.mkdirs()
