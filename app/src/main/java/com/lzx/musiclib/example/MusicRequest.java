@@ -29,7 +29,8 @@ public class MusicRequest {
         builder.addInterceptor(chain -> {
             Request newRequest = chain.request().newBuilder()
                     .removeHeader("User-Agent")
-                    .addHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:0.9.4)")
+                    .addHeader("User-Agent",
+                            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:0.9.4)")
                     .build();
             return chain.proceed(newRequest);
         });
@@ -57,7 +58,8 @@ public class MusicRequest {
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response)
+                    throws IOException {
                 try {
                     String json = response.body().string();
                     JSONObject jsonObject = new JSONObject(json);
@@ -85,7 +87,8 @@ public class MusicRequest {
      */
     public void getSongInfoDetail(String songId, RequestInfoCallback callback) {
         Request request = new Request.Builder()
-                .url("http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.play&songid=" + songId)
+                .url("http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.play&songid=" +
+                        songId)
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -94,9 +97,11 @@ public class MusicRequest {
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response)
+                    throws IOException {
                 try {
-                    JSONObject jsonObject = new JSONObject(response.body().string()).getJSONObject("bitrate");
+                    JSONObject jsonObject =
+                            new JSONObject(response.body().string()).getJSONObject("bitrate");
                     String url = jsonObject.getString("file_link");
                     callback.onSuccess(url);
                 } catch (JSONException e) {

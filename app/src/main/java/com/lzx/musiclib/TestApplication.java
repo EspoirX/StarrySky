@@ -49,8 +49,6 @@ public class TestApplication extends Application {
             // String destFileDir = Environment.getExternalStorageDirectory().getAbsolutePath()
             //         + "/111StarrySkyCache/";
             // builder.setCacheDestFileDir(destFileDir);
-
-
         }
 
         @Override
@@ -60,8 +58,6 @@ public class TestApplication extends Application {
             registry.registryImageLoader(new GlideLoader());
         }
     }
-
-
 
     public static class RequestSongInfoValid implements Valid {
         private MusicRequest mMusicRequest;

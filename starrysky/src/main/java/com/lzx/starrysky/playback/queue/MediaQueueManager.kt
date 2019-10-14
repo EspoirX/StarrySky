@@ -145,7 +145,7 @@ open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderS
 
         //更新封面 bitmap
         val coverUrl = metadata.albumArtUrl
-        if (!TextUtils.isEmpty(coverUrl)) {
+        if (!coverUrl.isNullOrEmpty()) {
             val imageLoader = StarrySky.get().registry.imageLoader
             imageLoader.load(coverUrl, object : ImageLoaderCallBack {
                 override fun onBitmapLoaded(bitmap: Bitmap?) {

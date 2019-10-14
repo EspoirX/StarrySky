@@ -195,8 +195,8 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         songInfo.artist = metadata.artist.toString()
         songInfo.duration = metadata.duration
         songInfo.genre = metadata.genre.toString()
-        songInfo.songCover = metadata.albumArtUrl
-        songInfo.albumCover = metadata.albumArtUrl
+        songInfo.songCover = metadata.albumArtUrl.toString()
+        songInfo.albumCover = metadata.albumArtUrl.toString()
         songInfo.songName = metadata.title.toString()
         songInfo.trackNumber = metadata.trackNumber.toInt()
         songInfo.albumSongCount = metadata.trackCount.toInt()
