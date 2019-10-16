@@ -82,7 +82,8 @@ public class PlayDetailActivity extends AppCompatActivity {
                     break;
                 case PlaybackStage.ERROR:
                     mTimerTask.stopToUpdateProgress();
-                    Toast.makeText(this, playbackStage.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, playbackStage.getErrorMessage(), Toast.LENGTH_SHORT)
+                            .show();
                     break;
                 default:
                     break;
@@ -99,7 +100,8 @@ public class PlayDetailActivity extends AppCompatActivity {
             }
             mSeekBar.setProgress((int) position);
             mSeekBar.setSecondaryProgress((int) buffered);
-            progress_text.setText(ListPlayAdapter.formatMusicTime(position) + "/" + ListPlayAdapter.formatMusicTime(duration));
+            progress_text.setText(ListPlayAdapter.formatMusicTime(position) + "/" +
+                    ListPlayAdapter.formatMusicTime(duration));
             time_text.setText(ListPlayAdapter.formatMusicTime(duration));
             mListPlayAdapter.notifyDataSetChanged();
         });
