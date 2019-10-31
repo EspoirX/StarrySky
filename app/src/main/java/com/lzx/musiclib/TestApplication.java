@@ -2,8 +2,9 @@ package com.lzx.musiclib;
 
 import android.Manifest;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
-import android.os.Environment;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -14,8 +15,6 @@ import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.StarrySkyBuilder;
 import com.lzx.starrysky.StarrySkyConfig;
 import com.lzx.starrysky.delayaction.Valid;
-import com.lzx.starrysky.playback.offline.StarrySkyCache;
-import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
 import com.lzx.starrysky.utils.StarrySkyUtils;
@@ -25,7 +24,6 @@ import com.qw.soul.permission.bean.Permissions;
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener;
 
 import leakcanary.LeakCanary;
-import shark.Leak;
 
 /**
  * create by lzx
@@ -43,6 +41,18 @@ public class TestApplication extends Application {
     }
 
     private static class TestConfig extends StarrySkyConfig {
+
+        public static String ACTION_PLAY_OR_PAUSE = "ACTION_PLAY_OR_PAUSE";
+        public static String ACTION_NEXT = "ACTION_NEXT";
+        public static String ACTION_PRE = "ACTION_PRE";
+        public static String ACTION_FAVORITE = "ACTION_FAVORITE";
+        public static String ACTION_LYRICS = "ACTION_LYRICS";
+
+        private PendingIntent getPendingIntent(Context context, String action) {
+            Intent intent = new Intent(action);
+            intent.setClass(context, NotificationReceiver.class);
+            return PendingIntent.getBroadcast(context, 0, intent, 0);
+        }
 
         @Override
         public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
