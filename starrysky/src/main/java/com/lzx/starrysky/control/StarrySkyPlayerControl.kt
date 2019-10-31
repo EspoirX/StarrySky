@@ -1,5 +1,6 @@
 package com.lzx.starrysky.control
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.net.Uri
@@ -88,45 +89,45 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     private fun playMusicImpl(mediaId: String) {
-        connection.transportControls.playFromMediaId(mediaId, null)
+        connection.getTransportControls()?.playFromMediaId(mediaId, null)
     }
 
     override fun pauseMusic() {
-        connection.transportControls.pause()
+        connection.getTransportControls()?.pause()
     }
 
     override fun playMusic() {
-        connection.transportControls.play()
+        connection.getTransportControls()?.play()
     }
 
     override fun stopMusic() {
-        connection.transportControls.stop()
+        connection.getTransportControls()?.stop()
     }
 
     override fun prepare() {
-        connection.transportControls.prepare()
+        connection.getTransportControls()?.prepare()
     }
 
     override fun prepareFromSongId(songId: String) {
         if (mMediaQueueProvider.hasMediaInfo(songId)) {
-            connection.transportControls.prepareFromMediaId(songId, null)
+            connection.getTransportControls()?.prepareFromMediaId(songId, null)
         }
     }
 
     override fun skipToNext() {
-        connection.transportControls.skipToNext()
+        connection.getTransportControls()?.skipToNext()
     }
 
     override fun skipToPrevious() {
-        connection.transportControls.skipToPrevious()
+        connection.getTransportControls()?.skipToPrevious()
     }
 
     override fun fastForward() {
-        connection.transportControls.fastForward()
+        connection.getTransportControls()?.fastForward()
     }
 
     override fun rewind() {
-        connection.transportControls.rewind()
+        connection.getTransportControls()?.rewind()
     }
 
     override fun onDerailleur(refer: Boolean, multiple: Float) {
@@ -137,23 +138,23 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun seekTo(pos: Long) {
-        connection.transportControls.seekTo(pos)
+        connection.getTransportControls()?.seekTo(pos)
     }
 
     override fun setShuffleMode(shuffleMode: Int) {
-        connection.transportControls.setShuffleMode(shuffleMode)
+        connection.getTransportControls()?.setShuffleMode(shuffleMode)
     }
 
     override fun getShuffleMode(): Int {
-        return connection.shuffleMode
+        return connection.getShuffleMode()
     }
 
     override fun setRepeatMode(repeatMode: Int) {
-        connection.transportControls.setRepeatMode(repeatMode)
+        connection.getTransportControls()?.setRepeatMode(repeatMode)
     }
 
     override fun getRepeatMode(): Int {
-        return connection.repeatMode
+        return connection.getRepeatMode()
     }
 
     override fun getPlayList(): List<SongInfo> {
@@ -174,7 +175,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
 
     override fun getNowPlayingSongInfo(): SongInfo? {
         var songInfo: SongInfo? = null
-        val metadataCompat = connection.nowPlaying
+        val metadataCompat = connection.getNowPlaying()
         if (metadataCompat != null) {
             val songId = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
             songInfo = mMediaQueueProvider.getSongInfo(songId)
@@ -189,8 +190,8 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
 
     private fun getSongInfoFromMediaMetadata(metadata: MediaMetadataCompat): SongInfo {
         val songInfo = SongInfo()
-        songInfo.songId = metadata.id
-        songInfo.songUrl = metadata.mediaUrl
+        songInfo.songId = metadata.id.toString()
+        songInfo.songUrl = metadata.mediaUrl.toString()
         songInfo.albumName = metadata.album.toString()
         songInfo.artist = metadata.artist.toString()
         songInfo.duration = metadata.duration
@@ -206,9 +207,9 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
 
     override fun getNowPlayingSongId(): String {
         var songId = ""
-        val metadataCompat = connection.nowPlaying
+        val metadataCompat = connection.getNowPlaying()
         if (metadataCompat != null) {
-            songId = metadataCompat.id
+            songId = metadataCompat.id.toString()
         }
         return songId
     }
@@ -231,38 +232,44 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun isSkipToNextEnabled(): Boolean {
-        val stateCompat = connection.playbackStateCompat
-        return stateCompat.actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L
+        val stateCompat = connection.getPlaybackStateCompat()
+        if (stateCompat != null) {
+            return stateCompat.actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L
+        }
+        return false
     }
 
     override fun isSkipToPreviousEnabled(): Boolean {
-        val stateCompat = connection.playbackStateCompat
-        return stateCompat.actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L
+        val stateCompat = connection.getPlaybackStateCompat()
+        if (stateCompat != null) {
+            return stateCompat.actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L
+        }
+        return false
     }
 
     override fun getPlaybackSpeed(): Float {
-        val stateCompat = connection.playbackStateCompat
-        return stateCompat.playbackSpeed
+        val stateCompat = connection.getPlaybackStateCompat()
+        return stateCompat?.playbackSpeed ?: 0F
     }
 
-    override fun getPlaybackState(): Any {
-        val stateCompat = connection.playbackStateCompat
-        return stateCompat.playbackState
+    override fun getPlaybackState(): Any? {
+        val stateCompat = connection.getPlaybackStateCompat()
+        return stateCompat?.playbackState
     }
 
     override fun getErrorMessage(): CharSequence {
-        val stateCompat = connection.playbackStateCompat
-        return stateCompat.errorMessage
+        val stateCompat = connection.getPlaybackStateCompat()
+        return stateCompat?.errorMessage ?: ""
     }
 
     override fun getErrorCode(): Int {
-        val stateCompat = connection.playbackStateCompat
-        return stateCompat.errorCode
+        val stateCompat = connection.getPlaybackStateCompat()
+        return stateCompat?.errorCode ?: -1
     }
 
     override fun getState(): Int {
-        val stateCompat = connection.playbackStateCompat
-        return stateCompat.state
+        val stateCompat = connection.getPlaybackStateCompat()
+        return stateCompat?.state ?: -1
     }
 
     override fun isPlaying(): Boolean {
@@ -312,9 +319,9 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun getDuration(): Long {
-        var duration = connection.nowPlaying.duration
+        var duration = connection.getNowPlaying()?.duration
         //如果没设置duration
-        if (duration == 0L) {
+        if (duration == null || duration == 0L) {
             duration = mPlayback?.duration ?: 0
         }
         //当切换歌曲的时候偶尔回调为 -9223372036854775807  Long.MIN_VALUE
@@ -339,6 +346,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         connection.sendCommand(INotification.ACTION_UPDATE_LYRICS_UI, bundle)
     }
 
+    @SuppressLint("Recycle")
     override fun querySongInfoInLocal(): List<SongInfo> {
         val songInfos = mutableListOf<SongInfo>()
         val cursor =
@@ -416,6 +424,6 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun playbackState(): MutableLiveData<PlaybackStage> {
-        return connection.playbackState
+        return connection.getPlaybackState()
     }
 }

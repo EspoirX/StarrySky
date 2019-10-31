@@ -7,6 +7,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -98,6 +99,7 @@ public class PlayDetailActivity extends AppCompatActivity {
             if (mSeekBar.getMax() != duration) {
                 mSeekBar.setMax((int) duration);
             }
+            Log.i("PlayDetailActivity", "duration = " + duration);
             mSeekBar.setProgress((int) position);
             mSeekBar.setSecondaryProgress((int) buffered);
             progress_text.setText(ListPlayAdapter.formatMusicTime(position) + "/" +

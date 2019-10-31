@@ -24,6 +24,8 @@ import com.qw.soul.permission.bean.Permission;
 import com.qw.soul.permission.bean.Permissions;
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener;
 
+import leakcanary.LeakCanary;
+import shark.Leak;
 
 /**
  * create by lzx
@@ -36,6 +38,8 @@ public class TestApplication extends Application {
         super.onCreate();
         StarrySky.init(this, new TestConfig());
         StarrySkyUtils.isDebug = true;
+
+        LeakCanary.INSTANCE.dumpHeap();
     }
 
     private static class TestConfig extends StarrySkyConfig {
@@ -44,11 +48,6 @@ public class TestApplication extends Application {
         public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
             super.applyOptions(context, builder);
             builder.setOpenNotification(true);
-
-            // builder.setOpenCache(false);
-            // String destFileDir = Environment.getExternalStorageDirectory().getAbsolutePath()
-            //         + "/111StarrySkyCache/";
-            // builder.setCacheDestFileDir(destFileDir);
         }
 
         @Override

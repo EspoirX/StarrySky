@@ -181,7 +181,7 @@ interface PlayerControl {
      * 获取底层框架[android.media.session.PlaybackState]对象。
      * 此方法仅在API 21+上受支持。
      */
-    fun getPlaybackState(): Any
+    fun getPlaybackState(): Any?
 
     /**
      * 获取发送错误时的错误信息

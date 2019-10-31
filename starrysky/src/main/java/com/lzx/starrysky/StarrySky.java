@@ -34,18 +34,25 @@ public class StarrySky {
     private Playback playback;
     private IPlaybackManager playbackManager;
     private MediaQueue mediaQueue;
+    private static IMediaConnection.OnConnectListener mOnConnectListener;
 
     public static void init(Application application) {
-        init(application, null);
+        init(application, null, null);
     }
 
     public static void init(Application application, StarrySkyConfig config) {
+        init(application, config, null);
+    }
+
+    public static void init(Application application, StarrySkyConfig config,
+                            IMediaConnection.OnConnectListener listener) {
         if (alreadyInit) {
             return;
         }
         alreadyInit = true;
         globalContext = application;
         mStarrySkyConfig = config;
+        mOnConnectListener = listener;
         get();
     }
 
@@ -66,6 +73,18 @@ public class StarrySky {
             }
         }
         return sStarrySky;
+    }
+
+    public static void release() {
+        if (StarrySky.get().mLifecycle != null) {
+            globalContext.unregisterActivityLifecycleCallbacks(StarrySky.get().mLifecycle);
+        }
+        isInitializing = false;
+        alreadyInit = false;
+        globalContext = null;
+        mStarrySkyConfig = null;
+        mOnConnectListener = null;
+        sStarrySky = null;
     }
 
     public static PlayerControl with() {
@@ -103,7 +122,8 @@ public class StarrySky {
                 mStarrySkyConfig != null
                         ? mStarrySkyConfig.getNotificationFactory()
                         : null;
-        StarrySkyNotificationManager notificationManager = new StarrySkyNotificationManager(builder.isOpenNotification, factory);
+        StarrySkyNotificationManager notificationManager =
+                new StarrySkyNotificationManager(builder.isOpenNotification, factory);
         starrySky.mRegistry.registryNotificationManager(notificationManager);
 
         //注册缓存
@@ -124,7 +144,8 @@ public class StarrySky {
             starrySky.playback = new ExoPlayback(context, cacheManager);
         }
         if (starrySky.playbackManager == null) {
-            starrySky.playbackManager = new PlaybackManager(starrySky.mediaQueue, starrySky.playback);
+            starrySky.playbackManager =
+                    new PlaybackManager(starrySky.mediaQueue, starrySky.playback);
         }
     }
 
@@ -144,6 +165,7 @@ public class StarrySky {
 
         //链接服务
         connection.connect();
+        connection.setOnConnectListener(mOnConnectListener);
     }
 
     public IMediaConnection getConnection() {
