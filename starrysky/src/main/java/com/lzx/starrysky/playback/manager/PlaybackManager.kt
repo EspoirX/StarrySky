@@ -71,7 +71,7 @@ class PlaybackManager constructor(
                 validManager.addValid(valid ?: ValidRegistry.DefaultValid())
             }
             //执行第一个验证
-            validManager.doCall(mediaQueue.currMediaInfo!!.mediaId)
+            validManager.doCall(mediaQueue.currMediaInfo?.mediaId)
         } else {
             checkThreadHandPlayRequest(null, isPlayWhenReady)
         }
