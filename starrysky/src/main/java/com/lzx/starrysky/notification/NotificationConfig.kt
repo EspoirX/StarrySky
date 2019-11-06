@@ -1,6 +1,7 @@
 package com.lzx.starrysky.notification
 
 import android.app.PendingIntent
+import android.os.Bundle
 
 /**
  * 通知栏构建者，可设置各种通知栏配置
@@ -8,6 +9,7 @@ import android.app.PendingIntent
 class NotificationConfig(
     var isNotificationCanClearBySystemBtn: Boolean = false, //是否让通知栏当暂停的时候可以滑动清除
     var targetClass: String? = null, //通知栏点击转跳界面
+    var targetClassBundle: Bundle? = null, //点击通知栏传递的参数
     var contentTitle: String? = null, //通知栏标题
     var contentText: String? = null, //通知栏内容
     var nextIntent: PendingIntent? = null,  //下一首按钮 PendingIntent

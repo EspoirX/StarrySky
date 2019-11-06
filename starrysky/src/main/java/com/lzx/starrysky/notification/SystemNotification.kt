@@ -231,7 +231,7 @@ class SystemNotification constructor(service: MusicService, config: Notification
             if (clazz != null) {
                 val songId = mMetadata?.id
                 notificationBuilder.setContentIntent(NotificationUtils
-                    .createContentIntent(mService, mConfig, songId, null, clazz))
+                    .createContentIntent(mService, mConfig, songId, mConfig?.targetClassBundle, clazz))
             }
         }
 

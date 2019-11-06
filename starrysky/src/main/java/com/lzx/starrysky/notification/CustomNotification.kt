@@ -193,7 +193,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
             val clazz = NotificationUtils.getTargetClass(mConfig?.targetClass!!)
             if (clazz != null) {
                 notificationBuilder.setContentIntent(NotificationUtils
-                    .createContentIntent(mService, mConfig, songId, null, clazz))
+                    .createContentIntent(mService, mConfig, songId, mConfig?.targetClassBundle, clazz))
             }
         }
         //这里不能复用，会导致内存泄漏，需要每次都创建
