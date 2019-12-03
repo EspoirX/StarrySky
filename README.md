@@ -5,6 +5,7 @@
 [ ![](https://img.shields.io/badge/license-MIT-green.svg) ](http://choosealicense.com/licenses/mit/)
 
 <img src="art/logo.jpg"/>
+<img src="art/a4074094959_10.jpg"/>
 
 # StarrySky
 
