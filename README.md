@@ -4,7 +4,7 @@
 [ ![Download](https://api.bintray.com/packages/lizixian/StarrySky/StarrySkyJava/images/download.svg) ](https://bintray.com/lizixian/StarrySky/StarrySkyJava/_latestVersion)
 [ ![](https://img.shields.io/badge/license-MIT-green.svg) ](http://choosealicense.com/licenses/mit/)
 
-<a href="art/logo.jpg"><img src="logo.jpg" /></a>
+<a href="art/logo.jpg"><img src="art/logo.jpg" /></a>
 <a href="art/a4074094959_10.jpg"><img src="art/a4074094959_10.jpg"/></a>
 
 # StarrySky
