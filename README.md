@@ -141,11 +141,14 @@ PS：
 
 ## 关于我
 
-An android developer in GuangZhou  
-掘金：[https://juejin.im/user/5861c3bb128fe10069e69f0a](https://juejin
-.im/user/5861c3bb128fe10069e69f0a)
+An android developer in GuangZhou
+
+掘金：[https://juejin.im/user/5861c3bb128fe10069e69f0a](https://juejin.im/user/5861c3bb128fe10069e69f0a)
+
 语雀：[https://www.yuque.com/espoir](https://www.yuque.com/espoir)
-Email:386707112@qq.com  
+
+Email:386707112@qq.com
+
 If you want to make friends with me, You can give me a Email and follow me。
 
 
