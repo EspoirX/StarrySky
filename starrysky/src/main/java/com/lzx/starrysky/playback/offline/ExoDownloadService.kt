@@ -21,7 +21,6 @@ import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.offline.DownloadManager.TaskState
 import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.scheduler.PlatformScheduler
-import com.google.android.exoplayer2.ui.DownloadNotificationUtil
 import com.google.android.exoplayer2.util.Util
 import com.lzx.starrysky.R
 import com.lzx.starrysky.StarrySky
@@ -55,12 +54,13 @@ class ExoDownloadService : DownloadService(
         return if (Util.SDK_INT >= 21) PlatformScheduler(this, JOB_ID) else null
     }
 
-    override fun getForegroundNotification(taskStates: Array<TaskState>?): Notification {
-        return DownloadNotificationUtil.buildProgressNotification(
-            /* context= */ this,
-            R.drawable.exo_controls_play,
-            CHANNEL_ID, null, null,
-            taskStates!!)/* contentIntent= */
+    override fun getForegroundNotification(taskStates: Array<TaskState>?): Notification? {
+        return null
+//        return DownloadNotificationUtil.buildProgressNotification(
+//            /* context= */ this,
+//            R.drawable.exo_controls_play,
+//            CHANNEL_ID, null, null,
+//            taskStates!!)/* contentIntent= */
     }
 
     override fun onTaskStateChanged(taskState: TaskState?) {

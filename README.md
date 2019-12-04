@@ -53,6 +53,38 @@ maven{
 }
 ```
 
+## 按需导入
+
+若要支持 dash 类流音频，请另外导入
+```groovy
+dependencies {
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.4'
+}
+```
+
+若要支持 hls 类流音频，请另外导入
+```groovy
+dependencies {
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.4'
+}
+```
+
+若要支持 smoothstreaming 类流音频，请另外导入
+```groovy
+dependencies {
+    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.4'
+}
+```
+
+若要支持 rtmp 类流音频，请另外导入
+```groovy
+dependencies {
+    implementation 'com.google.android.exoplayer:extension-rtmp:2.9.4'
+}
+```
+
+若不知道要导入哪一种，可以在播放时抛出的异常崩溃中根据异常信息提示导入。
+
 ## 初始化
 
 下面是最简单的初始化以及播放音频代码，更多功能请阅读使用文档。
