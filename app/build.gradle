@@ -36,7 +36,8 @@ android {
         implementation("com.squareup.okhttp3:okhttp:4.1.0")
         implementation 'com.qw:soulpermission:1.2.1'
         implementation project(':starrysky')
-
+        //implementation 'com.lzx:StarrySkyJava:2.2.8'
+        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.4'
         debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
     }
 }

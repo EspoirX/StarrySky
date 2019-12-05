@@ -23,8 +23,6 @@ import com.qw.soul.permission.bean.Permission;
 import com.qw.soul.permission.bean.Permissions;
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener;
 
-import leakcanary.LeakCanary;
-
 /**
  * create by lzx
  * time:2018/11/9
@@ -37,7 +35,6 @@ public class TestApplication extends Application {
         StarrySky.init(this, new TestConfig());
         StarrySkyUtils.isDebug = true;
 
-        LeakCanary.INSTANCE.dumpHeap();
     }
 
     private static class TestConfig extends StarrySkyConfig {

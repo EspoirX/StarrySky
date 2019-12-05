@@ -56,7 +56,6 @@ open class MediaQueueProviderImpl : MediaQueueProvider {
         }
 
     override fun getMediaList(): MutableList<BaseMediaInfo> {
-        StarrySkyUtils.log("mediaList = " + mediaList.size)
         return mediaList
     }
 

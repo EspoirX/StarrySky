@@ -16,6 +16,7 @@ import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.ext.id
 import com.lzx.starrysky.control.OnPlayerEventListener
 import com.lzx.starrysky.provider.SongInfo
+import com.lzx.starrysky.utils.StarrySkyUtils
 
 class MediaSessionConnection constructor(context: Context, serviceComponent: ComponentName) :
     IMediaConnection {
@@ -264,12 +265,15 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
                 return
             }
             val songId = metadata.id ?: return
-            val songInfo = StarrySky.get().mediaQueueProvider.getSongInfo(songId)
-            playbackState.postValue(playbackStage.buildSwitch(songId))
-            //状态监听
-            val mPlayerEventListeners = StarrySky.with().getPlayerEventListeners()
-            for (listener in mPlayerEventListeners) {
-                listener.onMusicSwitch(songInfo!!)
+            val currPlayingId = StarrySky.with().getNowPlayingSongId()
+            if (currPlayingId.isNotEmpty() && songId != currPlayingId) {
+                val songInfo = StarrySky.get().mediaQueueProvider.getSongInfo(songId)
+                playbackState.postValue(playbackStage.buildSwitch(songId))
+                //状态监听
+                val mPlayerEventListeners = StarrySky.with().getPlayerEventListeners()
+                for (listener in mPlayerEventListeners) {
+                    listener.onMusicSwitch(songInfo!!)
+                }
             }
         }
 

@@ -58,14 +58,17 @@ public class PlayDetailActivity extends AppCompatActivity {
                 return;
             }
             updateUIInfo(playbackStage);
-
             switch (playbackStage.getStage()) {
                 case PlaybackStage.NONE:
                     title.setText("播放详情页示例");
                     break;
                 case PlaybackStage.START:
+                    Log.i("StarrySky","START");
                     mListPlayAdapter.notifyDataSetChanged();
                     mTimerTask.startToUpdateProgress();
+                    break;
+                case PlaybackStage.SWITCH:
+                    Log.i("StarrySky","SWITCH");
                     break;
                 case PlaybackStage.PAUSE:
                     mTimerTask.stopToUpdateProgress();
@@ -102,8 +105,7 @@ public class PlayDetailActivity extends AppCompatActivity {
             Log.i("PlayDetailActivity", "duration = " + duration);
             mSeekBar.setProgress((int) position);
             mSeekBar.setSecondaryProgress((int) buffered);
-            progress_text.setText(ListPlayAdapter.formatMusicTime(position) + "/" +
-                    ListPlayAdapter.formatMusicTime(duration));
+            progress_text.setText(ListPlayAdapter.formatMusicTime(position) + "/" + ListPlayAdapter.formatMusicTime(duration));
             time_text.setText(ListPlayAdapter.formatMusicTime(duration));
             mListPlayAdapter.notifyDataSetChanged();
         });
