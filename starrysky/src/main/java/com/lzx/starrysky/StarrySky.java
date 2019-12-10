@@ -119,18 +119,14 @@ public class StarrySky {
 
         //注册通知栏
         StarrySkyNotificationManager.NotificationFactory factory =
-                mStarrySkyConfig != null
-                        ? mStarrySkyConfig.getNotificationFactory()
-                        : null;
+                mStarrySkyConfig != null ? mStarrySkyConfig.getNotificationFactory() : null;
         StarrySkyNotificationManager notificationManager =
                 new StarrySkyNotificationManager(builder.isOpenNotification, factory);
         starrySky.mRegistry.registryNotificationManager(notificationManager);
 
         //注册缓存
         StarrySkyCacheManager.CacheFactory cacheFactory =
-                mStarrySkyConfig != null
-                        ? mStarrySkyConfig.getCacheFactory()
-                        : null;
+                mStarrySkyConfig != null ? mStarrySkyConfig.getCacheFactory() : null;
         StarrySkyCacheManager cacheManager = new StarrySkyCacheManager(
                 context,
                 builder.isOpenCache,
@@ -144,8 +140,7 @@ public class StarrySky {
             starrySky.playback = new ExoPlayback(context, cacheManager);
         }
         if (starrySky.playbackManager == null) {
-            starrySky.playbackManager =
-                    new PlaybackManager(starrySky.mediaQueue, starrySky.playback);
+            starrySky.playbackManager = new PlaybackManager(starrySky.mediaQueue, starrySky.playback);
         }
     }
 

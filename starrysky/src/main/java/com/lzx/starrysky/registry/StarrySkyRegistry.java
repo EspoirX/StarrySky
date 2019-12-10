@@ -1,6 +1,7 @@
 package com.lzx.starrysky.registry;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.lzx.starrysky.notification.NotificationConfig;
 import com.lzx.starrysky.notification.StarrySkyNotificationManager;
@@ -72,10 +73,14 @@ public class StarrySkyRegistry {
     /**
      * 该方法在内部使用
      */
-    public void registryStarryCache(StarrySkyCacheManager starrySkyCacheManager){
+    public void registryStarryCache(StarrySkyCacheManager starrySkyCacheManager) {
         mCacheRegistry.setCacheManager(starrySkyCacheManager);
     }
 
+    /**
+     * 如果在自定义playback时，直接拿这个会是 null 的，这时可以直接 new StarrySkyCacheManager()，
+     * 然后传入即可
+     */
     public StarrySkyCacheManager getStarrySkyCacheManager() {
         return mCacheRegistry.getCacheManager();
     }
@@ -83,7 +88,7 @@ public class StarrySkyRegistry {
     /**
      * 注册播放器
      */
-    public void registryPlayback(Playback playback){
+    public void registryPlayback(Playback playback) {
         this.mPlayback = playback;
     }
 
