@@ -52,6 +52,10 @@ import javax.net.ssl.X509TrustManager;
 import static com.google.android.exoplayer2.upstream.DataSpec.FLAG_ALLOW_GZIP;
 import static com.google.android.exoplayer2.upstream.HttpDataSource.HttpDataSourceException.TYPE_OPEN;
 
+
+/**
+ * 代码来自 gsyvideoplayer
+ */
 public class SkipSSLHttpDataSource extends BaseDataSource implements HttpDataSource {
     public static final int DEFAULT_CONNECT_TIMEOUT_MILLIS = 8000;
     public static final int DEFAULT_READ_TIMEOUT_MILLIS = 8000;
@@ -63,8 +67,8 @@ public class SkipSSLHttpDataSource extends BaseDataSource implements HttpDataSou
     private static final Pattern CONTENT_RANGE_HEADER = Pattern.compile("^bytes (\\d+)-(\\d+)/(\\d+)$");
     private static final AtomicReference<byte[]> skipBufferReference = new AtomicReference();
     private final boolean allowCrossProtocolRedirects;
-    private final int connectTimeoutMillis;
-    private final int readTimeoutMillis;
+    private final long connectTimeoutMillis;
+    private final long readTimeoutMillis;
     private final String userAgent;
     @Nullable
     private final Predicate<String> contentTypePredicate;
@@ -93,7 +97,7 @@ public class SkipSSLHttpDataSource extends BaseDataSource implements HttpDataSou
     }
 
     public SkipSSLHttpDataSource(String userAgent, @Nullable Predicate<String> contentTypePredicate,
-                                 int connectTimeoutMillis, int readTimeoutMillis, boolean allowCrossProtocolRedirects,
+                                 long connectTimeoutMillis, long readTimeoutMillis, boolean allowCrossProtocolRedirects,
                                  @Nullable
                                         HttpDataSource.RequestProperties defaultRequestProperties) {
         super(true);
@@ -375,8 +379,8 @@ public class SkipSSLHttpDataSource extends BaseDataSource implements HttpDataSou
         } else {
             connection = (HttpURLConnection) url.openConnection();
         }
-        connection.setConnectTimeout(this.connectTimeoutMillis);
-        connection.setReadTimeout(this.readTimeoutMillis);
+        connection.setConnectTimeout((int) this.connectTimeoutMillis);
+        connection.setReadTimeout((int) this.readTimeoutMillis);
         Iterator var11;
         Entry property;
         if (this.defaultRequestProperties != null) {

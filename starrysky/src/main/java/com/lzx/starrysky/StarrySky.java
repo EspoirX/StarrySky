@@ -36,6 +36,12 @@ public class StarrySky {
     private MediaQueue mediaQueue;
     private static IMediaConnection.OnConnectListener mOnConnectListener;
 
+    //超时时间设置
+    private long httpConnectTimeout = -1;
+    private long httpReadTimeout = 1;
+    //是否跳过https
+    private boolean skipSSLChain = false;
+
     public static void init(Application application) {
         init(application, null, null);
     }
@@ -111,6 +117,9 @@ public class StarrySky {
         }
 
         StarrySky starrySky = builder.build(context);
+        starrySky.httpConnectTimeout = builder.httpConnectTimeout;
+        starrySky.httpReadTimeout = builder.httpReadTimeout;
+        starrySky.skipSSLChain = builder.skipSSLChain;
         sStarrySky = starrySky;
 
         if (mStarrySkyConfig != null) {
@@ -192,5 +201,17 @@ public class StarrySky {
 
     public MediaResource getMediaResource() {
         return mediaResource;
+    }
+
+    public long getHttpConnectTimeout() {
+        return httpConnectTimeout;
+    }
+
+    public long getHttpReadTimeout() {
+        return httpReadTimeout;
+    }
+
+    public boolean isSkipSSLChain() {
+        return skipSSLChain;
     }
 }

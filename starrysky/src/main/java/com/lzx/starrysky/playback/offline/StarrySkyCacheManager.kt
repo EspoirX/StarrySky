@@ -34,10 +34,6 @@ class StarrySkyCacheManager constructor(
     private var downloadDirectory: File? = null
     private var downloadCache: Cache? = null
 
-    companion object {
-        const val DOWNLOAD_CONTENT_DIRECTORY = "downloads" //下载路径子文件夹
-    }
-
     init {
         if (factory == null && isOpenCache) {
             this.factory = object : CacheFactory {
@@ -59,7 +55,6 @@ class StarrySkyCacheManager constructor(
     }
 
     fun getStarrySkyCache(context: Context): StarrySkyCache1? {
-
         if (starrySkyCache == null) {
             synchronized(this) {
                 if (starrySkyCache == null && factory != null) {
@@ -73,29 +68,6 @@ class StarrySkyCacheManager constructor(
     fun isOpenCache(): Boolean {
         return isOpenCache
     }
-
-    /**
-     * DataSourceFactory构造
-     */
-//    fun buildDataSourceFactory(context: Context): DataSource.Factory {
-//        val upstreamFactory = DefaultDataSourceFactory(context, buildHttpDataSourceFactory())
-//        return buildReadOnlyCacheDataSource(upstreamFactory, getDownloadCache())
-//    }
-
-//    fun buildHttpDataSourceFactory(): HttpDataSource.Factory {
-//        return DefaultHttpDataSourceFactory(userAgent)
-//    }
-//
-//    private fun buildReadOnlyCacheDataSource(
-//        upstreamFactory: DefaultDataSourceFactory, cache: Cache
-//    ): CacheDataSourceFactory {
-//        return CacheDataSourceFactory(
-//            cache,
-//            upstreamFactory,
-//            FileDataSourceFactory(),
-//            /* eventListener= */ null,
-//            CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR, null)/* cacheWriteDataSinkFactory= */
-//    }
 
     /**
      * 创建缓存文件夹
@@ -123,7 +95,7 @@ class StarrySkyCacheManager constructor(
     fun getDownloadCache(): Cache? {
         if (downloadCache == null) {
             val path = getDownloadDirectory(context).absolutePath
-            val downloadContentDirectory = File(getDownloadDirectory(context), DOWNLOAD_CONTENT_DIRECTORY)
+            val downloadContentDirectory = getDownloadDirectory(context)
             val isLocked = SimpleCache.isCacheFolderLocked(File(path))
             if (!isLocked) {
                 downloadCache = SimpleCache(downloadContentDirectory,

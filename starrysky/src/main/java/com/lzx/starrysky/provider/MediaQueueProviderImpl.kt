@@ -91,6 +91,7 @@ open class MediaQueueProviderImpl : MediaQueueProvider {
             mediaInfo.mediaCover = songInfo.songCover
             mediaInfo.mediaUrl = songInfo.songUrl
             mediaInfo.duration = songInfo.duration
+            mediaInfo.mapHeadData = songInfo.mMapHeadData
             mediaInfos.add(mediaInfo)
             songListMap[songInfo.songId] = songInfo
         }

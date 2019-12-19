@@ -45,18 +45,13 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        StarrySky.init(this, new TestConfig(this));
+        StarrySky.init(this, new TestConfig());
         StarrySkyUtils.isDebug = true;
         CrashReport.initCrashReport(getApplicationContext(), "9e447caa98", false);
     }
 
     private static class TestConfig extends StarrySkyConfig {
 
-        private Context mContext;
-
-        public TestConfig(Context context) {
-            mContext = context;
-        }
 
         @Override
         public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {

@@ -1,10 +1,7 @@
 package com.lzx.starrysky.playback.player
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
 import android.support.v4.media.session.PlaybackStateCompat
-import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC
 import com.google.android.exoplayer2.C.USAGE_MEDIA
 import com.google.android.exoplayer2.DefaultRenderersFactory
@@ -17,17 +14,11 @@ import com.google.android.exoplayer2.Timeline
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
 import com.google.android.exoplayer2.drm.FrameworkMediaCrypto
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.source.ExtractorMediaSource
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.source.ads.AdsMediaSource
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.util.EventLogger
-import com.google.android.exoplayer2.util.Util
 import com.lzx.starrysky.playback.offline.StarrySkyCache
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager
 import com.lzx.starrysky.provider.MediaResource
@@ -40,6 +31,7 @@ open class ExoPlayback internal constructor(
     private val mStarrySkyCache: StarrySkyCache? by lazy {
         cacheManager.getStarrySkyCache(context)
     }
+
     private val trackSelectorParameters: DefaultTrackSelector.Parameters by lazy {
         DefaultTrackSelector.ParametersBuilder().build()
     }
@@ -121,9 +113,9 @@ open class ExoPlayback internal constructor(
         // Nothing to do. Position maintained by ExoPlayer.
     }
 
-    override fun play(resource: MediaResource, isPlayWhenReady: Boolean) {
+    override fun play(mediaResource: MediaResource, isPlayWhenReady: Boolean) {
         mPlayOnFocusGain = true
-        val mediaId = resource.getMediaId()
+        val mediaId = mediaResource.getMediaId()
         if (mediaId.isNullOrEmpty()) {
             return
         }
@@ -132,21 +124,18 @@ open class ExoPlayback internal constructor(
             currentMediaId = mediaId
         }
         StarrySkyUtils.log(
-            "Playback# resource is empty = " + resource.getMediaUrl().isNullOrEmpty() +
+            "Playback# resource is empty = " + mediaResource.getMediaUrl().isNullOrEmpty() +
                 " mediaHasChanged = " + mediaHasChanged +
                 " isPlayWhenReady = " + isPlayWhenReady)
         StarrySkyUtils.log("---------------------------------------")
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false)  // release everything except the player
-            var source = resource.getMediaUrl()
+            var source = mediaResource.getMediaUrl()
             if (source.isNullOrEmpty()) {
                 mCallback?.onError("播放 url 为空")
                 return
             }
             source = source.replace(" ".toRegex(), "%20") // Escape spaces for URLs
-
-            //缓存歌曲
-//            mStarrySkyCache?.startCache(mediaId, source, "")
 
             if (mExoPlayer == null) {
                 //轨道选择
@@ -175,97 +164,18 @@ open class ExoPlayback internal constructor(
                     .build()
                 mExoPlayer!!.setAudioAttributes(audioAttributes, true) //第二个参数能使ExoPlayer自动管理焦点
             }
-
-//            val dataSourceFactory = cacheManager.buildDataSourceFactory(context)
-            //val mediaSource = buildMediaSource(dataSourceFactory, Uri.parse(source), null)
-            val mediaSource =  sourceManager.buildMediaSource(source,
-                null, cacheManager.isOpenCache(), cacheManager.getDownloadCache())
+            val mediaSource = sourceManager.buildMediaSource(
+                source,
+                null,
+                mediaResource.getMapHeadData(),
+                cacheManager.isOpenCache(),
+                cacheManager.getDownloadCache())
             mExoPlayer!!.prepare(mediaSource)
         }
 
         if (isPlayWhenReady) {
             mExoPlayer!!.playWhenReady = true
         }
-    }
-
-    @SuppressLint("DefaultLocale")
-    private fun buildMediaSource(
-        dataSourceFactory: DataSource.Factory, uri: Uri, overrideExtension: String?
-    ): MediaSource {
-        val dashClassName = "com.google.android.exoplayer2.source.dash.DashMediaSource"
-        val ssClassName = "com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource"
-        val hlsClassName = "com.google.android.exoplayer2.source.hls.HlsMediaSource"
-        val rtmpClassName = "com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory"
-
-        when (@C.ContentType val type = Util.inferContentType(uri, overrideExtension)) {
-            C.TYPE_DASH -> {
-                checkClassExist(dashClassName,
-                    "类 DashMediaSource 不存在，请导入 exoplayer:exoplayer-dash 包")
-                val factory: AdsMediaSource.MediaSourceFactory =
-                    newClassInstance(dashClassName, dataSourceFactory)
-                return factory.createMediaSource(uri)
-            }
-            C.TYPE_SS -> {
-                checkClassExist(ssClassName,
-                    "类 SsMediaSource 不存在，请导入 exoplayer:exoplayer-smoothstreaming 包")
-                val factory: AdsMediaSource.MediaSourceFactory =
-                    newClassInstance(ssClassName, dataSourceFactory)
-                return factory.createMediaSource(uri)
-            }
-            C.TYPE_HLS -> {
-                checkClassExist(hlsClassName, "类 HlsMediaSource 不存在，请导入 exoplayer:exoplayer-hls 包")
-                val factory: AdsMediaSource.MediaSourceFactory =
-                    newClassInstance(hlsClassName, dataSourceFactory)
-                return factory.createMediaSource(uri)
-            }
-            C.TYPE_OTHER -> {
-                val isRtmpSource = uri.toString().toLowerCase().startsWith("rtmp://")
-                val isFlacSource = uri.toString().toLowerCase().endsWith(".flac")
-                return if (isFlacSource) {
-                    val extractorsFactory = DefaultExtractorsFactory()
-                    ExtractorMediaSource(uri, dataSourceFactory, extractorsFactory, null, null)
-                } else {
-                    val factory: DataSource.Factory
-                    factory = if (isRtmpSource) {
-                        val clazz = Class.forName(rtmpClassName)
-                        checkClassExist(rtmpClassName,
-                            "类 RtmpDataSourceFactory 不存在，请导入 exoplayer:extension-rtmp 包")
-                        clazz.newInstance() as DataSource.Factory
-                    } else {
-                        dataSourceFactory
-                    }
-                    ExtractorMediaSource.Factory(factory).createMediaSource(uri)
-                }
-            }
-            else -> {
-                throw IllegalStateException("Unsupported type: $type")
-            }
-        }
-    }
-
-    private fun checkClassExist(className: String, errorStr: String) {
-        try {
-            javaClass.classLoader?.loadClass(className)
-        } catch (ex: ClassNotFoundException) {
-            throw IllegalArgumentException(errorStr)
-        }
-    }
-
-    private fun newClassInstance(
-        className: String, dataSourceFactory: DataSource.Factory
-    ): AdsMediaSource.MediaSourceFactory {
-        val clazz = Class.forName(className)
-        val innerClazz = clazz.declaredClasses
-        for (cls in innerClazz) {
-            if (cls.name == clazz.name + "\$Factory") {
-                val constructors = cls.getConstructor(DataSource.Factory::class.java)
-                constructors.isAccessible = true
-                return constructors.newInstance(
-                    dataSourceFactory) as AdsMediaSource.MediaSourceFactory
-            }
-        }
-
-        throw IllegalArgumentException("获取 " + clazz.name + "\$Factory 实例失败")
     }
 
     override fun pause() {

@@ -2,12 +2,15 @@ package com.lzx.starrysky;
 
 import android.support.annotation.Nullable;
 
+import java.util.Map;
+
 public class BaseMediaInfo implements Cloneable {
     private String mediaId = "";
     private String mediaUrl;
     private String mediaCover;
     private String mediaTitle;
     private long duration;
+    private Map<String, String> mapHeadData;
 
     public String getMediaId() {
         return mediaId;
@@ -47,6 +50,14 @@ public class BaseMediaInfo implements Cloneable {
 
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    public Map<String, String> getMapHeadData() {
+        return mapHeadData;
+    }
+
+    public void setMapHeadData(Map<String, String> mapHeadData) {
+        this.mapHeadData = mapHeadData;
     }
 
     @Override

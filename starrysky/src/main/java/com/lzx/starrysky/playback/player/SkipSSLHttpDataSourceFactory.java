@@ -21,15 +21,16 @@ import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.upstream.HttpDataSource.BaseFactory;
 import com.google.android.exoplayer2.upstream.TransferListener;
 
-
-
+/**
+ * 代码来自 gsyvideoplayer
+ */
 public final class SkipSSLHttpDataSourceFactory extends BaseFactory {
 
     private final String userAgent;
     private final
     TransferListener listener;
-    private final int connectTimeoutMillis;
-    private final int readTimeoutMillis;
+    private final long connectTimeoutMillis;
+    private final long readTimeoutMillis;
     private final boolean allowCrossProtocolRedirects;
 
     public SkipSSLHttpDataSourceFactory(String userAgent) {
@@ -59,8 +60,8 @@ public final class SkipSSLHttpDataSourceFactory extends BaseFactory {
     public SkipSSLHttpDataSourceFactory(
             String userAgent,
             @Nullable TransferListener listener,
-            int connectTimeoutMillis,
-            int readTimeoutMillis,
+            long connectTimeoutMillis,
+            long readTimeoutMillis,
             boolean allowCrossProtocolRedirects) {
         this.userAgent = userAgent;
         this.listener = listener;

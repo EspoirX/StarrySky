@@ -81,7 +81,8 @@ open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderS
         if (mMediaResource == null) {
             mMediaResource = StarrySky.get().mediaResource
         }
-        return mMediaResource?.obtain(info.mediaId, info.mediaUrl, System.currentTimeMillis())
+        return mMediaResource?.obtain(info.mediaId, info.mediaUrl, System.currentTimeMillis(),
+            info.mapHeadData)
     }
 
     override fun updateIndexByMediaId(mediaId: String): Boolean {
@@ -123,6 +124,9 @@ open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderS
         }
         if (mediaInfo.duration != songInfo.duration) {
             mediaInfo.duration = songInfo.duration
+        }
+        if (mediaInfo.mapHeadData != songInfo.mMapHeadData) {
+            mediaInfo.mapHeadData = songInfo.mMapHeadData
         }
         return mediaInfo
     }

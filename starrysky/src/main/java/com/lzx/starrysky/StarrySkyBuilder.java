@@ -25,6 +25,11 @@ public class StarrySkyBuilder {
     boolean isOpenCache;
     //缓存文件夹
     String cacheDestFileDir;
+    //超时时间设置
+    long httpConnectTimeout = -1;
+    long httpReadTimeout = 1;
+    //是否跳过https
+    boolean skipSSLChain = false;
 
     /**
      * 设置链接管理器
@@ -66,6 +71,18 @@ public class StarrySkyBuilder {
      */
     public void setOpenNotification(boolean openNotification) {
         isOpenNotification = openNotification;
+    }
+
+    public void setHttpConnectTimeout(long httpConnectTimeout) {
+        this.httpConnectTimeout = httpConnectTimeout;
+    }
+
+    public void setHttpReadTimeout(long httpReadTimeout) {
+        this.httpReadTimeout = httpReadTimeout;
+    }
+
+    public void setSkipSSLChain(boolean skipSSLChain) {
+        this.skipSSLChain = skipSSLChain;
     }
 
     StarrySky build(Context context) {

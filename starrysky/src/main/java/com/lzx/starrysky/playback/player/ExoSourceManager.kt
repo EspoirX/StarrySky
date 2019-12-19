@@ -20,16 +20,17 @@ import com.google.android.exoplayer2.upstream.cache.CacheUtil
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
+import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.utils.StarrySkyUtils
 import java.io.File
 
 class ExoSourceManager constructor(private val context: Context) {
 
     private var dataSource: String = ""
-    private var sHttpConnectTimeout = -1
-    private var sHttpReadTimeout = -1
+    private var sHttpConnectTimeout = -1L
+    private var sHttpReadTimeout = -1L
     private var sSkipSSLChain = false
-    private val mMapHeadData: Map<String, String>? = hashMapOf()
+    private var mMapHeadData: Map<String, String>? = hashMapOf()
     private var cache: Cache? = null
     private var isCached = false
 
@@ -39,14 +40,22 @@ class ExoSourceManager constructor(private val context: Context) {
         const val DEFAULT_MAX_SIZE = 512 * 1024 * 1024
     }
 
+    init {
+        sHttpConnectTimeout = StarrySky.get().httpConnectTimeout
+        sHttpReadTimeout = StarrySky.get().httpReadTimeout
+        sSkipSSLChain = StarrySky.get().isSkipSSLChain
+    }
+
     @SuppressLint("DefaultLocale")
     fun buildMediaSource(
         dataSource: String,
         overrideExtension: String?,
+        mapHeadData: Map<String, String>?,
         cacheEnable: Boolean,
         cache: Cache?
     ): MediaSource {
         this.dataSource = dataSource
+        this.mMapHeadData = mapHeadData
         this.cache = cache
         val dashClassName = "com.google.android.exoplayer2.source.dash.DashMediaSource"
         val ssClassName = "com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource"
@@ -56,12 +65,11 @@ class ExoSourceManager constructor(private val context: Context) {
         val contentUri = Uri.parse(dataSource)
         val contentType: Int = inferContentType(dataSource, overrideExtension)
 
-        val dataSourceFactory = getDataSourceFactoryCache(cacheEnable)
-
         when (contentType) {
             C.TYPE_DASH -> {
                 checkClassExist(dashClassName,
                     "类 DashMediaSource 不存在，请导入 exoplayer:exoplayer-dash 包")
+                val dataSourceFactory = getDataSourceFactoryCache(false)
                 val factory: AdsMediaSource.MediaSourceFactory =
                     newClassInstance(dashClassName, dataSourceFactory)
                 return factory.createMediaSource(contentUri)
@@ -69,19 +77,21 @@ class ExoSourceManager constructor(private val context: Context) {
             C.TYPE_SS -> {
                 checkClassExist(ssClassName,
                     "类 SsMediaSource 不存在，请导入 exoplayer:exoplayer-smoothstreaming 包")
+                val dataSourceFactory = getDataSourceFactoryCache(false)
                 val factory: AdsMediaSource.MediaSourceFactory =
                     newClassInstance(ssClassName, dataSourceFactory)
                 return factory.createMediaSource(contentUri)
             }
             C.TYPE_HLS -> {
                 checkClassExist(hlsClassName, "类 HlsMediaSource 不存在，请导入 exoplayer:exoplayer-hls 包")
+                val dataSourceFactory = getDataSourceFactoryCache(false)
                 val factory: AdsMediaSource.MediaSourceFactory =
                     newClassInstance(hlsClassName, dataSourceFactory)
                 return factory.createMediaSource(contentUri)
             }
             C.TYPE_OTHER -> {
-                val factory: DataSource.Factory = dataSourceFactory
-                return ExtractorMediaSource.Factory(factory)
+                val dataSourceFactory = getDataSourceFactoryCache(cacheEnable)
+                return ExtractorMediaSource.Factory(dataSourceFactory)
                     .setExtractorsFactory(DefaultExtractorsFactory())
                     .createMediaSource(contentUri)
             }
@@ -93,6 +103,7 @@ class ExoSourceManager constructor(private val context: Context) {
                 return ExtractorMediaSource.Factory(factory).createMediaSource(contentUri)
             }
             TYPE_FLAC -> {
+                val dataSourceFactory = getDataSourceFactoryCache(false)
                 val extractorsFactory = DefaultExtractorsFactory()
                 return ExtractorMediaSource(contentUri, dataSourceFactory, extractorsFactory, null,
                     null)
@@ -145,9 +156,7 @@ class ExoSourceManager constructor(private val context: Context) {
      *
      * @param cache
      */
-    private fun resolveCacheState(
-        cache: Cache?, url: String?
-    ): Boolean {
+    private fun resolveCacheState(cache: Cache?, url: String?): Boolean {
         var isCache = true
         if (!url.isNullOrEmpty()) {
             val key = CacheUtil.generateKey(Uri.parse(url))
@@ -156,16 +165,16 @@ class ExoSourceManager constructor(private val context: Context) {
                 if (cachedSpans?.size == 0) {
                     isCache = false
                 } else {
-                    cache?.let {
-                        val contentLength = cache.getContentMetadata(
-                            key)["exo_len", C.LENGTH_UNSET.toLong()]
+                    isCache = cache?.let {
+                        val contentLength =
+                            cache.getContentMetadata(key)["exo_len", C.LENGTH_UNSET.toLong()]
                         var currentLength: Long = 0
                         for (cachedSpan in cachedSpans ?: hashSetOf<CacheSpan>()) {
                             currentLength += cache.getCachedLength(key, cachedSpan.position,
                                 cachedSpan.length)
                         }
-                        isCache = currentLength >= contentLength
-                    }
+                        return currentLength >= contentLength
+                    } ?: false
                 }
             } else {
                 isCache = false
@@ -179,8 +188,8 @@ class ExoSourceManager constructor(private val context: Context) {
     }
 
     private fun buildHttpDataSourceFactory(): DataSource.Factory? {
-        var connectTimeout = 8000
-        var readTimeout = 8000
+        var connectTimeout = 8000L
+        var readTimeout = 8000L
         if (sHttpConnectTimeout > 0) {
             connectTimeout = sHttpConnectTimeout
         }
@@ -188,8 +197,8 @@ class ExoSourceManager constructor(private val context: Context) {
             readTimeout = sHttpReadTimeout
         }
         var allowCrossProtocolRedirects = false
-        if (mMapHeadData != null && mMapHeadData.size > 0) {
-            allowCrossProtocolRedirects = "true" == mMapHeadData["allowCrossProtocolRedirects"]
+        if (!mMapHeadData.isNullOrEmpty() && mMapHeadData!!.isNotEmpty()) {
+            allowCrossProtocolRedirects = "true" == mMapHeadData!!["allowCrossProtocolRedirects"]
         }
         val userAgent = StarrySkyUtils.getUserAgent(context,
             if (context.applicationInfo != null) context.applicationInfo.name else "StarrySky")
@@ -201,9 +210,9 @@ class ExoSourceManager constructor(private val context: Context) {
                     connectTimeout,
                     readTimeout,
                     allowCrossProtocolRedirects)
-            if (mMapHeadData != null && mMapHeadData.size > 0) {
-                for ((key, value) in mMapHeadData.entries) {
-                    dataSourceFactory.getDefaultRequestProperties().set(key, value)
+            if (!mMapHeadData.isNullOrEmpty() && mMapHeadData!!.isNotEmpty()) {
+                for ((key, value) in mMapHeadData!!.entries) {
+                    dataSourceFactory.defaultRequestProperties.set(key, value)
                 }
             }
             return dataSourceFactory
@@ -211,11 +220,11 @@ class ExoSourceManager constructor(private val context: Context) {
         val dataSourceFactory = DefaultHttpDataSourceFactory(
             userAgent,
             DefaultBandwidthMeter.Builder(context).build(),
-            connectTimeout,
-            readTimeout,
+            connectTimeout.toInt(),
+            readTimeout.toInt(),
             allowCrossProtocolRedirects)
-        if (mMapHeadData != null && mMapHeadData.size > 0) {
-            for ((key, value) in mMapHeadData.entries) {
+        if (!mMapHeadData.isNullOrEmpty() && mMapHeadData!!.isNotEmpty()) {
+            for ((key, value) in mMapHeadData!!.entries) {
                 dataSourceFactory.defaultRequestProperties[key] = value
             }
         }

@@ -51,19 +51,61 @@ class SongInfo(
     var albumRoundCover: String = "",  //专辑封面(圆形)
     var albumArtist: String = "",      //专辑艺术家
     var albumSongCount: Int = 0,     //专辑音乐数
-    var albumPlayCount: Int = 0    //专辑播放数
+    var albumPlayCount: Int = 0,    //专辑播放数
+    var mMapHeadData: Map<String, String>? = hashMapOf() //header 信息
 ) : Parcelable {
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
-            return true
-        }
-        if (obj == null || javaClass != obj.javaClass) {
-            return false
-        }
-        val songInfo = obj as SongInfo?
-        return songId == songInfo!!.songId && songUrl == songInfo.songUrl
+        other as SongInfo
+
+        if (songId != other.songId) return false
+        if (songName != other.songName) return false
+        if (songCover != other.songCover) return false
+        if (songHDCover != other.songHDCover) return false
+        if (songSquareCover != other.songSquareCover) return false
+        if (songRectCover != other.songRectCover) return false
+        if (songRoundCover != other.songRoundCover) return false
+        if (songNameKey != other.songNameKey) return false
+        if (songCoverBitmap != other.songCoverBitmap) return false
+        if (songUrl != other.songUrl) return false
+        if (genre != other.genre) return false
+        if (type != other.type) return false
+        if (size != other.size) return false
+        if (duration != other.duration) return false
+        if (artist != other.artist) return false
+        if (artistKey != other.artistKey) return false
+        if (artistId != other.artistId) return false
+        if (downloadUrl != other.downloadUrl) return false
+        if (site != other.site) return false
+        if (favorites != other.favorites) return false
+        if (playCount != other.playCount) return false
+        if (trackNumber != other.trackNumber) return false
+        if (language != other.language) return false
+        if (country != other.country) return false
+        if (proxyCompany != other.proxyCompany) return false
+        if (publishTime != other.publishTime) return false
+        if (year != other.year) return false
+        if (modifiedTime != other.modifiedTime) return false
+        if (description != other.description) return false
+        if (versions != other.versions) return false
+        if (mimeType != other.mimeType) return false
+        if (albumId != other.albumId) return false
+        if (albumName != other.albumName) return false
+        if (albumNameKey != other.albumNameKey) return false
+        if (albumCover != other.albumCover) return false
+        if (albumHDCover != other.albumHDCover) return false
+        if (albumSquareCover != other.albumSquareCover) return false
+        if (albumRectCover != other.albumRectCover) return false
+        if (albumRoundCover != other.albumRoundCover) return false
+        if (albumArtist != other.albumArtist) return false
+        if (albumSongCount != other.albumSongCount) return false
+        if (albumPlayCount != other.albumPlayCount) return false
+        if (mMapHeadData != other.mMapHeadData) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
@@ -109,6 +151,7 @@ class SongInfo(
         result = 31 * result + albumArtist.hashCode()
         result = 31 * result + albumSongCount
         result = 31 * result + albumPlayCount
+        result = 31 * result + (mMapHeadData?.hashCode() ?: 0)
         return result
     }
 }
