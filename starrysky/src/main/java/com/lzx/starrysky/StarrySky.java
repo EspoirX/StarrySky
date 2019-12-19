@@ -38,7 +38,7 @@ public class StarrySky {
 
     //超时时间设置
     private long httpConnectTimeout = -1;
-    private long httpReadTimeout = 1;
+    private long httpReadTimeout = -1;
     //是否跳过https
     private boolean skipSSLChain = false;
 

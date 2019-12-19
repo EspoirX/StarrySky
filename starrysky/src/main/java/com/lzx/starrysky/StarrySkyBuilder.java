@@ -27,7 +27,7 @@ public class StarrySkyBuilder {
     String cacheDestFileDir;
     //超时时间设置
     long httpConnectTimeout = -1;
-    long httpReadTimeout = 1;
+    long httpReadTimeout = -1;
     //是否跳过https
     boolean skipSSLChain = false;
 

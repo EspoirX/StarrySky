@@ -4,13 +4,13 @@ class MediaResource constructor() {
 
     private lateinit var mediaId: String
     private var queueId: Long = 0L
-    private lateinit var mediaUrl: String
+    private var mediaUrl: String? = ""
     private var mMapHeadData: Map<String, String>? = hashMapOf()
     private var mCacheMediaResource = hashMapOf<String, MediaResource>()
 
     constructor(
         mediaId: String,
-        mediaUrl: String,
+        mediaUrl: String?,
         queueId: Long,
         headData: Map<String, String>?
     ) : this() {
@@ -21,7 +21,7 @@ class MediaResource constructor() {
     }
 
     fun obtain(
-        mediaId: String?, mediaUrl: String, queueId: Long, headData: Map<String, String>?
+        mediaId: String?, mediaUrl: String?, queueId: Long, headData: Map<String, String>?
     ): MediaResource {
         if (!mediaId.isNullOrEmpty()) {
             var resource = mCacheMediaResource[mediaId]

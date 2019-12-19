@@ -21,10 +21,13 @@ import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvicto
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.playback.offline.StarrySkyCacheManager
 import com.lzx.starrysky.utils.StarrySkyUtils
 import java.io.File
 
-class ExoSourceManager constructor(private val context: Context) {
+class ExoSourceManager constructor(
+    private val context: Context, private val cacheManager: StarrySkyCacheManager
+) {
 
     private var dataSource: String = ""
     private var sHttpConnectTimeout = -1L
@@ -142,45 +145,13 @@ class ExoSourceManager constructor(private val context: Context) {
     ): DataSource.Factory {
         return if (cacheEnable) {
             if (cache != null) {
-                isCached = resolveCacheState(cache, dataSource)
+                isCached = cacheManager.resolveCacheState(cache, dataSource)
             }
             CacheDataSourceFactory(cache, getDataSourceFactory(),
                 CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
         } else {
             getDataSourceFactory()
         }
-    }
-
-    /**
-     * 根据缓存块判断是否缓存成功
-     *
-     * @param cache
-     */
-    private fun resolveCacheState(cache: Cache?, url: String?): Boolean {
-        var isCache = true
-        if (!url.isNullOrEmpty()) {
-            val key = CacheUtil.generateKey(Uri.parse(url))
-            if (!key.isNullOrEmpty()) {
-                val cachedSpans = cache?.getCachedSpans(key)
-                if (cachedSpans?.size == 0) {
-                    isCache = false
-                } else {
-                    isCache = cache?.let {
-                        val contentLength =
-                            cache.getContentMetadata(key)["exo_len", C.LENGTH_UNSET.toLong()]
-                        var currentLength: Long = 0
-                        for (cachedSpan in cachedSpans ?: hashSetOf<CacheSpan>()) {
-                            currentLength += cache.getCachedLength(key, cachedSpan.position,
-                                cachedSpan.length)
-                        }
-                        return currentLength >= contentLength
-                    } ?: false
-                }
-            } else {
-                isCache = false
-            }
-        }
-        return isCache
     }
 
     private fun getDataSourceFactory(): DataSource.Factory {
@@ -200,8 +171,8 @@ class ExoSourceManager constructor(private val context: Context) {
         if (!mMapHeadData.isNullOrEmpty() && mMapHeadData!!.isNotEmpty()) {
             allowCrossProtocolRedirects = "true" == mMapHeadData!!["allowCrossProtocolRedirects"]
         }
-        val userAgent = StarrySkyUtils.getUserAgent(context,
-            if (context.applicationInfo != null) context.applicationInfo.name else "StarrySky")
+        val userAgent =
+            StarrySkyUtils.getUserAgent(context, context.applicationInfo?.name ?: "StarrySky")
         if (sSkipSSLChain) {
             val dataSourceFactory =
                 SkipSSLHttpDataSourceFactory(

@@ -3,67 +3,22 @@ package com.lzx.starrysky.playback.offline
 import android.content.Context
 import android.net.Uri
 import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
-import com.google.android.exoplayer2.upstream.FileDataSourceFactory
-import com.google.android.exoplayer2.upstream.HttpDataSource
 import com.google.android.exoplayer2.upstream.cache.Cache
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource
-import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.upstream.cache.CacheSpan
 import com.google.android.exoplayer2.upstream.cache.CacheUtil
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
-import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.lzx.starrysky.playback.player.ExoSourceManager
 import com.lzx.starrysky.utils.StarrySkyUtils
 import java.io.File
-import com.lzx.starrysky.playback.offline.StarrySkyCache as StarrySkyCache1
 
 class StarrySkyCacheManager constructor(
     private val context: Context,
     private val isOpenCache: Boolean,
-    private val cacheDestFileDir: String?,
-    factory: CacheFactory?
+    private val cacheDestFileDir: String?
 ) {
-
-    private var factory: CacheFactory? = null
-    private val userAgent: String
-    private var starrySkyCache: StarrySkyCache1? = null
     private var downloadDirectory: File? = null
     private var downloadCache: Cache? = null
-
-    init {
-        if (factory == null && isOpenCache) {
-            this.factory = object : CacheFactory {
-                override fun build(
-                    context: Context, manager: StarrySkyCacheManager
-                ): StarrySkyCache1 {
-                    //return ExoCache(context, manager)
-                    return DefaultCache()
-                }
-            }
-        } else {
-            this.factory = factory
-        }
-        userAgent = StarrySkyUtils.getUserAgent(context,
-            if (context.applicationInfo != null)
-                context.applicationInfo.name
-            else
-                "StarrySky")
-    }
-
-    fun getStarrySkyCache(context: Context): StarrySkyCache1? {
-        if (starrySkyCache == null) {
-            synchronized(this) {
-                if (starrySkyCache == null && factory != null) {
-                    starrySkyCache = factory!!.build(context, this)
-                }
-            }
-        }
-        return starrySkyCache
-    }
 
     fun isOpenCache(): Boolean {
         return isOpenCache
@@ -105,7 +60,33 @@ class StarrySkyCacheManager constructor(
         return downloadCache
     }
 
-    interface CacheFactory {
-        fun build(context: Context, manager: StarrySkyCacheManager): StarrySkyCache1
+    /**
+     * 根据缓存块判断是否缓存成功
+     */
+    fun resolveCacheState(cache: Cache? = getDownloadCache(), url: String?): Boolean {
+        var isCache = true
+        if (!url.isNullOrEmpty()) {
+            val key = CacheUtil.generateKey(Uri.parse(url))
+            if (!key.isNullOrEmpty()) {
+                val cachedSpans = cache?.getCachedSpans(key)
+                if (cachedSpans?.size == 0) {
+                    isCache = false
+                } else {
+                    isCache = cache?.let {
+                        val contentLength =
+                            cache.getContentMetadata(key)["exo_len", C.LENGTH_UNSET.toLong()]
+                        var currentLength: Long = 0
+                        for (cachedSpan in cachedSpans ?: hashSetOf<CacheSpan>()) {
+                            currentLength += cache.getCachedLength(key, cachedSpan.position,
+                                cachedSpan.length)
+                        }
+                        return currentLength >= contentLength
+                    } ?: false
+                }
+            } else {
+                isCache = false
+            }
+        }
+        return isCache
     }
 }
