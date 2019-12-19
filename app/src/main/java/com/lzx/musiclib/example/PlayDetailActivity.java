@@ -61,14 +61,15 @@ public class PlayDetailActivity extends AppCompatActivity {
             switch (playbackStage.getStage()) {
                 case PlaybackStage.NONE:
                     title.setText("播放详情页示例");
+                    Log.i("PlayDetailActivity","NONE");
                     break;
                 case PlaybackStage.START:
-                    Log.i("StarrySky","START");
+                    Log.i("PlayDetailActivity","START");
                     mListPlayAdapter.notifyDataSetChanged();
                     mTimerTask.startToUpdateProgress();
                     break;
                 case PlaybackStage.SWITCH:
-                    Log.i("StarrySky","SWITCH");
+                    Log.i("PlayDetailActivity","SWITCH");
                     break;
                 case PlaybackStage.PAUSE:
                     mTimerTask.stopToUpdateProgress();
@@ -102,7 +103,7 @@ public class PlayDetailActivity extends AppCompatActivity {
             if (mSeekBar.getMax() != duration) {
                 mSeekBar.setMax((int) duration);
             }
-            Log.i("PlayDetailActivity", "duration = " + duration);
+            //Log.i("PlayDetailActivity", "duration = " + duration);
             mSeekBar.setProgress((int) position);
             mSeekBar.setSecondaryProgress((int) buffered);
             progress_text.setText(ListPlayAdapter.formatMusicTime(position) + "/" + ListPlayAdapter.formatMusicTime(duration));

@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -7,6 +9,10 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+        ndk {
+            // 设置支持的SO库架构
+            abiFilters 'armeabi' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
     }
     buildTypes {
         release {
@@ -36,9 +42,13 @@ android {
         implementation("com.squareup.okhttp3:okhttp:4.1.0")
         implementation 'com.qw:soulpermission:1.2.1'
         implementation project(':starrysky')
-        //implementation 'com.lzx:StarrySkyJava:2.2.8'
-        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.4'
-        debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
+        //implementation 'com.lzx:StarrySkyJava:2.2.9'
+//        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.4'
+
+        implementation 'com.liulishuo.filedownloader:library:1.7.7'
+
+        implementation 'com.tencent.bugly:crashreport:3.1.0'
+        implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
     }
 }
 dependencies {

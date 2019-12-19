@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC
 import com.google.android.exoplayer2.C.USAGE_MEDIA
@@ -33,7 +32,6 @@ import com.lzx.starrysky.playback.offline.StarrySkyCache
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager
 import com.lzx.starrysky.provider.MediaResource
 import com.lzx.starrysky.utils.StarrySkyUtils
-import java.lang.reflect.Constructor
 
 open class ExoPlayback internal constructor(
     var context: Context, private var cacheManager: StarrySkyCacheManager
@@ -47,6 +45,9 @@ open class ExoPlayback internal constructor(
     }
     private val mEventListener by lazy {
         ExoPlayerEventListener()
+    }
+    private val sourceManager: ExoSourceManager by lazy {
+        ExoSourceManager(context)
     }
 
     private var mPlayOnFocusGain: Boolean = false
@@ -145,7 +146,7 @@ open class ExoPlayback internal constructor(
             source = source.replace(" ".toRegex(), "%20") // Escape spaces for URLs
 
             //缓存歌曲
-            mStarrySkyCache?.startCache(mediaId, source, "")
+//            mStarrySkyCache?.startCache(mediaId, source, "")
 
             if (mExoPlayer == null) {
                 //轨道选择
@@ -175,8 +176,10 @@ open class ExoPlayback internal constructor(
                 mExoPlayer!!.setAudioAttributes(audioAttributes, true) //第二个参数能使ExoPlayer自动管理焦点
             }
 
-            val dataSourceFactory = cacheManager.buildDataSourceFactory(context)
-            val mediaSource = buildMediaSource(dataSourceFactory, Uri.parse(source), null)
+//            val dataSourceFactory = cacheManager.buildDataSourceFactory(context)
+            //val mediaSource = buildMediaSource(dataSourceFactory, Uri.parse(source), null)
+            val mediaSource =  sourceManager.buildMediaSource(source,
+                null, cacheManager.isOpenCache(), cacheManager.getDownloadCache())
             mExoPlayer!!.prepare(mediaSource)
         }
 

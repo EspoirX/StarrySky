@@ -1,6 +1,8 @@
 package com.lzx.starrysky.playback.offline
 
 import android.content.Context
+import android.net.Uri
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
@@ -9,10 +11,15 @@ import com.google.android.exoplayer2.upstream.HttpDataSource
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
+import com.google.android.exoplayer2.upstream.cache.CacheSpan
+import com.google.android.exoplayer2.upstream.cache.CacheUtil
+import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
+import com.lzx.starrysky.playback.player.ExoSourceManager
 import com.lzx.starrysky.utils.StarrySkyUtils
 import java.io.File
+import com.lzx.starrysky.playback.offline.StarrySkyCache as StarrySkyCache1
 
 class StarrySkyCacheManager constructor(
     private val context: Context,
@@ -23,7 +30,7 @@ class StarrySkyCacheManager constructor(
 
     private var factory: CacheFactory? = null
     private val userAgent: String
-    private var starrySkyCache: StarrySkyCache? = null
+    private var starrySkyCache: StarrySkyCache1? = null
     private var downloadDirectory: File? = null
     private var downloadCache: Cache? = null
 
@@ -36,8 +43,9 @@ class StarrySkyCacheManager constructor(
             this.factory = object : CacheFactory {
                 override fun build(
                     context: Context, manager: StarrySkyCacheManager
-                ): StarrySkyCache {
-                    return ExoCache(context, manager)
+                ): StarrySkyCache1 {
+                    //return ExoCache(context, manager)
+                    return DefaultCache()
                 }
             }
         } else {
@@ -50,7 +58,7 @@ class StarrySkyCacheManager constructor(
                 "StarrySky")
     }
 
-    fun getStarrySkyCache(context: Context): StarrySkyCache? {
+    fun getStarrySkyCache(context: Context): StarrySkyCache1? {
 
         if (starrySkyCache == null) {
             synchronized(this) {
@@ -69,25 +77,25 @@ class StarrySkyCacheManager constructor(
     /**
      * DataSourceFactory构造
      */
-    fun buildDataSourceFactory(context: Context): DataSource.Factory {
-        val upstreamFactory = DefaultDataSourceFactory(context, buildHttpDataSourceFactory())
-        return buildReadOnlyCacheDataSource(upstreamFactory, getDownloadCache())
-    }
+//    fun buildDataSourceFactory(context: Context): DataSource.Factory {
+//        val upstreamFactory = DefaultDataSourceFactory(context, buildHttpDataSourceFactory())
+//        return buildReadOnlyCacheDataSource(upstreamFactory, getDownloadCache())
+//    }
 
-    fun buildHttpDataSourceFactory(): HttpDataSource.Factory {
-        return DefaultHttpDataSourceFactory(userAgent)
-    }
-
-    private fun buildReadOnlyCacheDataSource(
-        upstreamFactory: DefaultDataSourceFactory, cache: Cache
-    ): CacheDataSourceFactory {
-        return CacheDataSourceFactory(
-            cache,
-            upstreamFactory,
-            FileDataSourceFactory(),
-            /* eventListener= */ null,
-            CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR, null)/* cacheWriteDataSinkFactory= */
-    }
+//    fun buildHttpDataSourceFactory(): HttpDataSource.Factory {
+//        return DefaultHttpDataSourceFactory(userAgent)
+//    }
+//
+//    private fun buildReadOnlyCacheDataSource(
+//        upstreamFactory: DefaultDataSourceFactory, cache: Cache
+//    ): CacheDataSourceFactory {
+//        return CacheDataSourceFactory(
+//            cache,
+//            upstreamFactory,
+//            FileDataSourceFactory(),
+//            /* eventListener= */ null,
+//            CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR, null)/* cacheWriteDataSinkFactory= */
+//    }
 
     /**
      * 创建缓存文件夹
@@ -112,16 +120,20 @@ class StarrySkyCacheManager constructor(
      * 获取缓存实例
      */
     @Synchronized
-    fun getDownloadCache(): Cache {
+    fun getDownloadCache(): Cache? {
         if (downloadCache == null) {
-            val downloadContentDirectory =
-                File(getDownloadDirectory(context), DOWNLOAD_CONTENT_DIRECTORY)
-            downloadCache = SimpleCache(downloadContentDirectory, NoOpCacheEvictor())
+            val path = getDownloadDirectory(context).absolutePath
+            val downloadContentDirectory = File(getDownloadDirectory(context), DOWNLOAD_CONTENT_DIRECTORY)
+            val isLocked = SimpleCache.isCacheFolderLocked(File(path))
+            if (!isLocked) {
+                downloadCache = SimpleCache(downloadContentDirectory,
+                    LeastRecentlyUsedCacheEvictor(ExoSourceManager.DEFAULT_MAX_SIZE.toLong()))
+            }
         }
-        return downloadCache!!
+        return downloadCache
     }
 
     interface CacheFactory {
-        fun build(context: Context, manager: StarrySkyCacheManager): StarrySkyCache
+        fun build(context: Context, manager: StarrySkyCacheManager): StarrySkyCache1
     }
 }
