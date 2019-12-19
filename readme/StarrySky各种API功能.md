@@ -11,10 +11,13 @@
 - 如果想要添加的字段跟媒体信息有关，可以留言给我添加上去。
 
 
-**SongInfo中必须要有的字段**
+**SongInfo 中必须要有的字段**
 
 在实现播放功能时，SongInfo 有两个值必须要填，那就是 songId 和 songUrl，否则无法播放。其中 songId 是媒体 Id，你可以随便给他赋值，只需要保证唯一就行，
 因为它是每个媒体的唯一标记，songUrl 就是媒体的播放地址。
+
+**设置请求头**
+有些音频需要添加请求 header 才能访问，所以 SongInfo 中 有一个 mMapHeadData 字段，它可以设置请求头。
 
 
 ## PlayerControl 播放控制

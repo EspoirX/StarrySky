@@ -112,7 +112,11 @@ public class StarrySkyBuilder {
     boolean isOpenCache;
     //缓存文件夹
     String cacheDestFileDir;
-
+    //超时时间设置
+    long httpConnectTimeout = -1;
+    long httpReadTimeout = -1;
+    //是否跳过https
+    boolean skipSSLChain = false;
     //...
 }
 ```
@@ -206,12 +210,6 @@ Playback 是播放器实现，StarrySky 内部默认的播放器实现是 ExoPla
 
 为了代码简洁清晰，特意分出了一个通知栏创建的相关方法 getNotificationFactory，通知栏是通过通知栏工厂 NotificationFactory 构建出来的，重写
 getNotificationFactory 方法即可实现自己的通知栏，具体可参数文档  [快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)
-
-
-## getCacheFactory
-
-同样地，也是为了代码简洁清晰，分出来来这么一个方法用来自定义实现媒体缓存，缓存的结构跟通知栏差不多，也是通过工厂类构建的，重写 getCacheFactory
-即可实现自己的缓存功能，具体可参考文档 [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/媒体缓存功能.md)
 
 
 StarrySky 的配置讲完了，可以看到 StarrySky 完全支持用户自定义实现各种组件，具有良好的扩展性。更多功能自己探索哦。

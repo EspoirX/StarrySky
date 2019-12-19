@@ -30,11 +30,4 @@ public abstract class StarrySkyConfig {
     public StarrySkyNotificationManager.NotificationFactory getNotificationFactory() {
         return null;
     }
-
-    /**
-     * 缓存配置
-     */
-    public StarrySkyCacheManager.CacheFactory getCacheFactory() {
-        return null;
-    }
 }

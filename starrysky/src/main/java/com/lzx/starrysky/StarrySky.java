@@ -133,14 +133,10 @@ public class StarrySky {
                 new StarrySkyNotificationManager(builder.isOpenNotification, factory);
         starrySky.mRegistry.registryNotificationManager(notificationManager);
 
-        //注册缓存
-        StarrySkyCacheManager.CacheFactory cacheFactory =
-                mStarrySkyConfig != null ? mStarrySkyConfig.getCacheFactory() : null;
         StarrySkyCacheManager cacheManager = new StarrySkyCacheManager(
                 context,
                 builder.isOpenCache,
-                builder.cacheDestFileDir,
-                cacheFactory);
+                builder.cacheDestFileDir);
         starrySky.mRegistry.registryStarryCache(cacheManager);
 
         //播放器
