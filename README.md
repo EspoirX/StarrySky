@@ -1,7 +1,7 @@
 # A Powerful and Streamline MusicLibrary
 
 [ ![](https://img.shields.io/badge/platform-android-green.svg) ](http://developer.android.com/index.html)
-[ ![Download](https://api.bintray.com/packages/lizixian/StarrySky/StarrySkyJava/images/download.svg) ](https://bintray.com/lizixian/StarrySky/StarrySkyJava/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/lizixian/StarrySky/StarrySky/images/download.svg) ](https://bintray.com/lizixian/StarrySky/StarrySkyJava/_latestVersion)
 [ ![](https://img.shields.io/badge/license-MIT-green.svg) ](http://choosealicense.com/licenses/mit/)
 
 <a href="art/logo.jpg"><img src="art/logo.jpg" /></a>
@@ -38,7 +38,7 @@
 ```groovy
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.lzx:StarrySkyJava:x.x.x'
+    implementation 'com.lzx:StarrySky:x.x.x'
 }
 ```
 x.x.x 填的是当前的版本号。
