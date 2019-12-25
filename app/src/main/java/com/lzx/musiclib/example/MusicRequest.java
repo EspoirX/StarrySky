@@ -73,6 +73,7 @@ public class MusicRequest {
                         info.setSongName(object.getString("title"));
                         info.setArtist(object.getString("author"));
                         //info.setSongUrl("http://rtmpcnr003.cnr.cn/live/yyzs/playlist.m3u8");
+                        info.setSongUrl("http://qiniu.a-yo.net/Fs12fmAwv2qhNhzHYM4bdjnryy56");
                         list.add(info);
                     }
                     callback.onSuccess(list);

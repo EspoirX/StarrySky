@@ -97,7 +97,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         connection.getTransportControls()?.pause()
     }
 
-    override fun playMusic() {
+    override fun restoreMusic() {
         connection.getTransportControls()?.play()
     }
 

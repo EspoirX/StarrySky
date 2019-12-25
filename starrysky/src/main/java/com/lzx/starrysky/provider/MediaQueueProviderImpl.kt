@@ -122,6 +122,7 @@ open class MediaQueueProviderImpl : MediaQueueProvider {
             mediaInfo.mediaCover = info.songCover
             mediaInfo.mediaUrl = info.songUrl
             mediaInfo.duration = info.duration
+            mediaInfo.mapHeadData = info.mMapHeadData
 
             addMediaInfo(mediaInfo)
         }

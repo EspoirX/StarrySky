@@ -114,7 +114,7 @@ public class ListPlayExampleActivity extends AppCompatActivity {
             } else if (text.equals("暂停")) {
                 StarrySky.with().pauseMusic();
             } else if (text.equals("播放")) {
-                StarrySky.with().playMusic();
+                StarrySky.with().restoreMusic();
             }
         });
         //停止
