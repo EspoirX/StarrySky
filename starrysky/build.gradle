@@ -9,8 +9,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 211
-        versionName "2.1.1"
+        versionCode 230
+        versionName "2.3.0"
 
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
@@ -38,7 +38,7 @@ android {
         userOrg = 'lizixian'
         groupId = 'com.lzx'
         artifactId = 'StarrySkyJava'
-        publishVersion = '2.1.1'
+        publishVersion = '2.3.0'
         desc = 'A Powerful and Streamline MusicLibrary'
         website = "https://github.com/lizixian18/StarrySky"
     }
