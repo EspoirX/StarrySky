@@ -43,8 +43,7 @@ android {
         implementation 'com.qw:soulpermission:1.2.1'
         implementation project(':starrysky')
         // implementation 'com.lzx:StarrySkyJava:2.1.01'
-//        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.4'
-
+//       implementation 'com.google.android.exoplayer:exoplayer-hls:2.10.4'
         implementation 'com.tencent.bugly:crashreport:3.1.0'
         implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
     }

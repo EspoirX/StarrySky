@@ -58,28 +58,28 @@ maven{
 若要支持 dash 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.4'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.10.4'
 }
 ```
 
 若要支持 hls 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.4'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.10.4'
 }
 ```
 
 若要支持 smoothstreaming 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.4'
+    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.10.4'
 }
 ```
 
 若要支持 rtmp 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:extension-rtmp:2.9.4'
+    implementation 'com.google.android.exoplayer:extension-rtmp:2.10.4'
 }
 ```
 
