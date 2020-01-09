@@ -19,6 +19,22 @@ open class MediaQueueProviderSurface(private val provider: MediaQueueProvider) :
         return provider.getMediaList()
     }
 
+    override fun getBackupMediaList(): MutableList<BaseMediaInfo> {
+        return provider.getBackupMediaList()
+    }
+
+    override fun setBackupMediaList(backupMediaList: MutableList<BaseMediaInfo>) {
+        provider.setBackupMediaList(backupMediaList)
+    }
+
+    override fun setShuffleMode(shuffleMode: Int) {
+        provider.setShuffleMode(shuffleMode)
+    }
+
+    override fun getShuffleMode(): Int {
+        return provider.getShuffleMode()
+    }
+
     override fun getSongList(): MutableList<SongInfo> {
         return provider.getSongList()
     }
@@ -29,6 +45,10 @@ open class MediaQueueProviderSurface(private val provider: MediaQueueProvider) :
 
     override fun getMediaInfo(index: Int): BaseMediaInfo? {
         return provider.getMediaInfo(index)
+    }
+
+    override fun getMediaInfoByShuffleMode(index: Int): BaseMediaInfo? {
+        return provider.getMediaInfoByShuffleMode(index)
     }
 
     override fun getSongInfo(songId: String): SongInfo? {

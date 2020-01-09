@@ -82,10 +82,12 @@ public class ListPlayExampleActivity extends AppCompatActivity {
             if (repeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
                 StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
                 playMode.setText("单曲循环"); //当前是顺序播放，设置为单曲循环
-            } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
+            }
+            else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
                 StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
                 playMode.setText("列表循环"); //当前是单曲循环，设置为列表循环
-            } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL && !isSettingShuffleMode) {
+            }
+            else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL && !isSettingShuffleMode) {
                 playMode.setText("随机播放"); //当前是列表循环，设置为随机播放
                 StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
                 isSettingShuffleMode = true;

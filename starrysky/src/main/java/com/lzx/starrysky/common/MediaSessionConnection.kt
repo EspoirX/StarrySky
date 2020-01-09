@@ -190,11 +190,13 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
             super.onConnectionSuspended()
             isConnected.value = false
             disconnect()
+            StarrySkyUtils.log("onConnectionSuspended")
         }
 
         override fun onConnectionFailed() {
             super.onConnectionFailed()
             isConnected.value = false
+            StarrySkyUtils.log("onConnectionFailed")
         }
     }
 

@@ -14,6 +14,14 @@ interface MediaQueueProvider {
      */
     fun getMediaList(): MutableList<BaseMediaInfo>
 
+    fun getBackupMediaList(): MutableList<BaseMediaInfo>
+
+    fun setBackupMediaList(backupMediaList: MutableList<BaseMediaInfo>)
+
+    fun setShuffleMode(shuffleMode: Int)
+
+    fun getShuffleMode(): Int
+
     fun getSongList(): MutableList<SongInfo>
 
     /**
@@ -68,6 +76,8 @@ interface MediaQueueProvider {
     fun getMediaInfo(songId: String): BaseMediaInfo?
 
     fun getMediaInfo(index: Int): BaseMediaInfo?
+
+    fun getMediaInfoByShuffleMode(index: Int): BaseMediaInfo?
 
     fun getSongInfo(songId: String): SongInfo?
 

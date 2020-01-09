@@ -2,7 +2,7 @@ package com.lzx.starrysky.playback.queue
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.text.TextUtils
+import android.support.v4.media.session.PlaybackStateCompat
 import com.lzx.starrysky.BaseMediaInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.ext.albumArtUrl
@@ -21,7 +21,6 @@ open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderS
     private var mMediaResource: MediaResource? = null
     private var mCurrentIndex: Int = 0
     private var mUpdateListener: MediaQueueProvider.MetadataUpdateListener? = null
-    private var backupMediaList: MutableList<BaseMediaInfo> = mutableListOf()
 
     override fun getCurrentIndex(): Int {
         return mCurrentIndex
@@ -67,6 +66,7 @@ open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderS
 
     override fun getCurrentMusic(mediaInfo: BaseMediaInfo?): MediaResource? {
         val mediaList = getMediaList()
+        val backupMediaList = getBackupMediaList()
         if (!QueueHelper.isIndexPlayable(mCurrentIndex, mediaList)) {
             return null
         }
@@ -175,13 +175,14 @@ open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderS
         //打乱顺序
         mediaInfos.shuffle()
         //打乱顺序要在这个前面
-        backupMediaList = Arrays.asList(
-            *backupArray) /*backupArray.toMutableList() as MutableList<BaseMediaInfo>*/
+        setBackupMediaList(Arrays.asList(*backupArray))
+        setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL)
     }
 
     override fun setNormalMode(mediaId: String) {
         //恢复备份
-        updateMediaList(backupMediaList)
+        updateMediaList(getBackupMediaList())
         updateCurrPlayingMedia(mediaId)  //恢复正常顺序后需要更新一下下标
+        setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE)
     }
 }

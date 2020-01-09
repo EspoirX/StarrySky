@@ -78,7 +78,12 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun playMusicByIndex(index: Int) {
-        val info = mMediaQueueProvider.getMediaInfo(index)
+        val info =
+            if (mMediaQueueProvider.getShuffleMode() == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
+                mMediaQueueProvider.getMediaInfoByShuffleMode(index)
+            } else {
+                mMediaQueueProvider.getMediaInfo(index)
+            }
         if (info != null) {
             playMusicImpl(info.mediaId)
         }

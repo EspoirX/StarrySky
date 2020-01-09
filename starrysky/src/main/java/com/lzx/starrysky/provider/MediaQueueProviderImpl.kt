@@ -15,9 +15,11 @@ import com.lzx.starrysky.ext.mediaUri
 import com.lzx.starrysky.ext.title
 import com.lzx.starrysky.ext.trackCount
 import com.lzx.starrysky.ext.trackNumber
-import com.lzx.starrysky.utils.StarrySkyUtils
 
 open class MediaQueueProviderImpl : MediaQueueProvider {
+
+    private var shuffleMode: Int =
+        -1 //PlaybackStateCompat.SHUFFLE_MODE_ALL,PlaybackStateCompat.SHUFFLE_MODE_NONE
 
     private var mediaListMap = linkedMapOf<String, BaseMediaInfo>()
     private var mMediaMetadataCompatMap = linkedMapOf<String, MediaMetadataCompat>()
@@ -25,6 +27,9 @@ open class MediaQueueProviderImpl : MediaQueueProvider {
 
     private val mediaList = mutableListOf<BaseMediaInfo>()
     private val songList = mutableListOf<SongInfo>()
+
+    private var backupMediaList: MutableList<BaseMediaInfo> = mutableListOf()
+    private var backupMediaListMap = linkedMapOf<String, BaseMediaInfo>()
 
     override val mediaMetadataCompatList: List<MediaMetadataCompat>
         get() = mediaMetadataCompatList.toList()
@@ -57,6 +62,26 @@ open class MediaQueueProviderImpl : MediaQueueProvider {
 
     override fun getMediaList(): MutableList<BaseMediaInfo> {
         return mediaList
+    }
+
+    override fun getBackupMediaList(): MutableList<BaseMediaInfo> {
+        return backupMediaList
+    }
+
+    override fun setBackupMediaList(backupMediaList: MutableList<BaseMediaInfo>) {
+        this.backupMediaList = backupMediaList
+        backupMediaListMap.clear()
+        for (info in backupMediaList) {
+            backupMediaListMap[info.mediaId] = info
+        }
+    }
+
+    override fun setShuffleMode(shuffleMode: Int) {
+        this.shuffleMode = shuffleMode
+    }
+
+    override fun getShuffleMode(): Int {
+        return this.shuffleMode
     }
 
     override fun getSongList(): MutableList<SongInfo> {
@@ -153,6 +178,10 @@ open class MediaQueueProviderImpl : MediaQueueProvider {
 
     override fun getMediaInfo(index: Int): BaseMediaInfo? {
         return mediaList.elementAtOrNull(index)
+    }
+
+    override fun getMediaInfoByShuffleMode(index: Int): BaseMediaInfo? {
+        return backupMediaList.elementAtOrNull(index)
     }
 
     override fun getSongInfo(songId: String): SongInfo? {
