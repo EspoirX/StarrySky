@@ -61,15 +61,15 @@ public class PlayDetailActivity extends AppCompatActivity {
             switch (playbackStage.getStage()) {
                 case PlaybackStage.NONE:
                     title.setText("播放详情页示例");
-                    Log.i("PlayDetailActivity","NONE");
+                    Log.i("PlayDetailActivity", "NONE");
                     break;
                 case PlaybackStage.START:
-                    Log.i("PlayDetailActivity","START");
+                    Log.i("PlayDetailActivity", "START");
                     mListPlayAdapter.notifyDataSetChanged();
                     mTimerTask.startToUpdateProgress();
                     break;
                 case PlaybackStage.SWITCH:
-                    Log.i("PlayDetailActivity","SWITCH");
+                    Log.i("PlayDetailActivity", "SWITCH");
                     break;
                 case PlaybackStage.PAUSE:
                     mTimerTask.stopToUpdateProgress();
@@ -106,7 +106,8 @@ public class PlayDetailActivity extends AppCompatActivity {
             //Log.i("PlayDetailActivity", "duration = " + duration);
             mSeekBar.setProgress((int) position);
             mSeekBar.setSecondaryProgress((int) buffered);
-            progress_text.setText(ListPlayAdapter.formatMusicTime(position) + "/" + ListPlayAdapter.formatMusicTime(duration));
+            progress_text.setText(
+                    ListPlayAdapter.formatMusicTime(position) + "/" + ListPlayAdapter.formatMusicTime(duration));
             time_text.setText(ListPlayAdapter.formatMusicTime(duration));
             mListPlayAdapter.notifyDataSetChanged();
         });
@@ -131,21 +132,18 @@ public class PlayDetailActivity extends AppCompatActivity {
         playMode.setOnClickListener(v -> {
             int repeatMode = StarrySky.with().getRepeatMode();
             int shuffleMode = StarrySky.with().getShuffleMode();
-            if (repeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+            if (repeatMode == PlaybackStateCompat.REPEAT_MODE_NONE && !isSettingShuffleMode) {
+                StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL); //当前是顺序播放，设置为随机播放
+                isSettingShuffleMode = true;
+                playMode.setText("随机播放");
+            } else if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL && isSettingShuffleMode) {  //当前是随机播放，设置为单曲循环
                 StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
                 playMode.setText("单曲循环"); //当前是顺序播放，设置为单曲循环
+                isSettingShuffleMode = false;
             } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
-                StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
-                playMode.setText("列表循环"); //当前是单曲循环，设置为列表循环
-            } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL && !isSettingShuffleMode) {
-                playMode.setText("随机播放"); //当前是列表循环，设置为随机播放
-                StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
-                isSettingShuffleMode = true;
-            } else if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
-                playMode.setText("顺序播放");  //当前是随机播放，设置为顺序播放
+                playMode.setText("顺序播放"); //当前是单曲循环，设置为顺序播放
                 StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
                 StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
-                isSettingShuffleMode = false;
             }
         });
 
