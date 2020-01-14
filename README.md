@@ -127,9 +127,9 @@ PS：
 StarrySky 目前为止有 **8100+** 的下载量，感谢各位开发者的支持，下面是部分 app 成功案例。
 
 <a href="art/妙读.png"><img src="art/妙读.png" width="50" height="50" /></a>&#160;&#160;
-<a href="art/小帮规划.png"><img src="art/小帮规划.png" width="120" height="40"/></a>&#160;&#160;
-<a href="art/点点听书.png"><img src="art/点点听书.png" width="150" height="52"/></a>&#160;&#160;
-<a href="art/惠谷阅读.png"><img src="art/惠谷阅读.png" width="140" height="62"/></a>&#160;&#160;
+<a href="art/小帮规划.png"><img src="art/小帮规划.png"/></a>&#160;&#160;
+<a href="art/点点听书.png"><img src="art/点点听书.png"/></a>&#160;&#160;
+<a href="art/惠谷阅读.png"><img src="art/惠谷阅读.png"/></a>&#160;&#160;
 
 （如违法或者侵权行为请联系我删除！）
 
