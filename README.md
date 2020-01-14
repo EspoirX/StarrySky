@@ -129,6 +129,7 @@ StarrySky 目前为止有 **8100+** 的下载量，感谢各位开发者的支�
 <a href="art/妙读.png"><img src="art/妙读.png" /></a>
 <a href="art/小帮规划.png"><img src="art/小帮规划.png"/></a>
 <a href="art/点点听书.png"><img src="art/点点听书.png"/></a>
+<a href="art/惠谷阅读.png"><img src="art/惠谷阅读.png"/></a>
 
 （如违法或者侵权行为请联系我删除！）
 
