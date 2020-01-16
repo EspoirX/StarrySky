@@ -137,8 +137,9 @@ public class PlayDetailActivity extends AppCompatActivity {
                 isSettingShuffleMode = true;
                 playMode.setText("随机播放");
             } else if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL && isSettingShuffleMode) {  //当前是随机播放，设置为单曲循环
+                StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
                 StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
-                playMode.setText("单曲循环"); //当前是顺序播放，设置为单曲循环
+                playMode.setText("单曲循环"); //当前是随机播放，设置为单曲循环
                 isSettingShuffleMode = false;
             } else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
                 playMode.setText("顺序播放"); //当前是单曲循环，设置为顺序播放
