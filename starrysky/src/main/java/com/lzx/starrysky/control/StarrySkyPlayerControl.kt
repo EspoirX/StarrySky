@@ -74,6 +74,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
 
     override fun playMusicByInfoDirect(info: SongInfo) {
         mMediaQueueProvider.onlyOneMediaBySongInfo(info)
+        mPlayback?.currentMediaId = ""
         playMusicImpl(info.songId)
     }
 
