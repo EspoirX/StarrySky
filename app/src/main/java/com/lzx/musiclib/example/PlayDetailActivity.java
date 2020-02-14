@@ -17,8 +17,11 @@ import com.bumptech.glide.Glide;
 import com.lzx.musiclib.R;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.common.PlaybackStage;
+import com.lzx.starrysky.control.OnPlayerEventListener;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.utils.TimerTaskManager;
+
+import org.jetbrains.annotations.NotNull;
 
 public class PlayDetailActivity extends AppCompatActivity {
 
@@ -51,6 +54,42 @@ public class PlayDetailActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mListPlayAdapter);
 
         mTimerTask = new TimerTaskManager();
+        StarrySky.with().addPlayerEventListener(new OnPlayerEventListener() {
+            @Override
+            public void onMusicSwitch(@NotNull SongInfo songInfo) {
+
+            }
+
+            @Override
+            public void onPlayerStart() {
+
+            }
+
+            @Override
+            public void onPlayerPause() {
+
+            }
+
+            @Override
+            public void onPlayerStop() {
+
+            }
+
+            @Override
+            public void onPlayCompletion(@NotNull SongInfo songInfo) {
+
+            }
+
+            @Override
+            public void onBuffering() {
+
+            }
+
+            @Override
+            public void onError(int errorCode, @NotNull String errorMsg) {
+
+            }
+        });
 
         //状态监听
         StarrySky.with().playbackState().observe(this, playbackStage -> {

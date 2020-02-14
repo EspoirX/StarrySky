@@ -77,7 +77,9 @@ class PlayValidManager {
 
     fun doCall(mediaId: String?) {
         val songInfo = mediaId?.let { StarrySky.get().mediaQueueProvider.getSongInfo(it) }
-        doCall(songInfo)
+        songInfo?.let {
+            doCall(songInfo)
+        }
     }
 
     fun resetValidIndex() {

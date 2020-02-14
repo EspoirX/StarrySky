@@ -11,11 +11,8 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.ext.id
-import com.lzx.starrysky.control.OnPlayerEventListener
-import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.StarrySkyUtils
 
 class MediaSessionConnection constructor(context: Context, serviceComponent: ComponentName) :
@@ -274,7 +271,7 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
                 //状态监听
                 val mPlayerEventListeners = StarrySky.with().getPlayerEventListeners()
                 for (listener in mPlayerEventListeners) {
-                    listener.onMusicSwitch(songInfo!!)
+                    songInfo?.let { listener.onMusicSwitch(it) }
                 }
             }
         }

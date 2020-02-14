@@ -39,7 +39,6 @@ public class TestApplication extends Application {
 
     private static class TestConfig extends StarrySkyConfig {
 
-
         @Override
         public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
             super.applyOptions(context, builder);
