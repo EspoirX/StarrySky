@@ -17,7 +17,7 @@ interface PlayerControl {
     fun playMusicByInfo(info: SongInfo)
 
     /**
-     * 保持播放列表里面只有一个音频
+     * 单曲播放，即设计模式默认设置为 SINGLE_MODE_ONE
      */
     fun playMusicByInfoDirect(info: SongInfo)
 

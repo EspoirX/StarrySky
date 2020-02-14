@@ -12,6 +12,7 @@ import android.text.TextUtils
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.common.IMediaConnection
 import com.lzx.starrysky.common.PlaybackStage
+import com.lzx.starrysky.ext.SINGLE_MODE_ONE
 import com.lzx.starrysky.ext.album
 import com.lzx.starrysky.ext.albumArt
 import com.lzx.starrysky.ext.albumArtUrl
@@ -40,7 +41,6 @@ import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.provider.MediaQueueProvider
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.MD5
-import com.lzx.starrysky.utils.StarrySkyUtils
 
 class StarrySkyPlayerControl constructor(private val context: Context) : PlayerControl {
 
@@ -73,8 +73,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun playMusicByInfoDirect(info: SongInfo) {
-        mMediaQueueProvider.onlyOneMediaBySongInfo(info)
-        mPlayback?.currentMediaId = ""
+        setRepeatMode(SINGLE_MODE_ONE)
         playMusicImpl(info.songId)
     }
 

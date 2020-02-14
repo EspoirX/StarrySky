@@ -68,7 +68,7 @@ public class ListPlayAdapter extends RecyclerView.Adapter<ListPlayAdapter.ListPl
         }
         holder.itemView.setOnClickListener(v -> {
             //StarrySky.with().playMusicByIndex(position);
-            StarrySky.with().playMusicByInfoDirect(songInfo);
+            StarrySky.with().playMusicByInfoDirect(mSongInfos.get(position));
             StarrySky.with().playMusicByInfoDirect(mSongInfos.get(position + 1));
         });
         holder.itemView.setOnLongClickListener(v -> {
