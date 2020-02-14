@@ -91,6 +91,10 @@ open class MediaQueueProviderSurface(private val provider: MediaQueueProvider) :
         provider.deleteMediaById(songId)
     }
 
+    override fun deleteMediasExceptId(songId: String) {
+        provider.deleteMediasExceptId(songId)
+    }
+
     override fun hasMediaInfo(songId: String): Boolean {
         return provider.hasMediaInfo(songId)
     }

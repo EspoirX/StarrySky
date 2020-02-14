@@ -17,7 +17,7 @@ interface PlayerControl {
     fun playMusicByInfo(info: SongInfo)
 
     /**
-     * 单曲播放，即设计模式默认设置为 SINGLE_MODE_ONE
+     * 单曲播放，即设计模式默认设置为 SINGLE_MODE_ONE，如调了这个方法后要用其他方法播放，记得播放模式要恢复一下
      */
     fun playMusicByInfoDirect(info: SongInfo)
 
@@ -270,7 +270,7 @@ interface PlayerControl {
     /**
      * 获取 AudioSessionId
      */
-    fun getAudioSessionId():Int
+    fun getAudioSessionId(): Int
 
     /**
      * 更新通知栏喜欢或收藏按钮UI

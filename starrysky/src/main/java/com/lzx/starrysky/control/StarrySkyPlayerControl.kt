@@ -64,17 +64,15 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun playMusicByInfo(info: SongInfo) {
-        if (mMediaQueueProvider.hasMediaInfo(info.songId)) {
-            playMusicImpl(info.songId)
-        } else {
+        if (!mMediaQueueProvider.hasMediaInfo(info.songId)) {
             mMediaQueueProvider.addMediaBySongInfo(info)
-            playMusicImpl(info.songId)
         }
+        playMusicImpl(info.songId)
     }
 
     override fun playMusicByInfoDirect(info: SongInfo) {
         setRepeatMode(SINGLE_MODE_ONE)
-        playMusicImpl(info.songId)
+        playMusicByInfo(info)
     }
 
     override fun playMusicByIndex(index: Int) {

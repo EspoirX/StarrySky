@@ -65,6 +65,8 @@ interface MediaQueueProvider {
 
     fun deleteMediaById(songId: String)
 
+    fun deleteMediasExceptId(songId: String)
+
     /**
      * 根据检查是否有某首音频
      */

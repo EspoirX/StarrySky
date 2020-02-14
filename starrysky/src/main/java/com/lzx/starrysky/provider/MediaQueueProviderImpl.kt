@@ -166,6 +166,10 @@ open class MediaQueueProviderImpl : MediaQueueProvider {
         }
     }
 
+    override fun deleteMediasExceptId(songId: String) {
+
+    }
+
     override fun hasMediaInfo(songId: String): Boolean {
         return mediaListMap.containsKey(songId)
     }

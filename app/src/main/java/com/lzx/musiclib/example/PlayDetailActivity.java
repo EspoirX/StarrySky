@@ -192,7 +192,7 @@ public class PlayDetailActivity extends AppCompatActivity {
         musicRequest.getMusicList(this, list -> {
             runOnUiThread(() -> {
                 mListPlayAdapter.setSongInfos(list);
-                StarrySky.with().updatePlayList(list);
+                //StarrySky.with().updatePlayList(list);
             });
         });
     }
