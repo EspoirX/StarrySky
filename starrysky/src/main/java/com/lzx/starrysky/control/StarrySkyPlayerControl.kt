@@ -12,7 +12,6 @@ import android.text.TextUtils
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.common.IMediaConnection
 import com.lzx.starrysky.common.PlaybackStage
-import com.lzx.starrysky.ext.SINGLE_MODE_ONE
 import com.lzx.starrysky.ext.album
 import com.lzx.starrysky.ext.albumArt
 import com.lzx.starrysky.ext.albumArtUrl
@@ -71,8 +70,9 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun playMusicByInfoDirect(info: SongInfo) {
-        setRepeatMode(SINGLE_MODE_ONE)
-        playMusicByInfo(info)
+        val bundle = Bundle()
+        bundle.putParcelable("songInfo", info)
+        connection.sendCommand(ExoPlayback.ACTION_PLAY_DIRECT, bundle)
     }
 
     override fun playMusicByIndex(index: Int) {

@@ -18,6 +18,7 @@ import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueue
 import com.lzx.starrysky.provider.MediaQueueProvider
+import com.lzx.starrysky.provider.MediaResource
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.registry.ValidRegistry
 import com.lzx.starrysky.utils.StarrySkyUtils
@@ -351,22 +352,34 @@ class PlaybackManager constructor(
             if (command == null) {
                 return
             }
-            if (INotification.ACTION_UPDATE_FAVORITE_UI == command) {
-                val isFavorite = extras?.getBoolean("isFavorite")
-                isFavorite?.apply { notification?.updateFavoriteUI(this) }
-            }
-            if (INotification.ACTION_UPDATE_LYRICS_UI == command) {
-                val isChecked = extras?.getBoolean("isChecked") ?: false
-                notification?.updateLyricsUI(isChecked)
-            }
-            if (ExoPlayback.ACTION_CHANGE_VOLUME == command) {
-                val audioVolume = extras?.getFloat("AudioVolume") ?: 0F
-                playback.volume = audioVolume
-            }
-            if (ExoPlayback.ACTION_DERAILLEUR == command) {
-                val refer = extras?.getBoolean("refer") ?: false
-                val multiple = extras?.getFloat("multiple") ?: 0F
-                handleDerailleur(refer, multiple)
+            when (command) {
+                INotification.ACTION_UPDATE_FAVORITE_UI -> {
+                    val isFavorite = extras?.getBoolean("isFavorite")
+                    isFavorite?.apply { notification?.updateFavoriteUI(this) }
+                }
+                INotification.ACTION_UPDATE_LYRICS_UI -> {
+                    val isChecked = extras?.getBoolean("isChecked") ?: false
+                    notification?.updateLyricsUI(isChecked)
+                }
+                ExoPlayback.ACTION_CHANGE_VOLUME -> {
+                    val audioVolume = extras?.getFloat("AudioVolume") ?: 0F
+                    playback.volume = audioVolume
+                }
+                ExoPlayback.ACTION_DERAILLEUR -> {
+                    val refer = extras?.getBoolean("refer") ?: false
+                    val multiple = extras?.getFloat("multiple") ?: 0F
+                    handleDerailleur(refer, multiple)
+                }
+                ExoPlayback.ACTION_PLAY_DIRECT -> {
+                    val songInfo: SongInfo = extras?.getParcelable("songInfo") as SongInfo
+                    val mediaInfo = mediaQueue.songInfoToMediaInfo(songInfo)
+                    playback.currentMediaId = ""
+                    val source = MediaResource()
+                    source.obtain(mediaInfo.mediaId, mediaInfo.mediaUrl, System.currentTimeMillis(),
+                        mediaInfo.mapHeadData)
+                    mServiceCallback?.onPlaybackStart()
+                    playback.play(source, true)
+                }
             }
         }
     }

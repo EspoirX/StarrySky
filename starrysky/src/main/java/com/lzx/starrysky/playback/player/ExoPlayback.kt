@@ -41,10 +41,14 @@ open class ExoPlayback internal constructor(
     private var mCallback: Playback.Callback? = null
     private var mExoPlayerNullIsStopped = false
     private var mExoPlayer: SimpleExoPlayer? = null
+    private var currProgressWhenError: Long = 0 //记录下出错时的进度
+    private var seekToPositionWhenError = 0L
+    private var happenSourceError = false //是否发生资源问题的错误
 
     companion object {
         const val ACTION_CHANGE_VOLUME = "ACTION_CHANGE_VOLUME"
         const val ACTION_DERAILLEUR = "ACTION_DERAILLEUR"
+        const val ACTION_PLAY_DIRECT = "ACTION_PLAY_DIRECT"
     }
 
     override var state: Int
@@ -123,53 +127,78 @@ open class ExoPlayback internal constructor(
                 " mediaHasChanged = " + mediaHasChanged +
                 " isPlayWhenReady = " + isPlayWhenReady)
         StarrySkyUtils.log("---------------------------------------")
+
+        //创建 mediaSource
+        var source = mediaResource.getMediaUrl()
+        if (source.isNullOrEmpty()) {
+            mCallback?.onError("播放 url 为空")
+            return
+        }
+        source = source.replace(" ".toRegex(), "%20") // Escape spaces for URL
+        val mediaSource = sourceManager.buildMediaSource(
+            source,
+            null,
+            mediaResource.getMapHeadData(),
+            cacheManager.isOpenCache(),
+            cacheManager.getDownloadCache())
+
+        //如果资源改变了或者播放器为空则重新加载
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false)  // release everything except the player
-            var source = mediaResource.getMediaUrl()
-            if (source.isNullOrEmpty()) {
-                mCallback?.onError("播放 url 为空")
-                return
-            }
-            source = source.replace(" ".toRegex(), "%20") // Escape spaces for URLs
 
-            if (mExoPlayer == null) {
-                //轨道选择
-                val trackSelectionFactory = AdaptiveTrackSelection.Factory()
+            //创建播放器实例
+            createExoPlayer()
 
-                //使用扩展渲染器的模式
-                @DefaultRenderersFactory.ExtensionRendererMode
-                val extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
-                val renderersFactory = DefaultRenderersFactory(context, extensionRendererMode)
-
-                //轨道选择
-                val trackSelector = DefaultTrackSelector(trackSelectionFactory)
-                trackSelector.parameters = trackSelectorParameters
-
-                val drmSessionManager: DefaultDrmSessionManager<FrameworkMediaCrypto>? = null
-
-                mExoPlayer = ExoPlayerFactory.newSimpleInstance(context, renderersFactory,
-                    trackSelector, drmSessionManager)
-
-                mExoPlayer!!.addListener(mEventListener)
-                mExoPlayer!!.addAnalyticsListener(EventLogger(trackSelector))
-
-                val audioAttributes = AudioAttributes.Builder()
-                    .setContentType(CONTENT_TYPE_MUSIC)
-                    .setUsage(USAGE_MEDIA)
-                    .build()
-                mExoPlayer!!.setAudioAttributes(audioAttributes, true) //第二个参数能使ExoPlayer自动管理焦点
-            }
-            val mediaSource = sourceManager.buildMediaSource(
-                source,
-                null,
-                mediaResource.getMapHeadData(),
-                cacheManager.isOpenCache(),
-                cacheManager.getDownloadCache())
             mExoPlayer!!.prepare(mediaSource)
         }
-
+        //当错误发送时，记录下播放进度currProgressWhenError，如果还播放同一首歌，
+        //这时候需要重新加载一下，并且吧进度 seekTo 到出错的地方
+        if (happenSourceError && !mediaHasChanged && mExoPlayer != null) {
+            mExoPlayer!!.prepare(mediaSource)
+            if (currProgressWhenError != 0L) {
+                if (seekToPositionWhenError != 0L) {
+                    mExoPlayer!!.seekTo(seekToPositionWhenError)
+                } else {
+                    mExoPlayer!!.seekTo(currentStreamPosition)
+                }
+            }
+        }
+        //如果准备好就播放
         if (isPlayWhenReady) {
             mExoPlayer!!.playWhenReady = true
+        }
+    }
+
+    /**
+     * 创建播放器实例
+     */
+    private fun createExoPlayer() {
+        if (mExoPlayer == null) {
+            //轨道选择
+            val trackSelectionFactory = AdaptiveTrackSelection.Factory()
+
+            //使用扩展渲染器的模式
+            @DefaultRenderersFactory.ExtensionRendererMode
+            val extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+            val renderersFactory = DefaultRenderersFactory(context, extensionRendererMode)
+
+            //轨道选择
+            val trackSelector = DefaultTrackSelector(trackSelectionFactory)
+            trackSelector.parameters = trackSelectorParameters
+
+            val drmSessionManager: DefaultDrmSessionManager<FrameworkMediaCrypto>? = null
+
+            mExoPlayer = ExoPlayerFactory.newSimpleInstance(context, renderersFactory,
+                trackSelector, drmSessionManager)
+
+            mExoPlayer!!.addListener(mEventListener)
+            mExoPlayer!!.addAnalyticsListener(EventLogger(trackSelector))
+
+            val audioAttributes = AudioAttributes.Builder()
+                .setContentType(CONTENT_TYPE_MUSIC)
+                .setUsage(USAGE_MEDIA)
+                .build()
+            mExoPlayer!!.setAudioAttributes(audioAttributes, true) //第二个参数能使ExoPlayer自动管理焦点
         }
     }
 
@@ -180,6 +209,7 @@ open class ExoPlayback internal constructor(
 
     override fun seekTo(position: Long) {
         mExoPlayer?.seekTo(position)
+        seekToPositionWhenError = position
     }
 
     override fun onFastForward() {
@@ -249,6 +279,11 @@ open class ExoPlayback internal constructor(
                     mCallback?.onPlaybackStatusChanged(state)
                 Player.STATE_ENDED -> mCallback?.onCompletion()
             }
+            if (playbackState == Player.STATE_READY) {
+                happenSourceError = false
+                currProgressWhenError = 0L
+                seekToPositionWhenError = 0L
+            }
         }
 
         override fun onPlayerError(error: ExoPlaybackException) {
@@ -259,6 +294,10 @@ open class ExoPlayback internal constructor(
                 else -> "Unknown: $error"
             }
             mCallback?.onError("ExoPlayer error $what")
+            if (error.type == ExoPlaybackException.TYPE_SOURCE) {
+                happenSourceError = true
+                currProgressWhenError = mExoPlayer?.duration ?: 0
+            }
         }
 
         override fun onPositionDiscontinuity(reason: Int) {

@@ -1,6 +1,8 @@
 package com.lzx.musiclib.example;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 
 import com.lzx.starrysky.provider.SongInfo;
@@ -23,6 +25,7 @@ import okhttp3.Response;
 public class MusicRequest {
 
     private OkHttpClient client;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     public MusicRequest() {
         OkHttpClient.Builder builder = new OkHttpClient().newBuilder();
@@ -54,7 +57,12 @@ public class MusicRequest {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Toast.makeText(context, "接口请求失败", Toast.LENGTH_SHORT).show();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "接口请求失败", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
@@ -72,8 +80,9 @@ public class MusicRequest {
                         info.setSongCover(object.getString("pic_big"));
                         info.setSongName(object.getString("title"));
                         info.setArtist(object.getString("author"));
-                        //info.setSongUrl("http://rtmpcnr003.cnr.cn/live/yyzs/playlist.m3u8");
-                        //info.setSongUrl("http://qiniu.a-yo.net/Fs12fmAwv2qhNhzHYM4bdjnryy56");
+                        // info.setSongUrl(
+                        //         "https://aphid.fireside.fm/d/1437767933/b480a1bf-0e6b-4876-8867-918942d889a1/328f189b-946b-481e-a32d-b1cb832e9f54.mp3");
+                        // info.setSongUrl("http://qiniu.a-yo.net/Fs12fmAwv2qhNhzHYM4bdjnryy56");
                         list.add(info);
                     }
                     callback.onSuccess(list);

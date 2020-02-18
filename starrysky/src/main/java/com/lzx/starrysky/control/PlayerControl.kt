@@ -17,8 +17,9 @@ interface PlayerControl {
     fun playMusicByInfo(info: SongInfo)
 
     /**
-     * 单曲播放，即设计模式默认设置为 SINGLE_MODE_ONE，如调了这个方法后要用其他方法播放，记得播放模式要恢复一下
+     * 简单播放，没有队列管理(暂时没用)
      */
+    @Deprecated("暂时没实现好")
     fun playMusicByInfoDirect(info: SongInfo)
 
     /**
