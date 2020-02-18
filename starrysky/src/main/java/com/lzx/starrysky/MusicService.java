@@ -28,7 +28,6 @@ import com.lzx.starrysky.provider.MediaQueueProvider;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-
 public class MusicService extends MediaBrowserServiceCompat implements MediaQueueProvider.MetadataUpdateListener,
         PlaybackManager.PlaybackServiceCallback {
 
@@ -55,15 +54,23 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
         mPlaybackManager.setServiceCallback(this);
         mPlaybackManager.setMetadataUpdateListener(this);
 
-        Intent sessionIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-        PendingIntent sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, 0);
 
         //会话连接
         mediaSession = new MediaSessionCompat(this, "MusicService");
         setSessionToken(mediaSession.getSessionToken());
-        mediaSession.setSessionActivity(sessionActivityPendingIntent);
+        try {
+            //这里可能会报 ：
+            //java.lang.NullPointerException: Attempt to invoke virtual method 'boolean android.content.Intent
+            // .migrateExtraStreamToClipData()' on a null object reference
+            Intent sessionIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            PendingIntent sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, 0);
+            mediaSession.setSessionActivity(sessionActivityPendingIntent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         mediaSession.setCallback(mPlaybackManager.getMediaSessionCallback());
-        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSession.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         Bundle mSessionExtras = new Bundle();
         mediaSession.setExtras(mSessionExtras);
 
