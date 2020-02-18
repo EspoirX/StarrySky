@@ -62,7 +62,7 @@ interface IPlaybackManager {
 
         fun onNotificationRequired()
 
-        fun onPlaybackStop()
+        fun onPlaybackStop(isStop: Boolean)
 
         fun onPlaybackStateUpdated(
             newState: PlaybackStateCompat, currMetadata:

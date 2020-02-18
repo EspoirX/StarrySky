@@ -41,9 +41,25 @@ open class ExoPlayback internal constructor(
     private var mCallback: Playback.Callback? = null
     private var mExoPlayerNullIsStopped = false
     private var mExoPlayer: SimpleExoPlayer? = null
-    private var currProgressWhenError: Long = 0 //记录下出错时的进度
-    private var seekToPositionWhenError = 0L
-    private var happenSourceError = false //是否发生资源问题的错误
+
+    private var sourceTypeErrorInfo: SourceTypeErrorInfo = SourceTypeErrorInfo()
+
+    /**
+     * 发生错误时保存的信息
+     */
+    inner class SourceTypeErrorInfo {
+        var seekToPosition = 0L
+        var happenSourceError = false //是否发生资源问题的错误
+        var seekToPositionWhenError = 0L
+        var currPositionWhenError = 0L //发生错误时的进度
+
+        fun clear() {
+            happenSourceError = false //是否发生资源问题的错误
+            seekToPosition = 0L
+            seekToPositionWhenError = 0L
+            currPositionWhenError = 0L //发生错误时的进度
+        }
+    }
 
     companion object {
         const val ACTION_CHANGE_VOLUME = "ACTION_CHANGE_VOLUME"
@@ -151,15 +167,15 @@ open class ExoPlayback internal constructor(
 
             mExoPlayer!!.prepare(mediaSource)
         }
-        //当错误发送时，记录下播放进度currProgressWhenError，如果还播放同一首歌，
+        //当错误发生时，如果还播放同一首歌，
         //这时候需要重新加载一下，并且吧进度 seekTo 到出错的地方
-        if (happenSourceError && !mediaHasChanged && mExoPlayer != null) {
+        if (sourceTypeErrorInfo.happenSourceError && !mediaHasChanged) {
             mExoPlayer!!.prepare(mediaSource)
-            if (currProgressWhenError != 0L) {
-                if (seekToPositionWhenError != 0L) {
-                    mExoPlayer!!.seekTo(seekToPositionWhenError)
+            if (sourceTypeErrorInfo.currPositionWhenError != 0L) {
+                if (sourceTypeErrorInfo.seekToPositionWhenError != 0L) {
+                    mExoPlayer!!.seekTo(sourceTypeErrorInfo.seekToPositionWhenError)
                 } else {
-                    mExoPlayer!!.seekTo(currentStreamPosition)
+                    mExoPlayer!!.seekTo(sourceTypeErrorInfo.currPositionWhenError)
                 }
             }
         }
@@ -209,7 +225,10 @@ open class ExoPlayback internal constructor(
 
     override fun seekTo(position: Long) {
         mExoPlayer?.seekTo(position)
-        seekToPositionWhenError = position
+        sourceTypeErrorInfo.seekToPosition = position
+        if (sourceTypeErrorInfo.happenSourceError) {
+            sourceTypeErrorInfo.seekToPositionWhenError = position
+        }
     }
 
     override fun onFastForward() {
@@ -280,9 +299,7 @@ open class ExoPlayback internal constructor(
                 Player.STATE_ENDED -> mCallback?.onCompletion()
             }
             if (playbackState == Player.STATE_READY) {
-                happenSourceError = false
-                currProgressWhenError = 0L
-                seekToPositionWhenError = 0L
+                sourceTypeErrorInfo.clear()
             }
         }
 
@@ -295,8 +312,9 @@ open class ExoPlayback internal constructor(
             }
             mCallback?.onError("ExoPlayer error $what")
             if (error.type == ExoPlaybackException.TYPE_SOURCE) {
-                happenSourceError = true
-                currProgressWhenError = mExoPlayer?.duration ?: 0
+                sourceTypeErrorInfo.happenSourceError = true
+                sourceTypeErrorInfo.seekToPositionWhenError = sourceTypeErrorInfo.seekToPosition
+                sourceTypeErrorInfo.currPositionWhenError = currentStreamPosition
             }
         }
 

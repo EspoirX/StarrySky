@@ -179,8 +179,10 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
      * 暂停或停止时回调
      */
     @Override
-    public void onPlaybackStop() {
-        mediaSession.setActive(false);
+    public void onPlaybackStop(boolean isStop) {
+        if (isStop) {
+            mediaSession.setActive(false);
+        }
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
         stopForeground(true);

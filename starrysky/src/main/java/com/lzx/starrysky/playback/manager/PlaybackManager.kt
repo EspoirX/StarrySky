@@ -21,7 +21,6 @@ import com.lzx.starrysky.provider.MediaQueueProvider
 import com.lzx.starrysky.provider.MediaResource
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.registry.ValidRegistry
-import com.lzx.starrysky.utils.StarrySkyUtils
 
 class PlaybackManager constructor(
     private val mediaQueue: MediaQueue, private val playback: Playback
@@ -100,13 +99,13 @@ class PlaybackManager constructor(
     override fun handlePauseRequest() {
         if (playback.isPlaying) {
             playback.pause()
-            mServiceCallback?.onPlaybackStop()
+            mServiceCallback?.onPlaybackStop(false)
         }
     }
 
     override fun handleStopRequest(withError: String?) {
         playback.stop(true)
-        mServiceCallback?.onPlaybackStop()
+        mServiceCallback?.onPlaybackStop(true)
         updatePlaybackState(false, withError)
     }
 
@@ -280,6 +279,9 @@ class PlaybackManager constructor(
         override fun onSeekTo(pos: Long) {
             super.onSeekTo(pos)
             playback.seekTo(pos)
+            if (playback.state == PlaybackStateCompat.STATE_PAUSED) {
+                onPlay()
+            }
         }
 
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
