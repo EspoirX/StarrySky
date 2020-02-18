@@ -162,7 +162,6 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
     public void onPlaybackStart() {
         mediaSession.setActive(true);
         mDelayedStopHandler.removeCallbacksAndMessages(null);
-        //startService(new Intent(getApplicationContext(), MusicService.class));
     }
 
     /**
