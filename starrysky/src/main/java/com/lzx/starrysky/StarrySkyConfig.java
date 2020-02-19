@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.lzx.starrysky.notification.StarrySkyNotificationManager;
-import com.lzx.starrysky.playback.offline.StarrySkyCacheManager;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
 
 /**

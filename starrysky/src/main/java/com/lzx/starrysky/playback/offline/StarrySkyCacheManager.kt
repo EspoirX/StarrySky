@@ -9,12 +9,11 @@ import com.google.android.exoplayer2.upstream.cache.CacheUtil
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.lzx.starrysky.playback.player.ExoSourceManager
-import com.lzx.starrysky.utils.StarrySkyUtils
 import java.io.File
 
 class StarrySkyCacheManager constructor(
     private val context: Context,
-    private val isOpenCache: Boolean,
+    private var isOpenCache: Boolean,
     private val cacheDestFileDir: String?
 ) {
     private var downloadDirectory: File? = null
@@ -22,6 +21,10 @@ class StarrySkyCacheManager constructor(
 
     fun isOpenCache(): Boolean {
         return isOpenCache
+    }
+
+    fun setOpenCache(isOpen: Boolean) {
+        isOpenCache = isOpen
     }
 
     /**
