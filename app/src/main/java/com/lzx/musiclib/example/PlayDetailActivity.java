@@ -108,21 +108,26 @@ public class PlayDetailActivity extends AppCompatActivity {
                     mTimerTask.startToUpdateProgress();
                     break;
                 case PlaybackStage.SWITCH:
-                    Log.i("PlayDetailActivity", "SWITCH");
+                    SongInfo songInfo = playbackStage.getSongInfo();
+                    Log.i("PlayDetailActivity", "SWITCH = " + songInfo.getSongName());
                     break;
                 case PlaybackStage.PAUSE:
+                    Log.i("PlayDetailActivity", "PAUSE");
                     mTimerTask.stopToUpdateProgress();
                     mListPlayAdapter.notifyDataSetChanged();
                     break;
                 case PlaybackStage.STOP:
+                    Log.i("PlayDetailActivity", "STOP");
                     mTimerTask.stopToUpdateProgress();
                     break;
                 case PlaybackStage.COMPLETION:
+                    Log.i("PlayDetailActivity", "COMPLETION");
                     mTimerTask.stopToUpdateProgress();
                     mSeekBar.setProgress(0);
                     progress_text.setText("00:00");
                     break;
                 case PlaybackStage.BUFFERING:
+                    Log.i("PlayDetailActivity", "BUFFERING");
                     break;
                 case PlaybackStage.ERROR:
                     mTimerTask.stopToUpdateProgress();

@@ -64,7 +64,6 @@ open class ExoPlayback internal constructor(
     companion object {
         const val ACTION_CHANGE_VOLUME = "ACTION_CHANGE_VOLUME"
         const val ACTION_DERAILLEUR = "ACTION_DERAILLEUR"
-        const val ACTION_PLAY_DIRECT = "ACTION_PLAY_DIRECT"
     }
 
     override var state: Int

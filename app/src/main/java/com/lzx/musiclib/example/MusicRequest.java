@@ -51,7 +51,7 @@ public class MusicRequest {
                         "&from=webapp_music" +
                         "&method=baidu.ting.billboard.billList" +
                         "&type=2" +
-                        "&size=20" +
+                        "&size=100" +
                         "&offset=0")
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -80,9 +80,9 @@ public class MusicRequest {
                         info.setSongCover(object.getString("pic_big"));
                         info.setSongName(object.getString("title"));
                         info.setArtist(object.getString("author"));
-                         // info.setSongUrl(
-                         //         "https://aphid.fireside.fm/d/1437767933/b480a1bf-0e6b-4876-8867-918942d889a1" +
-                         //                 "/328f189b-946b-481e-a32d-b1cb832e9f54.mp3");
+                        // info.setSongUrl(
+                        //         "https://aphid.fireside.fm/d/1437767933/b480a1bf-0e6b-4876-8867-918942d889a1" +
+                        //                 "/328f189b-946b-481e-a32d-b1cb832e9f54.mp3");
                         // String path = "file:///android_asset/纯雨声.wma";
                         // //String path = "file:///android_asset/1560745095.mp3";
                         // info.setSongUrl(path);

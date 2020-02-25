@@ -17,9 +17,8 @@ interface PlayerControl {
     fun playMusicByInfo(info: SongInfo)
 
     /**
-     * 简单播放，没有队列管理(暂时没用)
+     * 只是最简单的播放，其他什么功能都没有，调用该方法要保证有url和id，不然不能播放
      */
-    @Deprecated("暂时没实现好")
     fun playMusicByInfoDirect(info: SongInfo)
 
     /**

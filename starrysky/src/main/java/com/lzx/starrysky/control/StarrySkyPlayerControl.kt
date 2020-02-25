@@ -38,6 +38,7 @@ import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.provider.MediaQueueProvider
+import com.lzx.starrysky.provider.MediaResource
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.MD5
 
@@ -70,9 +71,10 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun playMusicByInfoDirect(info: SongInfo) {
-        val bundle = Bundle()
-        bundle.putParcelable("songInfo", info)
-        connection.sendCommand(ExoPlayback.ACTION_PLAY_DIRECT, bundle)
+        val source =
+            MediaResource(info.songId, info.songUrl, System.currentTimeMillis(), info.mMapHeadData)
+        mPlayback?.currentMediaId = ""
+        mPlayback?.play(source, true)
     }
 
     override fun playMusicByIndex(index: Int) {

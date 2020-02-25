@@ -15,12 +15,11 @@ import com.lzx.starrysky.ext.mediaUri
 import com.lzx.starrysky.ext.title
 import com.lzx.starrysky.ext.trackCount
 import com.lzx.starrysky.ext.trackNumber
-import com.lzx.starrysky.utils.StarrySkyUtils
 
 open class MediaQueueProviderImpl : MediaQueueProvider {
 
-    private var shuffleMode: Int =
-        -1 //PlaybackStateCompat.SHUFFLE_MODE_ALL,PlaybackStateCompat.SHUFFLE_MODE_NONE
+    //PlaybackStateCompat.SHUFFLE_MODE_ALL,PlaybackStateCompat.SHUFFLE_MODE_NONE
+    private var shuffleMode: Int = -1
 
     private var mediaListMap = linkedMapOf<String, BaseMediaInfo>()
     private var mMediaMetadataCompatMap = linkedMapOf<String, MediaMetadataCompat>()

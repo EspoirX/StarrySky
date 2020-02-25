@@ -18,7 +18,6 @@ import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueue
 import com.lzx.starrysky.provider.MediaQueueProvider
-import com.lzx.starrysky.provider.MediaResource
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.registry.ValidRegistry
 
@@ -371,16 +370,6 @@ class PlaybackManager constructor(
                     val refer = extras?.getBoolean("refer") ?: false
                     val multiple = extras?.getFloat("multiple") ?: 0F
                     handleDerailleur(refer, multiple)
-                }
-                ExoPlayback.ACTION_PLAY_DIRECT -> {
-                    val songInfo: SongInfo = extras?.getParcelable("songInfo") as SongInfo
-                    val mediaInfo = mediaQueue.songInfoToMediaInfo(songInfo)
-                    playback.currentMediaId = ""
-                    val source = MediaResource()
-                    source.obtain(mediaInfo.mediaId, mediaInfo.mediaUrl, System.currentTimeMillis(),
-                        mediaInfo.mapHeadData)
-                    mServiceCallback?.onPlaybackStart()
-                    playback.play(source, true)
                 }
             }
         }
