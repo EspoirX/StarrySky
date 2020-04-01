@@ -116,8 +116,9 @@ public class MusicService extends MediaBrowserServiceCompat implements MediaQueu
     public void onDestroy() {
         super.onDestroy();
         mPlaybackManager.handleStopRequest(null);
-        notification.stopNotification();
-
+        if (notification != null) {
+            notification.stopNotification();
+        }
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mBecomingNoisyReceiver.unregister();
         mediaSession.release();
