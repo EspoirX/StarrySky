@@ -16,9 +16,9 @@ public class StarrySkyActivityLifecycle implements Application.ActivityLifecycle
     /**
      * 获取可用Activity
      */
-   public Activity getActivity() {
+    public Activity getActivity() {
         if (null == activities || activities.size() == 0) {
-            throw new IllegalStateException("auto init failed ,you need invoke StarrySky.init() in your application");
+            return null;
         }
         for (int i = activities.size() - 1; i >= 0; i--) {
             Activity activity = activities.get(i);
@@ -26,7 +26,7 @@ public class StarrySkyActivityLifecycle implements Application.ActivityLifecycle
                 return activity;
             }
         }
-        throw new IllegalStateException("activity did not existence, check your app status before use StarrySky");
+        return null;
     }
 
     @Override

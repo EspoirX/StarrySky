@@ -1,5 +1,6 @@
 package com.lzx.starrysky;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -17,6 +18,8 @@ import com.lzx.starrysky.playback.queue.MediaQueue;
 import com.lzx.starrysky.provider.MediaQueueProvider;
 import com.lzx.starrysky.provider.MediaResource;
 import com.lzx.starrysky.registry.StarrySkyRegistry;
+
+import java.lang.reflect.Method;
 
 public class StarrySky {
     private static volatile StarrySky sStarrySky;
@@ -106,16 +109,28 @@ public class StarrySky {
             throw new IllegalStateException("checkAndInitializeStarrySky");
         }
         isInitializing = true;
-        initializeStarrySky(context, new StarrySkyBuilder());
-        isInitializing = false;
+        try {
+            initializeStarrySky(context, new StarrySkyBuilder());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            isInitializing = false;
+        }
     }
 
     private static void initializeStarrySky(Context context, StarrySkyBuilder builder) {
-
         if (mStarrySkyConfig != null) {
             mStarrySkyConfig.applyOptions(context, builder);
         }
-
+        if (context == null) {
+            context = globalContext;
+        }
+        if (context == null) {
+            context = getContextReflex();
+        }
+        if (context == null) {
+            throw new IllegalArgumentException("StarrySky 初始化失败，上下文为 null");
+        }
         StarrySky starrySky = builder.build(context);
         starrySky.httpConnectTimeout = builder.httpConnectTimeout;
         starrySky.httpReadTimeout = builder.httpReadTimeout;
@@ -146,6 +161,27 @@ public class StarrySky {
         }
         if (starrySky.playbackManager == null) {
             starrySky.playbackManager = new PlaybackManager(starrySky.mediaQueue, starrySky.playback);
+        }
+    }
+
+    /**
+     * 反射一下主线程获取一下上下文
+     */
+    private static Application getContextReflex() {
+        try {
+            @SuppressLint("PrivateApi")
+            Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
+            @SuppressLint("DiscouragedPrivateApi")
+            Method currentApplicationMethod = activityThreadClass.getDeclaredMethod("currentApplication");
+            currentApplicationMethod.setAccessible(true);
+            Application currentApplication = (Application) currentApplicationMethod.invoke(null);
+            if (globalContext == null) {
+                globalContext = currentApplication;
+            }
+            return currentApplication;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
         }
     }
 
