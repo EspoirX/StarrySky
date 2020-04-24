@@ -1,12 +1,12 @@
 package com.lzx.starrysky.imageloader
 
-import android.content.Context
+import com.lzx.starrysky.StarrySky
 
 /**
  * 图片加载类
  * 策略或者静态代理模式，开发者只需要关心ImageLoader + ImageLoaderOptions
  */
-class ImageLoader(private val context: Context) {
+class ImageLoader() {
     private var mLoader: ImageLoaderStrategy? = null
 
     fun init(loader: ImageLoaderStrategy) {
@@ -17,6 +17,6 @@ class ImageLoader(private val context: Context) {
         if (mLoader == null) {
             mLoader = DefaultImageLoader()
         }
-        mLoader!!.loadImage(context, url, callBack)
+        StarrySky.get().mLifecycle?.activity?.let { mLoader?.loadImage(it, url, callBack) }
     }
 }

@@ -5,7 +5,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 
 import com.lzx.starrysky.notification.INotification
-import com.lzx.starrysky.provider.MediaQueueProvider
+import com.lzx.starrysky.provider.IMediaSourceProvider
 
 interface IPlaybackManager {
 
@@ -18,7 +18,7 @@ interface IPlaybackManager {
 
     fun setServiceCallback(serviceCallback: PlaybackServiceCallback)
 
-    fun setMetadataUpdateListener(listener: MediaQueueProvider.MetadataUpdateListener)
+    fun setMetadataUpdateListener(listener: IMediaSourceProvider.MetadataUpdateListener)
 
     /**
      * 播放

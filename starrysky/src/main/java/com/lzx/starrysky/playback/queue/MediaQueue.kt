@@ -1,8 +1,7 @@
 package com.lzx.starrysky.playback.queue
 
 import com.lzx.starrysky.BaseMediaInfo
-import com.lzx.starrysky.provider.MediaQueueProvider
-import com.lzx.starrysky.provider.MediaResource
+import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
 
 /**
@@ -22,7 +21,7 @@ interface MediaQueue {
      */
     val currentQueueSize: Int
 
-    fun setMetadataUpdateListener(listener: MediaQueueProvider.MetadataUpdateListener)
+    fun setMetadataUpdateListener(listener: IMediaSourceProvider.MetadataUpdateListener)
 
     /**
      * 判断传入的媒体跟正在播放的媒体是否一样

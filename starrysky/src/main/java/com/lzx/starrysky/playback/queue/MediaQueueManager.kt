@@ -5,22 +5,19 @@ import android.graphics.drawable.Drawable
 import android.support.v4.media.session.PlaybackStateCompat
 import com.lzx.starrysky.BaseMediaInfo
 import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.ext.albumArtUrl
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack
-import com.lzx.starrysky.provider.MediaQueueProvider
-import com.lzx.starrysky.provider.MediaQueueProviderSurface
-import com.lzx.starrysky.provider.MediaResource
+import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.StarrySkyUtils
 import java.util.Arrays
 
-open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderSurface(provider),
+open class MediaQueueManager(provider: IMediaSourceProvider) : MediaQueueProviderSurface(provider),
     MediaQueue {
 
 
     private var mMediaResource: MediaResource? = null
     private var mCurrentIndex: Int = 0
-    private var mUpdateListener: MediaQueueProvider.MetadataUpdateListener? = null
+    private var mUpdateListener: IMediaSourceProvider.MetadataUpdateListener? = null
 
     override fun getCurrentIndex(): Int {
         return mCurrentIndex
@@ -32,7 +29,7 @@ open class MediaQueueManager(provider: MediaQueueProvider) : MediaQueueProviderS
     override val currentQueueSize: Int
         get() = getMediaList().size
 
-    override fun setMetadataUpdateListener(listener: MediaQueueProvider.MetadataUpdateListener) {
+    override fun setMetadataUpdateListener(listener: IMediaSourceProvider.MetadataUpdateListener) {
         mUpdateListener = listener
     }
 

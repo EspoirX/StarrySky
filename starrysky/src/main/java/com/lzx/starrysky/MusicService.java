@@ -23,12 +23,12 @@ import com.lzx.starrysky.notification.INotification;
 import com.lzx.starrysky.notification.StarrySkyNotificationManager;
 import com.lzx.starrysky.playback.manager.IPlaybackManager;
 import com.lzx.starrysky.playback.manager.PlaybackManager;
-import com.lzx.starrysky.provider.MediaQueueProvider;
+import com.lzx.starrysky.provider.IMediaSourceProvider;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class MusicService extends MediaBrowserServiceCompat implements MediaQueueProvider.MetadataUpdateListener,
+public class MusicService extends MediaBrowserServiceCompat implements IMediaSourceProvider.MetadataUpdateListener,
         PlaybackManager.PlaybackServiceCallback {
 
     public static final String UPDATE_PARENT_ID = "update";

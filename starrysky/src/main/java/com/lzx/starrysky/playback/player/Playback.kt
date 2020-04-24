@@ -15,8 +15,6 @@
  */
 package com.lzx.starrysky.playback.player
 
-import com.lzx.starrysky.provider.MediaResource
-
 /**
  * 播放器接口，如果要实现其他播放器，实现该接口即可
  */

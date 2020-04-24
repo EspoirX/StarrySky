@@ -1,7 +1,9 @@
 package com.lzx.starrysky.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,6 +13,7 @@ import android.util.Log;
 
 import com.google.android.exoplayer2.ExoPlayerLibraryInfo;
 
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 
@@ -71,6 +74,23 @@ public class StarrySkyUtils {
         }
         return applicationName + "/" + versionName + " (Linux;Android " + Build.VERSION.RELEASE
                 + ") " + ExoPlayerLibraryInfo.VERSION_SLASHY;
+    }
+
+    /**
+     * 反射一下主线程获取一下上下文
+     */
+    public static Application getContextReflex() {
+        try {
+            @SuppressLint("PrivateApi")
+            Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
+            @SuppressLint("DiscouragedPrivateApi")
+            Method currentApplicationMethod = activityThreadClass.getDeclaredMethod("currentApplication");
+            currentApplicationMethod.setAccessible(true);
+            return (Application) currentApplicationMethod.invoke(null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     public static void log(String msg) {

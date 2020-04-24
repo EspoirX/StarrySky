@@ -32,7 +32,7 @@ interface PlayerControl {
      * @param mediaList 播放列表
      * @param index     要播放的歌曲在播放列表中的下标
      */
-    fun playMusic(songInfos: List<SongInfo>, index: Int)
+    fun playMusic(songInfos: MutableList<SongInfo>, index: Int)
 
     /**
      * 暂停
@@ -89,18 +89,18 @@ interface PlayerControl {
      */
     fun seekTo(pos: Long)
 
-    /**
-     * 设置播放模式
-     * 必须是以下之一：
-     * PlaybackStateCompat.SHUFFLE_MODE_NONE 顺序播放
-     * PlaybackStateCompat.SHUFFLE_MODE_ALL  随机播放
-     */
-    fun setShuffleMode(shuffleMode: Int)
-
-    /**
-     * 获取播放模式
-     */
-    fun getShuffleMode(): Int
+//    /**
+//     * 设置播放模式
+//     * 必须是以下之一：
+//     * PlaybackStateCompat.SHUFFLE_MODE_NONE 顺序播放
+//     * PlaybackStateCompat.SHUFFLE_MODE_ALL  随机播放
+//     */
+//    fun setShuffleMode(shuffleMode: Int)
+//
+//    /**
+//     * 获取播放模式
+//     */
+//    fun getShuffleMode(): Int
 
     /**
      * 设置播放模式
@@ -110,7 +110,7 @@ interface PlayerControl {
      * PlaybackStateCompat.REPEAT_MODE_ALL   列表循环
      * PlaybackStateCompatExt.SINGLE_MODE_ONE   单曲播放(播放当前就结束,不会自动播下一首)
      */
-    fun setRepeatMode(repeatMode: Int)
+    fun setRepeatMode(repeatMode: Int, isLoop: Boolean)
 
     /**
      * 获取播放模式,默认顺序播放
@@ -120,12 +120,12 @@ interface PlayerControl {
     /**
      * 获取播放列表
      */
-    fun getPlayList(): List<SongInfo>
+    fun getPlayList(): MutableList<SongInfo>
 
     /**
      * 更新播放列表
      */
-    fun updatePlayList(songInfos: List<SongInfo>)
+    fun updatePlayList(songInfos: MutableList<SongInfo>)
 
     /**
      * 添加一首歌

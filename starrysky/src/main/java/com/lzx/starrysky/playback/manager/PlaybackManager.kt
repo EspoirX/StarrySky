@@ -17,7 +17,7 @@ import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueue
-import com.lzx.starrysky.provider.MediaQueueProvider
+import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.registry.ValidRegistry
 
@@ -51,7 +51,7 @@ class PlaybackManager constructor(
         mServiceCallback = serviceCallback
     }
 
-    override fun setMetadataUpdateListener(listener: MediaQueueProvider.MetadataUpdateListener) {
+    override fun setMetadataUpdateListener(listener: IMediaSourceProvider.MetadataUpdateListener) {
         mediaQueue.setMetadataUpdateListener(listener)
     }
 

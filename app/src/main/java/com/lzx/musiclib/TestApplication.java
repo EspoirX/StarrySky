@@ -11,7 +11,6 @@ import android.widget.Toast;
 import com.lzx.musiclib.example.MusicRequest;
 import com.lzx.musiclib.imageloader.GlideLoader;
 import com.lzx.starrysky.StarrySky;
-import com.lzx.starrysky.StarrySkyBuilder;
 import com.lzx.starrysky.StarrySkyConfig;
 import com.lzx.starrysky.delayaction.Valid;
 import com.lzx.starrysky.provider.SongInfo;

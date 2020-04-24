@@ -20,7 +20,6 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.util.EventLogger
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager
-import com.lzx.starrysky.provider.MediaResource
 import com.lzx.starrysky.utils.StarrySkyUtils
 
 open class ExoPlayback internal constructor(

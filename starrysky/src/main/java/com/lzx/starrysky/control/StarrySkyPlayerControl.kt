@@ -12,85 +12,52 @@ import android.text.TextUtils
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.common.IMediaConnection
 import com.lzx.starrysky.common.PlaybackStage
-import com.lzx.starrysky.ext.album
-import com.lzx.starrysky.ext.albumArt
 import com.lzx.starrysky.ext.albumArtUrl
-import com.lzx.starrysky.ext.albumId
-import com.lzx.starrysky.ext.albumKey
-import com.lzx.starrysky.ext.artist
-import com.lzx.starrysky.ext.artistKey
 import com.lzx.starrysky.ext.data
-import com.lzx.starrysky.ext.dateAdded
-import com.lzx.starrysky.ext.dateModified
-import com.lzx.starrysky.ext.displayName
 import com.lzx.starrysky.ext.duration
-import com.lzx.starrysky.ext.genre
 import com.lzx.starrysky.ext.id
 import com.lzx.starrysky.ext.mediaUrl
-import com.lzx.starrysky.ext.mimeType
-import com.lzx.starrysky.ext.size
 import com.lzx.starrysky.ext.title
-import com.lzx.starrysky.ext.titleKey
-import com.lzx.starrysky.ext.trackCount
-import com.lzx.starrysky.ext.trackNumber
-import com.lzx.starrysky.ext.year
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
-import com.lzx.starrysky.provider.MediaQueueProvider
-import com.lzx.starrysky.provider.MediaResource
+import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.MD5
 
 class StarrySkyPlayerControl constructor(private val context: Context) : PlayerControl {
 
-    private val connection: IMediaConnection
-    private val mMediaQueueProvider: MediaQueueProvider
-    private val mPlayback: Playback?
+    private val connection: IMediaConnection = StarrySky.get().mediaConnection()
+    private val mediaQueueProvider: IMediaSourceProvider = StarrySky.get().mediaQueueProvider()
+    private val mPlayback: Playback = StarrySky.get().playBack()
     private val mPlayerEventListeners = mutableListOf<OnPlayerEventListener>()
 
-    init {
-        val starrySky = StarrySky.get()
-        this.mMediaQueueProvider = starrySky.mediaQueueProvider
-        this.connection = starrySky.connection
-        this.mPlayback = starrySky.playback
-        starrySky.registerPlayerControl(this)
-    }
-
     override fun playMusicById(songId: String) {
-        if (mMediaQueueProvider.hasMediaInfo(songId)) {
+        if (mediaQueueProvider.hasSongInfo(songId)) {
             playMusicImpl(songId)
         }
     }
 
     override fun playMusicByInfo(info: SongInfo) {
-        if (!mMediaQueueProvider.hasMediaInfo(info.songId)) {
-            mMediaQueueProvider.addMediaBySongInfo(info)
-        }
+        mediaQueueProvider.addSongInfo(info)
         playMusicImpl(info.songId)
     }
 
     override fun playMusicByInfoDirect(info: SongInfo) {
-        val source =
-            MediaResource(info.songId, info.songUrl, System.currentTimeMillis(), info.mMapHeadData)
-        mPlayback?.currentMediaId = ""
-        mPlayback?.play(source, true)
+        info.mode = SongInfo.MODE_SINGLE
+        mediaQueueProvider.addSongInfo(info)
+        playMusicImpl(info.songId)
     }
 
     override fun playMusicByIndex(index: Int) {
-        val info =
-            if (mMediaQueueProvider.getShuffleMode() == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
-                mMediaQueueProvider.getMediaInfoByShuffleMode(index)
-            } else {
-                mMediaQueueProvider.getMediaInfo(index)
-            }
-        if (info != null) {
-            playMusicImpl(info.mediaId)
+        val info = mediaQueueProvider.getSongInfoByIndex(index)
+        info?.let {
+            playMusicImpl(it.songId)
         }
     }
 
-    override fun playMusic(songInfos: List<SongInfo>, index: Int) {
-        mMediaQueueProvider.updateMediaListBySongInfo(songInfos)
+    override fun playMusic(songInfos: MutableList<SongInfo>, index: Int) {
+        mediaQueueProvider.songList = songInfos
         playMusicByIndex(index)
     }
 
@@ -115,7 +82,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun prepareFromSongId(songId: String) {
-        if (mMediaQueueProvider.hasMediaInfo(songId)) {
+        if (mediaQueueProvider.hasSongInfo(songId)) {
             connection.getTransportControls()?.prepareFromMediaId(songId, null)
         }
     }
@@ -163,51 +130,42 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         return connection.getRepeatMode()
     }
 
-    override fun getPlayList(): List<SongInfo> {
-        return mMediaQueueProvider.getSongList()
+    override fun getPlayList(): MutableList<SongInfo> {
+        return mediaQueueProvider.songList
     }
 
-    override fun updatePlayList(songInfos: List<SongInfo>) {
-        mMediaQueueProvider.updateMediaListBySongInfo(songInfos)
+    override fun updatePlayList(songInfos: MutableList<SongInfo>) {
+        mediaQueueProvider.songList = songInfos
     }
 
     override fun addSongInfo(info: SongInfo) {
-        mMediaQueueProvider.addMediaBySongInfo(info)
+        mediaQueueProvider.addSongInfo(info)
     }
 
     override fun removeSongInfo(songId: String) {
-        mMediaQueueProvider.deleteMediaById(songId)
+        mediaQueueProvider.deleteSongInfoById(songId)
     }
 
     override fun getNowPlayingSongInfo(): SongInfo? {
-        var songInfo: SongInfo? = null
         val metadataCompat = connection.getNowPlaying()
-        if (metadataCompat != null) {
-            val songId = metadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
-            songInfo = mMediaQueueProvider.getSongInfo(songId)
+        return metadataCompat?.let {
+            var songInfo = it.id?.let { songId -> mediaQueueProvider.getSongInfoById(songId) }
             //播放列表改变了或者清空了，如果还在播放歌曲，这时候 getSongInfo 就会获取不到，
             //此时需要从 metadataCompat 中获取
-            if (songInfo == null && !TextUtils.isEmpty(songId)) {
-                songInfo = getSongInfoFromMediaMetadata(metadataCompat)
+            if (songInfo == null) {
+                songInfo = getSongInfoFromMediaMetadata(it)
             }
+            return@let songInfo
         }
-        return songInfo
     }
 
     private fun getSongInfoFromMediaMetadata(metadata: MediaMetadataCompat): SongInfo {
         val songInfo = SongInfo()
         songInfo.songId = metadata.id.toString()
         songInfo.songUrl = metadata.mediaUrl.toString()
-        songInfo.albumName = metadata.album.toString()
-        songInfo.artist = metadata.artist.toString()
         songInfo.duration = metadata.duration
-        songInfo.genre = metadata.genre.toString()
         songInfo.songCover = metadata.albumArtUrl.toString()
-        songInfo.albumCover = metadata.albumArtUrl.toString()
         songInfo.songName = metadata.title.toString()
-        songInfo.trackNumber = metadata.trackNumber.toInt()
-        songInfo.albumSongCount = metadata.trackCount.toInt()
-        songInfo.songCoverBitmap = metadata.albumArt
         return songInfo
     }
 
@@ -223,18 +181,16 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     override fun getNowPlayingIndex(): Int {
         var index = -1
         val songId = getNowPlayingSongId()
-        if (!TextUtils.isEmpty(songId)) {
-            index = mMediaQueueProvider.getIndexByMediaId(songId)
-        }
+        index = mediaQueueProvider.getIndexById(songId)
         return index
     }
 
     override fun getBufferedPosition(): Long {
-        return mPlayback?.bufferedPosition ?: 0
+        return mPlayback.bufferedPosition
     }
 
     override fun getPlayingPosition(): Long {
-        return mPlayback?.currentStreamPosition ?: 0
+        return mPlayback.currentStreamPosition
     }
 
     override fun isSkipToNextEnabled(): Boolean {
@@ -359,25 +315,11 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
             context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null,
                 null, null, null)
                 ?: return songInfos
-
         while (cursor.moveToNext()) {
             val song = SongInfo()
-            song.albumId = cursor.albumId
-            song.albumCover = getAlbumArtPicPath(context, song.albumId).toString()
-            song.songNameKey = cursor.titleKey
-            song.artistKey = cursor.artistKey
-            song.albumNameKey = cursor.albumKey
-            song.artist = cursor.artist
-            song.albumName = cursor.album
             song.songUrl = cursor.data
-            song.description = cursor.displayName
             song.songName = cursor.title
-            song.mimeType = cursor.mimeType
-            song.year = cursor.year
             song.duration = cursor.duration
-            song.size = cursor.size
-            song.publishTime = cursor.dateAdded
-            song.modifiedTime = cursor.dateModified
             val songId = if (song.songUrl.isNotEmpty())
                 MD5.hexdigest(song.songUrl)
             else
