@@ -252,7 +252,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mNotification?.bigContentView = mBigRemoteView
         }
-        val songInfos = StarrySky.get().mediaQueueProvider().songList.filter { it.songId == songId }
+        val songInfos = StarrySky.get().mediaQueueProvider().getSongList().filter { it.songId == songId }
         val songInfo: SongInfo? = if (songInfos.isNotEmpty()) songInfos[0] else null
         updateRemoteViewUI(mNotification, songInfo, smallIcon)
 

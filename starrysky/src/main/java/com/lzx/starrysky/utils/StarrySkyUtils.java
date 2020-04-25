@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.google.android.exoplayer2.ExoPlayerLibraryInfo;
 import com.lzx.starrysky.control.PlayerControl;
+import com.lzx.starrysky.control.RepeatMode;
 
 import org.json.JSONObject;
 
@@ -102,21 +103,21 @@ public class StarrySkyUtils {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("repeatMode", repeatMode);
             jsonObject.put("isLoop", isLoop);
-            SpUtil.Companion.getInstance().putString(PlayerControl.KEY_REPEAT_MODE, jsonObject.toString());
+            SpUtil.Companion.getInstance().putString(RepeatMode.KEY_REPEAT_MODE, jsonObject.toString());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public static PlayerControl.RepeatMode getRepeatMode() {
-        String json = SpUtil.Companion.getInstance().getString(PlayerControl.KEY_REPEAT_MODE);
-        PlayerControl.RepeatMode defaultMode = new PlayerControl.RepeatMode(PlayerControl.REPEAT_MODE_NONE, true);
+    public static RepeatMode getRepeatMode() {
+        String json = SpUtil.Companion.getInstance().getString(RepeatMode.KEY_REPEAT_MODE);
+        RepeatMode defaultMode = new RepeatMode(RepeatMode.REPEAT_MODE_NONE, true);
         if (TextUtils.isEmpty(json)) {
             return defaultMode;
         } else {
             try {
                 JSONObject jsonObject = new JSONObject(json);
-                return new PlayerControl.RepeatMode(jsonObject.getInt("repeatMode"), jsonObject.getBoolean("isLoop"));
+                return new RepeatMode(jsonObject.getInt("repeatMode"), jsonObject.getBoolean("isLoop"));
             } catch (Exception ex) {
                 ex.printStackTrace();
                 return defaultMode;

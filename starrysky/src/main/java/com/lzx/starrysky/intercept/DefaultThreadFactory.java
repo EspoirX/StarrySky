@@ -21,7 +21,7 @@ public class DefaultThreadFactory implements ThreadFactory {
         SecurityManager s = System.getSecurityManager();
         group = (s != null) ? s.getThreadGroup() :
                 Thread.currentThread().getThreadGroup();
-        namePrefix = "ARouter task pool No." + poolNumber.getAndIncrement() + ", thread No.";
+        namePrefix = "StarrySky task pool No." + poolNumber.getAndIncrement() + ", thread No.";
     }
 
     public Thread newThread(@NonNull Runnable runnable) {

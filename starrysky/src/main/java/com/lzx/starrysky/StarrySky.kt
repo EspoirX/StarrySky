@@ -2,7 +2,6 @@ package com.lzx.starrysky
 
 import android.app.Application
 import android.content.ComponentName
-import android.util.Log
 import com.lzx.starrysky.common.IMediaConnection
 import com.lzx.starrysky.common.IMediaConnection.OnConnectListener
 import com.lzx.starrysky.common.MediaSessionConnection
@@ -132,6 +131,10 @@ class StarrySky {
             return sStarrySky!!
         }
 
+        fun with(): PlayerControl {
+            return playerControl
+        }
+
         fun release() {
             get().mLifecycle?.let {
                 globalContext.unregisterActivityLifecycleCallbacks(it)
@@ -142,10 +145,6 @@ class StarrySky {
             sStarrySky = null
         }
 
-        @JvmStatic
-        fun with(): PlayerControl {
-            return playerControl
-        }
 
         private fun checkAndInitializeStarrySky() {
             check(!isInitializing) { "checkAndInitializeStarrySky" }

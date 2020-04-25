@@ -20,7 +20,7 @@ open class MediaQueueManager : MediaQueue {
         get() = mCurrentIndex
 
     override val currentQueueSize: Int
-        get() = StarrySky.get().mediaQueueProvider().songList.size
+        get() = StarrySky.get().mediaQueueProvider().getSongList().size
 
     override val currentSongInfo: SongInfo?
         get() = StarrySky.get().mediaQueueProvider().getSongInfoByIndex(currentIndex)
@@ -35,7 +35,7 @@ open class MediaQueueManager : MediaQueue {
     }
 
     override fun skipQueuePosition(amount: Int): Boolean {
-        val mPlayingQueue = StarrySky.get().mediaQueueProvider().songList
+        val mPlayingQueue = StarrySky.get().mediaQueueProvider().getSongList()
         if (mPlayingQueue.size == 0) {
             return false
         }
@@ -65,7 +65,7 @@ open class MediaQueueManager : MediaQueue {
 
     override fun updateIndexBySongId(songId: String): Boolean {
         val index = StarrySky.get().mediaQueueProvider().getIndexById(songId)
-        if (QueueHelper.isIndexPlayable(index, StarrySky.get().mediaQueueProvider().songList)) {
+        if (QueueHelper.isIndexPlayable(index, StarrySky.get().mediaQueueProvider().getSongList())) {
             mCurrentIndex = index
             mUpdateListener?.onCurrentQueueIndexUpdated(mCurrentIndex)
         }

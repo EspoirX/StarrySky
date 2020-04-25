@@ -1,15 +1,11 @@
 package com.lzx.starrysky.playback.manager
 
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.ResultReceiver
-import android.os.SystemClock
+import android.os.*
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.control.PlayerControl
+import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.InterceptorService
 import com.lzx.starrysky.notification.INotification
@@ -123,7 +119,7 @@ class PlaybackManager constructor(
             //如果错误信息不为 null 的时候，播放状态设为 STATE_ERROR
             if (!error.isNullOrEmpty()) {
                 stateBuilder!!.setErrorMessage(error)
-                state = PlaybackStateCompat.STATE_ERROR
+                state = Playback.PLAYBACK_STATE_ERROR
             }
             //设置播放状态
             stateBuilder!!.setState(state, position, 1.0f, SystemClock.elapsedRealtime())
@@ -192,7 +188,7 @@ class PlaybackManager constructor(
         val repeatMode = StarrySkyUtils.getRepeatMode()
         when (repeatMode.repeatMode) {
             //顺序播放
-            PlayerControl.REPEAT_MODE_NONE -> {
+            RepeatMode.REPEAT_MODE_NONE -> {
                 if (repeatMode.isLoop) {
                     skipToNextSongImpl(1)
                 } else {
@@ -202,14 +198,14 @@ class PlaybackManager constructor(
                 }
             }
             //单曲播放
-            PlayerControl.REPEAT_MODE_ONE -> {
+            RepeatMode.REPEAT_MODE_ONE -> {
                 playback.currentMediaId = ""
                 if (repeatMode.isLoop) {
                     handlePlayRequest(true)
                 }
             }
             //随机播放
-            PlayerControl.REPEAT_MODE_SHUFFLE -> {
+            RepeatMode.REPEAT_MODE_SHUFFLE -> {
                 if (repeatMode.isLoop) {
                     skipToNextSongImpl(1)
                 } else {
@@ -219,7 +215,7 @@ class PlaybackManager constructor(
                 }
             }
             //倒序播放
-            PlayerControl.REPEAT_MODE_REVERSE -> {
+            RepeatMode.REPEAT_MODE_REVERSE -> {
                 if (repeatMode.isLoop) {
                     skipToNextSongImpl(-1)
                 } else {
@@ -352,9 +348,9 @@ class PlaybackManager constructor(
                     handleDerailleur(refer, multiple)
                 }
                 //播放模式
-                PlayerControl.KEY_REPEAT_MODE -> {
+                RepeatMode.KEY_REPEAT_MODE -> {
                     val repeatMode = StarrySkyUtils.getRepeatMode().repeatMode
-                    if (repeatMode == PlayerControl.REPEAT_MODE_SHUFFLE) {
+                    if (repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
                         if (StarrySky.get().mediaQueueProvider() is NormalModeProvider) {
                             StarrySky.get().setMediaSourceProvider(ShuffleModeProvider())
                         }

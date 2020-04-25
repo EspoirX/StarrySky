@@ -83,10 +83,6 @@ open class StarrySkyConfig internal constructor(
     @get:JvmName("playback")
     val playback: Playback? = builder.playback
 
-    fun addInterceptor(interceptor: StarrySkyInterceptor) = apply {
-        interceptors += interceptor
-    }
-
     constructor() : this(Builder())
 
     open fun newBuilder(): Builder = Builder(this)
@@ -100,7 +96,7 @@ open class StarrySkyConfig internal constructor(
         var httpConnectTimeout: Long = -1
         var httpReadTimeout: Long = -1
         var skipSSLChain = false
-        var interceptors: MutableList<StarrySkyInterceptor> = mutableListOf()
+        val interceptors: MutableList<StarrySkyInterceptor> = mutableListOf()
         var interceptorTimeOut = 60L   //拦截器超时时间
         var imageLoader: ImageLoader = ImageLoader()
         var mediaConnection: IMediaConnection? = null
@@ -111,7 +107,6 @@ open class StarrySkyConfig internal constructor(
         var playback: Playback? = null
         var playerControl: PlayerControl? = null
 
-
         internal constructor(config: StarrySkyConfig) : this() {
             this.mediaQueueProvider = config.mediaQueueProvider
             this.mediaQueue = config.mediaQueue
@@ -121,7 +116,7 @@ open class StarrySkyConfig internal constructor(
             this.httpConnectTimeout = config.httpConnectTimeout
             this.httpReadTimeout = config.httpReadTimeout
             this.skipSSLChain = config.skipSSLChain
-            this.interceptors = config.interceptors
+            this.interceptors += config.interceptors
             this.interceptorTimeOut = config.interceptorTimeOut
             this.imageLoader = config.imageLoader
             this.notificationFactory = config.notificationFactory
@@ -133,7 +128,11 @@ open class StarrySkyConfig internal constructor(
             this.playerControl = config.playerControl
         }
 
-        fun build(): StarrySkyConfig? {
+        fun addInterceptor(interceptor: StarrySkyInterceptor) = apply {
+            interceptors += interceptor
+        }
+
+        fun build(): StarrySkyConfig {
             return StarrySkyConfig(this)
         }
     }

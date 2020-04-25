@@ -11,8 +11,10 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.ext.id
+import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.utils.StarrySkyUtils
 
 class MediaSessionConnection constructor(context: Context, serviceComponent: ComponentName) : IMediaConnection {
@@ -201,40 +203,41 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
             }
             //状态监听
             val mPlayerEventListeners = StarrySky.with().getPlayerEventListeners()
+            Log.i("XIAN", "state = " + state.state)
             when (state.state) {
-                PlaybackStateCompat.STATE_PLAYING -> {
+                Playback.PLAYBACK_STATE_PLAYING -> {
                     for (listener in mPlayerEventListeners) {
                         listener.onPlayerStart()
                     }
                     playbackState.setValue(playbackStage.buildStart(songId))
                 }
-                PlaybackStateCompat.STATE_PAUSED -> {
+                Playback.PLAYBACK_STATE_PAUSED -> {
                     for (listener in mPlayerEventListeners) {
                         listener.onPlayerPause()
                     }
                     playbackState.setValue(playbackStage.buildPause(songId))
                 }
-                PlaybackStateCompat.STATE_STOPPED -> {
+                Playback.PLAYBACK_STATE_STOPPED -> {
                     for (listener in mPlayerEventListeners) {
                         listener.onPlayerStop()
                     }
                     playbackState.setValue(playbackStage.buildStop(songId))
                 }
-                PlaybackStateCompat.STATE_ERROR -> {
+                Playback.PLAYBACK_STATE_ERROR -> {
                     for (listener in mPlayerEventListeners) {
                         listener.onError(state.errorCode, state.errorMessage.toString())
                     }
                     playbackState.setValue(playbackStage.buildError(songId, state.errorCode,
                             state.errorMessage.toString()))
                 }
-                PlaybackStateCompat.STATE_NONE -> {
+                Playback.PLAYBACK_STATE_NONE -> {
                     for (listener in mPlayerEventListeners) {
                         val songInfo = StarrySky.get().mediaQueueProvider().getSongInfoById(songId)
                         listener.onPlayCompletion(songInfo!!)
                     }
                     playbackState.setValue(playbackStage.buildCompletion(songId))
                 }
-                PlaybackStateCompat.STATE_BUFFERING -> {
+                Playback.PLAYBACK_STATE_BUFFERING -> {
                     for (listener in mPlayerEventListeners) {
                         listener.onBuffering()
                     }

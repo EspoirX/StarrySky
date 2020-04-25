@@ -9,7 +9,9 @@ interface IMediaSourceProvider {
     /**
      * 音频列表设置
      */
-    var songList: MutableList<SongInfo>
+    fun setSongList(songList: MutableList<SongInfo>)
+
+    fun getSongList(): MutableList<SongInfo>
 
     /**
      * 获取MediaMetadataCompat列表
@@ -55,7 +57,7 @@ interface IMediaSourceProvider {
      * 更新封面art
      */
     fun updateMusicArt(
-        songId: String, changeData: MediaMetadataCompat, albumArt: Bitmap, icon: Bitmap
+            songId: String, changeData: MediaMetadataCompat, albumArt: Bitmap, icon: Bitmap
     )
 
     interface MetadataUpdateListener {

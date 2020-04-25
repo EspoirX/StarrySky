@@ -4,8 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import com.lzx.starrysky.common.PlaybackStage
 import com.lzx.starrysky.provider.SongInfo
 
-interface PlayerControl {
-
+data class RepeatMode(val repeatMode: Int, val isLoop: Boolean) {
     companion object {
         const val KEY_REPEAT_MODE = "StarrySky#KEY_REPEAT_MODE"
         const val REPEAT_MODE_NONE = 100     //顺序播放
@@ -13,8 +12,9 @@ interface PlayerControl {
         const val REPEAT_MODE_SHUFFLE = 300  //随机播放
         const val REPEAT_MODE_REVERSE = 400  //倒序播放
     }
+}
 
-    data class RepeatMode(val repeatMode: Int, val isLoop: Boolean)
+interface PlayerControl {
 
     /**
      * 根据songId播放,调用前请确保已经设置了播放列表
@@ -113,8 +113,12 @@ interface PlayerControl {
 
     /**
      * 获取播放模式,默认顺序播放
+     * REPEAT_MODE_NONE      顺序播放
+     * REPEAT_MODE_ONE       单曲播放
+     * REPEAT_MODE_SHUFFLE   随机播放
+     * REPEAT_MODE_REVERSE   倒序播放
      */
-    fun getRepeatMode(): Int
+    fun getRepeatMode(): RepeatMode
 
     /**
      * 获取播放列表
@@ -205,19 +209,14 @@ interface PlayerControl {
     fun getErrorCode(): Int
 
     /**
-     * 获取当前的播放状态。 以下之一：
-     * PlaybackStateCompat.STATE_NONE                   默认播放状态，表示尚未添加媒体，或者表示已重置且无内容可播放。
-     * PlaybackStateCompat.STATE_STOPPED                当前已停止。
-     * PlaybackStateCompat.STATE_PLAYING                正在播放
-     * PlaybackStateCompat.STATE_PAUSED                 已暂停
-     * PlaybackStateCompat.STATE_FAST_FORWARDING        当前正在快进
-     * PlaybackStateCompat.STATE_REWINDING              当前正在倒带
-     * PlaybackStateCompat.STATE_BUFFERING              当前正在缓冲
-     * PlaybackStateCompat.STATE_ERROR                  当前处于错误状态
-     * PlaybackStateCompat.STATE_CONNECTING             正在连接中
-     * PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS   正在转跳到上一首
-     * PlaybackStateCompat.STATE_SKIPPING_TO_NEXT       正在转跳到下一首
-     * PlaybackStateCompat.STATE_SKIPPING_TO_QUEUE_ITEM 正在切歌
+     * 获取当前的播放状态。
+     *  Playback.PLAYBACK_STATE_NONE = 100      //什么都没开始
+     *  Playback.PLAYBACK_STATE_IDLE = 200      //空闲
+     *  Playback.PLAYBACK_STATE_BUFFERING = 300 //正在缓冲
+     *  Playback.PLAYBACK_STATE_PLAYING = 400   //正在播放
+     *  Playback.PLAYBACK_STATE_PAUSED = 500    //暂停
+     *  Playback.PLAYBACK_STATE_STOPPED = 600   //停止
+     *  Playback.PLAYBACK_STATE_ERROR = 700     //出错
      */
     fun getState(): Int
 

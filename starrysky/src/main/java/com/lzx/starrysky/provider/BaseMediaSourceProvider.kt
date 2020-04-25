@@ -2,35 +2,20 @@ package com.lzx.starrysky.provider
 
 import android.graphics.Bitmap
 import android.support.v4.media.MediaMetadataCompat
-import com.lzx.starrysky.ext.album
-import com.lzx.starrysky.ext.albumArtUri
-import com.lzx.starrysky.ext.duration
-import com.lzx.starrysky.ext.id
-import com.lzx.starrysky.ext.mediaUri
-import com.lzx.starrysky.ext.title
+import com.lzx.starrysky.ext.*
 
-open abstract class BaseMediaSourceProvider : IMediaSourceProvider {
+abstract class BaseMediaSourceProvider : IMediaSourceProvider {
 
     //数据源
     var songSources = linkedMapOf<String, SongInfo>()
     var mediaMetadataSources = linkedMapOf<String, MediaMetadataCompat>()
 
-    abstract fun getSongListImpl(): MutableList<SongInfo>
-
-    override var songList: MutableList<SongInfo>
-        get() {
-            val list = mutableListOf<SongInfo>()
-            songSources.forEach {
-                list.add(it.value)
-            }
-            return list
+    override fun setSongList(songList: MutableList<SongInfo>) {
+        songList.forEach {
+            songSources[it.songId] = it
+            mediaMetadataSources[it.songId] = toMediaMetadata(it)
         }
-        set(value) {
-            value.forEach {
-                songSources[it.songId] = it
-                mediaMetadataSources[it.songId] = toMediaMetadata(it)
-            }
-        }
+    }
 
     override val mediaMetadataCompatList: List<MediaMetadataCompat>
         get() {
@@ -67,12 +52,12 @@ open abstract class BaseMediaSourceProvider : IMediaSourceProvider {
     }
 
     override fun getSongInfoByIndex(index: Int): SongInfo? {
-        return songList.elementAtOrNull(index)
+        return getSongList().elementAtOrNull(index)
     }
 
     override fun getIndexById(songId: String): Int {
         val info = getSongInfoById(songId)
-        return if (info != null) songList.indexOf(info) else -1
+        return if (info != null) getSongList().indexOf(info) else -1
     }
 
     override fun getMediaMetadataById(songId: String?): MediaMetadataCompat? {
@@ -83,12 +68,12 @@ open abstract class BaseMediaSourceProvider : IMediaSourceProvider {
     }
 
     override fun updateMusicArt(
-        songId: String, changeData: MediaMetadataCompat, albumArt: Bitmap, icon: Bitmap
+            songId: String, changeData: MediaMetadataCompat, albumArt: Bitmap, icon: Bitmap
     ) {
         val metadata = MediaMetadataCompat.Builder(changeData)
-            .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
-            .putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, icon)
-            .build()
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, icon)
+                .build()
         mediaMetadataSources[songId] = metadata
     }
 

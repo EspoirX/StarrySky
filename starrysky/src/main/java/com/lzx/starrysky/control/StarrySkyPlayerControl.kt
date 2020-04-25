@@ -12,12 +12,7 @@ import android.text.TextUtils
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.common.IMediaConnection
 import com.lzx.starrysky.common.PlaybackStage
-import com.lzx.starrysky.ext.albumArtUrl
-import com.lzx.starrysky.ext.data
-import com.lzx.starrysky.ext.duration
-import com.lzx.starrysky.ext.id
-import com.lzx.starrysky.ext.mediaUrl
-import com.lzx.starrysky.ext.title
+import com.lzx.starrysky.ext.*
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
@@ -58,7 +53,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun playMusic(songInfos: MutableList<SongInfo>, index: Int) {
-        mediaQueueProvider.songList = songInfos
+        mediaQueueProvider.setSongList(songInfos)
         playMusicByIndex(index)
     }
 
@@ -117,19 +112,19 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
 
     override fun setRepeatMode(repeatMode: Int, isLoop: Boolean) {
         StarrySkyUtils.saveRepeatMode(repeatMode, isLoop)
-        connection.sendCommand(PlayerControl.KEY_REPEAT_MODE, Bundle())
+        connection.sendCommand(RepeatMode.KEY_REPEAT_MODE, Bundle())
     }
 
-    override fun getRepeatMode(): Int {
-        return StarrySkyUtils.getRepeatMode().repeatMode
+    override fun getRepeatMode(): RepeatMode {
+        return StarrySkyUtils.getRepeatMode()
     }
 
     override fun getPlayList(): MutableList<SongInfo> {
-        return mediaQueueProvider.songList
+        return mediaQueueProvider.getSongList()
     }
 
     override fun updatePlayList(songInfos: MutableList<SongInfo>) {
-        mediaQueueProvider.songList = songInfos
+        mediaQueueProvider.setSongList(songInfos)
     }
 
     override fun addSongInfo(info: SongInfo) {

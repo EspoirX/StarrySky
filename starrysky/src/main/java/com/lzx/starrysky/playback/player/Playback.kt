@@ -23,13 +23,13 @@ import com.lzx.starrysky.provider.SongInfo
 interface Playback {
 
     companion object {
-        const val PLAYBACK_STATE_NONE = 0      //什么都没开始
-        const val PLAYBACK_STATE_IDLE = 1      //空闲
-        const val PLAYBACK_STATE_BUFFERING = 2 //正在缓冲
-        const val PLAYBACK_STATE_PLAYING = 3   //正在播放
-        const val PLAYBACK_STATE_PAUSED = 4    //暂停
-        const val PLAYBACK_STATE_STOPPED = 5   //停止
-        const val PLAYBACK_STATE_ERROR = 6     //出错
+        const val PLAYBACK_STATE_NONE = 100      //什么都没开始
+        const val PLAYBACK_STATE_IDLE = 200      //空闲
+        const val PLAYBACK_STATE_BUFFERING = 300 //正在缓冲
+        const val PLAYBACK_STATE_PLAYING = 400   //正在播放
+        const val PLAYBACK_STATE_PAUSED = 500    //暂停
+        const val PLAYBACK_STATE_STOPPED = 600   //停止
+        const val PLAYBACK_STATE_ERROR = 700     //出错
     }
 
     val playbackState: Int
