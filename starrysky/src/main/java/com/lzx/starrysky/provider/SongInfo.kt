@@ -8,12 +8,13 @@ import kotlinx.android.parcel.Parcelize
  */
 @Parcelize
 class SongInfo(
-    var songId: String = "", //音乐id
-    var songUrl: String = "",  //音乐播放地址
-    var songName: String = "",  //音乐标题
-    var songCover: String = "",  //音乐封面
-    var duration: Long = -1, //音乐长度
-    var headData: Map<String, String>? = hashMapOf() //header 信息
+        var songId: String = "", //音乐id
+        var songUrl: String = "",  //音乐播放地址
+        var songName: String = "",  //音乐标题
+        var artist: String = "",    //作者
+        var songCover: String = "",  //音乐封面
+        var duration: Long = -1, //音乐长度
+        var headData: Map<String, String>? = hashMapOf() //header 信息
 ) : Parcelable, Cloneable {
 
     companion object {
@@ -29,6 +30,7 @@ class SongInfo(
         other as SongInfo
         if (songId != other.songId) return false
         if (songName != other.songName) return false
+        if (artist != other.artist) return false
         if (songCover != other.songCover) return false
         if (songUrl != other.songUrl) return false
         if (duration != other.duration) return false
@@ -39,6 +41,7 @@ class SongInfo(
     override fun hashCode(): Int {
         var result = songId.hashCode()
         result = 31 * result + songName.hashCode()
+        result = 31 * result + artist.hashCode()
         result = 31 * result + songCover.hashCode()
         result = 31 * result + songUrl.hashCode()
         result = 31 * result + duration.hashCode()

@@ -3,43 +3,39 @@ package com.lzx.starrysky.playback.queue
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.support.v4.media.session.PlaybackStateCompat
-import com.lzx.starrysky.BaseMediaInfo
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.ext.albumArtUri
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.StarrySkyUtils
 import java.util.Arrays
 
-open class MediaQueueManager(provider: IMediaSourceProvider) : MediaQueueProviderSurface(provider),
-    MediaQueue {
+open class MediaQueueManager : MediaQueue {
 
-
-    private var mMediaResource: MediaResource? = null
     private var mCurrentIndex: Int = 0
     private var mUpdateListener: IMediaSourceProvider.MetadataUpdateListener? = null
 
-    override fun getCurrentIndex(): Int {
-        return mCurrentIndex
-    }
-
-    override val currMediaInfo: BaseMediaInfo?
-        get() = getMediaInfo(mCurrentIndex)
+    override val currentIndex: Int
+        get() = mCurrentIndex
 
     override val currentQueueSize: Int
-        get() = getMediaList().size
+        get() = StarrySky.get().mediaQueueProvider().songList.size
+
+    override val currentSongInfo: SongInfo?
+        get() = StarrySky.get().mediaQueueProvider().getSongInfoByIndex(currentIndex)
 
     override fun setMetadataUpdateListener(listener: IMediaSourceProvider.MetadataUpdateListener) {
         mUpdateListener = listener
     }
 
-    override fun isSameMedia(mediaId: String): Boolean {
-        val current = getCurrentMusic() ?: return false
-        return mediaId == current.getMediaId()
+    override fun isSameSong(songId: String): Boolean {
+        val current = currentSongInfo ?: return false
+        return songId == current.songId
     }
 
     override fun skipQueuePosition(amount: Int): Boolean {
-        val mPlayingQueue = getMediaList()
+        val mPlayingQueue = StarrySky.get().mediaQueueProvider().songList
         if (mPlayingQueue.size == 0) {
             return false
         }
@@ -57,101 +53,59 @@ open class MediaQueueManager(provider: IMediaSourceProvider) : MediaQueueProvide
         return true
     }
 
-    override fun getCurrentMusic(): MediaResource? {
-        return getCurrentMusic(null)
+    override fun currSongIsFirstSong(): Boolean {
+        val firstSong = StarrySky.get().mediaQueueProvider().getSongInfoByIndex(0)
+        return currentSongInfo?.songId == firstSong?.songId
     }
 
-    override fun getCurrentMusic(mediaInfo: BaseMediaInfo?): MediaResource? {
-        val mediaList = getMediaList()
-        val backupMediaList = getBackupMediaList()
-        if (!QueueHelper.isIndexPlayable(mCurrentIndex, mediaList)) {
-            return null
-        }
-        val info: BaseMediaInfo
-        if (mediaInfo != null) {
-            mediaList[mCurrentIndex] = mediaInfo
-            info = mediaInfo
-        } else {
-            info = mediaList[mCurrentIndex]
-        }
-        //由于MediaQueueManager在构建Starry时初始化，所以这里不能放在构造函数中
-        if (mMediaResource == null) {
-            mMediaResource = StarrySky.get().mediaResource
-        }
-        return mMediaResource?.obtain(info.mediaId, info.mediaUrl, System.currentTimeMillis(),
-            info.mapHeadData)
+    override fun currSongIsLastSong(): Boolean {
+        val lastSong = StarrySky.get().mediaQueueProvider().getSongInfoByIndex(currentQueueSize - 1)
+        return currentSongInfo?.songId == lastSong?.songId
     }
 
-    override fun updateIndexByMediaId(mediaId: String): Boolean {
-        val index = getIndexByMediaId(mediaId)
-        if (QueueHelper.isIndexPlayable(index, getMediaList())) {
+    override fun updateIndexBySongId(songId: String): Boolean {
+        val index = StarrySky.get().mediaQueueProvider().getIndexById(songId)
+        if (QueueHelper.isIndexPlayable(index, StarrySky.get().mediaQueueProvider().songList)) {
             mCurrentIndex = index
             mUpdateListener?.onCurrentQueueIndexUpdated(mCurrentIndex)
         }
         return index >= 0
     }
 
-    override fun updateCurrPlayingMedia(mediaId: String) {
+    override fun updateCurrPlayingSongInfo(songId: String) {
         var canReuseQueue = false
-        if (isSameMedia(mediaId)) {
-            canReuseQueue = updateIndexByMediaId(mediaId)
+        if (isSameSong(songId)) {
+            canReuseQueue = updateIndexBySongId(songId)
         }
         if (!canReuseQueue) {
-            mCurrentIndex = getIndexByMediaId(mediaId)
+            mCurrentIndex = StarrySky.get().mediaQueueProvider().getIndexById(songId)
         }
-        updateMetadata()
+        updateMediaMetadata()
     }
 
-    override fun songInfoToMediaInfo(songInfo: SongInfo?): BaseMediaInfo {
-        check(!(songInfo == null || songInfo.songId.isEmpty()))
-        {
-            "songInfo is null or song Id is Empty"
-        }
-        val mediaInfo = getMediaInfo(songInfo.songId)
-            ?: throw NullPointerException("can find mediaInfo by songId:" + songInfo.songId)
-
-        if (mediaInfo.mediaUrl != songInfo.songUrl) {
-            mediaInfo.mediaUrl = songInfo.songUrl
-        }
-        if (mediaInfo.mediaTitle != songInfo.songName) {
-            mediaInfo.mediaTitle = songInfo.songName
-        }
-        if (mediaInfo.mediaCover != songInfo.songCover) {
-            mediaInfo.mediaCover = songInfo.songCover
-        }
-        if (mediaInfo.duration != songInfo.duration) {
-            mediaInfo.duration = songInfo.duration
-        }
-        if (mediaInfo.mapHeadData != songInfo.mMapHeadData) {
-            mediaInfo.mapHeadData = songInfo.mMapHeadData
-        }
-        return mediaInfo
-    }
-
-    override fun updateMetadata() {
-        val currentMusic = getCurrentMusic()
-        if (currentMusic == null) {
+    override fun updateMediaMetadata() {
+        if (currentSongInfo == null) {
             mUpdateListener?.onMetadataRetrieveError()
             return
         }
-        val musicId = currentMusic.getMediaId()
-        if (musicId.isNullOrEmpty()) {
+        val musicId = currentSongInfo!!.songId
+        if (musicId.isEmpty()) {
             mUpdateListener?.onMetadataRetrieveError()
             return
         }
-        val metadata = getMediaMetadataCompatById(musicId)
-            ?: throw IllegalArgumentException("Invalid musicId $musicId")
+        val metadata = StarrySky.get().mediaQueueProvider().getMediaMetadataById(musicId)
+                ?: throw IllegalArgumentException("Invalid musicId $musicId")
 
         mUpdateListener?.onMetadataChanged(metadata)
 
         //更新封面 bitmap
-        val coverUrl = metadata.albumArtUrl
-        if (!coverUrl.isNullOrEmpty()) {
-            val imageLoader = StarrySky.get().registry.imageLoader
+        val coverUrl = currentSongInfo!!.songCover
+        if (coverUrl.isNotEmpty()) {
+            val imageLoader = StarrySky.get().imageLoader()
             imageLoader.load(coverUrl, object : ImageLoaderCallBack {
                 override fun onBitmapLoaded(bitmap: Bitmap?) {
-                    if (bitmap != null) {
-                        updateMusicArt(musicId, metadata, bitmap, bitmap)
+                    bitmap?.let {
+                        StarrySky.get().mediaQueueProvider().updateMusicArt(musicId, metadata, bitmap, bitmap)
                     }
                     mUpdateListener?.onMetadataChanged(metadata)
                 }
@@ -160,26 +114,5 @@ open class MediaQueueManager(provider: IMediaSourceProvider) : MediaQueueProvide
                 }
             })
         }
-    }
-
-    override fun setShuffledMode() {
-        val mediaInfos = getMediaList()
-        if (mediaInfos.size == 0) {
-            return
-        }
-        //通过深拷贝备份一个 backupMediaList
-        val backupArray = mediaInfos.toTypedArray()
-        //打乱顺序
-        mediaInfos.shuffle()
-        //打乱顺序要在这个前面
-        setBackupMediaList(Arrays.asList(*backupArray))
-        setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL)
-    }
-
-    override fun setNormalMode(mediaId: String) {
-        //恢复备份
-        updateMediaList(getBackupMediaList())
-        updateCurrPlayingMedia(mediaId)  //恢复正常顺序后需要更新一下下标
-        setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE)
     }
 }

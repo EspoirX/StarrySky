@@ -9,9 +9,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Process;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.android.exoplayer2.ExoPlayerLibraryInfo;
+import com.lzx.starrysky.control.PlayerControl;
+
+import org.json.JSONObject;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -91,6 +95,42 @@ public class StarrySkyUtils {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    public static void saveRepeatMode(int repeatMode, boolean isLoop) {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("repeatMode", repeatMode);
+            jsonObject.put("isLoop", isLoop);
+            SpUtil.Companion.getInstance().putString(PlayerControl.KEY_REPEAT_MODE, jsonObject.toString());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static PlayerControl.RepeatMode getRepeatMode() {
+        String json = SpUtil.Companion.getInstance().getString(PlayerControl.KEY_REPEAT_MODE);
+        PlayerControl.RepeatMode defaultMode = new PlayerControl.RepeatMode(PlayerControl.REPEAT_MODE_NONE, true);
+        if (TextUtils.isEmpty(json)) {
+            return defaultMode;
+        } else {
+            try {
+                JSONObject jsonObject = new JSONObject(json);
+                return new PlayerControl.RepeatMode(jsonObject.getInt("repeatMode"), jsonObject.getBoolean("isLoop"));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return defaultMode;
+            }
+        }
+    }
+
+    public static String formatStackTrace(StackTraceElement[] stackTrace) {
+        StringBuilder sb = new StringBuilder();
+        for (StackTraceElement element : stackTrace) {
+            sb.append("    at ").append(element.toString());
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
     public static void log(String msg) {

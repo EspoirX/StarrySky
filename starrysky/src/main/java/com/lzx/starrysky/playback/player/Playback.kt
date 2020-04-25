@@ -15,12 +15,24 @@
  */
 package com.lzx.starrysky.playback.player
 
+import com.lzx.starrysky.provider.SongInfo
+
 /**
  * 播放器接口，如果要实现其他播放器，实现该接口即可
  */
 interface Playback {
 
-    var state: Int
+    companion object {
+        const val PLAYBACK_STATE_NONE = 0      //什么都没开始
+        const val PLAYBACK_STATE_IDLE = 1      //空闲
+        const val PLAYBACK_STATE_BUFFERING = 2 //正在缓冲
+        const val PLAYBACK_STATE_PLAYING = 3   //正在播放
+        const val PLAYBACK_STATE_PAUSED = 4    //暂停
+        const val PLAYBACK_STATE_STOPPED = 5   //停止
+        const val PLAYBACK_STATE_ERROR = 6     //出错
+    }
+
+    val playbackState: Int
 
     val isConnected: Boolean
 
@@ -36,15 +48,11 @@ interface Playback {
 
     var volume: Float
 
-    fun getAudioSessionId():Int
+    fun getAudioSessionId(): Int
 
-    fun start()
+    fun stop()
 
-    fun stop(notifyListeners: Boolean)
-
-    fun updateLastKnownStreamPosition()
-
-    fun play(mediaResource: MediaResource, isPlayWhenReady: Boolean)
+    fun play(songInfo: SongInfo, isPlayWhenReady: Boolean)
 
     fun pause()
 
@@ -65,8 +73,6 @@ interface Playback {
         fun onPlaybackStatusChanged(state: Int)
 
         fun onError(error: String)
-
-        fun setCurrentMediaId(mediaId: String)
     }
 
     fun setCallback(callback: Callback)

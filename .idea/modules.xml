@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Downloads-StarrySky.iml" filepath="$PROJECT_DIR$/Downloads-StarrySky.iml" group="StarrySky" />
-      <module fileurl="file://$PROJECT_DIR$/starrysky/Downloads-StarrySky-starrysky.iml" filepath="$PROJECT_DIR$/starrysky/Downloads-StarrySky-starrysky.iml" group="StarrySky/starrysky" />
+      <module fileurl="file://$PROJECT_DIR$/E-StarrySky.iml" filepath="$PROJECT_DIR$/E-StarrySky.iml" group="StarrySky" />
+      <module fileurl="file://$PROJECT_DIR$/starrysky/E-StarrySky-starrysky.iml" filepath="$PROJECT_DIR$/starrysky/E-StarrySky-starrysky.iml" group="StarrySky/starrysky" />
       <module fileurl="file://$PROJECT_DIR$/StarrySky.iml" filepath="$PROJECT_DIR$/StarrySky.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/StarrySky-app.iml" filepath="$PROJECT_DIR$/app/StarrySky-app.iml" group="StarrySky/app" />
       <module fileurl="file://$PROJECT_DIR$/starrysky/StarrySky-starrysky.iml" filepath="$PROJECT_DIR$/starrysky/StarrySky-starrysky.iml" />

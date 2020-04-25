@@ -3,24 +3,24 @@ package com.lzx.musiclib;
 import android.Manifest;
 import android.app.Application;
 import android.content.Context;
-import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.lzx.musiclib.example.MusicRequest;
-import com.lzx.musiclib.imageloader.GlideLoader;
 import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.StarrySkyConfig;
-import com.lzx.starrysky.delayaction.Valid;
+import com.lzx.starrysky.intercept.InterceptorCallback;
+import com.lzx.starrysky.intercept.StarrySkyInterceptor;
 import com.lzx.starrysky.provider.SongInfo;
-import com.lzx.starrysky.registry.StarrySkyRegistry;
 import com.lzx.starrysky.utils.StarrySkyUtils;
 import com.qw.soul.permission.SoulPermission;
 import com.qw.soul.permission.bean.Permission;
 import com.qw.soul.permission.bean.Permissions;
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener;
 import com.tencent.bugly.crashreport.CrashReport;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * create by lzx
@@ -31,41 +31,24 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        StarrySky.init(this, new TestConfig());
+        StarrySkyConfig config = new StarrySkyConfig();
+        config.addInterceptor(new RequestSongInfoInterceptor(this));
+        StarrySky.Companion.init(this, config);
         StarrySkyUtils.isDebug = true;
         CrashReport.initCrashReport(getApplicationContext(), "9e447caa98", false);
     }
 
-    private static class TestConfig extends StarrySkyConfig {
-
-        @Override
-        public void applyOptions(@NonNull Context context, @NonNull StarrySkyBuilder builder) {
-            super.applyOptions(context, builder);
-            builder.setOpenNotification(true);
-            builder.setOpenCache(true);
-            String destFileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/000xian/";
-            builder.setCacheDestFileDir(destFileDir);
-        }
-
-        @Override
-        public void applyStarrySkyRegistry(@NonNull Context context, StarrySkyRegistry registry) {
-            super.applyStarrySkyRegistry(context, registry);
-            registry.appendValidRegistry(new RequestSongInfoValid(context));
-            registry.registryImageLoader(new GlideLoader());
-        }
-    }
-
-    public static class RequestSongInfoValid implements Valid {
+    public static class RequestSongInfoInterceptor implements StarrySkyInterceptor {
         private MusicRequest mMusicRequest;
         private Context mContext;
 
-        RequestSongInfoValid(Context context) {
+        RequestSongInfoInterceptor(Context context) {
             mContext = context;
             mMusicRequest = new MusicRequest();
         }
 
         @Override
-        public void doValid(SongInfo songInfo, ValidCallback callback) {
+        public void process(@Nullable SongInfo songInfo, @NotNull InterceptorCallback callback) {
             SoulPermission.getInstance().checkAndRequestPermissions(
                     Permissions.build(
                             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -76,10 +59,10 @@ public class TestApplication extends Application {
                             if (TextUtils.isEmpty(songInfo.getSongUrl())) {
                                 mMusicRequest.getSongInfoDetail(songInfo.getSongId(), songUrl -> {
                                     songInfo.setSongUrl(songUrl); //给songInfo设置Url
-                                    callback.finishValid();
+                                    callback.onContinue(songInfo);
                                 });
                             } else {
-                                callback.doActionDirect();
+                                callback.onContinue(songInfo);
                             }
                         }
 
@@ -90,6 +73,4 @@ public class TestApplication extends Application {
                     });
         }
     }
-
-
 }

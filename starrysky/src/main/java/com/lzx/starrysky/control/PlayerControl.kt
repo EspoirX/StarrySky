@@ -6,6 +6,16 @@ import com.lzx.starrysky.provider.SongInfo
 
 interface PlayerControl {
 
+    companion object {
+        const val KEY_REPEAT_MODE = "StarrySky#KEY_REPEAT_MODE"
+        const val REPEAT_MODE_NONE = 100     //顺序播放
+        const val REPEAT_MODE_ONE = 200      //单曲播放
+        const val REPEAT_MODE_SHUFFLE = 300  //随机播放
+        const val REPEAT_MODE_REVERSE = 400  //倒序播放
+    }
+
+    data class RepeatMode(val repeatMode: Int, val isLoop: Boolean)
+
     /**
      * 根据songId播放,调用前请确保已经设置了播放列表
      */
@@ -89,26 +99,15 @@ interface PlayerControl {
      */
     fun seekTo(pos: Long)
 
-//    /**
-//     * 设置播放模式
-//     * 必须是以下之一：
-//     * PlaybackStateCompat.SHUFFLE_MODE_NONE 顺序播放
-//     * PlaybackStateCompat.SHUFFLE_MODE_ALL  随机播放
-//     */
-//    fun setShuffleMode(shuffleMode: Int)
-//
-//    /**
-//     * 获取播放模式
-//     */
-//    fun getShuffleMode(): Int
-
     /**
      * 设置播放模式
      * 必须是以下之一：
-     * PlaybackStateCompat.REPEAT_MODE_NONE  顺序播放
-     * PlaybackStateCompat.REPEAT_MODE_ONE   单曲循环
-     * PlaybackStateCompat.REPEAT_MODE_ALL   列表循环
-     * PlaybackStateCompatExt.SINGLE_MODE_ONE   单曲播放(播放当前就结束,不会自动播下一首)
+     * REPEAT_MODE_NONE      顺序播放
+     * REPEAT_MODE_ONE       单曲播放
+     * REPEAT_MODE_SHUFFLE   随机播放
+     * REPEAT_MODE_REVERSE   倒序播放
+     *
+     * isLoop 播放倒最后一首时是否从第一首开始循环播放,该参数对随机播放无效
      */
     fun setRepeatMode(repeatMode: Int, isLoop: Boolean)
 

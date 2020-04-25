@@ -44,9 +44,9 @@ class ExoSourceManager constructor(
     }
 
     init {
-        sHttpConnectTimeout = StarrySky.get().httpConnectTimeout
-        sHttpReadTimeout = StarrySky.get().httpReadTimeout
-        sSkipSSLChain = StarrySky.get().isSkipSSLChain
+        sHttpConnectTimeout = StarrySky.get().config().httpConnectTimeout
+        sHttpReadTimeout = StarrySky.get().config().httpReadTimeout
+        sSkipSSLChain = StarrySky.get().config().skipSSLChain
     }
 
     @SuppressLint("DefaultLocale")

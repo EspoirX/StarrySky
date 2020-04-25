@@ -7,15 +7,14 @@ import com.lzx.starrysky.utils.StarrySkyUtils
 import java.util.ArrayList
 
 class StarrySkyActivityLifecycle : ActivityLifecycleCallbacks {
-    private val activities: MutableList<Activity>? =
-        ArrayList()
+    private val activities: MutableList<Activity> = ArrayList()
 
     /**
      * 获取可用Activity
      */
     val activity: Activity?
         get() {
-            if (null == activities || activities.size == 0) {
+            if ( activities.size == 0) {
                 return null
             }
             for (i in activities.indices.reversed()) {
@@ -28,9 +27,9 @@ class StarrySkyActivityLifecycle : ActivityLifecycleCallbacks {
         }
 
     override fun onActivityCreated(
-        activity: Activity, savedInstanceState: Bundle
+        activity: Activity, savedInstanceState: Bundle?
     ) {
-        activities!!.add(activity)
+        activities.add(activity)
     }
 
     override fun onActivityStarted(activity: Activity) {}
@@ -43,6 +42,6 @@ class StarrySkyActivityLifecycle : ActivityLifecycleCallbacks {
     }
 
     override fun onActivityDestroyed(activity: Activity) {
-        activities!!.remove(activity)
+        activities.remove(activity)
     }
 }

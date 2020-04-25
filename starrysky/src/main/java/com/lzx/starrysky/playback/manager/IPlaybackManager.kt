@@ -69,8 +69,8 @@ interface IPlaybackManager {
             MediaMetadataCompat?
         )
 
-        fun onShuffleModeUpdated(shuffleMode: Int)
-
-        fun onRepeatModeUpdated(repeatMode: Int)
+//        fun onShuffleModeUpdated(shuffleMode: Int)
+//
+//        fun onRepeatModeUpdated(repeatMode: Int)
     }
 }

@@ -25,7 +25,7 @@ class StarrySkyNotificationManager constructor(
     fun getNotification(musicService: MusicService): INotification? {
         return notification ?: synchronized(this) {
             if (notification == null && factory != null) {
-                val config = StarrySky.get().registry.notificationConfig
+                val config = StarrySky.get().notificationConfig()
                 notification = factory?.build(musicService, config)
             }
             return notification

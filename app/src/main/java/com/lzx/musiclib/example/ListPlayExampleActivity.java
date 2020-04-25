@@ -76,28 +76,28 @@ public class ListPlayExampleActivity extends AppCompatActivity {
                     break;
             }
         });
-        playMode.setOnClickListener(v -> {
-            int repeatMode = StarrySky.with().getRepeatMode();
-            int shuffleMode = StarrySky.with().getShuffleMode();
-            if (repeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
-                StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
-                playMode.setText("单曲循环"); //当前是顺序播放，设置为单曲循环
-            }
-            else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
-                StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
-                playMode.setText("列表循环"); //当前是单曲循环，设置为列表循环
-            }
-            else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL && !isSettingShuffleMode) {
-                playMode.setText("随机播放"); //当前是列表循环，设置为随机播放
-                StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
-                isSettingShuffleMode = true;
-            } else if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
-                playMode.setText("顺序播放");  //当前是随机播放，设置为顺序播放
-                StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
-                StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
-                isSettingShuffleMode = false;
-            }
-        });
+//        playMode.setOnClickListener(v -> {
+//            int repeatMode = StarrySky.with().getRepeatMode();
+//            int shuffleMode = StarrySky.with().getShuffleMode();
+//            if (repeatMode == PlaybackStateCompat.REPEAT_MODE_NONE) {
+//                StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+//                playMode.setText("单曲循环"); //当前是顺序播放，设置为单曲循环
+//            }
+//            else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
+//                StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+//                playMode.setText("列表循环"); //当前是单曲循环，设置为列表循环
+//            }
+//            else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL && !isSettingShuffleMode) {
+//                playMode.setText("随机播放"); //当前是列表循环，设置为随机播放
+//                StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+//                isSettingShuffleMode = true;
+//            } else if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
+//                playMode.setText("顺序播放");  //当前是随机播放，设置为顺序播放
+//                StarrySky.with().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+//                StarrySky.with().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
+//                isSettingShuffleMode = false;
+//            }
+//        });
         //进度监听
         mTimerTask.setUpdateProgressTask(() -> {
             SongInfo songInfo = StarrySky.with().getNowPlayingSongInfo();

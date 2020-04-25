@@ -50,7 +50,7 @@ public class MusicService extends MediaBrowserServiceCompat implements IMediaSou
     @Override
     public void onCreate() {
         super.onCreate();
-        mPlaybackManager = StarrySky.get().getPlaybackManager();
+        mPlaybackManager = StarrySky.get().playbackManager();
         mPlaybackManager.setServiceCallback(this);
         mPlaybackManager.setMetadataUpdateListener(this);
 
@@ -89,7 +89,7 @@ public class MusicService extends MediaBrowserServiceCompat implements IMediaSou
         mPackageValidator = new PackageValidator(this);
         //通知栏相关
 
-        StarrySkyNotificationManager manager = StarrySky.get().getRegistry().getNotificationManager();
+        StarrySkyNotificationManager manager = StarrySky.get().notificationManager();
         notification = manager.getNotification(this);
         if (notification != null) {
             mPlaybackManager.registerNotification(notification);
@@ -202,21 +202,21 @@ public class MusicService extends MediaBrowserServiceCompat implements IMediaSou
         }
     }
 
-    /**
-     * 更新播放顺序
-     */
-    @Override
-    public void onShuffleModeUpdated(int shuffleMode) {
-        mediaSession.setShuffleMode(shuffleMode);
-    }
-
-    /**
-     * 更新播放模式
-     */
-    @Override
-    public void onRepeatModeUpdated(int repeatMode) {
-        mediaSession.setRepeatMode(repeatMode);
-    }
+//    /**
+//     * 更新播放顺序
+//     */
+//    @Override
+//    public void onShuffleModeUpdated(int shuffleMode) {
+//        mediaSession.setShuffleMode(shuffleMode);
+//    }
+//
+//    /**
+//     * 更新播放模式
+//     */
+//    @Override
+//    public void onRepeatModeUpdated(int repeatMode) {
+//        mediaSession.setRepeatMode(repeatMode);
+//    }
 
     private static class DelayedStopHandler extends Handler {
         private final WeakReference<MusicService> mWeakReference;

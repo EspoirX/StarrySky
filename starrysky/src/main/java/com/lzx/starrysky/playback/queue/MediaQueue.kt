@@ -1,6 +1,5 @@
 package com.lzx.starrysky.playback.queue
 
-import com.lzx.starrysky.BaseMediaInfo
 import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
 
@@ -10,23 +9,26 @@ import com.lzx.starrysky.provider.SongInfo
 interface MediaQueue {
 
     /**
-     * 获取当前下标
+     * 获取当前正在播放的下标
      */
-    fun getCurrentIndex(): Int
-
-    val currMediaInfo: BaseMediaInfo?
+    val currentIndex: Int
 
     /**
      * 获取列表大小
      */
     val currentQueueSize: Int
 
+    /**
+     * 获取当前播放的songInfo
+     */
+    val currentSongInfo: SongInfo?
+
     fun setMetadataUpdateListener(listener: IMediaSourceProvider.MetadataUpdateListener)
 
     /**
      * 判断传入的媒体跟正在播放的媒体是否一样
      */
-    fun isSameMedia(mediaId: String): Boolean
+    fun isSameSong(songId: String): Boolean
 
     /**
      * 转跳下一首或上一首
@@ -36,33 +38,27 @@ interface MediaQueue {
     fun skipQueuePosition(amount: Int): Boolean
 
     /**
-     * 获取当前播放的媒体
+     * 当前歌曲是否是列表中的第一首
      */
-    fun getCurrentMusic(): MediaResource?
+    fun currSongIsFirstSong(): Boolean
 
     /**
-     * 获取当前播放的媒体
+     * 当前歌曲是否是列表中的最后一首
      */
-    fun getCurrentMusic(mediaInfo: BaseMediaInfo?): MediaResource?
+    fun currSongIsLastSong(): Boolean
 
     /**
      * 根据传入的媒体id来更新此媒体的下标并通知
      */
-    fun updateIndexByMediaId(mediaId: String): Boolean
+    fun updateIndexBySongId(songId: String): Boolean
 
     /**
      * 根据当前传入的 mediaId 更新当前播放媒体下标和信息
      */
-    fun updateCurrPlayingMedia(mediaId: String)
-
-    fun songInfoToMediaInfo(songInfo: SongInfo?): BaseMediaInfo
+    fun updateCurrPlayingSongInfo(songId: String)
 
     /**
      * 更新媒体信息
      */
-    fun updateMetadata()
-
-    fun setShuffledMode()
-
-    fun setNormalMode(mediaId: String)
+    fun updateMediaMetadata()
 }

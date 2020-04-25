@@ -3,10 +3,11 @@ package com.lzx.starrysky
 import com.lzx.starrysky.common.IMediaConnection
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.imageloader.ImageLoader
-import com.lzx.starrysky.intercept.Interceptor
+import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.playback.manager.IPlaybackManager
+import com.lzx.starrysky.playback.manager.PlaybackManager
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueue
@@ -18,7 +19,7 @@ import com.lzx.starrysky.provider.NormalModeProvider
  * StarrySky 初始化配置类
  */
 open class StarrySkyConfig internal constructor(
-    builder: Builder
+        builder: Builder
 ) : Cloneable {
 
     //媒体信息存储管理类
@@ -53,14 +54,16 @@ open class StarrySkyConfig internal constructor(
     val skipSSLChain = builder.skipSSLChain
 
     @get:JvmName("interceptors")
-    val interceptors: MutableList<Interceptor> = builder.interceptors
+    val interceptors: MutableList<StarrySkyInterceptor> = builder.interceptors
+
+    @get:JvmName("interceptorTimeOut")
+    val interceptorTimeOut: Long = builder.interceptorTimeOut
 
     @get:JvmName("imageLoader")
     val imageLoader: ImageLoader = builder.imageLoader
 
     @get:JvmName("notificationFactory")
-    val notificationFactory: StarrySkyNotificationManager.NotificationFactory? =
-        builder.notificationFactory
+    val notificationFactory: StarrySkyNotificationManager.NotificationFactory? = builder.notificationFactory
 
     @get:JvmName("notificationManager")
     val notificationManager: StarrySkyNotificationManager? = builder.notificationManager
@@ -80,8 +83,9 @@ open class StarrySkyConfig internal constructor(
     @get:JvmName("playback")
     val playback: Playback? = builder.playback
 
-    @get:JvmName("playbackManager")
-    val playbackManager: IPlaybackManager? = builder.playbackManager
+    fun addInterceptor(interceptor: StarrySkyInterceptor) = apply {
+        interceptors += interceptor
+    }
 
     constructor() : this(Builder())
 
@@ -89,14 +93,15 @@ open class StarrySkyConfig internal constructor(
 
     class Builder constructor() {
         var mediaQueueProvider: IMediaSourceProvider = NormalModeProvider()
-        var mediaQueue: MediaQueue = MediaQueueManager(mediaQueueProvider)
+        var mediaQueue: MediaQueue = MediaQueueManager()
         var isOpenNotification = false
         var isOpenCache = false
         var cacheDestFileDir: String? = null
         var httpConnectTimeout: Long = -1
         var httpReadTimeout: Long = -1
         var skipSSLChain = false
-        var interceptors: MutableList<Interceptor> = mutableListOf()
+        var interceptors: MutableList<StarrySkyInterceptor> = mutableListOf()
+        var interceptorTimeOut = 60L   //拦截器超时时间
         var imageLoader: ImageLoader = ImageLoader()
         var mediaConnection: IMediaConnection? = null
         var notificationFactory: StarrySkyNotificationManager.NotificationFactory? = null
@@ -105,7 +110,7 @@ open class StarrySkyConfig internal constructor(
         var cacheManager: StarrySkyCacheManager? = null
         var playback: Playback? = null
         var playerControl: PlayerControl? = null
-        var playbackManager: IPlaybackManager? = null
+
 
         internal constructor(config: StarrySkyConfig) : this() {
             this.mediaQueueProvider = config.mediaQueueProvider
@@ -117,6 +122,7 @@ open class StarrySkyConfig internal constructor(
             this.httpReadTimeout = config.httpReadTimeout
             this.skipSSLChain = config.skipSSLChain
             this.interceptors = config.interceptors
+            this.interceptorTimeOut = config.interceptorTimeOut
             this.imageLoader = config.imageLoader
             this.notificationFactory = config.notificationFactory
             this.notificationManager = config.notificationManager
@@ -125,7 +131,6 @@ open class StarrySkyConfig internal constructor(
             this.playback = config.playback
             this.mediaConnection = config.mediaConnection
             this.playerControl = config.playerControl
-            this.playbackManager = config.playbackManager
         }
 
         fun build(): StarrySkyConfig? {

@@ -44,7 +44,7 @@ object NotificationUtils {
         songId: String?, bundle: Bundle?, targetClass: Class<*>
     ): PendingIntent {
         var songInfo: SongInfo? = null
-        val songInfos = StarrySky.get().mediaQueueProvider.getSongList()
+        val songInfos = StarrySky.get().mediaQueueProvider().songList
         for (info in songInfos) {
             if (info.songId == songId) {
                 songInfo = info

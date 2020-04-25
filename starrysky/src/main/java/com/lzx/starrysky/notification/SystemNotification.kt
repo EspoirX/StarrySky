@@ -259,7 +259,7 @@ class SystemNotification constructor(service: MusicService, config: Notification
         fetchArtUrl: String,
         notificationBuilder: NotificationCompat.Builder
     ) {
-        val imageLoader = StarrySky.get().registry.imageLoader
+        val imageLoader = StarrySky.get().imageLoader()
         imageLoader.load(fetchArtUrl, object : ImageLoaderCallBack {
             override fun onBitmapLoaded(bitmap: Bitmap?) {
                 if (bitmap == null) {

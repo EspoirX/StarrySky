@@ -24,6 +24,7 @@ import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.MD5
+import com.lzx.starrysky.utils.StarrySkyUtils
 
 class StarrySkyPlayerControl constructor(private val context: Context) : PlayerControl {
 
@@ -114,20 +115,13 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         connection.getTransportControls()?.seekTo(pos)
     }
 
-    override fun setShuffleMode(shuffleMode: Int) {
-        connection.getTransportControls()?.setShuffleMode(shuffleMode)
-    }
-
-    override fun getShuffleMode(): Int {
-        return connection.getShuffleMode()
-    }
-
-    override fun setRepeatMode(repeatMode: Int) {
-        connection.getTransportControls()?.setRepeatMode(repeatMode)
+    override fun setRepeatMode(repeatMode: Int, isLoop: Boolean) {
+        StarrySkyUtils.saveRepeatMode(repeatMode, isLoop)
+        connection.sendCommand(PlayerControl.KEY_REPEAT_MODE, Bundle())
     }
 
     override fun getRepeatMode(): Int {
-        return connection.getRepeatMode()
+        return StarrySkyUtils.getRepeatMode().repeatMode
     }
 
     override fun getPlayList(): MutableList<SongInfo> {
@@ -277,14 +271,14 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun getVolume(): Float {
-        return mPlayback?.volume ?: -1F
+        return mPlayback.volume
     }
 
     override fun getDuration(): Long {
         var duration = connection.getNowPlaying()?.duration
         //如果没设置duration
         if (duration == null || duration == 0L) {
-            duration = mPlayback?.duration ?: 0
+            duration = mPlayback.duration
         }
         //当切换歌曲的时候偶尔回调为 -9223372036854775807  Long.MIN_VALUE
         return if (duration < -1) {
@@ -293,7 +287,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun getAudioSessionId(): Int {
-        return mPlayback?.getAudioSessionId() ?: 0
+        return mPlayback.getAudioSessionId()
     }
 
     override fun updateFavoriteUI(isFavorite: Boolean) {
@@ -312,9 +306,9 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     override fun querySongInfoInLocal(): List<SongInfo> {
         val songInfos = mutableListOf<SongInfo>()
         val cursor =
-            context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null,
-                null, null, null)
-                ?: return songInfos
+                context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null,
+                        null, null, null)
+                        ?: return songInfos
         while (cursor.moveToNext()) {
             val song = SongInfo()
             song.songUrl = cursor.data
@@ -339,7 +333,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         val projection = arrayOf(MediaStore.Audio.Albums.ALBUM_ART)
         var imagePath: String? = null
         val uri = Uri.parse(
-            "content://media" + MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.path + "/" + albumId)
+                "content://media" + MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.path + "/" + albumId)
         val cur = context.contentResolver.query(uri, projection, null, null, null) ?: return null
         if (cur.count > 0 && cur.columnCount > 0) {
             cur.moveToNext()
@@ -350,16 +344,16 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun addPlayerEventListener(listener: OnPlayerEventListener?) {
-        if (listener != null) {
-            if (!mPlayerEventListeners.contains(listener)) {
-                mPlayerEventListeners.add(listener)
+        listener?.let {
+            if (!mPlayerEventListeners.contains(it)) {
+                mPlayerEventListeners.add(it)
             }
         }
     }
 
     override fun removePlayerEventListener(listener: OnPlayerEventListener?) {
-        if (listener != null) {
-            mPlayerEventListeners.remove(listener)
+        listener?.let {
+            mPlayerEventListeners.remove(it)
         }
     }
 

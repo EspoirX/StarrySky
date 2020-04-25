@@ -243,7 +243,7 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
                 }
                 PlaybackStateCompat.STATE_NONE -> {
                     for (listener in mPlayerEventListeners) {
-                        val songInfo = StarrySky.get().mediaQueueProvider.getSongInfo(songId)
+                        val songInfo = StarrySky.get().mediaQueueProvider().getSongInfoById(songId)
                         listener.onPlayCompletion(songInfo!!)
                     }
                     playbackState.setValue(playbackStage.buildCompletion(songId))
@@ -266,7 +266,7 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
             val songId = metadata.id ?: return
             val currPlayingId = StarrySky.with().getNowPlayingSongId()
             if (currPlayingId.isNotEmpty() && songId != currPlayingId) {
-                val songInfo = StarrySky.get().mediaQueueProvider.getSongInfo(songId)
+                val songInfo = StarrySky.get().mediaQueueProvider().getSongInfoById(songId)
                 playbackState.postValue(playbackStage.buildSwitch(songId))
                 //状态监听
                 val mPlayerEventListeners = StarrySky.with().getPlayerEventListeners()

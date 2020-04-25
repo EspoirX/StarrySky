@@ -81,7 +81,7 @@ class PlaybackStage constructor(private val stage: String?, private val songInfo
 
         internal fun setSongId(songId: String?): Builder {
             if (!songId.isNullOrEmpty()) {
-                this.songInfo = StarrySky.get().mediaQueueProvider.getSongInfo(songId)
+                this.songInfo = StarrySky.get().mediaQueueProvider().getSongInfoById(songId)
             }
             return this
         }
