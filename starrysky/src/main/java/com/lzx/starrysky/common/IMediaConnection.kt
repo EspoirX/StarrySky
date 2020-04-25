@@ -23,15 +23,15 @@ interface IMediaConnection {
      */
     fun sendCommand(command: String, parameters: Bundle)
 
-    /**
-     * 获取当前随机模式
-     */
-    fun getShuffleMode(): Int
-
-    /**
-     * 获取当前播放模式
-     */
-    fun getRepeatMode(): Int
+//    /**
+//     * 获取当前随机模式
+//     */
+//    fun getShuffleMode(): Int
+//
+//    /**
+//     * 获取当前播放模式
+//     */
+//    fun getRepeatMode(): Int
 
     /**
      * 获取当前播放的 MediaMetadataCompat

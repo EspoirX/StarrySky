@@ -49,28 +49,30 @@ public class TestApplication extends Application {
 
         @Override
         public void process(@Nullable SongInfo songInfo, @NotNull InterceptorCallback callback) {
-            SoulPermission.getInstance().checkAndRequestPermissions(
-                    Permissions.build(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    new CheckRequestPermissionsListener() {
-                        @Override
-                        public void onAllPermissionOk(Permission[] allPermissions) {
-                            if (TextUtils.isEmpty(songInfo.getSongUrl())) {
-                                mMusicRequest.getSongInfoDetail(songInfo.getSongId(), songUrl -> {
-                                    songInfo.setSongUrl(songUrl); //给songInfo设置Url
-                                    callback.onContinue(songInfo);
-                                });
-                            } else {
-                                callback.onContinue(songInfo);
-                            }
-                        }
+            if (songInfo == null) {
+                callback.onInterrupt(new RuntimeException("SongInfo is null"));
+                return;
+            }
+            SoulPermission.getInstance().checkAndRequestPermissions(Permissions.build(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE), new CheckRequestPermissionsListener() {
+                @Override
+                public void onAllPermissionOk(Permission[] allPermissions) {
+                    if (TextUtils.isEmpty(songInfo.getSongUrl())) {
+                        mMusicRequest.getSongInfoDetail(songInfo.getSongId(), songUrl -> {
+                            songInfo.setSongUrl(songUrl); //给songInfo设置Url
+                            callback.onContinue(songInfo);
+                        });
+                    } else {
+                        callback.onContinue(songInfo);
+                    }
+                }
 
-                        @Override
-                        public void onPermissionDenied(Permission[] refusedPermissions) {
-                            Toast.makeText(mContext, "没有权限，播放失败", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                @Override
+                public void onPermissionDenied(Permission[] refusedPermissions) {
+                    Toast.makeText(mContext, "没有权限，播放失败", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 }

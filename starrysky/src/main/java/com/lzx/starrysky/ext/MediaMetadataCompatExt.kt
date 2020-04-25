@@ -11,8 +11,6 @@ import com.google.android.exoplayer2.upstream.DataSource
 /**
  * MediaMetadataCompat 的扩展，使用更清晰
  */
-
-
 //重命名属性
 inline val MediaMetadataCompat.id: String?
     get() = getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)

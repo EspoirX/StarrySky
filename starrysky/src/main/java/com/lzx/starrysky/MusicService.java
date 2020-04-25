@@ -202,22 +202,6 @@ public class MusicService extends MediaBrowserServiceCompat implements IMediaSou
         }
     }
 
-//    /**
-//     * 更新播放顺序
-//     */
-//    @Override
-//    public void onShuffleModeUpdated(int shuffleMode) {
-//        mediaSession.setShuffleMode(shuffleMode);
-//    }
-//
-//    /**
-//     * 更新播放模式
-//     */
-//    @Override
-//    public void onRepeatModeUpdated(int repeatMode) {
-//        mediaSession.setRepeatMode(repeatMode);
-//    }
-
     private static class DelayedStopHandler extends Handler {
         private final WeakReference<MusicService> mWeakReference;
 

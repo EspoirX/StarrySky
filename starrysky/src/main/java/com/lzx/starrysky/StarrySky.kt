@@ -123,15 +123,12 @@ class StarrySky {
         @JvmStatic
         fun get(): StarrySky {
             if (sStarrySky == null) {
-                Log.i("XIAN", "1")
                 synchronized(StarrySky::class.java) {
                     if (sStarrySky == null) {
-                        Log.i("XIAN", "2")
                         checkAndInitializeStarrySky()
                     }
                 }
             }
-            Log.i("XIAN", "get")
             return sStarrySky!!
         }
 
@@ -151,7 +148,6 @@ class StarrySky {
         }
 
         private fun checkAndInitializeStarrySky() {
-            Log.i("XIAN", "3")
             check(!isInitializing) { "checkAndInitializeStarrySky" }
             isInitializing = true
             try {
@@ -164,11 +160,9 @@ class StarrySky {
         }
 
         private fun initializeStarrySky() {
-            Log.i("XIAN", "4")
             if (globalContext == null) {
                 globalContext = StarrySkyUtils.getContextReflex()
             }
-            Log.i("XIAN", "globalContext = " + globalContext)
             requireNotNull(globalContext) { "StarrySky 初始化失败，上下文为 null" }
 
             notificationManager = if (mStarrySkyConfig.notificationManager == null) {
@@ -188,7 +182,6 @@ class StarrySky {
             } else {
                 mStarrySkyConfig.playback
             }!!
-            Log.i("XIAN", "StarrySky")
 
             sStarrySky = StarrySky()
 

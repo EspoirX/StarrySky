@@ -7,10 +7,6 @@ import android.support.v4.media.session.PlaybackStateCompat
 /**
  * PlaybackStateCompat 的扩展，使用更清晰
  */
-
-//单曲播放
-var SINGLE_MODE_ONE = 4
-
 inline val PlaybackStateCompat.isPrepared
     get() = (state == PlaybackStateCompat.STATE_BUFFERING) ||
         (state == PlaybackStateCompat.STATE_PLAYING) ||

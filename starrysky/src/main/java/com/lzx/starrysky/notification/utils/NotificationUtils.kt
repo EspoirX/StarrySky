@@ -8,7 +8,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
-import android.text.TextUtils
 import com.lzx.starrysky.MusicService
 import com.lzx.starrysky.R
 import com.lzx.starrysky.StarrySky
@@ -26,13 +25,12 @@ object NotificationUtils {
     fun getTargetClass(targetClass: String): Class<*>? {
         var clazz: Class<*>? = null
         try {
-            if (!TextUtils.isEmpty(targetClass)) {
+            if (targetClass.isNotEmpty()) {
                 clazz = Class.forName(targetClass)
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         return clazz
     }
 
@@ -40,17 +38,11 @@ object NotificationUtils {
      * 设置content点击事件
      */
     fun createContentIntent(
-        mService: MusicService, mBuilder: NotificationConfig?,
-        songId: String?, bundle: Bundle?, targetClass: Class<*>
+            mService: MusicService, mBuilder: NotificationConfig?,
+            songId: String?, bundle: Bundle?, targetClass: Class<*>
     ): PendingIntent {
-        var songInfo: SongInfo? = null
-        val songInfos = StarrySky.get().mediaQueueProvider().songList
-        for (info in songInfos) {
-            if (info.songId == songId) {
-                songInfo = info
-                break
-            }
-        }
+        val songInfos = StarrySky.get().mediaQueueProvider().songList.filter { it.songId == songId }
+        val songInfo: SongInfo? = songInfos.elementAtOrNull(0)
         val openUI = Intent(mService, targetClass)
         openUI.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         openUI.putExtra("notification_entry", INotification.ACTION_INTENT_CLICK)
@@ -64,13 +56,13 @@ object NotificationUtils {
         val pendingIntent: PendingIntent
         pendingIntent = when (mBuilder?.pendingIntentMode) {
             NotificationConfig.MODE_ACTIVITY -> PendingIntent.getActivity(mService, INotification.REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+                    PendingIntent.FLAG_CANCEL_CURRENT)
             NotificationConfig.MODE_BROADCAST -> PendingIntent.getBroadcast(mService, INotification.REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+                    PendingIntent.FLAG_CANCEL_CURRENT)
             NotificationConfig.MODE_SERVICE -> PendingIntent.getService(mService, INotification.REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+                    PendingIntent.FLAG_CANCEL_CURRENT)
             else -> PendingIntent.getActivity(mService, INotification.REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+                    PendingIntent.FLAG_CANCEL_CURRENT)
         }
         return pendingIntent
     }
@@ -80,15 +72,14 @@ object NotificationUtils {
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun createNotificationChannel(
-        mService: MusicService, mNotificationManager: NotificationManager
+            mService: MusicService, mNotificationManager: NotificationManager
     ) {
         if (mNotificationManager.getNotificationChannel(INotification.CHANNEL_ID) == null) {
             val notificationChannel = NotificationChannel(INotification.CHANNEL_ID,
-                mService.getString(R.string.notification_channel),
-                NotificationManager.IMPORTANCE_LOW)
+                    mService.getString(R.string.notification_channel),
+                    NotificationManager.IMPORTANCE_LOW)
 
-            notificationChannel.description =
-                mService.getString(R.string.notification_channel_description)
+            notificationChannel.description = mService.getString(R.string.notification_channel_description)
 
             mNotificationManager.createNotificationChannel(notificationChannel)
         }

@@ -15,8 +15,7 @@ import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.ext.id
 import com.lzx.starrysky.utils.StarrySkyUtils
 
-class MediaSessionConnection constructor(context: Context, serviceComponent: ComponentName) :
-    IMediaConnection {
+class MediaSessionConnection constructor(context: Context, serviceComponent: ComponentName) : IMediaConnection {
 
     private val mContext: Context = context
 
@@ -41,9 +40,7 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
     private var mConnectListener: IMediaConnection.OnConnectListener? = null
 
     init {
-        mediaBrowser =
-            MediaBrowserCompat(mContext, serviceComponent, mediaBrowserConnectionCallback,
-                null)
+        mediaBrowser = MediaBrowserCompat(mContext, serviceComponent, mediaBrowserConnectionCallback, null)
         isConnected.value = false
         playbackState.value = PlaybackStage.buildNone()
         nowPlaying.value = NOTHING_PLAYING
@@ -61,9 +58,7 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
         mediaBrowser.subscribe(parentId, callback)
     }
 
-    override fun unsubscribe(
-        parentId: String, callback: MediaBrowserCompat.SubscriptionCallback
-    ) {
+    override fun unsubscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) {
         mediaBrowser.unsubscribe(parentId, callback)
     }
 
@@ -74,10 +69,9 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
         if (!mediaBrowser.isConnected) {
             return
         }
-        mediaController?.sendCommand(command, parameters,
-            object : ResultReceiver(Handler()) {
-                //空实现
-            })
+        mediaController?.sendCommand(command, parameters, object : ResultReceiver(Handler()) {
+            //空实现
+        })
     }
 
     /**
@@ -99,14 +93,6 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
      */
     fun getMediaBrowser(): MediaBrowserCompat {
         return mediaBrowser
-    }
-
-    override fun getShuffleMode(): Int {
-        return mediaController?.shuffleMode ?: PlaybackStateCompat.SHUFFLE_MODE_NONE
-    }
-
-    override fun getRepeatMode(): Int {
-        return mediaController?.repeatMode ?: PlaybackStateCompat.REPEAT_MODE_NONE
     }
 
     /**
@@ -239,7 +225,7 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
                         listener.onError(state.errorCode, state.errorMessage.toString())
                     }
                     playbackState.setValue(playbackStage.buildError(songId, state.errorCode,
-                        state.errorMessage.toString()))
+                            state.errorMessage.toString()))
                 }
                 PlaybackStateCompat.STATE_NONE -> {
                     for (listener in mPlayerEventListeners) {
@@ -284,12 +270,12 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
 
     companion object {
         private val EMPTY_PLAYBACK_STATE = PlaybackStateCompat.Builder()
-            .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)
-            .build()
+                .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)
+                .build()
 
         private val NOTHING_PLAYING = MediaMetadataCompat.Builder()
-            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
-            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
-            .build()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
+                .build()
     }
 }
