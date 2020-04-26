@@ -165,11 +165,11 @@ class CustomNotification constructor(service: MusicService, config: Notification
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             super.onPlaybackStateChanged(state)
             mPlaybackState = state
-            if (state?.state == PlaybackStateCompat.STATE_STOPPED || state?.state == PlaybackStateCompat.STATE_NONE) {
+            if (state?.state == Playback.STATE_STOPPED || state?.state == Playback.STATE_NONE) {
                 stopNotification()
             } else {
                 val notification = createNotification()
-                if (notification != null && state?.state != PlaybackStateCompat.STATE_BUFFERING) {
+                if (notification != null && state?.state != Playback.STATE_BUFFERING) {
                     mNotificationManager?.notify(NOTIFICATION_ID, notification)
                 }
             }
@@ -267,7 +267,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
             mService.stopForeground(true)
             return
         }
-        builder.setOngoing(mPlaybackState?.state == PlaybackStateCompat.STATE_PLAYING)
+        builder.setOngoing(mPlaybackState?.state == Playback.STATE_PLAYING)
     }
 
 

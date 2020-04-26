@@ -229,15 +229,15 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun isPlaying(): Boolean {
-        return getState() == PlaybackStateCompat.STATE_PLAYING
+        return getState() == Playback.STATE_PLAYING // PlaybackStateCompat.STATE_PLAYING
     }
 
     override fun isPaused(): Boolean {
-        return getState() == PlaybackStateCompat.STATE_PAUSED
+        return getState() == Playback.STATE_PAUSED // PlaybackStateCompat.STATE_PAUSED
     }
 
     override fun isIdea(): Boolean {
-        return getState() == PlaybackStateCompat.STATE_NONE
+        return getState() == Playback.STATE_NONE // PlaybackStateCompat.STATE_NONE
     }
 
     override fun isCurrMusicIsPlayingMusic(songId: String): Boolean {

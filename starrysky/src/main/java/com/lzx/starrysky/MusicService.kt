@@ -21,6 +21,7 @@ import com.lzx.starrysky.StarrySky.Companion.get
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.playback.manager.IPlaybackManager
 import com.lzx.starrysky.playback.manager.IPlaybackManager.PlaybackServiceCallback
+import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.provider.IMediaSourceProvider.MetadataUpdateListener
 import com.lzx.starrysky.provider.SongInfo
 import java.lang.ref.WeakReference
@@ -169,8 +170,8 @@ class MusicService : MediaBrowserServiceCompat(), MetadataUpdateListener,
         newState: PlaybackStateCompat?, currMetadata: MediaMetadataCompat?
     ) {
         mediaSession?.setPlaybackState(newState)
-        if (newState?.state == PlaybackStateCompat.STATE_BUFFERING ||
-            newState?.state == PlaybackStateCompat.STATE_PLAYING) {
+        if (newState?.state == Playback.STATE_BUFFERING ||
+            newState?.state == Playback.STATE_PLAYING) {
             mBecomingNoisyReceiver?.register()
         } else {
             mBecomingNoisyReceiver?.unregister()

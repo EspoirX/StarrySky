@@ -28,6 +28,7 @@ import com.lzx.starrysky.ext.artist
 import com.lzx.starrysky.ext.id
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.notification.utils.NotificationUtils
+import com.lzx.starrysky.playback.player.Playback
 
 class SystemNotification constructor(service: MusicService, config: NotificationConfig?) :
     BroadcastReceiver(), INotification {
@@ -98,11 +99,11 @@ class SystemNotification constructor(service: MusicService, config: Notification
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             super.onPlaybackStateChanged(state)
             mPlaybackState = state
-            if (state!!.state == PlaybackStateCompat.STATE_STOPPED || state.state == PlaybackStateCompat.STATE_NONE) {
+            if (state?.state == Playback.STATE_STOPPED || state?.state == Playback.STATE_NONE) {
                 stopNotification()
             } else {
                 val notification = createNotification()
-                if (notification != null && state.state != PlaybackStateCompat.STATE_BUFFERING) {
+                if (notification != null && state?.state != Playback.STATE_BUFFERING) {
                     mNotificationManager?.notify(INotification.NOTIFICATION_ID, notification)
                 }
             }
@@ -231,7 +232,8 @@ class SystemNotification constructor(service: MusicService, config: Notification
             if (clazz != null) {
                 val songId = mMetadata?.id
                 notificationBuilder.setContentIntent(NotificationUtils
-                    .createContentIntent(mService, mConfig, songId, mConfig?.targetClassBundle, clazz))
+                    .createContentIntent(mService, mConfig, songId, mConfig?.targetClassBundle,
+                        clazz))
             }
         }
 
@@ -249,7 +251,7 @@ class SystemNotification constructor(service: MusicService, config: Notification
             mService.stopForeground(true)
             return
         }
-        builder.setOngoing(mPlaybackState?.state == PlaybackStateCompat.STATE_PLAYING)
+        builder.setOngoing(mPlaybackState?.state == Playback.STATE_PLAYING)
     }
 
     /**
@@ -302,7 +304,7 @@ class SystemNotification constructor(service: MusicService, config: Notification
         val icon: Int
         val intent: PendingIntent?
 
-        if (mPlaybackState?.state == PlaybackStateCompat.STATE_PLAYING) {
+        if (mPlaybackState?.state == Playback.STATE_PLAYING) {
             label = if (!TextUtils.isEmpty(mConfig?.labelPlay))
                 mConfig?.labelPlay ?: ""
             else

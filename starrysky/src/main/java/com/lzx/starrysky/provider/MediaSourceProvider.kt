@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.support.v4.media.MediaMetadataCompat
 import com.lzx.starrysky.ext.album
 import com.lzx.starrysky.ext.albumArtUri
+import com.lzx.starrysky.ext.artist
 import com.lzx.starrysky.ext.duration
 import com.lzx.starrysky.ext.id
 import com.lzx.starrysky.ext.mediaUri
@@ -139,6 +140,50 @@ class MediaSourceProvider : IMediaSourceProvider {
         if (info.songName.isNotEmpty()) {
             builder.title = info.songName
         }
+        if (info.artist.isNotEmpty()) {
+            builder.artist = info.artist
+        }
         return builder.build()
     }
+
+//    private fun toMediaMetadata(info: SongInfo): MediaMetadataCompat {
+//        var albumTitle = ""
+//        if (!TextUtils.isEmpty(info.albumName)) {
+//            albumTitle = info.albumName
+//        } else if (!TextUtils.isEmpty(info.songName)) {
+//            albumTitle = info.songName
+//        }
+//        var songCover = ""
+//        if (!TextUtils.isEmpty(info.songCover)) {
+//            songCover = info.songCover
+//        } else if (!TextUtils.isEmpty(info.albumCover)) {
+//            songCover = info.albumCover
+//        }
+//        val builder = MediaMetadataCompat.Builder()
+//        builder.id = info.songId
+//        builder.mediaUri = info.songUrl
+//        if (albumTitle.isNotEmpty()) {
+//            builder.album = albumTitle
+//        }
+//        if (info.artist.isNotEmpty()) {
+//            builder.artist = info.artist
+//        }
+//        if (info.duration != -1L) {
+//            builder.duration = info.duration
+//        }
+//        if (info.genre.isNotEmpty()) {
+//            builder.genre = info.genre
+//        }
+//        if (songCover.isNotEmpty()) {
+//            builder.albumArtUri = songCover
+//        }
+//        if (info.songName.isNotEmpty()) {
+//            builder.title = info.songName
+//        }
+//        if (info.trackNumber != -1) {
+//            builder.trackNumber = info.trackNumber.toLong()
+//        }
+//        builder.trackCount = info.albumSongCount.toLong()
+//        return builder.build()
+//    }
 }
