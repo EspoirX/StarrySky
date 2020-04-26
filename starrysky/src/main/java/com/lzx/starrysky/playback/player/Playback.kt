@@ -23,13 +23,13 @@ import com.lzx.starrysky.provider.SongInfo
 interface Playback {
 
     companion object {
-        const val PLAYBACK_STATE_NONE = 100      //什么都没开始
-        const val PLAYBACK_STATE_IDLE = 200      //空闲
-        const val PLAYBACK_STATE_BUFFERING = 300 //正在缓冲
-        const val PLAYBACK_STATE_PLAYING = 400   //正在播放
-        const val PLAYBACK_STATE_PAUSED = 500    //暂停
-        const val PLAYBACK_STATE_STOPPED = 600   //停止
-        const val PLAYBACK_STATE_ERROR = 700     //出错
+        const val STATE_NONE = 100      //什么都没开始
+        const val STATE_IDLE = 200      //空闲
+        const val STATE_BUFFERING = 300 //正在缓冲
+        const val STATE_PLAYING = 400   //正在播放
+        const val STATE_PAUSED = 500    //暂停
+        const val STATE_STOPPED = 600   //停止
+        const val STATE_ERROR = 700     //出错
     }
 
     val playbackState: Int
@@ -47,6 +47,8 @@ interface Playback {
     var currentMediaId: String
 
     var volume: Float
+
+    val currPlayInfo: SongInfo?
 
     fun getAudioSessionId(): Int
 
@@ -68,11 +70,11 @@ interface Playback {
     fun onDerailleur(refer: Boolean, multiple: Float)
 
     interface Callback {
-        fun onCompletion()
+        fun onPlaybackCompletion()
 
-        fun onPlaybackStatusChanged(state: Int)
+        fun onPlaybackStatusChanged(songInfo: SongInfo?, state: Int)
 
-        fun onError(error: String)
+        fun onPlaybackError(songInfo: SongInfo?, error: String)
     }
 
     fun setCallback(callback: Callback)

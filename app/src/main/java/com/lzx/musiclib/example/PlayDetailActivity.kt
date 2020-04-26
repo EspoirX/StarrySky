@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -18,7 +17,6 @@ import com.lzx.musiclib.R
 import com.lzx.musiclib.example.MusicRequest.RequestCallback
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.common.PlaybackStage
-import com.lzx.starrysky.control.OnPlayerEventListener
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.TimerTaskManager
@@ -46,19 +44,10 @@ class PlayDetailActivity : AppCompatActivity() {
         time_text = findViewById(R.id.time_text)
         mRecyclerView = findViewById(R.id.recycle_view)
         playMode = findViewById(R.id.play_mode)
-        mRecyclerView.setLayoutManager(LinearLayoutManager(this))
+        mRecyclerView.layoutManager = LinearLayoutManager(this)
         mListPlayAdapter = ListPlayAdapter(this)
-        mRecyclerView.setAdapter(mListPlayAdapter)
+        mRecyclerView.adapter = mListPlayAdapter
         mTimerTask = TimerTaskManager()
-        StarrySky.with().addPlayerEventListener(object : OnPlayerEventListener {
-            override fun onMusicSwitch(songInfo: SongInfo) {}
-            override fun onPlayerStart() {}
-            override fun onPlayerPause() {}
-            override fun onPlayerStop() {}
-            override fun onPlayCompletion(songInfo: SongInfo) {}
-            override fun onBuffering() {}
-            override fun onError(errorCode: Int, errorMsg: String) {}
-        })
 
         //状态监听
         StarrySky.with().playbackState().observe(this, Observer { playbackStage: PlaybackStage? ->
@@ -72,8 +61,8 @@ class PlayDetailActivity : AppCompatActivity() {
                     Log.i("PlayDetailActivity", "NONE")
                 }
                 PlaybackStage.START -> {
-                    Log.i("PlayDetailActivity", "START")
                     val info = StarrySky.with().getNowPlayingSongInfo()
+                    Log.i("PlayDetailActivity", "START = " + info?.songName)
                     mListPlayAdapter?.notifyDataSetChanged()
                     mTimerTask?.startToUpdateProgress()
                 }
@@ -100,7 +89,7 @@ class PlayDetailActivity : AppCompatActivity() {
                 PlaybackStage.ERROR -> {
                     mTimerTask!!.stopToUpdateProgress()
                     Toast.makeText(this, playbackStage.getErrorMessage(), Toast.LENGTH_SHORT)
-                            .show()
+                        .show()
                 }
                 else -> {
                 }
@@ -112,15 +101,16 @@ class PlayDetailActivity : AppCompatActivity() {
             val position = StarrySky.with().getPlayingPosition()
             val duration = StarrySky.with().getDuration()
             val buffered = StarrySky.with().getBufferedPosition()
-            if (mSeekBar.getMax().toLong() != duration) {
-                mSeekBar.setMax(duration.toInt())
+            if (mSeekBar.max.toLong() != duration) {
+                mSeekBar.max = duration.toInt()
             }
             //Log.i("PlayDetailActivity", "duration = " + duration);
-            mSeekBar.setProgress(position.toInt())
-            mSeekBar.setSecondaryProgress(buffered.toInt())
-            progress_text.setText(
-                    ListPlayAdapter.formatMusicTime(position) + "/" + ListPlayAdapter.formatMusicTime(duration))
-            time_text.setText(ListPlayAdapter.formatMusicTime(duration))
+            mSeekBar.progress = position.toInt()
+            mSeekBar.secondaryProgress = buffered.toInt()
+            progress_text.text =
+                ListPlayAdapter.formatMusicTime(position) + "/" + ListPlayAdapter.formatMusicTime(
+                    duration)
+            time_text.text = ListPlayAdapter.formatMusicTime(duration)
             mListPlayAdapter!!.notifyDataSetChanged()
         }
 
@@ -138,26 +128,26 @@ class PlayDetailActivity : AppCompatActivity() {
         val repeatMode = StarrySky.with().getRepeatMode()
         when (repeatMode.repeatMode) {
             RepeatMode.REPEAT_MODE_NONE -> if (repeatMode.isLoop) {
-                playMode.text = "单曲播放"
-            } else {
                 playMode.text = "列表循环"
+            } else {
+                playMode.text = "顺序播放"
             }
             RepeatMode.REPEAT_MODE_ONE -> if (repeatMode.isLoop) {
-                playMode.text = "随机播放"
-            } else {
                 playMode.text = "单曲循环"
+            } else {
+                playMode.text = "单曲播放"
             }
             RepeatMode.REPEAT_MODE_SHUFFLE -> {
-                playMode.text = "倒序播放"
+                playMode.text = "随机播放"
             }
             RepeatMode.REPEAT_MODE_REVERSE -> if (repeatMode.isLoop) {
-                playMode.text = "顺序播放"
-            } else {
                 playMode.text = "倒序列表循环"
+            } else {
+                playMode.text = "倒序播放"
             }
         }
 
-        playMode.setOnClickListener(View.OnClickListener { v: View? ->
+        playMode.setOnClickListener {
             val model = StarrySky.with().getRepeatMode()
             when (model.repeatMode) {
                 RepeatMode.REPEAT_MODE_NONE -> if (model.isLoop) {
@@ -186,7 +176,7 @@ class PlayDetailActivity : AppCompatActivity() {
                     playMode.text = "倒序列表循环"
                 }
             }
-        })
+        }
 
         //获取数据
         val musicRequest = MusicRequest()
@@ -201,10 +191,10 @@ class PlayDetailActivity : AppCompatActivity() {
     private fun updateUIInfo(playbackStage: PlaybackStage) {
         val songInfo = playbackStage.getSongInfo()
         if (songInfo != null) {
-            title!!.text = songInfo.songName
+            title.text = songInfo.songName
             Glide.with(this).load(songInfo.songCover).into(cover!!)
         } else {
-            title!!.text = "播放详情页示例"
+            title.text = "播放详情页示例"
         }
     }
 

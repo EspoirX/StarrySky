@@ -1,6 +1,8 @@
 package com.lzx.starrysky.playback.manager
 
-import android.os.*
+import android.os.Bundle
+import android.os.ResultReceiver
+import android.os.SystemClock
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -13,13 +15,12 @@ import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueue
 import com.lzx.starrysky.provider.IMediaSourceProvider
-import com.lzx.starrysky.provider.NormalModeProvider
-import com.lzx.starrysky.provider.ShuffleModeProvider
 import com.lzx.starrysky.provider.SongInfo
+import com.lzx.starrysky.utils.MainLooper
 import com.lzx.starrysky.utils.StarrySkyUtils
 
 class PlaybackManager constructor(
-        private val mediaQueue: MediaQueue, private val playback: Playback
+    private val mediaQueue: MediaQueue, private val playback: Playback
 ) : IPlaybackManager, Playback.Callback {
 
     private var mServiceCallback: IPlaybackManager.PlaybackServiceCallback? = null
@@ -27,7 +28,6 @@ class PlaybackManager constructor(
     private var notification: INotification? = null
     private var stateBuilder: PlaybackStateCompat.Builder? = null
     private val interceptorService: InterceptorService = InterceptorService()
-    private val mHandler = Handler(Looper.getMainLooper())
 
     init {
         mMediaSessionCallback = MediaSessionCallback()
@@ -48,24 +48,27 @@ class PlaybackManager constructor(
         mediaQueue.setMetadataUpdateListener(listener)
     }
 
-    override fun handlePlayRequest(isPlayWhenReady: Boolean) {
-        interceptorService.doInterceptions(mediaQueue.currentSongInfo, object : InterceptorCallback {
+    /**
+     * 主动触发的都从正常的队列中取
+     * 非主动触发的根据播放模式在不同的队列中取
+     */
+    override fun handlePlayRequest(isPlayWhenReady: Boolean, isActiveTrigger: Boolean) {
+        val playSongInfo = mediaQueue.getCurrentSongInfo(isActiveTrigger) //要播放的歌曲信息
+        mediaQueue.updateMediaMetadata(playSongInfo) //更新媒体封面信息
+        interceptorService.doInterceptions(playSongInfo, object : InterceptorCallback {
             override fun onContinue(songInfo: SongInfo?) {
-                checkThreadHandPlayRequest(songInfo, isPlayWhenReady)
+                MainLooper.instance.runOnUiThread(Runnable {
+                    handPlayRequestImpl(songInfo, isPlayWhenReady)
+                })
             }
 
             override fun onInterrupt(exception: Throwable?) {
-                mHandler.post { updatePlaybackState(false, exception?.message) }
+                MainLooper.instance.runOnUiThread(Runnable {
+                    updatePlaybackState(playSongInfo, isOnlyUpdateActions = false, isError = true,
+                        error = exception?.message)
+                })
             }
         })
-    }
-
-    private fun checkThreadHandPlayRequest(songInfo: SongInfo?, isPlayWhenReady: Boolean) {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            mHandler.post { handPlayRequestImpl(songInfo, isPlayWhenReady) }
-        } else {
-            handPlayRequestImpl(songInfo, isPlayWhenReady)
-        }
     }
 
     private fun handPlayRequestImpl(songInfo: SongInfo?, isPlayWhenReady: Boolean) {
@@ -87,7 +90,7 @@ class PlaybackManager constructor(
     override fun handleStopRequest(withError: String?) {
         playback.stop()
         mServiceCallback?.onPlaybackStop(true)
-        updatePlaybackState(false, withError)
+        updatePlaybackState(playback.currPlayInfo, false, withError.isNullOrEmpty(), withError)
     }
 
     override fun handleFastForward() {
@@ -102,40 +105,46 @@ class PlaybackManager constructor(
         playback.onDerailleur(refer, multiple)
     }
 
-    override fun updatePlaybackState(isOnlyUpdateActions: Boolean, error: String?) {
-        if (isOnlyUpdateActions && stateBuilder != null) {
+    override fun updatePlaybackState(
+        currPlayInfo: SongInfo?,
+        isOnlyUpdateActions: Boolean,
+        isError: Boolean,
+        error: String?
+    ) {
+        if (isOnlyUpdateActions) {
             //单独更新 Actions
-            stateBuilder!!.setActions(getAvailableActions())
-            mServiceCallback?.onPlaybackStateUpdated(stateBuilder!!.build(), null)
+            stateBuilder?.setActions(getAvailableActions())
+            mServiceCallback?.onPlaybackStateUpdated(stateBuilder?.build(), null)
         } else {
-            var position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN
+            //当前播放进度
+            var currentStreamPosition = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN
             if (playback.isConnected) {
-                position = playback.currentStreamPosition
+                currentStreamPosition = playback.currentStreamPosition
             }
             //构建一个播放状态对象
             stateBuilder = PlaybackStateCompat.Builder().setActions(getAvailableActions())
             //获取播放器播放状态
             var state = playback.playbackState
-            //如果错误信息不为 null 的时候，播放状态设为 STATE_ERROR
-            if (!error.isNullOrEmpty()) {
-                stateBuilder!!.setErrorMessage(error)
-                state = Playback.PLAYBACK_STATE_ERROR
+            //发生错误的时候，播放状态设为 STATE_ERROR
+            if (isError) {
+                stateBuilder?.setErrorMessage(if (!error.isNullOrEmpty()) error else "错误信息为 null")
+                state = Playback.STATE_ERROR
             }
             //设置播放状态
-            stateBuilder!!.setState(state, position, 1.0f, SystemClock.elapsedRealtime())
-            //设置当前活动的 songId
-            val currentMusic = mediaQueue.currentSongInfo
+            stateBuilder?.setState(state, currentStreamPosition, 1.0f,
+                SystemClock.elapsedRealtime())
+
+            //获取当前的 MediaMetadataCompat
             var currMetadata: MediaMetadataCompat? = null
-            if (currentMusic != null) {
-                stateBuilder!!.setActiveQueueItemId(-1L)
-                val musicId = currentMusic.songId
+            currPlayInfo?.let {
+                stateBuilder?.setActiveQueueItemId(-1L)
                 currMetadata =
-                        StarrySky.get().mediaQueueProvider().getMediaMetadataById(musicId)
+                    StarrySky.get().mediaQueueProvider().getMediaMetadataById(it.songId)
             }
             //把状态回调出去
-            mServiceCallback?.onPlaybackStateUpdated(stateBuilder!!.build(), currMetadata)
+            mServiceCallback?.onPlaybackStateUpdated(stateBuilder?.build(), currMetadata)
             //如果是播放或者暂停的状态，更新一下通知栏
-            if (state == PlaybackStateCompat.STATE_PLAYING || state == PlaybackStateCompat.STATE_PAUSED) {
+            if (state == Playback.STATE_PLAYING || state == Playback.STATE_PAUSED) {
                 mServiceCallback?.onNotificationRequired()
             }
         }
@@ -146,10 +155,10 @@ class PlaybackManager constructor(
      */
     private fun getAvailableActions(): Long {
         var actions = PlaybackStateCompat.ACTION_PLAY_PAUSE or
-                PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
-                PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH or
-                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-                PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+            PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
+            PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH or
+            PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
+            PlaybackStateCompat.ACTION_SKIP_TO_NEXT
         actions = if (playback.isPlaying) {
             actions or PlaybackStateCompat.ACTION_PAUSE //添加 ACTION_PAUSE
         } else {
@@ -179,12 +188,16 @@ class PlaybackManager constructor(
         return actions
     }
 
-    override fun registerNotification(notification: INotification) {
+    override fun registerNotification(notification: INotification?) {
         this.notification = notification
     }
 
-    override fun onCompletion() {
-        updatePlaybackState(false, null)
+    /**
+     * 播放器回调播放完成时会回调这里
+     */
+    override fun onPlaybackCompletion() {
+        updatePlaybackState(playback.currPlayInfo, isOnlyUpdateActions = false, isError = false,
+            error = null)
         val repeatMode = StarrySkyUtils.getRepeatMode()
         when (repeatMode.repeatMode) {
             //顺序播放
@@ -201,18 +214,12 @@ class PlaybackManager constructor(
             RepeatMode.REPEAT_MODE_ONE -> {
                 playback.currentMediaId = ""
                 if (repeatMode.isLoop) {
-                    handlePlayRequest(true)
+                    handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = false)
                 }
             }
             //随机播放
             RepeatMode.REPEAT_MODE_SHUFFLE -> {
-                if (repeatMode.isLoop) {
-                    skipToNextSongImpl(1)
-                } else {
-                    if (!mediaQueue.currSongIsLastSong()) {
-                        skipToNextSongImpl(1)
-                    }
-                }
+                skipToNextSongImpl(1)
             }
             //倒序播放
             RepeatMode.REPEAT_MODE_REVERSE -> {
@@ -227,103 +234,137 @@ class PlaybackManager constructor(
         }
     }
 
+    /**
+     * 播放器回调状态改变时回调这里
+     */
+    override fun onPlaybackStatusChanged(songInfo: SongInfo?, state: Int) {
+        updatePlaybackState(songInfo, isOnlyUpdateActions = false, isError = false, error = null)
+    }
+
+    /**
+     * 播放器回调错误时回调这里
+     */
+    override fun onPlaybackError(songInfo: SongInfo?, error: String) {
+        updatePlaybackState(songInfo, isOnlyUpdateActions = false, isError = true, error = error)
+    }
+
     private fun skipToNextSongImpl(amount: Int) {
         if (mediaQueue.skipQueuePosition(amount)) {
-            handlePlayRequest(true)
-            mediaQueue.updateMediaMetadata()
+            handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = false)
         }
-    }
-
-    override fun onPlaybackStatusChanged(state: Int) {
-        updatePlaybackState(false, null)
-    }
-
-    override fun onError(error: String) {
-        updatePlaybackState(false, error)
     }
 
     /**
      * MusicManager API 方法的具体实现
      */
     inner class MediaSessionCallback : MediaSessionCompat.Callback() {
+
+        /**
+         * 缓冲不播放
+         */
         override fun onPrepare() {
             super.onPrepare()
-            handlePlayRequest(false)
+            handlePlayRequest(isPlayWhenReady = false, isActiveTrigger = true)
         }
 
+        /**
+         * 根据 id 缓冲
+         */
         override fun onPrepareFromMediaId(mediaId: String?, extras: Bundle?) {
             super.onPrepareFromMediaId(mediaId, extras)
             mediaId?.apply {
-                mediaQueue.updateCurrPlayingSongInfo(this)
-                handlePlayRequest(false)
+                mediaQueue.updateIndexBySongId(this)
+                handlePlayRequest(isPlayWhenReady = false, isActiveTrigger = true)
             }
         }
 
-        override fun onPlay() {
-            super.onPlay()
-            mediaQueue.currentSongInfo?.let {
-                handlePlayRequest(true)
-            }
-        }
-
-        override fun onSkipToQueueItem(id: Long) {
-            super.onSkipToQueueItem(id)
-            mediaQueue.updateIndexBySongId(id.toString())
-            mediaQueue.updateMediaMetadata()
-        }
-
-        override fun onSeekTo(pos: Long) {
-            super.onSeekTo(pos)
-            playback.seekTo(pos)
-            if (playback.playbackState == Playback.PLAYBACK_STATE_PAUSED) {
-                onPlay()
-            }
-        }
-
+        /**
+         * 根据 id 播放
+         */
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
             super.onPlayFromMediaId(mediaId, extras)
             mediaId?.apply {
-                mediaQueue.updateCurrPlayingSongInfo(this)
-                handlePlayRequest(true)
+                mediaQueue.updateIndexBySongId(this)
+                handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = true)
             }
         }
 
+        /**
+         * 暂停后播放
+         */
+        override fun onPlay() {
+            super.onPlay()
+            playback.currPlayInfo?.let {
+                handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = true)
+            }
+        }
+
+        /**
+         * 暂停
+         */
         override fun onPause() {
             super.onPause()
             handlePauseRequest()
         }
 
+        /**
+         * 停止
+         */
         override fun onStop() {
             super.onStop()
             handleStopRequest(null)
         }
 
+        /**
+         * 拖进度条
+         */
+        override fun onSeekTo(pos: Long) {
+            super.onSeekTo(pos)
+            playback.seekTo(pos)
+            if (playback.playbackState == Playback.STATE_PAUSED) {
+                onPlay()
+            }
+        }
+
+        /**
+         * 下一首
+         */
         override fun onSkipToNext() {
             super.onSkipToNext()
             if (mediaQueue.skipQueuePosition(1)) {
-                handlePlayRequest(true)
-                mediaQueue.updateMediaMetadata()
+                handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = true)
             }
         }
 
+        /**
+         * 上一首
+         */
         override fun onSkipToPrevious() {
             super.onSkipToPrevious()
             if (mediaQueue.skipQueuePosition(-1)) {
-                handlePlayRequest(true)
-                mediaQueue.updateMediaMetadata()
+                handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = true)
             }
         }
 
+        /**
+         * 快进
+         */
         override fun onFastForward() {
             super.onFastForward()
             handleFastForward()
         }
 
+        /**
+         * 快退
+         */
         override fun onRewind() {
             super.onRewind()
             handleRewind()
         }
 
+        /**
+         * 自定义命令
+         */
         override fun onCommand(command: String?, extras: Bundle?, cb: ResultReceiver?) {
             super.onCommand(command, extras, cb)
             if (command == null) {
@@ -351,13 +392,9 @@ class PlaybackManager constructor(
                 RepeatMode.KEY_REPEAT_MODE -> {
                     val repeatMode = StarrySkyUtils.getRepeatMode().repeatMode
                     if (repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
-                        if (StarrySky.get().mediaQueueProvider() is NormalModeProvider) {
-                            StarrySky.get().setMediaSourceProvider(ShuffleModeProvider())
-                        }
+                        StarrySky.get().mediaQueueProvider().updateShuffleSongList()
                     } else {
-                        if (StarrySky.get().mediaQueueProvider() is ShuffleModeProvider) {
-                            StarrySky.get().setMediaSourceProvider(NormalModeProvider())
-                        }
+                        mediaQueue.updateIndexBySongId(playback.currentMediaId)
                     }
                 }
             }

@@ -203,41 +203,40 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
             }
             //状态监听
             val mPlayerEventListeners = StarrySky.with().getPlayerEventListeners()
-            Log.i("XIAN", "state = " + state.state)
             when (state.state) {
-                Playback.PLAYBACK_STATE_PLAYING -> {
+                Playback.STATE_PLAYING -> {
                     for (listener in mPlayerEventListeners) {
                         listener.onPlayerStart()
                     }
                     playbackState.setValue(playbackStage.buildStart(songId))
                 }
-                Playback.PLAYBACK_STATE_PAUSED -> {
+                Playback.STATE_PAUSED -> {
                     for (listener in mPlayerEventListeners) {
                         listener.onPlayerPause()
                     }
                     playbackState.setValue(playbackStage.buildPause(songId))
                 }
-                Playback.PLAYBACK_STATE_STOPPED -> {
+                Playback.STATE_STOPPED -> {
                     for (listener in mPlayerEventListeners) {
                         listener.onPlayerStop()
                     }
                     playbackState.setValue(playbackStage.buildStop(songId))
                 }
-                Playback.PLAYBACK_STATE_ERROR -> {
+                Playback.STATE_ERROR -> {
                     for (listener in mPlayerEventListeners) {
                         listener.onError(state.errorCode, state.errorMessage.toString())
                     }
                     playbackState.setValue(playbackStage.buildError(songId, state.errorCode,
                             state.errorMessage.toString()))
                 }
-                Playback.PLAYBACK_STATE_NONE -> {
+                Playback.STATE_NONE -> {
                     for (listener in mPlayerEventListeners) {
                         val songInfo = StarrySky.get().mediaQueueProvider().getSongInfoById(songId)
                         listener.onPlayCompletion(songInfo!!)
                     }
                     playbackState.setValue(playbackStage.buildCompletion(songId))
                 }
-                Playback.PLAYBACK_STATE_BUFFERING -> {
+                Playback.STATE_BUFFERING -> {
                     for (listener in mPlayerEventListeners) {
                         listener.onBuffering()
                     }

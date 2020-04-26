@@ -82,7 +82,7 @@ import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.provider.SongInfo
 
 class CustomNotification constructor(service: MusicService, config: NotificationConfig?) :
-        BroadcastReceiver(), INotification {
+    BroadcastReceiver(), INotification {
 
 
     private var mRemoteView: RemoteViews? = null
@@ -123,7 +123,8 @@ class CustomNotification constructor(service: MusicService, config: Notification
             mConfig = NotificationConfig()
         }
         updateSessionToken()
-        mNotificationManager = mService.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+        mNotificationManager =
+            mService.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         packageName = mService.applicationContext.packageName
         res = mService.applicationContext.resources
         mColorUtils = NotificationColorUtils()
@@ -195,7 +196,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
             ACTION_PAUSE -> mTransportControls?.pause()
             ACTION_PLAY -> mTransportControls?.play()
             ACTION_PLAY_OR_PAUSE -> {
-                if (mPlaybackState?.state == Playback.PLAYBACK_STATE_PLAYING) {
+                if (mPlaybackState?.state == Playback.STATE_PLAYING) {
                     mTransportControls?.pause()
                 } else {
                     mTransportControls?.play()
@@ -214,24 +215,26 @@ class CustomNotification constructor(service: MusicService, config: Notification
         }
         val description = mMetadata?.description
         val songId = mMetadata?.id
-        val smallIcon = if (mConfig?.smallIconRes != -1) mConfig?.smallIconRes else R.drawable.ic_notification
+        val smallIcon =
+            if (mConfig?.smallIconRes != -1) mConfig?.smallIconRes else R.drawable.ic_notification
         //适配8.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationUtils.createNotificationChannel(mService, mNotificationManager!!)
         }
         val notificationBuilder = NotificationCompat.Builder(mService, CHANNEL_ID)
         notificationBuilder
-                .setOnlyAlertOnce(true)
-                .setSmallIcon(smallIcon!!)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setContentTitle(description?.title) //歌名
-                .setContentText(description?.subtitle) //艺术家
+            .setOnlyAlertOnce(true)
+            .setSmallIcon(smallIcon!!)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setContentTitle(description?.title) //歌名
+            .setContentText(description?.subtitle) //艺术家
         //setContentIntent
         if (!mConfig?.targetClass.isNullOrEmpty()) {
             val clazz = NotificationUtils.getTargetClass(mConfig?.targetClass!!)
             if (clazz != null) {
                 notificationBuilder.setContentIntent(NotificationUtils
-                        .createContentIntent(mService, mConfig, songId, mConfig?.targetClassBundle, clazz))
+                    .createContentIntent(mService, mConfig, songId, mConfig?.targetClassBundle,
+                        clazz))
             }
         }
         //这里不能复用，会导致内存泄漏，需要每次都创建
@@ -252,7 +255,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mNotification?.bigContentView = mBigRemoteView
         }
-        val songInfos = StarrySky.get().mediaQueueProvider().getSongList().filter { it.songId == songId }
+        val songInfos = StarrySky.get().mediaQueueProvider().songList.filter { it.songId == songId }
         val songInfo: SongInfo? = if (songInfos.isNotEmpty()) songInfos[0] else null
         updateRemoteViewUI(mNotification, songInfo, smallIcon)
 
@@ -314,7 +317,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
      * 更新RemoteViews
      */
     private fun updateRemoteViewUI(
-            notification: Notification?, songInfo: SongInfo?, smallIcon: Int
+        notification: Notification?, songInfo: SongInfo?, smallIcon: Int
     ) {
         val isDark = mColorUtils.isDarkNotificationBar(mService, notification)
         var art: Bitmap? = mMetadata?.albumArt
@@ -325,11 +328,15 @@ class CustomNotification constructor(service: MusicService, config: Notification
         mRemoteView?.setTextViewText(getResourceId(ID_TXT_NOTIFY_ARTISTNAME, "id"), artistName)
         //设置播放暂停按钮
         if (mPlaybackState?.state == PlaybackStateCompat.STATE_PLAYING) {
-            val name = if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR
-            mRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"), getResourceId(name, "drawable"))
+            val name =
+                if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR
+            mRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
+                getResourceId(name, "drawable"))
         } else {
-            val name = if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PLAY_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PLAY_SELECTOR
-            mRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"), getResourceId(name, "drawable"))
+            val name =
+                if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PLAY_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PLAY_SELECTOR
+            mRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
+                getResourceId(name, "drawable"))
         }
 
         //大布局
@@ -338,43 +345,47 @@ class CustomNotification constructor(service: MusicService, config: Notification
         mBigRemoteView?.setTextViewText(getResourceId(ID_TXT_NOTIFY_ARTISTNAME, "id"), artistName)
         //设置播放暂停按钮
         if (mPlaybackState?.state == PlaybackStateCompat.STATE_PLAYING) {
-            val name = if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR
-            mBigRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"), getResourceId(name, "drawable"))
+            val name =
+                if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR
+            mBigRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
+                getResourceId(name, "drawable"))
         } else {
-            val name = if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PLAY_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PLAY_SELECTOR
-            mBigRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"), getResourceId(name, "drawable"))
+            val name =
+                if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PLAY_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PLAY_SELECTOR
+            mBigRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
+                getResourceId(name, "drawable"))
         }
         //设置喜欢或收藏按钮
         mBigRemoteView
-                ?.setImageViewResource(
-                        getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
-                        getResourceId(if (isDark)
-                            DRAWABLE_NOTIFY_BTN_DARK_FAVORITE
-                        else
-                            DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE, "drawable"))
+            ?.setImageViewResource(
+                getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
+                getResourceId(if (isDark)
+                    DRAWABLE_NOTIFY_BTN_DARK_FAVORITE
+                else
+                    DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE, "drawable"))
         //设置歌词按钮
         mBigRemoteView
-                ?.setImageViewResource(
-                        getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
-                        getResourceId(if (isDark)
-                            DRAWABLE_NOTIFY_BTN_DARK_LYRICS
-                        else
-                            DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS, "drawable"))
+            ?.setImageViewResource(
+                getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
+                getResourceId(if (isDark)
+                    DRAWABLE_NOTIFY_BTN_DARK_LYRICS
+                else
+                    DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS, "drawable"))
         //设置下载按钮
         mBigRemoteView
-                ?.setImageViewResource(
-                        getResourceId(ID_IMG_NOTIFY_DOWNLOAD, "id"),
-                        getResourceId(if (isDark)
-                            DRAWABLE_NOTIFY_BTN_DARK_DOWNLOAD
-                        else
-                            DRAWABLE_NOTIFY_BTN_LIGHT_DOWNLOAD, "drawable"))
+            ?.setImageViewResource(
+                getResourceId(ID_IMG_NOTIFY_DOWNLOAD, "id"),
+                getResourceId(if (isDark)
+                    DRAWABLE_NOTIFY_BTN_DARK_DOWNLOAD
+                else
+                    DRAWABLE_NOTIFY_BTN_LIGHT_DOWNLOAD, "drawable"))
 
         //上一首下一首按钮
         if (mPlaybackState != null) {
             val hasNextSong =
-                    mPlaybackState!!.actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L
+                mPlaybackState!!.actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L
             val hasPreSong =
-                    mPlaybackState!!.actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L
+                mPlaybackState!!.actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L
             disableNextBtn(hasNextSong, isDark)
             disablePreviousBtn(hasPreSong, isDark)
         }
@@ -388,10 +399,10 @@ class CustomNotification constructor(service: MusicService, config: Notification
             }
         }
         mRemoteView?.setImageViewBitmap(
-                getResourceId(ID_IMG_NOTIFY_ICON, "id"), art)
+            getResourceId(ID_IMG_NOTIFY_ICON, "id"), art)
         mBigRemoteView
-                ?.setImageViewBitmap(
-                        getResourceId(ID_IMG_NOTIFY_ICON, "id"), art)
+            ?.setImageViewBitmap(
+                getResourceId(ID_IMG_NOTIFY_ICON, "id"), art)
         mNotificationManager?.notify(NOTIFICATION_ID, notification)
 
         if (!fetchArtUrl.isNullOrEmpty()) {
@@ -507,17 +518,17 @@ class CustomNotification constructor(service: MusicService, config: Notification
         //喜欢或收藏按钮选中时样式
         if (isFavorite) {
             mBigRemoteView?.setImageViewResource(
-                    getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
-                    getResourceId(DRAWABLE_NOTIFY_BTN_FAVORITE,
-                            "drawable"))
+                getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
+                getResourceId(DRAWABLE_NOTIFY_BTN_FAVORITE,
+                    "drawable"))
         } else {
             //喜欢或收藏按钮没选中时样式
             mBigRemoteView?.setImageViewResource(
-                    getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
-                    getResourceId(if (isDark)
-                        DRAWABLE_NOTIFY_BTN_DARK_FAVORITE
-                    else
-                        DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE, "drawable"))
+                getResourceId(ID_IMG_NOTIFY_FAVORITE, "id"),
+                getResourceId(if (isDark)
+                    DRAWABLE_NOTIFY_BTN_DARK_FAVORITE
+                else
+                    DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE, "drawable"))
         }
         mNotificationManager?.notify(NOTIFICATION_ID, mNotification)
     }
@@ -533,19 +544,19 @@ class CustomNotification constructor(service: MusicService, config: Notification
         //歌词按钮选中时样式
         if (isChecked) {
             mBigRemoteView
-                    ?.setImageViewResource(
-                            getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
-                            getResourceId(DRAWABLE_NOTIFY_BTN_LYRICS,
-                                    "drawable"))
+                ?.setImageViewResource(
+                    getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
+                    getResourceId(DRAWABLE_NOTIFY_BTN_LYRICS,
+                        "drawable"))
         } else {
             //歌词按钮没选中时样式
             mBigRemoteView
-                    ?.setImageViewResource(
-                            getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
-                            getResourceId(if (isDark)
-                                DRAWABLE_NOTIFY_BTN_DARK_LYRICS
-                            else
-                                DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS, "drawable"))
+                ?.setImageViewResource(
+                    getResourceId(ID_IMG_NOTIFY_LYRICS, "id"),
+                    getResourceId(if (isDark)
+                        DRAWABLE_NOTIFY_BTN_DARK_LYRICS
+                    else
+                        DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS, "drawable"))
         }
         mNotificationManager?.notify(NOTIFICATION_ID, mNotification)
     }
@@ -564,7 +575,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
 
     private fun setPrePendingIntent(pendingIntent: PendingIntent?) {
         mPreviousIntent =
-                pendingIntent ?: getPendingIntent(ACTION_PREV)
+            pendingIntent ?: getPendingIntent(ACTION_PREV)
     }
 
     private fun setPlayPendingIntent(pendingIntent: PendingIntent?) {
@@ -577,17 +588,17 @@ class CustomNotification constructor(service: MusicService, config: Notification
 
     private fun setFavoritePendingIntent(pendingIntent: PendingIntent?) {
         mFavoriteIntent =
-                pendingIntent ?: getPendingIntent(ACTION_FAVORITE)
+            pendingIntent ?: getPendingIntent(ACTION_FAVORITE)
     }
 
     private fun setLyricsPendingIntent(pendingIntent: PendingIntent?) {
         mLyricsIntent =
-                pendingIntent ?: getPendingIntent(ACTION_LYRICS)
+            pendingIntent ?: getPendingIntent(ACTION_LYRICS)
     }
 
     private fun setDownloadPendingIntent(pendingIntent: PendingIntent?) {
         mDownloadIntent =
-                pendingIntent ?: getPendingIntent(ACTION_DOWNLOAD)
+            pendingIntent ?: getPendingIntent(ACTION_DOWNLOAD)
     }
 
     private fun setClosePendingIntent(pendingIntent: PendingIntent?) {
@@ -596,14 +607,14 @@ class CustomNotification constructor(service: MusicService, config: Notification
 
     private fun setPlayOrPauseIntent(pendingIntent: PendingIntent?) {
         mPlayOrPauseIntent =
-                pendingIntent ?: getPendingIntent(ACTION_PLAY_OR_PAUSE)
+            pendingIntent ?: getPendingIntent(ACTION_PLAY_OR_PAUSE)
     }
 
     private fun getPendingIntent(action: String): PendingIntent {
         val intent = Intent(action)
         intent.setPackage(packageName)
         return PendingIntent
-                .getBroadcast(mService, REQUEST_CODE, intent,
-                        PendingIntent.FLAG_CANCEL_CURRENT)
+            .getBroadcast(mService, REQUEST_CODE, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT)
     }
 }

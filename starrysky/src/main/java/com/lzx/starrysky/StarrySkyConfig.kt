@@ -6,25 +6,22 @@ import com.lzx.starrysky.imageloader.ImageLoader
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
-import com.lzx.starrysky.playback.manager.IPlaybackManager
-import com.lzx.starrysky.playback.manager.PlaybackManager
 import com.lzx.starrysky.playback.offline.StarrySkyCacheManager
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueue
 import com.lzx.starrysky.playback.queue.MediaQueueManager
 import com.lzx.starrysky.provider.IMediaSourceProvider
-import com.lzx.starrysky.provider.NormalModeProvider
 
 /**
  * StarrySky 初始化配置类
  */
 open class StarrySkyConfig internal constructor(
-        builder: Builder
+    builder: Builder
 ) : Cloneable {
 
     //媒体信息存储管理类
     @get:JvmName("mediaQueueProvider")
-    val mediaQueueProvider: IMediaSourceProvider = builder.mediaQueueProvider
+    val mediaQueueProvider: IMediaSourceProvider? = builder.mediaQueueProvider
 
     //播放队列管理类
     @get:JvmName("mediaQueue")
@@ -63,7 +60,8 @@ open class StarrySkyConfig internal constructor(
     val imageLoader: ImageLoader = builder.imageLoader
 
     @get:JvmName("notificationFactory")
-    val notificationFactory: StarrySkyNotificationManager.NotificationFactory? = builder.notificationFactory
+    val notificationFactory: StarrySkyNotificationManager.NotificationFactory? =
+        builder.notificationFactory
 
     @get:JvmName("notificationManager")
     val notificationManager: StarrySkyNotificationManager? = builder.notificationManager
@@ -88,7 +86,7 @@ open class StarrySkyConfig internal constructor(
     open fun newBuilder(): Builder = Builder(this)
 
     class Builder constructor() {
-        var mediaQueueProvider: IMediaSourceProvider = NormalModeProvider()
+        var mediaQueueProvider: IMediaSourceProvider? = null
         var mediaQueue: MediaQueue = MediaQueueManager()
         var isOpenNotification = false
         var isOpenCache = false
@@ -128,8 +126,73 @@ open class StarrySkyConfig internal constructor(
             this.playerControl = config.playerControl
         }
 
+        fun setMediaQueueProvider(mediaQueueProvider: IMediaSourceProvider) = apply {
+            this.mediaQueueProvider = mediaQueueProvider
+        }
+
+        fun setMediaQueue(mediaQueue: MediaQueue) = apply {
+            this.mediaQueue = mediaQueue
+        }
+
+        fun isOpenNotification(isOpenNotification: Boolean) = apply {
+            this.isOpenNotification = isOpenNotification
+        }
+
+        fun isOpenCache(isOpenCache: Boolean) = apply {
+            this.isOpenCache = isOpenCache
+        }
+
+        fun setCacheDestFileDir(cacheDestFileDir: String) = apply {
+            this.cacheDestFileDir = cacheDestFileDir
+        }
+
+        fun setHttpConnectTimeout(httpConnectTimeout: Long) =
+            apply { this.httpConnectTimeout = httpConnectTimeout }
+
+        fun setHttpReadTimeout(httpReadTimeout: Long) =
+            apply { this.httpReadTimeout = httpReadTimeout }
+
+        fun skipSSLChain(skipSSLChain: Boolean) = apply {
+            this.skipSSLChain = skipSSLChain
+        }
+
         fun addInterceptor(interceptor: StarrySkyInterceptor) = apply {
             interceptors += interceptor
+        }
+
+        fun setInterceptorTimeOut(interceptorTimeOut: Long) =
+            apply { this.interceptorTimeOut = interceptorTimeOut }
+
+        fun setImageLoader(imageLoader: ImageLoader) = apply { this.imageLoader = imageLoader }
+
+        fun setIMediaConnection(mediaConnection: IMediaConnection) = apply {
+            this.mediaConnection = mediaConnection
+        }
+
+        fun setNotificationFactory(
+            notificationFactory: StarrySkyNotificationManager.NotificationFactory
+        ) = apply {
+            this.notificationFactory = notificationFactory
+        }
+
+        fun setNotificationManager(notificationManager: StarrySkyNotificationManager) = apply {
+            this.notificationManager = notificationManager
+        }
+
+        fun setNotificationConfig(notificationConfig: NotificationConfig) = apply {
+            this.notificationConfig = notificationConfig
+        }
+
+        fun setStarrySkyCacheManager(cacheManager: StarrySkyCacheManager) = apply {
+            this.cacheManager = cacheManager
+        }
+
+        fun setPlayback(playback: Playback) = apply {
+            this.playback = playback
+        }
+
+        fun setPlayerControl(playerControl: PlayerControl) = apply {
+            this.playerControl = playerControl
         }
 
         fun build(): StarrySkyConfig {

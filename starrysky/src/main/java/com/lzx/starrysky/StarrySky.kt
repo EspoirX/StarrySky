@@ -18,6 +18,7 @@ import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueueManager
 import com.lzx.starrysky.provider.IMediaSourceProvider
+import com.lzx.starrysky.provider.MediaSourceProvider
 import com.lzx.starrysky.utils.SpUtil
 import com.lzx.starrysky.utils.StarrySkyUtils
 
@@ -104,9 +105,9 @@ class StarrySky {
 
         @JvmOverloads
         fun init(
-                application: Application,
-                config: StarrySkyConfig = StarrySkyConfig(),
-                listener: OnConnectListener? = null
+            application: Application,
+            config: StarrySkyConfig = StarrySkyConfig(),
+            listener: OnConnectListener? = null
         ) {
             if (alreadyInit) {
                 return
@@ -115,7 +116,6 @@ class StarrySky {
             globalContext = application
             mStarrySkyConfig = config
             mOnConnectListener = listener
-            mediaQueueProvider = mStarrySkyConfig.mediaQueueProvider
             get()
         }
 
@@ -145,7 +145,6 @@ class StarrySky {
             sStarrySky = null
         }
 
-
         private fun checkAndInitializeStarrySky() {
             check(!isInitializing) { "checkAndInitializeStarrySky" }
             isInitializing = true
@@ -166,13 +165,13 @@ class StarrySky {
 
             notificationManager = if (mStarrySkyConfig.notificationManager == null) {
                 StarrySkyNotificationManager(mStarrySkyConfig.isOpenNotification,
-                        mStarrySkyConfig.notificationFactory)
+                    mStarrySkyConfig.notificationFactory)
             } else {
                 mStarrySkyConfig.notificationManager
             }!!
             cacheManager = if (mStarrySkyConfig.cacheManager == null) {
                 StarrySkyCacheManager(
-                        globalContext, mStarrySkyConfig.isOpenCache, mStarrySkyConfig.cacheDestFileDir)
+                    globalContext, mStarrySkyConfig.isOpenCache, mStarrySkyConfig.cacheDestFileDir)
             } else {
                 mStarrySkyConfig.cacheManager
             }!!
@@ -183,19 +182,28 @@ class StarrySky {
             }!!
 
             sStarrySky = StarrySky()
-
+            //因为有层级调用关系，所以顺序不能乱
             mediaConnection = (if (mStarrySkyConfig.mediaConnection == null) {
                 val componentName = ComponentName(globalContext, MusicService::class.java)
                 MediaSessionConnection(globalContext, componentName)
             } else {
                 mStarrySkyConfig.mediaConnection
             })!!
+
+            mediaQueueProvider = if (mStarrySkyConfig.mediaQueueProvider == null) {
+                MediaSourceProvider()
+            } else {
+                mStarrySkyConfig.mediaQueueProvider!!
+            }
+
             playerControl = if (mStarrySkyConfig.playerControl == null) {
                 StarrySkyPlayerControl(globalContext)
             } else {
                 mStarrySkyConfig.playerControl
             }!!
+
             playbackManager = PlaybackManager(MediaQueueManager(), playback)
+
             //链接服务
             mediaConnection.connect()
             mediaConnection.setOnConnectListener(mOnConnectListener)

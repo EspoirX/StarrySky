@@ -21,14 +21,9 @@ interface MediaQueue {
     /**
      * 获取当前播放的songInfo
      */
-    val currentSongInfo: SongInfo?
+    fun getCurrentSongInfo(isActiveTrigger: Boolean): SongInfo?
 
     fun setMetadataUpdateListener(listener: IMediaSourceProvider.MetadataUpdateListener)
-
-    /**
-     * 判断传入的媒体跟正在播放的媒体是否一样
-     */
-    fun isSameSong(songId: String): Boolean
 
     /**
      * 转跳下一首或上一首
@@ -53,12 +48,7 @@ interface MediaQueue {
     fun updateIndexBySongId(songId: String): Boolean
 
     /**
-     * 根据当前传入的 mediaId 更新当前播放媒体下标和信息
-     */
-    fun updateCurrPlayingSongInfo(songId: String)
-
-    /**
      * 更新媒体信息
      */
-    fun updateMediaMetadata()
+    fun updateMediaMetadata(songInfo: SongInfo?)
 }

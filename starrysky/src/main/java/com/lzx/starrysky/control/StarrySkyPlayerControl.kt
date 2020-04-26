@@ -12,7 +12,12 @@ import android.text.TextUtils
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.common.IMediaConnection
 import com.lzx.starrysky.common.PlaybackStage
-import com.lzx.starrysky.ext.*
+import com.lzx.starrysky.ext.albumArtUrl
+import com.lzx.starrysky.ext.data
+import com.lzx.starrysky.ext.duration
+import com.lzx.starrysky.ext.id
+import com.lzx.starrysky.ext.mediaUrl
+import com.lzx.starrysky.ext.title
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
@@ -53,7 +58,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun playMusic(songInfos: MutableList<SongInfo>, index: Int) {
-        mediaQueueProvider.setSongList(songInfos)
+        updatePlayList(songInfos)
         playMusicByIndex(index)
     }
 
@@ -120,11 +125,11 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun getPlayList(): MutableList<SongInfo> {
-        return mediaQueueProvider.getSongList()
+        return mediaQueueProvider.songList
     }
 
     override fun updatePlayList(songInfos: MutableList<SongInfo>) {
-        mediaQueueProvider.setSongList(songInfos)
+        mediaQueueProvider.songList = songInfos
     }
 
     override fun addSongInfo(info: SongInfo) {
@@ -301,9 +306,9 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     override fun querySongInfoInLocal(): List<SongInfo> {
         val songInfos = mutableListOf<SongInfo>()
         val cursor =
-                context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null,
-                        null, null, null)
-                        ?: return songInfos
+            context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null,
+                null, null, null)
+                ?: return songInfos
         while (cursor.moveToNext()) {
             val song = SongInfo()
             song.songUrl = cursor.data
@@ -328,7 +333,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         val projection = arrayOf(MediaStore.Audio.Albums.ALBUM_ART)
         var imagePath: String? = null
         val uri = Uri.parse(
-                "content://media" + MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.path + "/" + albumId)
+            "content://media" + MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.path + "/" + albumId)
         val cur = context.contentResolver.query(uri, projection, null, null, null) ?: return null
         if (cur.count > 0 && cur.columnCount > 0) {
             cur.moveToNext()

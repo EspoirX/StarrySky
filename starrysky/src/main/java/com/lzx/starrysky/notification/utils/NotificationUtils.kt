@@ -38,10 +38,10 @@ object NotificationUtils {
      * 设置content点击事件
      */
     fun createContentIntent(
-            mService: MusicService, mBuilder: NotificationConfig?,
-            songId: String?, bundle: Bundle?, targetClass: Class<*>
+        mService: MusicService, mBuilder: NotificationConfig?,
+        songId: String?, bundle: Bundle?, targetClass: Class<*>
     ): PendingIntent {
-        val songInfos = StarrySky.get().mediaQueueProvider().getSongList().filter { it.songId == songId }
+        val songInfos = StarrySky.get().mediaQueueProvider().songList.filter { it.songId == songId }
         val songInfo: SongInfo? = songInfos.elementAtOrNull(0)
         val openUI = Intent(mService, targetClass)
         openUI.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
