@@ -213,13 +213,13 @@ interface PlayerControl {
 
     /**
      * 获取当前的播放状态。
-     *  Playback.PLAYBACK_STATE_NONE = 100      //什么都没开始
-     *  Playback.PLAYBACK_STATE_IDLE = 200      //空闲
-     *  Playback.PLAYBACK_STATE_BUFFERING = 300 //正在缓冲
-     *  Playback.PLAYBACK_STATE_PLAYING = 400   //正在播放
-     *  Playback.PLAYBACK_STATE_PAUSED = 500    //暂停
-     *  Playback.PLAYBACK_STATE_STOPPED = 600   //停止
-     *  Playback.PLAYBACK_STATE_ERROR = 700     //出错
+     *  Playback.STATE_NONE = 100      //什么都没开始
+     *  Playback.STATE_IDLE = 200      //空闲
+     *  Playback.STATE_BUFFERING = 300 //正在缓冲
+     *  Playback.STATE_PLAYING = 400   //正在播放
+     *  Playback.STATE_PAUSED = 500    //暂停
+     *  Playback.STATE_STOPPED = 600   //停止
+     *  Playback.STATE_ERROR = 700     //出错
      */
     fun getState(): Int
 
