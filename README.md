@@ -37,6 +37,15 @@ dependencies {
     implementation 'com.lzx:StarrySkyKt:x.x.x'
 }
 ```
+
+## androidX 版本集成
+```groovy
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.lzx:StarrySkyX:x.x.x'
+}
+```
+
 x.x.x 填的是当前的版本号。
 
 
