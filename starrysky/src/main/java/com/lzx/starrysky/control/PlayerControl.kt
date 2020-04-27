@@ -1,6 +1,6 @@
 package com.lzx.starrysky.control
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.common.PlaybackStage
 import com.lzx.starrysky.provider.SongInfo
 

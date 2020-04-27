@@ -13,12 +13,12 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.RemoteException
-import android.support.v4.app.NotificationCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
+import androidx.core.app.NotificationCompat
 import com.lzx.starrysky.MusicService
 import com.lzx.starrysky.R
 import com.lzx.starrysky.StarrySky
@@ -211,7 +211,7 @@ class SystemNotification constructor(service: MusicService, config: Notification
             R.drawable.ic_notification
 
         notificationBuilder
-            .setStyle(android.support.v4.media.app.NotificationCompat.MediaStyle()
+            .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
                 // show only play/pause in compact view
                 .setShowActionsInCompactView(playPauseButtonPosition)
                 .setShowCancelButton(true)

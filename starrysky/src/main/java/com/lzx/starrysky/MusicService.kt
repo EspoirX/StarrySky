@@ -12,11 +12,11 @@ import android.os.Handler
 import android.os.Message
 import android.os.RemoteException
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaBrowserServiceCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.media.MediaBrowserServiceCompat
 import com.lzx.starrysky.StarrySky.Companion.get
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.playback.manager.IPlaybackManager

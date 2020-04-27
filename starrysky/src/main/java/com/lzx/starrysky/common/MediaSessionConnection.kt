@@ -1,6 +1,5 @@
 package com.lzx.starrysky.common
 
-import android.arch.lifecycle.MutableLiveData
 import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
@@ -11,7 +10,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.ext.id
 import com.lzx.starrysky.playback.player.Playback

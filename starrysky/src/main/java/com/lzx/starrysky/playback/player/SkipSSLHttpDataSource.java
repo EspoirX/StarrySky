@@ -6,7 +6,6 @@
 package com.lzx.starrysky.playback.player;
 
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.android.exoplayer2.upstream.BaseDataSource;
@@ -48,6 +47,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import androidx.annotation.Nullable;
 
 import static com.google.android.exoplayer2.upstream.DataSpec.FLAG_ALLOW_GZIP;
 import static com.google.android.exoplayer2.upstream.HttpDataSource.HttpDataSourceException.TYPE_OPEN;

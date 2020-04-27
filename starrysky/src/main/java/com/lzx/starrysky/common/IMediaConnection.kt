@@ -1,11 +1,11 @@
 package com.lzx.starrysky.common
 
-import android.arch.lifecycle.MutableLiveData
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.lifecycle.MutableLiveData
 
 interface IMediaConnection {
     /**
@@ -22,16 +22,6 @@ interface IMediaConnection {
      * 给服务发消息
      */
     fun sendCommand(command: String, parameters: Bundle)
-
-//    /**
-//     * 获取当前随机模式
-//     */
-//    fun getShuffleMode(): Int
-//
-//    /**
-//     * 获取当前播放模式
-//     */
-//    fun getRepeatMode(): Int
 
     /**
      * 获取当前播放的 MediaMetadataCompat

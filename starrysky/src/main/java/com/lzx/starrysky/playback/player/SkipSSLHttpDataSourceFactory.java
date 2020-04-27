@@ -15,11 +15,12 @@
  */
 package com.lzx.starrysky.playback.player;
 
-import android.support.annotation.Nullable;
 
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.upstream.HttpDataSource.BaseFactory;
 import com.google.android.exoplayer2.upstream.TransferListener;
+
+import androidx.annotation.Nullable;
 
 /**
  * 代码来自 gsyvideoplayer

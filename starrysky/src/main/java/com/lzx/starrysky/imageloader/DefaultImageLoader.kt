@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.AsyncTask
-import android.support.v4.util.LruCache
+import androidx.collection.LruCache
 import java.io.BufferedInputStream
 import java.io.IOException
 import java.io.InputStream

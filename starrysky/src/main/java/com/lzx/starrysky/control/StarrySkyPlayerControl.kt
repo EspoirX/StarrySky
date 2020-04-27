@@ -1,7 +1,6 @@
 package com.lzx.starrysky.control
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -9,6 +8,7 @@ import android.provider.MediaStore
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
+import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.common.IMediaConnection
 import com.lzx.starrysky.common.PlaybackStage

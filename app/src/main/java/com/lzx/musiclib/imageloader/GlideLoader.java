@@ -3,8 +3,6 @@ package com.lzx.musiclib.imageloader;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -12,6 +10,8 @@ import com.bumptech.glide.request.transition.Transition;
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack;
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * 具体框架实现类
