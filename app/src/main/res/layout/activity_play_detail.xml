@@ -5,32 +5,126 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/play_mode"
+        android:id="@+id/playMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:text="顺序播放" />
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/next"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_below="@+id/playMode"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="下一首" />
+
+    <Button
+        android:id="@+id/previous"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/next"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="上一首" />
+
+    <Button
+        android:id="@+id/playPause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/previous"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="播放" />
+
+    <Button
+        android:id="@+id/fastForward"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/playPause"
+        android:layout_toLeftOf="@+id/rewind"
+        android:text="快进" />
+
+    <Button
+        android:id="@+id/rewind"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/playPause"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:text="快退" />
+
+    <Button
+        android:id="@+id/derailleur"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:text="变速" />
+
+    <Button
+        android:id="@+id/volumeJia"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/derailleur"
+        android:text="音量+"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/volumeJian"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/derailleur"
+        android:layout_toRightOf="@+id/volumeJia"
+        android:text="音量-"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/volumeJia"
+        android:text="停止播放"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/prepare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/stop"
+        android:text="缓冲不播放"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/songName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
         android:ellipsize="end"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:text="歌名" />
 
     <ImageView
         android:id="@+id/cover"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp" />
+        android:layout_width="190dp"
+        android:layout_height="190dp"
+        android:layout_below="@+id/songName"
+        android:layout_centerHorizontal="true" />
 
     <SeekBar
-        android:id="@+id/seek_bar"
+        android:id="@+id/seekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/cover"
@@ -40,26 +134,27 @@
         android:layout_marginBottom="10dp" />
 
     <TextView
-        android:id="@+id/progress_text"
+        android:id="@+id/progressText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/seek_bar"
+        android:layout_below="@+id/seekBar"
         android:layout_marginLeft="16dp"
         android:text="00:00" />
 
     <TextView
-        android:id="@+id/time_text"
+        android:id="@+id/timeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/seek_bar"
+        android:layout_below="@+id/seekBar"
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
         android:text="00:00" />
 
+
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycle_view"
+        android:id="@+id/recycleView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/progress_text"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/progressText"
         android:layout_marginTop="20dp" />
 </RelativeLayout>

@@ -97,9 +97,8 @@ open class ExoPlayback internal constructor(
     override val currPlayInfo: SongInfo?
         get() = currSongInfo
 
-    override fun getAudioSessionId(): Int {
-        return mExoPlayer?.audioSessionId ?: 0
-    }
+    override val audioSessionId: Int
+        get() = mExoPlayer?.audioSessionId ?: 0
 
     override fun stop() {
         releaseResources(true)

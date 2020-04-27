@@ -90,7 +90,8 @@ class PlaybackManager constructor(
     override fun handleStopRequest(withError: String?) {
         playback.stop()
         mServiceCallback?.onPlaybackStop(true)
-        updatePlaybackState(playback.currPlayInfo, false, withError.isNullOrEmpty(), withError)
+        val hasError = withError?.isNotEmpty() ?: false
+        updatePlaybackState(playback.currPlayInfo, false, hasError, withError)
     }
 
     override fun handleFastForward() {

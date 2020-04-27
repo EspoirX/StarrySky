@@ -44,12 +44,6 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         playMusicImpl(info.songId)
     }
 
-    override fun playMusicByInfoDirect(info: SongInfo) {
-        info.mode = SongInfo.MODE_SINGLE
-        mediaQueueProvider.addSongInfo(info)
-        playMusicImpl(info.songId)
-    }
-
     override fun playMusicByIndex(index: Int) {
         val info = mediaQueueProvider.getSongInfoByIndex(index)
         info?.let {
@@ -130,6 +124,10 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
 
     override fun updatePlayList(songInfos: MutableList<SongInfo>) {
         mediaQueueProvider.songList = songInfos
+    }
+
+    override fun addPlayList(infos: MutableList<SongInfo>) {
+        mediaQueueProvider.addSongInfos(infos)
     }
 
     override fun addSongInfo(info: SongInfo) {
@@ -287,7 +285,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun getAudioSessionId(): Int {
-        return mPlayback.getAudioSessionId()
+        return mPlayback.audioSessionId
     }
 
     override fun updateFavoriteUI(isFavorite: Boolean) {

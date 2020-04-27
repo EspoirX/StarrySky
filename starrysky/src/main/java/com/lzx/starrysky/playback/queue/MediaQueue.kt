@@ -23,8 +23,6 @@ interface MediaQueue {
      */
     fun getCurrentSongInfo(isActiveTrigger: Boolean): SongInfo?
 
-    fun setMetadataUpdateListener(listener: IMediaSourceProvider.MetadataUpdateListener)
-
     /**
      * 转跳下一首或上一首
      *
@@ -48,7 +46,12 @@ interface MediaQueue {
     fun updateIndexBySongId(songId: String): Boolean
 
     /**
-     * 更新媒体信息
+     * 更新媒体信息,比如封面之类的
      */
     fun updateMediaMetadata(songInfo: SongInfo?)
+
+    /**
+     * 更新媒体信息后的回调
+     */
+    fun setMetadataUpdateListener(listener: IMediaSourceProvider.MetadataUpdateListener)
 }

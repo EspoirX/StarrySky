@@ -13,12 +13,11 @@ import com.lzx.starrysky.ext.title
 class MediaSourceProvider : IMediaSourceProvider {
 
     //数据源
-    var songSources = linkedMapOf<String, SongInfo>()
-    var mediaMetadataSources = linkedMapOf<String, MediaMetadataCompat>()
+    private var songSources = linkedMapOf<String, SongInfo>()
+    private var mediaMetadataSources = linkedMapOf<String, MediaMetadataCompat>()
 
-    var shuffleSongSources = mutableListOf<SongInfo>()
-
-    data class ShuffleSongSource(var shuffleVersion: Int, var list: MutableList<SongInfo>)
+    //随机模式下的数据源
+    private var shuffleSongSources = mutableListOf<SongInfo>()
 
     override var songList: MutableList<SongInfo>
         get() {
@@ -145,45 +144,4 @@ class MediaSourceProvider : IMediaSourceProvider {
         }
         return builder.build()
     }
-
-//    private fun toMediaMetadata(info: SongInfo): MediaMetadataCompat {
-//        var albumTitle = ""
-//        if (!TextUtils.isEmpty(info.albumName)) {
-//            albumTitle = info.albumName
-//        } else if (!TextUtils.isEmpty(info.songName)) {
-//            albumTitle = info.songName
-//        }
-//        var songCover = ""
-//        if (!TextUtils.isEmpty(info.songCover)) {
-//            songCover = info.songCover
-//        } else if (!TextUtils.isEmpty(info.albumCover)) {
-//            songCover = info.albumCover
-//        }
-//        val builder = MediaMetadataCompat.Builder()
-//        builder.id = info.songId
-//        builder.mediaUri = info.songUrl
-//        if (albumTitle.isNotEmpty()) {
-//            builder.album = albumTitle
-//        }
-//        if (info.artist.isNotEmpty()) {
-//            builder.artist = info.artist
-//        }
-//        if (info.duration != -1L) {
-//            builder.duration = info.duration
-//        }
-//        if (info.genre.isNotEmpty()) {
-//            builder.genre = info.genre
-//        }
-//        if (songCover.isNotEmpty()) {
-//            builder.albumArtUri = songCover
-//        }
-//        if (info.songName.isNotEmpty()) {
-//            builder.title = info.songName
-//        }
-//        if (info.trackNumber != -1) {
-//            builder.trackNumber = info.trackNumber.toLong()
-//        }
-//        builder.trackCount = info.albumSongCount.toLong()
-//        return builder.build()
-//    }
 }

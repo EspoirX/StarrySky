@@ -8,6 +8,8 @@
       <module fileurl="file://$PROJECT_DIR$/app/StarrySky-app.iml" filepath="$PROJECT_DIR$/app/StarrySky-app.iml" group="StarrySky/app" />
       <module fileurl="file://$PROJECT_DIR$/starrysky/StarrySky-starrysky.iml" filepath="$PROJECT_DIR$/starrysky/StarrySky-starrysky.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/github-StarrySky.iml" filepath="$PROJECT_DIR$/github-StarrySky.iml" group="StarrySky" />
+      <module fileurl="file://$PROJECT_DIR$/starrysky/github-StarrySky-starrysky.iml" filepath="$PROJECT_DIR$/starrysky/github-StarrySky-starrysky.iml" group="StarrySky/starrysky" />
       <module fileurl="file://$PROJECT_DIR$/starrysky/starrysky.iml" filepath="$PROJECT_DIR$/starrysky/starrysky.iml" />
     </modules>
   </component>

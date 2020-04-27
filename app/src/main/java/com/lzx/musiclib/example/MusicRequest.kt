@@ -1,35 +1,39 @@
 package com.lzx.musiclib.example
 
-
 import android.widget.Toast
 import com.lzx.musiclib.TestApplication
 import com.lzx.starrysky.provider.SongInfo
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 
-
 open class MusicRequest {
     private val client: OkHttpClient
 
     init {
         client = OkHttpClient().newBuilder()
-                .addInterceptor(object : Interceptor {
-                    override fun intercept(chain: Interceptor.Chain): Response {
-                        val newRequest = chain.request().newBuilder()
-                                .removeHeader("User-Agent")
-                                .addHeader("User-Agent",
-                                        "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:0.9.4)")
-                                .build()
-                        return chain.proceed(newRequest)
-                    }
-                }).build()
+            .addInterceptor(object : Interceptor {
+                override fun intercept(chain: Interceptor.Chain): Response {
+                    val newRequest = chain.request().newBuilder()
+                        .removeHeader("User-Agent")
+                        .addHeader("User-Agent",
+                            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:0.9.4)")
+                        .build()
+                    return chain.proceed(newRequest)
+                }
+            }).build()
     }
 
-    data class MediaInfo(val songid: String, val songmid: String, val songname: String, val singer: String)
+    data class MediaInfo(
+        val songid: String, val songmid: String, val songname: String, val singer: String
+    )
 
     private fun getSongList(): MutableList<MediaInfo> {
         val list = mutableListOf<MediaInfo>()
@@ -50,10 +54,10 @@ open class MusicRequest {
                         "未知歌手"
                     }
                     val media = MediaInfo(
-                            obj.getString("songid"),
-                            obj.getString("songmid"),
-                            obj.getString("songname"),
-                            artist
+                        obj.getString("songid"),
+                        obj.getString("songmid"),
+                        obj.getString("songname"),
+                        artist
                     )
                     list.add(media)
                 }
@@ -82,7 +86,8 @@ open class MusicRequest {
                 list.forEach {
                     val songInfo = SongInfo()
                     val data = jsonObject.getJSONObject("data").getJSONObject(it.songmid)
-                    val mid = data.getJSONObject("track_info").getJSONObject("album").getString("mid")
+                    val mid =
+                        data.getJSONObject("track_info").getJSONObject("album").getString("mid")
                     val songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg`"
                     songInfo.songId = it.songmid
                     songInfo.songName = it.songname
@@ -134,6 +139,4 @@ open class MusicRequest {
     interface RequestInfoCallback {
         fun onSuccess(songUrl: String)
     }
-
-
 }

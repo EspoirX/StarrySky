@@ -27,11 +27,6 @@ interface PlayerControl {
     fun playMusicByInfo(info: SongInfo)
 
     /**
-     * 只是最简单的播放，其他什么功能都没有，调用该方法要保证有url和id，不然不能播放
-     */
-    fun playMusicByInfoDirect(info: SongInfo)
-
-    /**
      * 根据要播放的歌曲在播放列表中的下标播放,调用前请确保已经设置了播放列表
      */
     fun playMusicByIndex(index: Int)
@@ -79,6 +74,9 @@ interface PlayerControl {
      */
     fun skipToPrevious()
 
+    /**
+     * 快进
+     */
     fun fastForward()
 
     /**
@@ -129,6 +127,11 @@ interface PlayerControl {
      * 更新播放列表
      */
     fun updatePlayList(songInfos: MutableList<SongInfo>)
+
+    /**
+     * 添加更多播放列表
+     */
+    fun addPlayList(infos: MutableList<SongInfo>)
 
     /**
      * 添加一首歌

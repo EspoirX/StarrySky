@@ -26,8 +26,7 @@ import com.lzx.starrysky.provider.IMediaSourceProvider.MetadataUpdateListener
 import com.lzx.starrysky.provider.SongInfo
 import java.lang.ref.WeakReference
 
-class MusicService : MediaBrowserServiceCompat(), MetadataUpdateListener,
-    PlaybackServiceCallback {
+class MusicService : MediaBrowserServiceCompat(), MetadataUpdateListener, PlaybackServiceCallback {
 
     companion object {
         const val STOP_DELAY = 30000

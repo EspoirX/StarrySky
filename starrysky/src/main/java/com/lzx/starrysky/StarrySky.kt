@@ -56,7 +56,7 @@ class StarrySky {
     }
 
     fun imageLoader(): ImageLoader {
-        return mStarrySkyConfig.imageLoader
+        return imageLoader
     }
 
     fun interceptors(): MutableList<StarrySkyInterceptor> {
@@ -102,6 +102,7 @@ class StarrySky {
         private lateinit var playerControl: PlayerControl
         private lateinit var mediaQueueProvider: IMediaSourceProvider
         private lateinit var playbackManager: PlaybackManager
+        private lateinit var imageLoader: ImageLoader
 
         @JvmOverloads
         fun init(
@@ -163,12 +164,9 @@ class StarrySky {
             }
             requireNotNull(globalContext) { "StarrySky 初始化失败，上下文为 null" }
 
-            notificationManager = if (mStarrySkyConfig.notificationManager == null) {
-                StarrySkyNotificationManager(mStarrySkyConfig.isOpenNotification,
-                    mStarrySkyConfig.notificationFactory)
-            } else {
-                mStarrySkyConfig.notificationManager
-            }!!
+            notificationManager = StarrySkyNotificationManager(mStarrySkyConfig.isOpenNotification,
+                mStarrySkyConfig.notificationFactory)
+
             cacheManager = if (mStarrySkyConfig.cacheManager == null) {
                 StarrySkyCacheManager(
                     globalContext, mStarrySkyConfig.isOpenCache, mStarrySkyConfig.cacheDestFileDir)
@@ -182,6 +180,12 @@ class StarrySky {
             }!!
 
             sStarrySky = StarrySky()
+
+            imageLoader = ImageLoader()
+            mStarrySkyConfig.imageLoader?.let {
+                imageLoader.init(it)
+            }
+
             //因为有层级调用关系，所以顺序不能乱
             mediaConnection = (if (mStarrySkyConfig.mediaConnection == null) {
                 val componentName = ComponentName(globalContext, MusicService::class.java)

@@ -24,7 +24,7 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:appComponentFactory">
         <activity
-            android:name=".MainActivity"
+            android:name=".example.PlayDetailActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,15 +33,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".example.ListPlayExampleActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".example.RequestBeforePlayActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".example.PlayDetailActivity"
-            android:screenOrientation="portrait" />
 
         <receiver
             android:name=".NotificationReceiver"
