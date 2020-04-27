@@ -11,11 +11,8 @@
 
 `StarrySky` `MusicLibrary` `Music` `音频集成` 
 
-[English Document](https://github.com/lizixian18/StarrySky/blob/StarrySkyJava/README-EN.md)
 
 一个丰富的音乐播放封装库，针对快速集成音频播放功能，减少大家搬砖的时间，你值得拥有。
-
-
 
 
 ## 特点
@@ -112,8 +109,7 @@ StarrySky.with().playMusicByInfo(info);
 - [StarrySky各种API功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky各种API功能.md)
 - [自定义实现图片加载器](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义图片加载器说明.md)
 - [快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)
-- [播放音频前需要先请求接口获取url这类需求的解决方案](https://github
-.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/拦截器.md)
+- [拦截器](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/拦截器.md)
 - [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/媒体缓存功能.md)
 - [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义播放器说明.md)
 - [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义播放队列管理说明.md)
