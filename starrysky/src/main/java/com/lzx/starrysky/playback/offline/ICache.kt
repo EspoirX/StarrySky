@@ -7,7 +7,7 @@ import java.io.File
 interface ICache {
 
     /**
-     * 代理url，如果为空则用正常的url
+     * 代理url，如果已经有缓存了，你可以用它来返回缓存地址，如果为空则用正常的 url
      */
     fun getProxyUrl(url: String): String?
 

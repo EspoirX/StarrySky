@@ -165,27 +165,35 @@ class PlaybackManager constructor(
         } else {
             actions or PlaybackStateCompat.ACTION_PLAY //添加 ACTION_PLAY
         }
-//        if (!shouldPlayNext) {
-//            //在不能播放下一首的情况下，判断actions是否包含ACTION_SKIP_TO_NEXT，如果包含则清除
-//            if (actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L) {
-//                actions = actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT.inv()
-//            }
-//        } else {
-        //判断 actions 是否包含 ACTION_SKIP_TO_NEXT，如果不包含，则添加
-        if (actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT == 0L) {
-            actions = actions or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+        var shouldPlayNext = true
+        var shouldPlayPre = true
+        val repeatMode = StarrySkyUtils.getRepeatMode()
+        if (repeatMode.repeatMode != RepeatMode.REPEAT_MODE_SHUFFLE) {
+            //如果没开启循环并且当前歌曲是最后一首，则不能下一首
+            shouldPlayNext = !(!repeatMode.isLoop && mediaQueue.currSongIsLastSong())
+            shouldPlayPre = !(!repeatMode.isLoop && mediaQueue.currSongIsFirstSong())
         }
-//        }
+        if (!shouldPlayNext) {
+            //在不能播放下一首的情况下，判断actions是否包含ACTION_SKIP_TO_NEXT，如果包含则清除
+            if (actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L) {
+                actions = actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT.inv()
+            }
+        } else {
+            //判断 actions 是否包含 ACTION_SKIP_TO_NEXT，如果不包含，则添加
+            if (actions and PlaybackStateCompat.ACTION_SKIP_TO_NEXT == 0L) {
+                actions = actions or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+            }
+        }
         //同理
-//        if (!shouldPlayPre) {
-//            if (actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L) {
-//                actions = actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS.inv()
-//            }
-//        } else {
-        if (actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS == 0L) {
-            actions = actions or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+        if (!shouldPlayPre) {
+            if (actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L) {
+                actions = actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS.inv()
+            }
+        } else {
+            if (actions and PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS == 0L) {
+                actions = actions or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+            }
         }
-//        }
         return actions
     }
 
@@ -397,6 +405,7 @@ class PlaybackManager constructor(
                     } else {
                         mediaQueue.updateIndexBySongId(playback.currentMediaId)
                     }
+                    updatePlaybackState(null, isOnlyUpdateActions = true, isError = false, error = null)
                 }
             }
         }

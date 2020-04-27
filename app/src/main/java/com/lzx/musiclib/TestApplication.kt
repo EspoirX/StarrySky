@@ -66,6 +66,10 @@ open class TestApplication : Application() {
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
             .isOpenNotification(true)
+//            .isOpenCache(true)
+//            .setCacheDestFileDir(
+//                Environment.getExternalStorageDirectory().absolutePath.toString() +
+//                    "/111StarrySkyCache/")
 //            .setNotificationFactory(MyNotificationFactory())
 //            .setPlayback(MyPlayback())
 //            .setPlayerControl(MyPlayerControl())
@@ -367,10 +371,11 @@ class MyCache(private val context: Context) : ICache {
         var fileDir = destFileDir
         if (fileDir.isNullOrEmpty()) {
             fileDir =
-                Environment.getExternalStorageDirectory().absolutePath.toString() + "/111StarrySkyCache/"
+                Environment.getExternalStorageDirectory().absolutePath.toString() +
+                    "/222StarrySkyCache/"
         }
         if (cacheFile == null && fileDir.isNotEmpty()) {
-            cacheFile = File(destFileDir)
+            cacheFile = File(fileDir)
             if (cacheFile?.exists() == false) {
                 cacheFile?.mkdirs()
             }

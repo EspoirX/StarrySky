@@ -11,6 +11,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.lzx.musiclib.R
+import com.lzx.musiclib.TestApplication
 import com.lzx.musiclib.example.MusicRequest.RequestCallback
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.common.PlaybackStage
@@ -210,10 +211,18 @@ class PlayDetailActivity : AppCompatActivity() {
             StarrySky.with().prepare()
         }
         next.setOnClickListener {
-            StarrySky.with().skipToNext()
+            if (StarrySky.with().isSkipToNextEnabled()) {
+                StarrySky.with().skipToNext()
+            } else {
+                Toast.makeText(TestApplication.context, "已经最后一首了", Toast.LENGTH_SHORT).show()
+            }
         }
         previous.setOnClickListener {
-            StarrySky.with().skipToPrevious()
+            if (StarrySky.with().isSkipToPreviousEnabled()) {
+                StarrySky.with().skipToPrevious()
+            } else {
+                Toast.makeText(TestApplication.context, "已经是第一首了", Toast.LENGTH_SHORT).show()
+            }
         }
         playPause.setOnClickListener {
             if (StarrySky.with().isPlaying()) {
