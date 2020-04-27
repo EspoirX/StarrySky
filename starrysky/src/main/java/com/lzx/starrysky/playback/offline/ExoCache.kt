@@ -8,42 +8,41 @@ import com.google.android.exoplayer2.upstream.cache.CacheSpan
 import com.google.android.exoplayer2.upstream.cache.CacheUtil
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
+import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.playback.player.ExoSourceManager
 import java.io.File
 
-class StarrySkyCacheManager constructor(
-    private val context: Context,
-    private var isOpenCache: Boolean,
-    private val cacheDestFileDir: String?
-) {
-    private var downloadDirectory: File? = null
-    private var downloadCache: Cache? = null
+class ExoCache(private val context: Context) : ICache {
 
-    fun isOpenCache(): Boolean {
-        return isOpenCache
+    private var cacheFile: File? = null
+    private var exoCache: Cache? = null
+
+    override fun startCache(url: String) {
+        //什么都不做
     }
 
-    fun setOpenCache(isOpen: Boolean) {
-        isOpenCache = isOpen
+    override fun getProxyUrl(url: String): String? {
+        return null
     }
 
-    /**
-     * 创建缓存文件夹
-     */
-    fun getDownloadDirectory(context: Context): File {
-        if (!cacheDestFileDir.isNullOrEmpty()) {
-            downloadDirectory = File(cacheDestFileDir)
-            if (!downloadDirectory!!.exists()) {
-                downloadDirectory!!.mkdirs()
+    override fun isOpenCache(): Boolean {
+        return true
+    }
+
+    override fun getCacheDirectory(context: Context, destFileDir: String?): File? {
+        if (cacheFile == null && !destFileDir.isNullOrEmpty()) {
+            cacheFile = File(destFileDir)
+            if (cacheFile?.exists() == false) {
+                cacheFile?.mkdirs()
             }
         }
-        if (downloadDirectory == null) {
-            downloadDirectory = context.getExternalFilesDir(null)
-            if (downloadDirectory == null) {
-                downloadDirectory = context.filesDir
+        if (cacheFile == null) {
+            cacheFile = context.getExternalFilesDir(null)
+            if (cacheFile == null) {
+                cacheFile = context.filesDir
             }
         }
-        return downloadDirectory!!
+        return cacheFile
     }
 
     /**
@@ -51,24 +50,22 @@ class StarrySkyCacheManager constructor(
      */
     @Synchronized
     fun getDownloadCache(): Cache? {
-        if (downloadCache == null) {
-            val path = getDownloadDirectory(context).absolutePath
-            val downloadContentDirectory = getDownloadDirectory(context)
+        if (exoCache == null) {
+            val cacheFile = getCacheDirectory(context, StarrySky.get().config().cacheDestFileDir)
+            val path = cacheFile?.absolutePath
             val isLocked = SimpleCache.isCacheFolderLocked(File(path))
             if (!isLocked) {
-                downloadCache = SimpleCache(downloadContentDirectory,
+                exoCache = SimpleCache(cacheFile,
                     LeastRecentlyUsedCacheEvictor(ExoSourceManager.DEFAULT_MAX_SIZE.toLong()))
             }
         }
-        return downloadCache
+        return exoCache
     }
 
-    /**
-     * 根据缓存块判断是否缓存成功
-     */
-    fun resolveCacheState(cache: Cache? = getDownloadCache(), url: String?): Boolean {
+    override fun isCache(url: String): Boolean {
         var isCache = true
-        if (!url.isNullOrEmpty()) {
+        val cache = getDownloadCache()
+        if (url.isNotEmpty()) {
             val key = CacheUtil.generateKey(Uri.parse(url))
             if (!key.isNullOrEmpty()) {
                 val cachedSpans = cache?.getCachedSpans(key)

@@ -13,7 +13,8 @@ import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.playback.manager.IPlaybackManager
 import com.lzx.starrysky.playback.manager.PlaybackManager
-import com.lzx.starrysky.playback.offline.StarrySkyCacheManager
+import com.lzx.starrysky.playback.offline.ExoCache
+import com.lzx.starrysky.playback.offline.ICache
 import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueueManager
@@ -97,7 +98,7 @@ class StarrySky {
         private var mOnConnectListener: OnConnectListener? = null
         private lateinit var mediaConnection: IMediaConnection
         private lateinit var notificationManager: StarrySkyNotificationManager
-        private lateinit var cacheManager: StarrySkyCacheManager
+        private lateinit var cache: ICache
         private lateinit var playback: Playback
         private lateinit var playerControl: PlayerControl
         private lateinit var mediaQueueProvider: IMediaSourceProvider
@@ -167,14 +168,13 @@ class StarrySky {
             notificationManager = StarrySkyNotificationManager(mStarrySkyConfig.isOpenNotification,
                 mStarrySkyConfig.notificationFactory)
 
-            cacheManager = if (mStarrySkyConfig.cacheManager == null) {
-                StarrySkyCacheManager(
-                    globalContext, mStarrySkyConfig.isOpenCache, mStarrySkyConfig.cacheDestFileDir)
+            cache = if (mStarrySkyConfig.cache == null) {
+                ExoCache(globalContext)
             } else {
-                mStarrySkyConfig.cacheManager
+                mStarrySkyConfig.cache
             }!!
             playback = if (mStarrySkyConfig.playback == null) {
-                ExoPlayback(globalContext, cacheManager)
+                ExoPlayback(globalContext, cache)
             } else {
                 mStarrySkyConfig.playback
             }!!

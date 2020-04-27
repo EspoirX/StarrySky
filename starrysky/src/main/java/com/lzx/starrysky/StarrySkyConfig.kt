@@ -2,12 +2,11 @@ package com.lzx.starrysky
 
 import com.lzx.starrysky.common.IMediaConnection
 import com.lzx.starrysky.control.PlayerControl
-import com.lzx.starrysky.imageloader.ImageLoader
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
-import com.lzx.starrysky.playback.offline.StarrySkyCacheManager
+import com.lzx.starrysky.playback.offline.ICache
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueue
 import com.lzx.starrysky.playback.queue.MediaQueueManager
@@ -68,7 +67,7 @@ open class StarrySkyConfig internal constructor(
     val notificationConfig: NotificationConfig? = builder.notificationConfig
 
     @get:JvmName("cacheManager")
-    val cacheManager: StarrySkyCacheManager? = builder.cacheManager
+    val cache: ICache? = builder.cache
 
     @get:JvmName("mediaConnection")
     val mediaConnection: IMediaConnection? = builder.mediaConnection
@@ -98,7 +97,7 @@ open class StarrySkyConfig internal constructor(
         var mediaConnection: IMediaConnection? = null
         var notificationFactory: StarrySkyNotificationManager.NotificationFactory? = null
         var notificationConfig: NotificationConfig? = null
-        var cacheManager: StarrySkyCacheManager? = null
+        var cache: ICache? = null
         var playback: Playback? = null
         var playerControl: PlayerControl? = null
 
@@ -116,7 +115,7 @@ open class StarrySkyConfig internal constructor(
             this.imageLoader = config.imageLoader
             this.notificationFactory = config.notificationFactory
             this.notificationConfig = config.notificationConfig
-            this.cacheManager = config.cacheManager
+            this.cache = config.cache
             this.playback = config.playback
             this.mediaConnection = config.mediaConnection
             this.playerControl = config.playerControl
@@ -159,7 +158,8 @@ open class StarrySkyConfig internal constructor(
         fun setInterceptorTimeOut(interceptorTimeOut: Long) =
             apply { this.interceptorTimeOut = interceptorTimeOut }
 
-        fun setImageLoader(imageLoader: ImageLoaderStrategy) = apply { this.imageLoader = imageLoader }
+        fun setImageLoader(imageLoader: ImageLoaderStrategy) =
+            apply { this.imageLoader = imageLoader }
 
         fun setIMediaConnection(mediaConnection: IMediaConnection) = apply {
             this.mediaConnection = mediaConnection
@@ -175,8 +175,8 @@ open class StarrySkyConfig internal constructor(
             this.notificationConfig = notificationConfig
         }
 
-        fun setStarrySkyCacheManager(cacheManager: StarrySkyCacheManager) = apply {
-            this.cacheManager = cacheManager
+        fun setCache(cache: ICache) = apply {
+            this.cache = cache
         }
 
         fun setPlayback(playback: Playback) = apply {

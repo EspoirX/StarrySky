@@ -18,7 +18,7 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.util.EventLogger
-import com.lzx.starrysky.playback.offline.StarrySkyCacheManager
+import com.lzx.starrysky.playback.offline.ICache
 import com.lzx.starrysky.playback.player.Playback.Companion.STATE_BUFFERING
 import com.lzx.starrysky.playback.player.Playback.Companion.STATE_NONE
 import com.lzx.starrysky.playback.player.Playback.Companion.STATE_PAUSED
@@ -29,7 +29,7 @@ import com.lzx.starrysky.utils.StarrySkyUtils
 
 open class ExoPlayback internal constructor(
     var context: Context,
-    private var cacheManager: StarrySkyCacheManager
+    private var playbackCache: ICache
 ) : Playback {
 
     private val trackSelectorParameters: DefaultTrackSelector.Parameters by lazy {
@@ -38,9 +38,7 @@ open class ExoPlayback internal constructor(
     private val mEventListener by lazy {
         ExoPlayerEventListener()
     }
-    private val sourceManager: ExoSourceManager by lazy {
-        ExoSourceManager(context, cacheManager)
-    }
+    private val sourceManager: ExoSourceManager by lazy { ExoSourceManager(context) }
 
     private var mPlayOnFocusGain: Boolean = false
     private var mCallback: Playback.Callback? = null
@@ -121,32 +119,31 @@ open class ExoPlayback internal constructor(
             currentMediaId = mediaId
         }
         StarrySkyUtils.log(
-            "Playback# resource is empty = " + songInfo.songUrl.isEmpty() +
-                " mediaHasChanged = " + mediaHasChanged +
-                " isPlayWhenReady = " + isPlayWhenReady)
+            "Playback#songUrl = " + songInfo.songUrl +
+                " 音频是否有改变 = " + mediaHasChanged +
+                " 是否立即播放 = " + isPlayWhenReady)
         StarrySkyUtils.log("---------------------------------------")
-
-        //创建 mediaSource
+        //url 处理
         var source = songInfo.songUrl
         if (source.isEmpty()) {
             mCallback?.onPlaybackError(currPlayInfo, "播放 url 为空")
             return
         }
         source = source.replace(" ".toRegex(), "%20") // Escape spaces for URL
+        //代理url
+        val proxyUrl = playbackCache.getProxyUrl(source)
+        source = if (proxyUrl.isNullOrEmpty()) source else proxyUrl
+        playbackCache.startCache(source)
+
+        //创建 MediaSource
         val mediaSource = sourceManager.buildMediaSource(
-            source,
-            null,
-            songInfo.headData,
-            cacheManager.isOpenCache(),
-            cacheManager.getDownloadCache())
+            source, null, songInfo.headData, playbackCache)
 
         //如果资源改变了或者播放器为空则重新加载
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false)  // release everything except the player
-
             //创建播放器实例
             createExoPlayer()
-
             mExoPlayer?.prepare(mediaSource)
         }
         //当错误发生时，如果还播放同一首歌，

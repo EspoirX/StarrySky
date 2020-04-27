@@ -3,8 +3,10 @@ package com.lzx.musiclib.example
 import android.widget.Toast
 import com.lzx.musiclib.TestApplication
 import com.lzx.starrysky.provider.SongInfo
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -14,7 +16,7 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 
-open class MusicRequest {
+open class MusicRequest : CoroutineScope by MainScope() {
     private val client: OkHttpClient
 
     init {
@@ -103,7 +105,7 @@ open class MusicRequest {
     }
 
     fun requestSongList(callback: RequestCallback) {
-        GlobalScope.launch(Dispatchers.IO) {
+         launch(Dispatchers.IO) {
             val list = async { getSongList() }
             val songList = async { getSongDetail(list.await()) }
             withContext(Dispatchers.Main) {
@@ -117,7 +119,7 @@ open class MusicRequest {
     }
 
     fun requestSongUrl(songmid: String, callback: RequestInfoCallback) {
-        GlobalScope.launch(Dispatchers.IO) {
+         launch(Dispatchers.IO) {
             val url = "https://api.qq.jsososo.com/song/urls?id=$songmid"
             val request = Request.Builder().url(url).build()
             val response = client.newCall(request).execute()

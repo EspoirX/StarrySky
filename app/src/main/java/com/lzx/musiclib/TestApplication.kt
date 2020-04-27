@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
@@ -16,6 +17,7 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.danikula.videocache.HttpProxyCacheServer
 import com.lzx.musiclib.example.MusicRequest
 import com.lzx.musiclib.example.MusicRequest.RequestInfoCallback
 import com.lzx.starrysky.MusicService
@@ -33,6 +35,7 @@ import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
+import com.lzx.starrysky.playback.offline.ICache
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueue
 import com.lzx.starrysky.provider.IMediaSourceProvider
@@ -44,6 +47,7 @@ import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import com.tencent.bugly.crashreport.CrashReport
+import java.io.File
 
 /**
  * create by lzx
@@ -69,7 +73,7 @@ open class TestApplication : Application() {
 //            .setMediaQueue(MyMediaQueue())
 //            .setImageLoader(MyImageLoader())
 //            .setIMediaConnection(MyMediaConnection())
-//            .setStarrySkyCacheManager()
+//            .setCache(MyCache(this))
             .build()
         StarrySky.init(this, config)
         StarrySkyUtils.isDebug = true
@@ -326,4 +330,61 @@ class MyMediaConnection : IMediaConnection {
     override fun connect() {}
     override fun disconnect() {}
     override fun setOnConnectListener(listener: IMediaConnection.OnConnectListener?) {}
+}
+
+/**
+ * 自定义缓存
+ */
+class MyCache(private val context: Context) : ICache {
+
+    private var proxy: HttpProxyCacheServer? = null
+    private var cacheFile: File? = null
+
+    override fun startCache(url: String) {
+        //什么都不做
+    }
+
+    private fun getProxy(): HttpProxyCacheServer? {
+        return if (proxy == null) newProxy().also { proxy = it } else proxy
+    }
+
+    private fun newProxy(): HttpProxyCacheServer? {
+        return HttpProxyCacheServer.Builder(context)
+            .maxCacheSize(1024 * 1024 * 1024)       // 1 Gb for cache
+            .cacheDirectory(getCacheDirectory(context, StarrySky.get().config().cacheDestFileDir))
+            .build()
+    }
+
+    override fun getProxyUrl(url: String): String? {
+        return getProxy()?.getProxyUrl(url)
+    }
+
+    override fun isOpenCache(): Boolean {
+        return super.isOpenCache()
+    }
+
+    override fun getCacheDirectory(context: Context, destFileDir: String?): File? {
+        var fileDir = destFileDir
+        if (fileDir.isNullOrEmpty()) {
+            fileDir =
+                Environment.getExternalStorageDirectory().absolutePath.toString() + "/111StarrySkyCache/"
+        }
+        if (cacheFile == null && fileDir.isNotEmpty()) {
+            cacheFile = File(destFileDir)
+            if (cacheFile?.exists() == false) {
+                cacheFile?.mkdirs()
+            }
+        }
+        if (cacheFile == null) {
+            cacheFile = context.getExternalFilesDir(null)
+            if (cacheFile == null) {
+                cacheFile = context.filesDir
+            }
+        }
+        return cacheFile
+    }
+
+    override fun isCache(url: String): Boolean {
+        return getProxy()?.isCached(url) ?: false
+    }
 }
