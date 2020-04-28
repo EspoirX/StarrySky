@@ -76,7 +76,7 @@ open class TestApplication : Application() {
 //            .setMediaQueueProvider(MyMediaQueueProvider())
 //            .setMediaQueue(MyMediaQueue())
 //            .setImageLoader(MyImageLoader())
-//            .setIMediaConnection(MyMediaConnection())
+//            .setMediaConnection(MyMediaConnection())
 //            .setCache(MyCache(this))
             .build()
         StarrySky.init(this, config)

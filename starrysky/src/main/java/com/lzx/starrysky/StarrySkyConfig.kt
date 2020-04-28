@@ -83,23 +83,23 @@ open class StarrySkyConfig internal constructor(
     open fun newBuilder(): Builder = Builder(this)
 
     class Builder constructor() {
-        var mediaQueueProvider: IMediaSourceProvider? = null
-        var mediaQueue: MediaQueue = MediaQueueManager()
-        var isOpenNotification = false
-        var isOpenCache = false
-        var cacheDestFileDir: String? = null
-        var httpConnectTimeout: Long = -1
-        var httpReadTimeout: Long = -1
-        var skipSSLChain = false
-        val interceptors: MutableList<StarrySkyInterceptor> = mutableListOf()
-        var interceptorTimeOut = 60L   //拦截器超时时间
-        var imageLoader: ImageLoaderStrategy? = null
-        var mediaConnection: IMediaConnection? = null
-        var notificationFactory: StarrySkyNotificationManager.NotificationFactory? = null
-        var notificationConfig: NotificationConfig? = null
-        var cache: ICache? = null
-        var playback: Playback? = null
-        var playerControl: PlayerControl? = null
+        internal var mediaQueueProvider: IMediaSourceProvider? = null
+        internal var mediaQueue: MediaQueue = MediaQueueManager()
+        internal var isOpenNotification = false
+        internal var isOpenCache = false
+        internal var cacheDestFileDir: String? = null
+        internal var httpConnectTimeout: Long = -1
+        internal var httpReadTimeout: Long = -1
+        internal var skipSSLChain = false
+        internal val interceptors: MutableList<StarrySkyInterceptor> = mutableListOf()
+        internal var interceptorTimeOut = 60L   //拦截器超时时间
+        internal var imageLoader: ImageLoaderStrategy? = null
+        internal var mediaConnection: IMediaConnection? = null
+        internal var notificationFactory: StarrySkyNotificationManager.NotificationFactory? = null
+        internal var notificationConfig: NotificationConfig? = null
+        internal var cache: ICache? = null
+        internal var playback: Playback? = null
+        internal var playerControl: PlayerControl? = null
 
         internal constructor(config: StarrySkyConfig) : this() {
             this.mediaQueueProvider = config.mediaQueueProvider
@@ -161,7 +161,7 @@ open class StarrySkyConfig internal constructor(
         fun setImageLoader(imageLoader: ImageLoaderStrategy) =
             apply { this.imageLoader = imageLoader }
 
-        fun setIMediaConnection(mediaConnection: IMediaConnection) = apply {
+        fun setMediaConnection(mediaConnection: IMediaConnection) = apply {
             this.mediaConnection = mediaConnection
         }
 
