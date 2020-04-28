@@ -218,7 +218,6 @@ class SystemNotification constructor(service: MusicService, config: Notification
                 .setCancelButtonIntent(mStopIntent)
                 .setMediaSession(mSessionToken))
             .setDeleteIntent(mStopIntent)
-            //.setColor(mNotificationColor)
             .setColorized(true)
             .setSmallIcon(smallIcon!!)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

@@ -327,7 +327,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         mRemoteView?.setTextViewText(getResourceId(ID_TXT_NOTIFY_SONGNAME, "id"), songName)
         mRemoteView?.setTextViewText(getResourceId(ID_TXT_NOTIFY_ARTISTNAME, "id"), artistName)
         //设置播放暂停按钮
-        if (mPlaybackState?.state == PlaybackStateCompat.STATE_PLAYING) {
+        if (mPlaybackState?.state == Playback.STATE_PLAYING) {
             val name =
                 if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR
             mRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
@@ -344,7 +344,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         mBigRemoteView?.setTextViewText(getResourceId(ID_TXT_NOTIFY_SONGNAME, "id"), songName)
         mBigRemoteView?.setTextViewText(getResourceId(ID_TXT_NOTIFY_ARTISTNAME, "id"), artistName)
         //设置播放暂停按钮
-        if (mPlaybackState?.state == PlaybackStateCompat.STATE_PLAYING) {
+        if (mPlaybackState?.state == Playback.STATE_PLAYING) {
             val name =
                 if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR
             mBigRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),

@@ -66,6 +66,7 @@ open class TestApplication : Application() {
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
             .isOpenNotification(true)
+//            .setNotificationFactory(StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY)
 //            .isOpenCache(true)
 //            .setCacheDestFileDir(
 //                Environment.getExternalStorageDirectory().absolutePath.toString() +
