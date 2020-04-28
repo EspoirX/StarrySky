@@ -34,8 +34,7 @@ import com.lzx.starrysky.playback.player.Playback
 class SystemNotification constructor(
     val context: Context,
     var config: NotificationConfig = NotificationConfig()
-) :
-    BroadcastReceiver(), INotification {
+) : BroadcastReceiver(), INotification {
 
 
     private var mPlayIntent: PendingIntent? = null

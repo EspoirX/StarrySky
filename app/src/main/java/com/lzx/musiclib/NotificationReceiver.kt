@@ -14,8 +14,7 @@ var isFavorite = true
 class NotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.action
-        when (action) {
+        when (intent.action) {
             INotification.ACTION_FAVORITE -> {
                 val bundle = Bundle()
                 bundle.putBoolean("isFavorite", isFavorite)

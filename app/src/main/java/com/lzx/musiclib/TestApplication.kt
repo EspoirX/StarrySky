@@ -65,8 +65,8 @@ open class TestApplication : Application() {
         super.onCreate()
         context = this
 
-        val notificationConfig = NotificationConfig()
-        notificationConfig.favoriteIntent = getPendingIntent(ACTION_FAVORITE)
+//        val notificationConfig = NotificationConfig()
+//        notificationConfig.favoriteIntent = getPendingIntent(ACTION_FAVORITE)
 
         val config = StarrySkyConfig().newBuilder()
             .addInterceptor(PermissionInterceptor(this))
