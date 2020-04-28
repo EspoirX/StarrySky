@@ -380,14 +380,6 @@ class PlaybackManager constructor(
                 return
             }
             when (command) {
-                INotification.ACTION_UPDATE_FAVORITE_UI -> {
-                    val isFavorite = extras?.getBoolean("isFavorite")
-                    isFavorite?.apply { notification?.updateFavoriteUI(this) }
-                }
-                INotification.ACTION_UPDATE_LYRICS_UI -> {
-                    val isChecked = extras?.getBoolean("isChecked") ?: false
-                    notification?.updateLyricsUI(isChecked)
-                }
                 ExoPlayback.ACTION_CHANGE_VOLUME -> {
                     val audioVolume = extras?.getFloat("AudioVolume") ?: 0F
                     playback.volume = audioVolume
@@ -406,6 +398,10 @@ class PlaybackManager constructor(
                         mediaQueue.updateIndexBySongId(playback.currentMediaId)
                     }
                     updatePlaybackState(null, isOnlyUpdateActions = true, isError = false, error = null)
+                }
+                else -> {
+                    //通知栏相关
+                    notification?.onCommand(command, extras)
                 }
             }
         }

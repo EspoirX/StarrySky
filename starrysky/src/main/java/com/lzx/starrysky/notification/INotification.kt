@@ -1,5 +1,7 @@
 package com.lzx.starrysky.notification
 
+import android.os.Bundle
+
 interface INotification {
 
     /**
@@ -13,14 +15,9 @@ interface INotification {
     fun stopNotification()
 
     /**
-     * 更新喜欢或收藏按钮UI
+     * 自定义事件
      */
-    fun updateFavoriteUI(isFavorite: Boolean)
-
-    /**
-     * 更新歌词按钮UI
-     */
-    fun updateLyricsUI(isChecked: Boolean)
+    fun onCommand(command: String?, extras: Bundle?)
 
     companion object {
         const val NOTIFICATION_ID = 412
@@ -38,9 +35,6 @@ interface INotification {
         const val ACTION_LYRICS = "com.lzx.starrysky.lyrics"
         const val ACTION_DOWNLOAD = "com.lzx.starrysky.download"
         const val ACTION_INTENT_CLICK = "com.lzx.starrysky.EXTRY_NOTIFICATION_TO_MAINACTIVITY"
-
-        const val ACTION_UPDATE_FAVORITE_UI = "com.lzx.starrysky.update_favorite_ui"
-        const val ACTION_UPDATE_LYRICS_UI = "com.lzx.starrysky.update_lyrics_ui"
 
         const val CHANNEL_ID = "com.lzx.starrysky.MUSIC_CHANNEL_ID"
 

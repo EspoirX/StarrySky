@@ -3,15 +3,22 @@ package com.lzx.musiclib
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.text.TextUtils
-import android.widget.Toast
+import android.os.Bundle
+import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.notification.CustomNotification
+import com.lzx.starrysky.notification.INotification
+
+var isFavorite = true
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.action
-        if (TextUtils.isEmpty(action)) {
-            return
+        when (intent.action) {
+            INotification.ACTION_FAVORITE -> {
+                val bundle = Bundle()
+                bundle.putBoolean("isFavorite", isFavorite)
+                isFavorite = !isFavorite
+                StarrySky.with().sendCommand(CustomNotification.ACTION_UPDATE_FAVORITE, bundle)
+            }
         }
-        Toast.makeText(context, "这是自定义通知栏点击事件", Toast.LENGTH_SHORT).show()
     }
 }

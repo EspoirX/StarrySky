@@ -13,13 +13,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.os.Bundle
 import android.os.RemoteException
-import androidx.core.app.NotificationCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.widget.RemoteViews
+import androidx.core.app.NotificationCompat
 import com.lzx.starrysky.MusicService
 import com.lzx.starrysky.R
 import com.lzx.starrysky.StarrySky
@@ -81,9 +82,15 @@ import com.lzx.starrysky.notification.utils.NotificationUtils
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.provider.SongInfo
 
-class CustomNotification constructor(service: MusicService, config: NotificationConfig?) :
-    BroadcastReceiver(), INotification {
+class CustomNotification constructor(
+    val context: Context,
+    var config: NotificationConfig = NotificationConfig()
+) : BroadcastReceiver(), INotification {
 
+    companion object {
+        const val ACTION_UPDATE_FAVORITE = "ACTION_UPDATE_FAVORITE"
+        const val ACTION_UPDATE_LYRICS = "ACTION_UPDATE_LYRICS"
+    }
 
     private var mRemoteView: RemoteViews? = null
     private var mBigRemoteView: RemoteViews? = null
@@ -99,7 +106,6 @@ class CustomNotification constructor(service: MusicService, config: Notification
     private var mDownloadIntent: PendingIntent? = null
     private var mCloseIntent: PendingIntent? = null
 
-    private val mService: MusicService = service
     private var mSessionToken: MediaSessionCompat.Token? = null
     private var mController: MediaControllerCompat? = null
     private var mTransportControls: MediaControllerCompat.TransportControls? = null
@@ -109,7 +115,6 @@ class CustomNotification constructor(service: MusicService, config: Notification
     private val mNotificationManager: NotificationManager?
     private val packageName: String
     private var mStarted = false
-    private var mConfig: NotificationConfig? = null
     private var mNotification: Notification? = null
 
     private val res: Resources
@@ -118,38 +123,34 @@ class CustomNotification constructor(service: MusicService, config: Notification
     private var lastClickTime: Long = 0
 
     init {
-        mConfig = config
-        if (mConfig == null) {
-            mConfig = NotificationConfig()
-        }
         updateSessionToken()
         mNotificationManager =
-            mService.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
-        packageName = mService.applicationContext.packageName
-        res = mService.applicationContext.resources
+            context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+        packageName = context.applicationContext.packageName
+        res = context.applicationContext.resources
         mColorUtils = NotificationColorUtils()
-        setStopIntent(mConfig?.stopIntent)
-        setNextPendingIntent(mConfig?.nextIntent)
-        setPrePendingIntent(mConfig?.preIntent)
-        setPlayPendingIntent(mConfig?.playIntent)
-        setPausePendingIntent(mConfig?.pauseIntent)
-        setFavoritePendingIntent(mConfig?.favoriteIntent)
-        setLyricsPendingIntent(mConfig?.lyricsIntent)
-        setDownloadPendingIntent(mConfig?.downloadIntent)
-        setClosePendingIntent(mConfig?.closeIntent)
-        setPlayOrPauseIntent(mConfig?.playOrPauseIntent)
+        setStopIntent(config.stopIntent)
+        setNextPendingIntent(config.nextIntent)
+        setPrePendingIntent(config.preIntent)
+        setPlayPendingIntent(config.playIntent)
+        setPausePendingIntent(config.pauseIntent)
+        setFavoritePendingIntent(config.favoriteIntent)
+        setLyricsPendingIntent(config.lyricsIntent)
+        setDownloadPendingIntent(config.downloadIntent)
+        setClosePendingIntent(config.closeIntent)
+        setPlayOrPauseIntent(config.playOrPauseIntent)
 
         mNotificationManager.cancelAll()
     }
 
     private fun updateSessionToken() {
         try {
-            val freshToken = mService.sessionToken
+            val freshToken = (context as MusicService).sessionToken
             if (mSessionToken == null && freshToken != null || mSessionToken != null && mSessionToken != freshToken) {
                 mController?.unregisterCallback(mCb)
                 mSessionToken = freshToken
                 mSessionToken?.let {
-                    mController = MediaControllerCompat(mService, it)
+                    mController = MediaControllerCompat(context, it)
                     mTransportControls = mController?.transportControls
                     if (mStarted) {
                         mController?.registerCallback(mCb)
@@ -216,24 +217,24 @@ class CustomNotification constructor(service: MusicService, config: Notification
         val description = mMetadata?.description
         val songId = mMetadata?.id
         val smallIcon =
-            if (mConfig?.smallIconRes != -1) mConfig?.smallIconRes else R.drawable.ic_notification
+            if (config.smallIconRes != -1) config.smallIconRes else R.drawable.ic_notification
         //适配8.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationUtils.createNotificationChannel(mService, mNotificationManager!!)
+            NotificationUtils.createNotificationChannel(context, mNotificationManager!!)
         }
-        val notificationBuilder = NotificationCompat.Builder(mService, CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
         notificationBuilder
             .setOnlyAlertOnce(true)
-            .setSmallIcon(smallIcon!!)
+            .setSmallIcon(smallIcon)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentTitle(description?.title) //歌名
             .setContentText(description?.subtitle) //艺术家
         //setContentIntent
-        if (!mConfig?.targetClass.isNullOrEmpty()) {
-            val clazz = NotificationUtils.getTargetClass(mConfig?.targetClass!!)
+        if (!config.targetClass.isNullOrEmpty()) {
+            val clazz = NotificationUtils.getTargetClass(config.targetClass!!)
             if (clazz != null) {
                 notificationBuilder.setContentIntent(NotificationUtils
-                    .createContentIntent(mService, mConfig, songId, mConfig?.targetClassBundle,
+                    .createContentIntent(context, config, songId, config.targetClassBundle,
                         clazz))
             }
         }
@@ -264,7 +265,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
 
     private fun setNotificationPlaybackState(builder: NotificationCompat.Builder) {
         if (mPlaybackState == null || !mStarted) {
-            mService.stopForeground(true)
+            (context as MusicService).stopForeground(true)
             return
         }
         builder.setOngoing(mPlaybackState?.state == Playback.STATE_PLAYING)
@@ -319,7 +320,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
     private fun updateRemoteViewUI(
         notification: Notification?, songInfo: SongInfo?, smallIcon: Int
     ) {
-        val isDark = mColorUtils.isDarkNotificationBar(mService, notification)
+        val isDark = mColorUtils.isDarkNotificationBar(context, notification)
         var art: Bitmap? = mMetadata?.albumArt
         val artistName = songInfo?.artist ?: ""
         val songName = songInfo?.songName ?: ""
@@ -327,7 +328,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         mRemoteView?.setTextViewText(getResourceId(ID_TXT_NOTIFY_SONGNAME, "id"), songName)
         mRemoteView?.setTextViewText(getResourceId(ID_TXT_NOTIFY_ARTISTNAME, "id"), artistName)
         //设置播放暂停按钮
-        if (mPlaybackState?.state == PlaybackStateCompat.STATE_PLAYING) {
+        if (mPlaybackState?.state == Playback.STATE_PLAYING) {
             val name =
                 if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR
             mRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
@@ -344,7 +345,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         mBigRemoteView?.setTextViewText(getResourceId(ID_TXT_NOTIFY_SONGNAME, "id"), songName)
         mBigRemoteView?.setTextViewText(getResourceId(ID_TXT_NOTIFY_ARTISTNAME, "id"), artistName)
         //设置播放暂停按钮
-        if (mPlaybackState?.state == PlaybackStateCompat.STATE_PLAYING) {
+        if (mPlaybackState?.state == Playback.STATE_PLAYING) {
             val name =
                 if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR
             mBigRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PLAY_OR_PAUSE, "id"),
@@ -395,7 +396,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         if (art == null) {
             fetchArtUrl = mMetadata?.albumArtUrl
             if (fetchArtUrl.isNullOrEmpty()) {
-                art = BitmapFactory.decodeResource(mService.resources, R.drawable.default_art)
+                art = BitmapFactory.decodeResource(context.resources, R.drawable.default_art)
             }
         }
         mRemoteView?.setImageViewBitmap(
@@ -484,9 +485,9 @@ class CustomNotification constructor(service: MusicService, config: Notification
                 filter.addAction(ACTION_PLAY_OR_PAUSE)
                 filter.addAction(ACTION_CLOSE)
 
-                mService.registerReceiver(this, filter)
+                context.registerReceiver(this, filter)
 
-                mService.startForeground(NOTIFICATION_ID, notification)
+                (context as MusicService).startForeground(NOTIFICATION_ID, notification)
                 mStarted = true
             }
         }
@@ -498,23 +499,36 @@ class CustomNotification constructor(service: MusicService, config: Notification
             mController?.unregisterCallback(mCb)
             try {
                 mNotificationManager?.cancel(NOTIFICATION_ID)
-                mService.unregisterReceiver(this)
+                context.unregisterReceiver(this)
             } catch (ex: IllegalArgumentException) {
                 ex.printStackTrace()
             }
 
-            mService.stopForeground(true)
+            (context as MusicService).stopForeground(true)
+        }
+    }
+
+    override fun onCommand(command: String?, extras: Bundle?) {
+        when (command) {
+            ACTION_UPDATE_FAVORITE -> {
+                val isFavorite = extras?.getBoolean("isFavorite") ?: false
+                updateFavoriteUI(isFavorite)
+            }
+            ACTION_UPDATE_LYRICS -> {
+                val isChecked = extras?.getBoolean("isChecked") ?: false
+                updateLyricsUI(isChecked)
+            }
         }
     }
 
     /**
      * 更新喜欢或收藏按钮样式
      */
-    override fun updateFavoriteUI(isFavorite: Boolean) {
+    private fun updateFavoriteUI(isFavorite: Boolean) {
         if (mNotification == null) {
             return
         }
-        val isDark = mColorUtils.isDarkNotificationBar(mService, mNotification!!)
+        val isDark = mColorUtils.isDarkNotificationBar(context, mNotification!!)
         //喜欢或收藏按钮选中时样式
         if (isFavorite) {
             mBigRemoteView?.setImageViewResource(
@@ -536,11 +550,11 @@ class CustomNotification constructor(service: MusicService, config: Notification
     /**
      * 更新歌词按钮UI
      */
-    override fun updateLyricsUI(isChecked: Boolean) {
+    private fun updateLyricsUI(isChecked: Boolean) {
         if (mNotification == null) {
             return
         }
-        val isDark = mColorUtils.isDarkNotificationBar(mService, mNotification!!)
+        val isDark = mColorUtils.isDarkNotificationBar(context, mNotification!!)
         //歌词按钮选中时样式
         if (isChecked) {
             mBigRemoteView
@@ -614,7 +628,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         val intent = Intent(action)
         intent.setPackage(packageName)
         return PendingIntent
-            .getBroadcast(mService, REQUEST_CODE, intent,
+            .getBroadcast(context, REQUEST_CODE, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT)
     }
 }

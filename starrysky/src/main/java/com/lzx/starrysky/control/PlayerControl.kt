@@ -1,5 +1,6 @@
 package com.lzx.starrysky.control
 
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.common.PlaybackStage
 import com.lzx.starrysky.provider.SongInfo
@@ -274,14 +275,9 @@ interface PlayerControl {
     fun getAudioSessionId(): Int
 
     /**
-     * 更新通知栏喜欢或收藏按钮UI
+     * 发送自定义事件
      */
-    fun updateFavoriteUI(isFavorite: Boolean)
-
-    /**
-     * 更新通知栏歌词按钮UI
-     */
-    fun updateLyricsUI(isChecked: Boolean)
+    fun sendCommand(command: String, parameters: Bundle)
 
     /**
      * 扫描本地媒体信息

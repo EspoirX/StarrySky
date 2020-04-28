@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.os.Bundle
 import android.os.RemoteException
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
@@ -30,7 +31,10 @@ import com.lzx.starrysky.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.notification.utils.NotificationUtils
 import com.lzx.starrysky.playback.player.Playback
 
-class SystemNotification constructor(service: MusicService, config: NotificationConfig?) :
+class SystemNotification constructor(
+    val context: Context,
+    var config: NotificationConfig = NotificationConfig()
+) :
     BroadcastReceiver(), INotification {
 
 
@@ -40,7 +44,6 @@ class SystemNotification constructor(service: MusicService, config: Notification
     private var mNextIntent: PendingIntent? = null
     private var mPreviousIntent: PendingIntent? = null
 
-    private val mService: MusicService = service
     private var mSessionToken: MediaSessionCompat.Token? = null
     private var mController: MediaControllerCompat? = null
     private var mTransportControls: MediaControllerCompat.TransportControls? = null
@@ -50,40 +53,35 @@ class SystemNotification constructor(service: MusicService, config: Notification
     private val mNotificationManager: NotificationManager?
     private val packageName: String
     private var mStarted = false
-    private var mConfig: NotificationConfig? = null
     private var lastClickTime: Long = 0
 
     init {
-        mConfig = config
-        if (mConfig == null) {
-            mConfig = NotificationConfig()
-        }
         try {
             updateSessionToken()
         } catch (e: RemoteException) {
             e.printStackTrace()
         }
         mNotificationManager =
-            mService.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
-        packageName = mService.applicationContext.packageName
+            context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+        packageName = context.applicationContext.packageName
 
-        setStopIntent(mConfig?.stopIntent)
-        setNextPendingIntent(mConfig?.nextIntent)
-        setPrePendingIntent(mConfig?.preIntent)
-        setPlayPendingIntent(mConfig?.playIntent)
-        setPausePendingIntent(mConfig?.pauseIntent)
+        setStopIntent(config.stopIntent)
+        setNextPendingIntent(config.nextIntent)
+        setPrePendingIntent(config.preIntent)
+        setPlayPendingIntent(config.playIntent)
+        setPausePendingIntent(config.pauseIntent)
 
         mNotificationManager.cancelAll()
     }
 
     @Throws(RemoteException::class)
     private fun updateSessionToken() {
-        val freshToken = mService.sessionToken
+        val freshToken = (context as MusicService).sessionToken
         if (mSessionToken == null && freshToken != null || mSessionToken != null && mSessionToken != freshToken) {
             mController?.unregisterCallback(mCb)
             mSessionToken = freshToken
             if (mSessionToken != null) {
-                mController = MediaControllerCompat(mService, mSessionToken!!)
+                mController = MediaControllerCompat(context, mSessionToken!!)
                 mTransportControls = mController?.transportControls
                 if (mStarted) {
                     mController?.registerCallback(mCb)
@@ -156,9 +154,9 @@ class SystemNotification constructor(service: MusicService, config: Notification
                 filter.addAction(INotification.ACTION_PLAY)
                 filter.addAction(INotification.ACTION_PREV)
 
-                mService.registerReceiver(this, filter)
+                context.registerReceiver(this, filter)
 
-                mService.startForeground(INotification.NOTIFICATION_ID, notification)
+                (context as MusicService).startForeground(INotification.NOTIFICATION_ID, notification)
                 mStarted = true
             }
         }
@@ -170,12 +168,12 @@ class SystemNotification constructor(service: MusicService, config: Notification
             mController?.unregisterCallback(mCb)
             try {
                 mNotificationManager?.cancel(INotification.NOTIFICATION_ID)
-                mService.unregisterReceiver(this)
+                context.unregisterReceiver(this)
             } catch (ex: IllegalArgumentException) {
                 ex.printStackTrace()
             }
 
-            mService.stopForeground(true)
+            (context as MusicService).stopForeground(true)
         }
     }
 
@@ -191,22 +189,22 @@ class SystemNotification constructor(service: MusicService, config: Notification
         if (art == null) {
             fetchArtUrl = mMetadata?.albumArtUrl
             if (fetchArtUrl.isNullOrEmpty()) {
-                art = BitmapFactory.decodeResource(mService.resources,
+                art = BitmapFactory.decodeResource(context.resources,
                     R.drawable.default_art)
             }
         }
 
         //适配8.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationUtils.createNotificationChannel(mService, mNotificationManager!!)
+            NotificationUtils.createNotificationChannel(context, mNotificationManager!!)
         }
 
-        val notificationBuilder = NotificationCompat.Builder(mService, INotification.CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(context, INotification.CHANNEL_ID)
 
         val playPauseButtonPosition = addActions(notificationBuilder)
 
-        val smallIcon = if (mConfig?.smallIconRes != -1)
-            mConfig?.smallIconRes
+        val smallIcon = if (config.smallIconRes != -1)
+            config.smallIconRes
         else
             R.drawable.ic_notification
 
@@ -227,12 +225,12 @@ class SystemNotification constructor(service: MusicService, config: Notification
             .setContentText(mMetadata?.artist) //艺术家
             .setLargeIcon(art)
 
-        if (!mConfig?.targetClass.isNullOrEmpty()) {
-            val clazz = NotificationUtils.getTargetClass(mConfig?.targetClass!!)
+        if (!config.targetClass.isNullOrEmpty()) {
+            val clazz = NotificationUtils.getTargetClass(config.targetClass!!)
             if (clazz != null) {
                 val songId = mMetadata?.id
                 notificationBuilder.setContentIntent(NotificationUtils
-                    .createContentIntent(mService, mConfig, songId, mConfig?.targetClassBundle,
+                    .createContentIntent(context, config, songId, config.targetClassBundle,
                         clazz))
             }
         }
@@ -248,7 +246,7 @@ class SystemNotification constructor(service: MusicService, config: Notification
 
     private fun setNotificationPlaybackState(builder: NotificationCompat.Builder) {
         if (mPlaybackState == null || !mStarted) {
-            mService.stopForeground(true)
+            (context as MusicService).stopForeground(true)
             return
         }
         builder.setOngoing(mPlaybackState?.state == Playback.STATE_PLAYING)
@@ -287,14 +285,14 @@ class SystemNotification constructor(service: MusicService, config: Notification
             PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L
         if (hasPrevious) {
             notificationBuilder.addAction(
-                if (mConfig?.skipPreviousDrawableRes != -1)
-                    mConfig?.skipPreviousDrawableRes ?: -1
+                if (config.skipPreviousDrawableRes != -1)
+                    config.skipPreviousDrawableRes ?: -1
                 else
                     R.drawable.ic_skip_previous_white_24dp,
-                if (!TextUtils.isEmpty(mConfig?.skipPreviousTitle))
-                    mConfig?.skipPreviousTitle
+                if (!TextUtils.isEmpty(config.skipPreviousTitle))
+                    config.skipPreviousTitle
                 else
-                    mService.getString(R.string.label_previous),
+                    context.getString(R.string.label_previous),
                 mPreviousIntent)
             playPauseButtonPosition = 1
         }
@@ -305,22 +303,22 @@ class SystemNotification constructor(service: MusicService, config: Notification
         val intent: PendingIntent?
 
         if (mPlaybackState?.state == Playback.STATE_PLAYING) {
-            label = if (!TextUtils.isEmpty(mConfig?.labelPlay))
-                mConfig?.labelPlay ?: ""
+            label = if (!TextUtils.isEmpty(config.labelPlay))
+                config.labelPlay ?: ""
             else
-                mService.getString(R.string.label_pause)
-            icon = if (mConfig?.pauseDrawableRes != -1)
-                mConfig?.pauseDrawableRes ?: -1
+                context.getString(R.string.label_pause)
+            icon = if (config.pauseDrawableRes != -1)
+                config.pauseDrawableRes ?: -1
             else
                 R.drawable.ic_pause_white_24dp
             intent = mPauseIntent
         } else {
-            label = if (!TextUtils.isEmpty(mConfig?.labelPause))
-                mConfig?.labelPause ?: ""
+            label = if (!TextUtils.isEmpty(config.labelPause))
+                config.labelPause ?: ""
             else
-                mService.getString(R.string.label_play)
-            icon = if (mConfig?.playDrawableRes != -1)
-                mConfig?.playDrawableRes ?: -1
+                context.getString(R.string.label_play)
+            icon = if (config.playDrawableRes != -1)
+                config.playDrawableRes ?: -1
             else
                 R.drawable.ic_play_arrow_white_24dp
             intent = mPlayIntent
@@ -333,14 +331,14 @@ class SystemNotification constructor(service: MusicService, config: Notification
             PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L
         if (hasNext) {
             notificationBuilder.addAction(
-                if (mConfig?.skipNextDrawableRes != -1)
-                    mConfig?.skipNextDrawableRes ?: -1
+                if (config.skipNextDrawableRes != -1)
+                    config.skipNextDrawableRes ?: -1
                 else
                     R.drawable.ic_skip_next_white_24dp,
-                if (!TextUtils.isEmpty(mConfig?.skipNextTitle))
-                    mConfig?.skipNextTitle
+                if (!TextUtils.isEmpty(config.skipNextTitle))
+                    config.skipNextTitle
                 else
-                    mService.getString(R.string.label_next),
+                    context.getString(R.string.label_next),
                 mNextIntent)
         }
 
@@ -370,14 +368,9 @@ class SystemNotification constructor(service: MusicService, config: Notification
     private fun getPendingIntent(action: String): PendingIntent {
         val intent = Intent(action)
         intent.setPackage(packageName)
-        return PendingIntent
-            .getBroadcast(mService, INotification.REQUEST_CODE, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+        return PendingIntent.getBroadcast(context, INotification.REQUEST_CODE, intent,
+            PendingIntent.FLAG_CANCEL_CURRENT)
     }
 
-    override fun updateFavoriteUI(isFavorite: Boolean) {
-    }
-
-    override fun updateLyricsUI(isChecked: Boolean) {
-    }
+    override fun onCommand(command: String?, extras: Bundle?) {}
 }

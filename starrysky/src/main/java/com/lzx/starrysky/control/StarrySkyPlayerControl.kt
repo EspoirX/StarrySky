@@ -288,16 +288,8 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         return mPlayback.audioSessionId
     }
 
-    override fun updateFavoriteUI(isFavorite: Boolean) {
-        val bundle = Bundle()
-        bundle.putBoolean("isFavorite", isFavorite)
-        connection.sendCommand(INotification.ACTION_UPDATE_FAVORITE_UI, bundle)
-    }
-
-    override fun updateLyricsUI(isChecked: Boolean) {
-        val bundle = Bundle()
-        bundle.putBoolean("isChecked", isChecked)
-        connection.sendCommand(INotification.ACTION_UPDATE_LYRICS_UI, bundle)
+    override fun sendCommand(command: String, parameters: Bundle) {
+        connection.sendCommand(command, parameters)
     }
 
     @SuppressLint("Recycle")
