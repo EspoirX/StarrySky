@@ -1,7 +1,7 @@
 # A Powerful and Streamline MusicLibrary
 
 [ ![](https://img.shields.io/badge/platform-android-green.svg) ](http://developer.android.com/index.html)
-[ ![Download](https://api.bintray.com/packages/lizixian/StarrySky/StarrySkyJava/images/download.svg)](https://bintray.com/lizixian/StarrySky/StarrySkyJava/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/lizixian/StarrySky/StarrySkyX/images/download.svg)](https://bintray.com/lizixian/StarrySky/StarrySkyX/_latestVersion)
 [ ![](https://img.shields.io/badge/license-MIT-green.svg) ](http://choosealicense.com/licenses/mit/)
 
 <a href="art/logo.jpg"><img src="art/logo.jpg" /></a>
@@ -11,11 +11,8 @@
 
 `StarrySky` `MusicLibrary` `Music` `音频集成` 
 
-[English Document](https://github.com/lizixian18/StarrySky/blob/StarrySkyJava/README-EN.md)
 
 一个丰富的音乐播放封装库，针对快速集成音频播放功能，减少大家搬砖的时间，你值得拥有。
-
-
 
 
 ## 特点
@@ -24,12 +21,11 @@
 - 集成和调用API非常简单，音频功能几乎可以集成到一个语句中。
 - 提供丰富的API方法来轻松实现各种功能。
 - 方便集成自定义通知栏和系统通知栏。
-- 使用 ExoPlayer 作为底层播放器。
-- 支持多种普通音频格式并支持多种流式音频格式(DASH, SmoothStreaming, HLS，rtmp，flac)。
-- 支持边播边存功能，没网也能播。
+- 使用 ExoPlayer 作为底层播放器，但支持自定义实现
+- 基于 ExoPlayer 支持多种普通音频格式并支持多种流式音频格式(DASH, SmoothStreaming, HLS，rtmp，flac)。
+- 支持边播边存功能，没网也能播。支持自定义缓存实现。
 - 支持改变播放速度。
-- 超级丰富的 API。
-- 支持自定义播放组件，高度的扩展性。
+- 几乎所有组件都支持自定义实现，高度的扩展性。
 - 等等等等
 
 若在使用中发现 Bug 或者有什么建议问题的可以在 issues 中提出或者添加 QQ 群交流，欢迎反馈。
@@ -38,9 +34,18 @@
 ```groovy
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.lzx:StarrySkyJava:x.x.x'
+    implementation 'com.lzx:StarrySkyKt:x.x.x'
 }
 ```
+
+## androidX 版本集成
+```groovy
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.lzx:StarrySkyX:x.x.x'
+}
+```
+
 x.x.x 填的是当前的版本号。
 
 
@@ -108,12 +113,16 @@ StarrySky.with().playMusicByInfo(info);
 
 ## 使用文档
 
+- [版本更新记录](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/version.md)
 - [StarrySky介绍](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky介绍.md)
 - [StarrySky各种API功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky各种API功能.md)
 - [自定义实现图片加载器](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义图片加载器说明.md)
 - [快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)
-- [播放音频前需要先请求接口获取url这类需求的解决方案](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/播放前需求先请求接口获取url时的处理方法.md)
+- [拦截器](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/拦截器.md)
 - [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/媒体缓存功能.md)
+- [自定义播放器说明](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义播放器说明.md)
+- [自定义播放队列管理说明](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义播放队列管理说明.md)
+- [自定义音频数据提供器说明](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义音频数据提供器说明.md)
 - [Flac音频格式集成说明](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/Flac格式集成说明.md)
 
 
