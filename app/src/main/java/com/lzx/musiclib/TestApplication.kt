@@ -2,8 +2,10 @@ package com.lzx.musiclib
 
 import android.Manifest
 import android.app.Application
+import android.app.PendingIntent
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -20,7 +22,6 @@ import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
 import com.lzx.musiclib.example.MusicRequest
 import com.lzx.musiclib.example.MusicRequest.RequestInfoCallback
-import com.lzx.starrysky.MusicService
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyConfig
 import com.lzx.starrysky.common.IMediaConnection
@@ -33,6 +34,7 @@ import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
+import com.lzx.starrysky.notification.INotification.Companion.ACTION_FAVORITE
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.playback.offline.ICache
@@ -62,10 +64,15 @@ open class TestApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
+
+        val notificationConfig = NotificationConfig()
+        notificationConfig.favoriteIntent = getPendingIntent(ACTION_FAVORITE)
+
         val config = StarrySkyConfig().newBuilder()
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
             .isOpenNotification(true)
+//            .setNotificationConfig(notificationConfig)
 //            .setNotificationFactory(StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY)
 //            .isOpenCache(true)
 //            .setCacheDestFileDir(
@@ -83,6 +90,12 @@ open class TestApplication : Application() {
         StarrySky.init(this, config)
         StarrySkyUtils.isDebug = true
         CrashReport.initCrashReport(applicationContext, "9e447caa98", false)
+    }
+
+    fun getPendingIntent(action: String): PendingIntent? {
+        val intent = Intent(action)
+        intent.setClass(this, NotificationReceiver::class.java)
+        return PendingIntent.getBroadcast(this, 0, intent, 0)
     }
 }
 
@@ -152,8 +165,7 @@ class MyNotificationFactory : StarrySkyNotificationManager.NotificationFactory {
         return object : INotification {
             override fun startNotification() {}
             override fun stopNotification() {}
-            override fun updateFavoriteUI(isFavorite: Boolean) {}
-            override fun updateLyricsUI(isChecked: Boolean) {}
+            override fun onCommand(command: String?, extras: Bundle?) {}
         }
     }
 }
@@ -243,8 +255,7 @@ class MyPlayerControl : PlayerControl {
     override fun getVolume(): Float = 0F
     override fun getDuration(): Long = 0
     override fun getAudioSessionId(): Int = 0
-    override fun updateFavoriteUI(isFavorite: Boolean) {}
-    override fun updateLyricsUI(isChecked: Boolean) {}
+    override fun sendCommand(command: String, parameters: Bundle) {}
     override fun querySongInfoInLocal(): List<SongInfo> = mutableListOf()
     override fun addPlayerEventListener(listener: OnPlayerEventListener?) {}
     override fun removePlayerEventListener(listener: OnPlayerEventListener?) {}

@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.os.Bundle
 import android.os.RemoteException
 import android.support.v4.app.NotificationCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -370,9 +371,5 @@ class SystemNotification constructor(
                 PendingIntent.FLAG_CANCEL_CURRENT)
     }
 
-    override fun updateFavoriteUI(isFavorite: Boolean) {
-    }
-
-    override fun updateLyricsUI(isChecked: Boolean) {
-    }
+    override fun onCommand(command: String?, extras: Bundle?) {}
 }

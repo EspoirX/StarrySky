@@ -13,6 +13,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.os.Bundle
 import android.os.RemoteException
 import android.support.v4.app.NotificationCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -86,6 +87,19 @@ class CustomNotification constructor(
     var config: NotificationConfig = NotificationConfig()
 ) : BroadcastReceiver(), INotification {
 
+    //    /**
+//     * 更新喜欢或收藏按钮UI
+//     */
+//    fun updateFavoriteUI(isFavorite: Boolean)
+//
+//    /**
+//     * 更新歌词按钮UI
+//     */
+//    fun updateLyricsUI(isChecked: Boolean)
+    companion object {
+        const val ACTION_UPDATE_FAVORITE = "ACTION_UPDATE_FAVORITE"
+        const val ACTION_UPDATE_LYRICS = "ACTION_UPDATE_LYRICS"
+    }
 
     private var mRemoteView: RemoteViews? = null
     private var mBigRemoteView: RemoteViews? = null
@@ -502,10 +516,23 @@ class CustomNotification constructor(
         }
     }
 
+    override fun onCommand(command: String?, extras: Bundle?) {
+        when (command) {
+            ACTION_UPDATE_FAVORITE -> {
+                val isFavorite = extras?.getBoolean("isFavorite") ?: false
+                updateFavoriteUI(isFavorite)
+            }
+            ACTION_UPDATE_LYRICS -> {
+                val isChecked = extras?.getBoolean("isChecked") ?: false
+                updateLyricsUI(isChecked)
+            }
+        }
+    }
+
     /**
      * 更新喜欢或收藏按钮样式
      */
-    override fun updateFavoriteUI(isFavorite: Boolean) {
+    private fun updateFavoriteUI(isFavorite: Boolean) {
         if (mNotification == null) {
             return
         }
@@ -531,7 +558,7 @@ class CustomNotification constructor(
     /**
      * 更新歌词按钮UI
      */
-    override fun updateLyricsUI(isChecked: Boolean) {
+    private fun updateLyricsUI(isChecked: Boolean) {
         if (mNotification == null) {
             return
         }

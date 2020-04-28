@@ -18,7 +18,6 @@ import com.lzx.starrysky.ext.duration
 import com.lzx.starrysky.ext.id
 import com.lzx.starrysky.ext.mediaUrl
 import com.lzx.starrysky.ext.title
-import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.playback.player.ExoPlayback
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.provider.IMediaSourceProvider
@@ -288,16 +287,8 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
         return mPlayback.audioSessionId
     }
 
-    override fun updateFavoriteUI(isFavorite: Boolean) {
-        val bundle = Bundle()
-        bundle.putBoolean("isFavorite", isFavorite)
-        connection.sendCommand(INotification.ACTION_UPDATE_FAVORITE_UI, bundle)
-    }
-
-    override fun updateLyricsUI(isChecked: Boolean) {
-        val bundle = Bundle()
-        bundle.putBoolean("isChecked", isChecked)
-        connection.sendCommand(INotification.ACTION_UPDATE_LYRICS_UI, bundle)
+    override fun sendCommand(command: String, parameters: Bundle) {
+        connection.sendCommand(command, parameters)
     }
 
     @SuppressLint("Recycle")
