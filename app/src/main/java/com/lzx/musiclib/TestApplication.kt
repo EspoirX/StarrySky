@@ -148,7 +148,7 @@ class RequestSongInfoInterceptor : StarrySkyInterceptor {
  * 自定义通知栏实例
  */
 class MyNotificationFactory : StarrySkyNotificationManager.NotificationFactory {
-    override fun build(musicService: MusicService, config: NotificationConfig?): INotification {
+    override fun build(context: Context, config: NotificationConfig?): INotification {
         return object : INotification {
             override fun startNotification() {}
             override fun stopNotification() {}

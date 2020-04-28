@@ -4,15 +4,12 @@ import android.app.Notification
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.support.v4.graphics.ColorUtils
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RemoteViews
 import android.widget.TextView
-
+import com.lzx.starrysky.utils.MainLooper
 import java.util.concurrent.CountDownLatch
 
 /**
@@ -21,49 +18,39 @@ import java.util.concurrent.CountDownLatch
 class NotificationColorUtils {
     private var titleView: TextView? = null
     private var contentView: TextView? = null
-    private var mNotificationColorModel: NotificationColorModel? = null
+    private var colorModel: NotificationColorModel? = null
 
     fun setTitleTextColor(
-        context: Context, remoteView: RemoteViews, viewId: Int, notification: Notification
+        context: Context,
+        remoteView: RemoteViews,
+        viewId: Int,
+        notification: Notification
     ) {
-        if (mNotificationColorModel == null) {
+        if (colorModel == null) {
             isDarkNotificationBar(context, notification)
         }
-
-        if (mNotificationColorModel!!.titleColor == COLOR_UNDEF && Build.VERSION.SDK_INT >= 21) {
-            if (mNotificationColorModel!!.isDarkNotificationBg) {
-                mNotificationColorModel!!.titleColor = EVENTCONTENT_TITLE_COLOR
-            } else {
-                mNotificationColorModel!!.titleColor = NOTIFICATION_TITLE_COLOR
-            }
-        }
-
-        remoteView.setTextColor(viewId, mNotificationColorModel!!.titleColor)
+        colorModel?.configTitleColor()
+        colorModel?.titleColor?.let { remoteView.setTextColor(viewId, it) }
     }
 
     fun setContentTextColor(
-        context: Context, remoteView: RemoteViews, viewId: Int, notification: Notification
+        context: Context,
+        remoteView: RemoteViews,
+        viewId: Int,
+        notification: Notification
     ) {
-        if (mNotificationColorModel == null) {
+        if (colorModel == null) {
             isDarkNotificationBar(context, notification)
         }
-
-        if (mNotificationColorModel!!.contentColor == COLOR_UNDEF && Build.VERSION.SDK_INT >= 21) {
-            if (mNotificationColorModel!!.isDarkNotificationBg) {
-                mNotificationColorModel!!.contentColor = EVENTCONTENT_COLOR
-            } else {
-                mNotificationColorModel!!.contentColor = NOTIFICATION_LINE2_COLOR
-            }
-        }
-
-        remoteView.setTextColor(viewId, mNotificationColorModel!!.contentColor)
+        colorModel?.configContentColor()
+        colorModel?.contentColor?.let { remoteView.setTextColor(viewId, it) }
     }
 
     @Synchronized
     fun isDarkNotificationBar(context: Context, notification: Notification?): Boolean {
-        if (mNotificationColorModel == null) {
-            mNotificationColorModel = NotificationColorModel()
-            val isInMainThread = Looper.myLooper() == Looper.getMainLooper()
+        if (colorModel == null) {
+            colorModel = NotificationColorModel()
+            val isInMainThread = MainLooper.instance.isInMainThread()
             var countDownLatch: CountDownLatch? = null
             if (!isInMainThread) {
                 countDownLatch = CountDownLatch(1)
@@ -72,54 +59,36 @@ class NotificationColorUtils {
             val finalCountDownLatch = countDownLatch
             val runnable = Runnable {
                 try {
-                    val notiTextColor = getNotificationColor(context, notification)
-                    if (notiTextColor == COLOR_UNDEF) {
-                        mNotificationColorModel!!.titleColor = COLOR_UNDEF
-                        mNotificationColorModel!!.contentColor = COLOR_UNDEF
-                        mNotificationColorModel!!.isDarkNotificationBg = true
+                    val noticeTextColor = getNotificationColor(context, notification)
+                    if (noticeTextColor == COLOR_UNDEF) {
+                        colorModel?.defaultConfig()
                     } else {
-                        //!isTextColorSimilar(-16777216, notiTextColor);
-                        val isDark = ColorUtils.calculateLuminance(notiTextColor) > 0.5
-                        mNotificationColorModel!!.isDarkNotificationBg = isDark
+                        val isDark = ColorUtils.calculateLuminance(noticeTextColor) > 0.5
+                        colorModel?.isDarkNotificationBg = isDark
                     }
                 } catch (var3: Exception) {
                     var3.printStackTrace()
-                    mNotificationColorModel!!.titleColor = COLOR_UNDEF
-                    mNotificationColorModel!!.contentColor = COLOR_UNDEF
-                    mNotificationColorModel!!.isDarkNotificationBg = true
+                    colorModel?.defaultConfig()
                 }
 
-                if (mNotificationColorModel!!.titleColor == COLOR_UNDEF && Build.VERSION.SDK_INT >= 21) {
-                    if (mNotificationColorModel!!.isDarkNotificationBg) {
-                        mNotificationColorModel!!.titleColor = EVENTCONTENT_TITLE_COLOR
-                    } else {
-                        mNotificationColorModel!!.titleColor = NOTIFICATION_TITLE_COLOR
-                    }
-                }
-
-                if (mNotificationColorModel!!.contentColor == COLOR_UNDEF && Build.VERSION.SDK_INT >= 21) {
-                    if (mNotificationColorModel!!.isDarkNotificationBg) {
-                        mNotificationColorModel!!.contentColor = EVENTCONTENT_COLOR
-                    } else {
-                        mNotificationColorModel!!.contentColor = NOTIFICATION_LINE2_COLOR
-                    }
-                }
+                colorModel?.configTitleColor()
+                colorModel?.configContentColor()
 
                 finalCountDownLatch?.countDown()
             }
+
             if (isInMainThread) {
                 runnable.run()
             } else {
-                Handler(Looper.getMainLooper()).post(runnable)
+                MainLooper.instance.runOnUiThread(runnable)
                 try {
-                    countDownLatch!!.await()
+                    countDownLatch?.await()
                 } catch (var6: InterruptedException) {
                     var6.printStackTrace()
                 }
             }
         }
-
-        return mNotificationColorModel!!.isDarkNotificationBg
+        return colorModel?.isDarkNotificationBg ?: false
     }
 
     private fun getNotificationColor(context: Context, notification: Notification?): Int {
@@ -127,18 +96,14 @@ class NotificationColorUtils {
         layout.layoutParams = LinearLayout.LayoutParams(-2, -2)
         val viewGroup = notification?.contentView?.apply(context, layout) as ViewGroup
         getTextView(viewGroup, false)
-        return if (titleView == null) {
-            COLOR_UNDEF
-        } else {
-            val color = titleView!!.currentTextColor
-            mNotificationColorModel!!.titleColor = color
-            if (contentView != null) {
-                val contentColor = contentView!!.currentTextColor
-                mNotificationColorModel!!.contentColor = contentColor
+        return titleView?.let { it ->
+            val color = it.currentTextColor
+            colorModel?.titleColor = color
+            contentView?.let {
+                colorModel?.contentColor = it.currentTextColor
             }
-
-            color
-        }
+            return color
+        } ?: COLOR_UNDEF
     }
 
     private fun getTextView(viewGroup: ViewGroup?, isSetTextColor: Boolean): TextView? {
@@ -164,7 +129,6 @@ class NotificationColorUtils {
                     getTextView(view, isSetTextColor)
                 }
             }
-
             return null
         }
     }
@@ -193,6 +157,32 @@ class NotificationColorUtils {
             this.titleColor = COLOR_UNDEF
             this.contentColor = COLOR_UNDEF
             this.isDarkNotificationBg = true
+        }
+
+        fun defaultConfig() {
+            titleColor = COLOR_UNDEF
+            contentColor = COLOR_UNDEF
+            isDarkNotificationBg = true
+        }
+
+        fun configTitleColor() {
+            if (titleColor == COLOR_UNDEF && Build.VERSION.SDK_INT >= 21) {
+                titleColor = if (isDarkNotificationBg) {
+                    EVENTCONTENT_TITLE_COLOR
+                } else {
+                    NOTIFICATION_TITLE_COLOR
+                }
+            }
+        }
+
+        fun configContentColor() {
+            if (contentColor == COLOR_UNDEF && Build.VERSION.SDK_INT >= 21) {
+                contentColor = if (isDarkNotificationBg) {
+                    EVENTCONTENT_COLOR
+                } else {
+                    NOTIFICATION_LINE2_COLOR
+                }
+            }
         }
     }
 

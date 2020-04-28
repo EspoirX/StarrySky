@@ -1,6 +1,6 @@
 package com.lzx.starrysky.notification
 
-import com.lzx.starrysky.MusicService
+import android.content.Context
 import com.lzx.starrysky.StarrySky
 
 class StarrySkyNotificationManager constructor(
@@ -22,34 +22,34 @@ class StarrySkyNotificationManager constructor(
         return isOpenNotification
     }
 
-    fun getNotification(musicService: MusicService): INotification? {
+    fun getNotification(context: Context): INotification? {
         return notification ?: synchronized(this) {
             if (notification == null && factory != null) {
                 val config = StarrySky.get().notificationConfig()
-                notification = factory?.build(musicService, config)
+                notification = factory?.build(context, config)
             }
             return notification
         }
     }
 
     interface NotificationFactory {
-        fun build(musicService: MusicService, config: NotificationConfig?): INotification
+        fun build(context: Context, config: NotificationConfig?): INotification
     }
 
     companion object {
         val SYSTEM_NOTIFICATION_FACTORY: NotificationFactory = object : NotificationFactory {
             override fun build(
-                musicService: MusicService, config: NotificationConfig?
+                context: Context, config: NotificationConfig?
             ): INotification {
-                return SystemNotification(musicService, config)
+                return if(config==null) SystemNotification(context) else SystemNotification(context, config)
             }
         }
 
         val CUSTOM_NOTIFICATION_FACTORY: NotificationFactory = object : NotificationFactory {
             override fun build(
-                musicService: MusicService, config: NotificationConfig?
+                context: Context, config: NotificationConfig?
             ): INotification {
-                return CustomNotification(musicService, config)
+                return if(config==null) CustomNotification(context) else CustomNotification(context, config)
             }
         }
     }

@@ -13,6 +13,8 @@ class MainLooper private constructor(looper: Looper) : Handler(looper) {
         }
     }
 
+    fun isInMainThread() = Looper.myLooper() == Looper.getMainLooper()
+
     companion object {
         val instance = MainLooper(Looper.getMainLooper())
     }

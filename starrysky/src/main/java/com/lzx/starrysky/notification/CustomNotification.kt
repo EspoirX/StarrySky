@@ -81,8 +81,10 @@ import com.lzx.starrysky.notification.utils.NotificationUtils
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.provider.SongInfo
 
-class CustomNotification constructor(service: MusicService, config: NotificationConfig?) :
-    BroadcastReceiver(), INotification {
+class CustomNotification constructor(
+    val context: Context,
+    var config: NotificationConfig = NotificationConfig()
+) : BroadcastReceiver(), INotification {
 
 
     private var mRemoteView: RemoteViews? = null
@@ -99,7 +101,6 @@ class CustomNotification constructor(service: MusicService, config: Notification
     private var mDownloadIntent: PendingIntent? = null
     private var mCloseIntent: PendingIntent? = null
 
-    private val mService: MusicService = service
     private var mSessionToken: MediaSessionCompat.Token? = null
     private var mController: MediaControllerCompat? = null
     private var mTransportControls: MediaControllerCompat.TransportControls? = null
@@ -109,7 +110,6 @@ class CustomNotification constructor(service: MusicService, config: Notification
     private val mNotificationManager: NotificationManager?
     private val packageName: String
     private var mStarted = false
-    private var mConfig: NotificationConfig? = null
     private var mNotification: Notification? = null
 
     private val res: Resources
@@ -118,38 +118,34 @@ class CustomNotification constructor(service: MusicService, config: Notification
     private var lastClickTime: Long = 0
 
     init {
-        mConfig = config
-        if (mConfig == null) {
-            mConfig = NotificationConfig()
-        }
         updateSessionToken()
         mNotificationManager =
-            mService.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
-        packageName = mService.applicationContext.packageName
-        res = mService.applicationContext.resources
+            context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+        packageName = context.applicationContext.packageName
+        res = context.applicationContext.resources
         mColorUtils = NotificationColorUtils()
-        setStopIntent(mConfig?.stopIntent)
-        setNextPendingIntent(mConfig?.nextIntent)
-        setPrePendingIntent(mConfig?.preIntent)
-        setPlayPendingIntent(mConfig?.playIntent)
-        setPausePendingIntent(mConfig?.pauseIntent)
-        setFavoritePendingIntent(mConfig?.favoriteIntent)
-        setLyricsPendingIntent(mConfig?.lyricsIntent)
-        setDownloadPendingIntent(mConfig?.downloadIntent)
-        setClosePendingIntent(mConfig?.closeIntent)
-        setPlayOrPauseIntent(mConfig?.playOrPauseIntent)
+        setStopIntent(config.stopIntent)
+        setNextPendingIntent(config.nextIntent)
+        setPrePendingIntent(config.preIntent)
+        setPlayPendingIntent(config.playIntent)
+        setPausePendingIntent(config.pauseIntent)
+        setFavoritePendingIntent(config.favoriteIntent)
+        setLyricsPendingIntent(config.lyricsIntent)
+        setDownloadPendingIntent(config.downloadIntent)
+        setClosePendingIntent(config.closeIntent)
+        setPlayOrPauseIntent(config.playOrPauseIntent)
 
         mNotificationManager.cancelAll()
     }
 
     private fun updateSessionToken() {
         try {
-            val freshToken = mService.sessionToken
+            val freshToken = (context as MusicService).sessionToken
             if (mSessionToken == null && freshToken != null || mSessionToken != null && mSessionToken != freshToken) {
                 mController?.unregisterCallback(mCb)
                 mSessionToken = freshToken
                 mSessionToken?.let {
-                    mController = MediaControllerCompat(mService, it)
+                    mController = MediaControllerCompat(context, it)
                     mTransportControls = mController?.transportControls
                     if (mStarted) {
                         mController?.registerCallback(mCb)
@@ -216,12 +212,12 @@ class CustomNotification constructor(service: MusicService, config: Notification
         val description = mMetadata?.description
         val songId = mMetadata?.id
         val smallIcon =
-            if (mConfig?.smallIconRes != -1) mConfig?.smallIconRes else R.drawable.ic_notification
+            if (config.smallIconRes != -1) config.smallIconRes else R.drawable.ic_notification
         //适配8.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationUtils.createNotificationChannel(mService, mNotificationManager!!)
+            NotificationUtils.createNotificationChannel(context, mNotificationManager!!)
         }
-        val notificationBuilder = NotificationCompat.Builder(mService, CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
         notificationBuilder
             .setOnlyAlertOnce(true)
             .setSmallIcon(smallIcon!!)
@@ -229,12 +225,12 @@ class CustomNotification constructor(service: MusicService, config: Notification
             .setContentTitle(description?.title) //歌名
             .setContentText(description?.subtitle) //艺术家
         //setContentIntent
-        if (!mConfig?.targetClass.isNullOrEmpty()) {
-            val clazz = NotificationUtils.getTargetClass(mConfig?.targetClass!!)
+        if (!config.targetClass.isNullOrEmpty()) {
+            val clazz = NotificationUtils.getTargetClass(config.targetClass!!)
             if (clazz != null) {
-                notificationBuilder.setContentIntent(NotificationUtils
-                    .createContentIntent(mService, mConfig, songId, mConfig?.targetClassBundle,
-                        clazz))
+                notificationBuilder.setContentIntent(
+                    NotificationUtils.createContentIntent(context, config, songId,
+                        config.targetClassBundle, clazz))
             }
         }
         //这里不能复用，会导致内存泄漏，需要每次都创建
@@ -255,8 +251,8 @@ class CustomNotification constructor(service: MusicService, config: Notification
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mNotification?.bigContentView = mBigRemoteView
         }
-        val songInfos = StarrySky.get().mediaQueueProvider().songList.filter { it.songId == songId }
-        val songInfo: SongInfo? = if (songInfos.isNotEmpty()) songInfos[0] else null
+        val songInfo = StarrySky.get().mediaQueueProvider().songList
+            .filter { it.songId == songId }.elementAtOrNull(0)
         updateRemoteViewUI(mNotification, songInfo, smallIcon)
 
         return mNotification
@@ -264,12 +260,11 @@ class CustomNotification constructor(service: MusicService, config: Notification
 
     private fun setNotificationPlaybackState(builder: NotificationCompat.Builder) {
         if (mPlaybackState == null || !mStarted) {
-            mService.stopForeground(true)
+            (context as MusicService).stopForeground(true)
             return
         }
         builder.setOngoing(mPlaybackState?.state == Playback.STATE_PLAYING)
     }
-
 
     /**
      * 创建RemoteViews
@@ -319,7 +314,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
     private fun updateRemoteViewUI(
         notification: Notification?, songInfo: SongInfo?, smallIcon: Int
     ) {
-        val isDark = mColorUtils.isDarkNotificationBar(mService, notification)
+        val isDark = mColorUtils.isDarkNotificationBar(context, notification)
         var art: Bitmap? = mMetadata?.albumArt
         val artistName = songInfo?.artist ?: ""
         val songName = songInfo?.songName ?: ""
@@ -395,7 +390,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         if (art == null) {
             fetchArtUrl = mMetadata?.albumArtUrl
             if (fetchArtUrl.isNullOrEmpty()) {
-                art = BitmapFactory.decodeResource(mService.resources, R.drawable.default_art)
+                art = BitmapFactory.decodeResource(context.resources, R.drawable.default_art)
             }
         }
         mRemoteView?.setImageViewBitmap(
@@ -484,9 +479,9 @@ class CustomNotification constructor(service: MusicService, config: Notification
                 filter.addAction(ACTION_PLAY_OR_PAUSE)
                 filter.addAction(ACTION_CLOSE)
 
-                mService.registerReceiver(this, filter)
+                context.registerReceiver(this, filter)
 
-                mService.startForeground(NOTIFICATION_ID, notification)
+                (context as MusicService).startForeground(NOTIFICATION_ID, notification)
                 mStarted = true
             }
         }
@@ -498,12 +493,12 @@ class CustomNotification constructor(service: MusicService, config: Notification
             mController?.unregisterCallback(mCb)
             try {
                 mNotificationManager?.cancel(NOTIFICATION_ID)
-                mService.unregisterReceiver(this)
+                context.unregisterReceiver(this)
             } catch (ex: IllegalArgumentException) {
                 ex.printStackTrace()
             }
 
-            mService.stopForeground(true)
+            (context as MusicService).stopForeground(true)
         }
     }
 
@@ -514,7 +509,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         if (mNotification == null) {
             return
         }
-        val isDark = mColorUtils.isDarkNotificationBar(mService, mNotification!!)
+        val isDark = mColorUtils.isDarkNotificationBar(context, mNotification!!)
         //喜欢或收藏按钮选中时样式
         if (isFavorite) {
             mBigRemoteView?.setImageViewResource(
@@ -540,7 +535,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
         if (mNotification == null) {
             return
         }
-        val isDark = mColorUtils.isDarkNotificationBar(mService, mNotification!!)
+        val isDark = mColorUtils.isDarkNotificationBar(context, mNotification!!)
         //歌词按钮选中时样式
         if (isChecked) {
             mBigRemoteView
@@ -574,8 +569,7 @@ class CustomNotification constructor(service: MusicService, config: Notification
     }
 
     private fun setPrePendingIntent(pendingIntent: PendingIntent?) {
-        mPreviousIntent =
-            pendingIntent ?: getPendingIntent(ACTION_PREV)
+        mPreviousIntent = pendingIntent ?: getPendingIntent(ACTION_PREV)
     }
 
     private fun setPlayPendingIntent(pendingIntent: PendingIntent?) {
@@ -587,18 +581,15 @@ class CustomNotification constructor(service: MusicService, config: Notification
     }
 
     private fun setFavoritePendingIntent(pendingIntent: PendingIntent?) {
-        mFavoriteIntent =
-            pendingIntent ?: getPendingIntent(ACTION_FAVORITE)
+        mFavoriteIntent = pendingIntent ?: getPendingIntent(ACTION_FAVORITE)
     }
 
     private fun setLyricsPendingIntent(pendingIntent: PendingIntent?) {
-        mLyricsIntent =
-            pendingIntent ?: getPendingIntent(ACTION_LYRICS)
+        mLyricsIntent = pendingIntent ?: getPendingIntent(ACTION_LYRICS)
     }
 
     private fun setDownloadPendingIntent(pendingIntent: PendingIntent?) {
-        mDownloadIntent =
-            pendingIntent ?: getPendingIntent(ACTION_DOWNLOAD)
+        mDownloadIntent = pendingIntent ?: getPendingIntent(ACTION_DOWNLOAD)
     }
 
     private fun setClosePendingIntent(pendingIntent: PendingIntent?) {
@@ -606,15 +597,13 @@ class CustomNotification constructor(service: MusicService, config: Notification
     }
 
     private fun setPlayOrPauseIntent(pendingIntent: PendingIntent?) {
-        mPlayOrPauseIntent =
-            pendingIntent ?: getPendingIntent(ACTION_PLAY_OR_PAUSE)
+        mPlayOrPauseIntent = pendingIntent ?: getPendingIntent(ACTION_PLAY_OR_PAUSE)
     }
 
     private fun getPendingIntent(action: String): PendingIntent {
         val intent = Intent(action)
         intent.setPackage(packageName)
-        return PendingIntent
-            .getBroadcast(mService, REQUEST_CODE, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+        return PendingIntent.getBroadcast(context, REQUEST_CODE, intent,
+            PendingIntent.FLAG_CANCEL_CURRENT)
     }
 }
