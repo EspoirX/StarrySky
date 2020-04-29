@@ -2,13 +2,7 @@ package com.lzx.starrysky.provider
 
 import android.graphics.Bitmap
 import android.support.v4.media.MediaMetadataCompat
-import com.lzx.starrysky.ext.album
-import com.lzx.starrysky.ext.albumArtUri
-import com.lzx.starrysky.ext.artist
-import com.lzx.starrysky.ext.duration
-import com.lzx.starrysky.ext.id
-import com.lzx.starrysky.ext.mediaUri
-import com.lzx.starrysky.ext.title
+import com.lzx.starrysky.utils.StarrySkyUtils
 
 class MediaSourceProvider : IMediaSourceProvider {
 
@@ -32,7 +26,7 @@ class MediaSourceProvider : IMediaSourceProvider {
             mediaMetadataSources.clear()
             value.forEach {
                 songSources[it.songId] = it
-                mediaMetadataSources[it.songId] = toMediaMetadata(it)
+                mediaMetadataSources[it.songId] = StarrySkyUtils.toMediaMetadata(it)
             }
         }
 
@@ -63,7 +57,7 @@ class MediaSourceProvider : IMediaSourceProvider {
     override fun addSongInfo(info: SongInfo) {
         if (!hasSongInfo(info.songId)) {
             songSources[info.songId] = info
-            mediaMetadataSources[info.songId] = toMediaMetadata(info)
+            mediaMetadataSources[info.songId] = StarrySkyUtils.toMediaMetadata(info)
         }
     }
 
@@ -115,33 +109,5 @@ class MediaSourceProvider : IMediaSourceProvider {
             .putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, icon)
             .build()
         mediaMetadataSources[songId] = metadata
-    }
-
-    /**
-     * SongInfo 转 MediaMetadataCompat
-     */
-    @Synchronized
-    private fun toMediaMetadata(info: SongInfo): MediaMetadataCompat {
-        val albumTitle = if (info.songName.isNotEmpty()) info.songName else ""
-        val songCover = if (info.songCover.isNotEmpty()) info.songCover else ""
-        val builder = MediaMetadataCompat.Builder()
-        builder.id = info.songId
-        builder.mediaUri = info.songUrl
-        if (albumTitle.isNotEmpty()) {
-            builder.album = albumTitle
-        }
-        if (info.duration != -1L) {
-            builder.duration = info.duration
-        }
-        if (songCover.isNotEmpty()) {
-            builder.albumArtUri = songCover
-        }
-        if (info.songName.isNotEmpty()) {
-            builder.title = info.songName
-        }
-        if (info.artist.isNotEmpty()) {
-            builder.artist = info.artist
-        }
-        return builder.build()
     }
 }

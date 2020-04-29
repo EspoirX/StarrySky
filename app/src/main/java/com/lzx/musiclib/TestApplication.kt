@@ -190,7 +190,7 @@ class PlayVoiceBeforeRealPlay(context: Context) : StarrySkyInterceptor {
 class MyNotificationFactory : StarrySkyNotificationManager.NotificationFactory {
     override fun build(context: Context, config: NotificationConfig?): INotification {
         return object : INotification {
-            override fun startNotification() {}
+            override fun startNotification(songInfo: SongInfo?, playbackState: PlaybackStateCompat?) {}
             override fun stopNotification() {}
             override fun onCommand(command: String?, extras: Bundle?) {}
         }

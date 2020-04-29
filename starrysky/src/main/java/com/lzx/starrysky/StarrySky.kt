@@ -160,9 +160,11 @@ class StarrySky {
         }
 
         private fun initializeStarrySky() {
+
             if (globalContext == null) {
-                globalContext = StarrySkyUtils.getContextReflex()
+                StarrySkyUtils.contextReflex?.let { globalContext = it }
             }
+
             requireNotNull(globalContext) { "StarrySky 初始化失败，上下文为 null" }
 
             notificationManager = StarrySkyNotificationManager(mStarrySkyConfig.isOpenNotification,

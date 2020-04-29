@@ -114,7 +114,7 @@ class StarrySkyPlayerControl constructor(private val context: Context) : PlayerC
     }
 
     override fun getRepeatMode(): RepeatMode {
-        return StarrySkyUtils.getRepeatMode()
+        return StarrySkyUtils.repeatMode
     }
 
     override fun getPlayList(): MutableList<SongInfo> {

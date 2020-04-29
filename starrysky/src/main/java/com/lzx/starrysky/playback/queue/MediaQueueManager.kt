@@ -21,7 +21,7 @@ open class MediaQueueManager : MediaQueue {
         get() = StarrySky.get().mediaQueueProvider().songList.size
 
     override fun getCurrentSongInfo(isActiveTrigger: Boolean): SongInfo? {
-        val repeatMode = StarrySkyUtils.getRepeatMode().repeatMode
+        val repeatMode = StarrySkyUtils.repeatMode.repeatMode
         val mPlayingQueue = if (!isActiveTrigger && repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
             StarrySky.get().mediaQueueProvider().getShuffleSongList()
         } else {

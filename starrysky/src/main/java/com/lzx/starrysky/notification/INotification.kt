@@ -1,13 +1,16 @@
 package com.lzx.starrysky.notification
 
 import android.os.Bundle
+import android.support.v4.media.session.PlaybackStateCompat
+import com.lzx.starrysky.provider.SongInfo
 
 interface INotification {
 
     /**
      * 展示通知栏
+     * songInfo 当前播放的音频
      */
-    fun startNotification()
+    fun startNotification(songInfo: SongInfo?, playbackState: PlaybackStateCompat?)
 
     /**
      * 关闭通知栏

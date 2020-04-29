@@ -144,10 +144,11 @@ class PlaybackManager constructor(
                     StarrySky.get().mediaQueueProvider().getMediaMetadataById(it.songId)
             }
             //把状态回调出去
-            mServiceCallback?.onPlaybackStateUpdated(stateBuilder?.build(), currMetadata)
+            val playbackState = stateBuilder?.build()
+            mServiceCallback?.onPlaybackStateUpdated(playbackState, currMetadata)
             //如果是播放或者暂停的状态，更新一下通知栏
             if (state == Playback.STATE_PLAYING || state == Playback.STATE_PAUSED) {
-                mServiceCallback?.onNotificationRequired()
+                notification?.startNotification(currPlayInfo, playbackState)
             }
         }
     }
@@ -168,7 +169,7 @@ class PlaybackManager constructor(
         }
         var shouldPlayNext = true
         var shouldPlayPre = true
-        val repeatMode = StarrySkyUtils.getRepeatMode()
+        val repeatMode = StarrySkyUtils.repeatMode
         if (repeatMode.repeatMode != RepeatMode.REPEAT_MODE_SHUFFLE) {
             //如果没开启循环并且当前歌曲是最后一首，则不能下一首
             shouldPlayNext = !(!repeatMode.isLoop && mediaQueue.currSongIsLastSong())
@@ -208,7 +209,7 @@ class PlaybackManager constructor(
     override fun onPlaybackCompletion() {
         updatePlaybackState(playback.currPlayInfo, isOnlyUpdateActions = false, isError = false,
             error = null)
-        val repeatMode = StarrySkyUtils.getRepeatMode()
+        val repeatMode = StarrySkyUtils.repeatMode
         when (repeatMode.repeatMode) {
             //顺序播放
             RepeatMode.REPEAT_MODE_NONE -> {
@@ -392,7 +393,7 @@ class PlaybackManager constructor(
                 }
                 //播放模式
                 RepeatMode.KEY_REPEAT_MODE -> {
-                    val repeatMode = StarrySkyUtils.getRepeatMode().repeatMode
+                    val repeatMode = StarrySkyUtils.repeatMode.repeatMode
                     if (repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
                         StarrySky.get().mediaQueueProvider().updateShuffleSongList()
                     } else {

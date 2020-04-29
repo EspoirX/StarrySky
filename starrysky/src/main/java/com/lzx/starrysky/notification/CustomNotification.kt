@@ -81,6 +81,7 @@ import com.lzx.starrysky.notification.utils.NotificationColorUtils
 import com.lzx.starrysky.notification.utils.NotificationUtils
 import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.provider.SongInfo
+import com.lzx.starrysky.utils.StarrySkyUtils
 
 class CustomNotification constructor(
     val context: Context,
@@ -476,11 +477,18 @@ class CustomNotification constructor(
         mBigRemoteView?.setImageViewResource(getResourceId(ID_IMG_NOTIFY_PRE, "id"), res)
     }
 
-    override fun startNotification() {
-        if (!mStarted) {
+    override fun startNotification(songInfo: SongInfo?, playbackState: PlaybackStateCompat?) {
+        mPlaybackState = mController?.playbackState
+        if (mPlaybackState?.state != playbackState?.state) {
+            mPlaybackState = playbackState
+        }
+        if (mMetadata?.id != songInfo?.songId) {
+            mMetadata = songInfo?.let { StarrySkyUtils.toMediaMetadata(it) }
+            createNotification()
+        } else {
             mMetadata = mController?.metadata
-            mPlaybackState = mController?.playbackState
-
+        }
+        if (!mStarted) {
             // The notification must be updated after setting started to true
             val notification = createNotification()
             if (notification != null) {
