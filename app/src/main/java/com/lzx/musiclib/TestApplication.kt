@@ -24,6 +24,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
 import com.lzx.musiclib.example.MusicRequest
 import com.lzx.musiclib.example.MusicRequest.RequestInfoCallback
+import com.lzx.musiclib.imageloader.GlideLoader
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyConfig
 import com.lzx.starrysky.common.IMediaConnection
@@ -39,7 +40,6 @@ import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.playback.offline.ICache
-import com.lzx.starrysky.playback.player.Playback
 import com.lzx.starrysky.playback.queue.MediaQueue
 import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
@@ -81,11 +81,11 @@ open class TestApplication : Application() {
 //                Environment.getExternalStorageDirectory().absolutePath.toString() +
 //                    "/111StarrySkyCache/")
 //            .setNotificationFactory(MyNotificationFactory())
-//            .setPlayback(MyPlayback())
+//            .setPlayback(MediaPlayback(this, null))
 //            .setPlayerControl(MyPlayerControl())
 //            .setMediaQueueProvider(MyMediaQueueProvider())
 //            .setMediaQueue(MyMediaQueue())
-//            .setImageLoader(MyImageLoader())
+            .setImageLoader(GlideLoader())
 //            .setMediaConnection(MyMediaConnection())
 //            .setCache(MyCache(this))
             .build()
@@ -113,7 +113,6 @@ class PermissionInterceptor internal constructor(private val mContext: Context) 
             callback.onInterrupt(RuntimeException("SongInfo is null"))
             return
         }
-        Log.i("TestApplication", "------PermissionInterceptor-----")
         SoulPermission.getInstance().checkAndRequestPermissions(Permissions.build(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE),
@@ -144,7 +143,6 @@ class RequestSongInfoInterceptor : StarrySkyInterceptor {
             callback.onInterrupt(RuntimeException("SongInfo is null"))
             return
         }
-        Log.i("TestApplication", "------RequestSongInfoInterceptor-----")
         if (songInfo.songUrl.isEmpty()) {
             mMusicRequest.requestSongUrl(songInfo.songId,
                 object : RequestInfoCallback {
@@ -164,9 +162,7 @@ class PlayVoiceBeforeRealPlay(context: Context) : StarrySkyInterceptor {
     private val file: AssetFileDescriptor = context.assets.openFd("111.mp3")
 
     init {
-        player.setOnPreparedListener {
-            it.start()
-        }
+        player.setOnPreparedListener { it.start() }
     }
 
     override fun process(
@@ -174,6 +170,7 @@ class PlayVoiceBeforeRealPlay(context: Context) : StarrySkyInterceptor {
     ) {
         mainLooper.runOnUiThread(Runnable {
             try {
+                Log.i("TestApplication", "index = " + StarrySky.with().getNowPlayingIndex())
                 if (StarrySky.with().isPlaying()) {
                     StarrySky.with().stopMusic()
                 }
@@ -188,9 +185,7 @@ class PlayVoiceBeforeRealPlay(context: Context) : StarrySkyInterceptor {
                 callback.onInterrupt(RuntimeException("转场音效播放失败"))
                 return@setOnErrorListener false
             }
-            player.setOnCompletionListener {
-                callback.onContinue(songInfo)
-            }
+            player.setOnCompletionListener { callback.onContinue(songInfo) }
         })
     }
 }
@@ -206,43 +201,6 @@ class MyNotificationFactory : StarrySkyNotificationManager.NotificationFactory {
             override fun onCommand(command: String?, extras: Bundle?) {}
         }
     }
-}
-
-/**
- * 自定义播放器示例
- */
-class MyPlayback : Playback {
-    override val playbackState: Int
-        get() = Playback.STATE_NONE
-    override val isConnected: Boolean
-        get() = true
-    override val isPlaying: Boolean
-        get() = false
-    override val currentStreamPosition: Long
-        get() = 0L
-    override val bufferedPosition: Long
-        get() = 0L
-    override val duration: Long
-        get() = 0
-    override var currentMediaId: String
-        get() = ""
-        set(value) {}
-    override var volume: Float
-        get() = 0F
-        set(value) {}
-    override val currPlayInfo: SongInfo?
-        get() = null
-    override val audioSessionId: Int
-        get() = 0
-
-    override fun stop() {}
-    override fun play(songInfo: SongInfo, isPlayWhenReady: Boolean) {}
-    override fun pause() {}
-    override fun seekTo(position: Long) {}
-    override fun onFastForward() {}
-    override fun onRewind() {}
-    override fun onDerailleur(refer: Boolean, multiple: Float) {}
-    override fun setCallback(callback: Playback.Callback) {}
 }
 
 /**
@@ -345,28 +303,6 @@ class MyMediaQueue : MediaQueue {
     override fun currSongIsLastSong(): Boolean = false
     override fun updateIndexBySongId(songId: String): Boolean = false
     override fun updateMediaMetadata(songInfo: SongInfo?) {}
-}
-
-/**
- * 自定义图片加载器示例
- */
-class MyImageLoader : ImageLoaderStrategy {
-    override fun loadImage(context: Context, url: String?, callBack: ImageLoaderCallBack) {
-        Glide.with(context).asBitmap().load(url)
-            .into(object : CustomTarget<Bitmap?>() {
-                override fun onLoadCleared(placeholder: Drawable?) {}
-                override fun onLoadFailed(errorDrawable: Drawable?) {
-                    super.onLoadFailed(errorDrawable)
-                    callBack.onBitmapFailed(errorDrawable)
-                }
-
-                override fun onResourceReady(
-                    resource: Bitmap, transition: Transition<in Bitmap?>?
-                ) {
-                    callBack.onBitmapLoaded(resource)
-                }
-            })
-    }
 }
 
 /**

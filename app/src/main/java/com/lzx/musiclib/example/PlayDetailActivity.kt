@@ -87,6 +87,8 @@ class PlayDetailActivity : AppCompatActivity() {
                     Log.i("PlayDetailActivity", "STOP")
                     playPause.text = "播放"
                     mTimerTask?.stopToUpdateProgress()
+                    seekBar.progress = 0
+                    progressText.text = "00:00"
                 }
                 PlaybackStage.COMPLETION -> {
                     Log.i("PlayDetailActivity", "COMPLETION")
