@@ -5,7 +5,6 @@ import com.lzx.musiclib.TestApplication
 import com.lzx.starrysky.provider.SongInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -90,7 +89,7 @@ open class MusicRequest : CoroutineScope by MainScope() {
                     val data = jsonObject.getJSONObject("data").getJSONObject(it.songmid)
                     val mid =
                         data.getJSONObject("track_info").getJSONObject("album").getString("mid")
-                    val songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg`"
+                    val songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg"
                     songInfo.songId = it.songmid
                     songInfo.songName = it.songname
                     songInfo.artist = it.singer
@@ -105,7 +104,7 @@ open class MusicRequest : CoroutineScope by MainScope() {
     }
 
     fun requestSongList(callback: RequestCallback) {
-         launch(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
             val list = async { getSongList() }
             val songList = async { getSongDetail(list.await()) }
             withContext(Dispatchers.Main) {
@@ -119,7 +118,7 @@ open class MusicRequest : CoroutineScope by MainScope() {
     }
 
     fun requestSongUrl(songmid: String, callback: RequestInfoCallback) {
-         launch(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
             val url = "https://api.qq.jsososo.com/song/urls?id=$songmid"
             val request = Request.Builder().url(url).build()
             val response = client.newCall(request).execute()

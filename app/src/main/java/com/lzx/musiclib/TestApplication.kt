@@ -6,8 +6,10 @@ import android.app.PendingIntent
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.content.Intent
+import android.content.res.AssetFileDescriptor
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.media.MediaBrowserCompat
@@ -34,7 +36,6 @@ import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
-import com.lzx.starrysky.notification.INotification.Companion.ACTION_FAVORITE
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.playback.offline.ICache
@@ -71,6 +72,7 @@ open class TestApplication : Application() {
         val config = StarrySkyConfig().newBuilder()
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
+//            .addInterceptor(PlayVoiceBeforeRealPlay(this))
             .isOpenNotification(true)
 //            .setNotificationConfig(notificationConfig)
 //            .setNotificationFactory(StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY)
@@ -154,6 +156,42 @@ class RequestSongInfoInterceptor : StarrySkyInterceptor {
         } else {
             callback.onContinue(songInfo)
         }
+    }
+}
+
+class PlayVoiceBeforeRealPlay(context: Context) : StarrySkyInterceptor {
+    private val player: MediaPlayer = MediaPlayer()
+    private val file: AssetFileDescriptor = context.assets.openFd("111.mp3")
+
+    init {
+        player.setOnPreparedListener {
+            it.start()
+        }
+    }
+
+    override fun process(
+        songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback
+    ) {
+        mainLooper.runOnUiThread(Runnable {
+            try {
+                if (StarrySky.with().isPlaying()) {
+                    StarrySky.with().stopMusic()
+                }
+                player.reset()
+                player.setDataSource(file.fileDescriptor, file.startOffset, file.declaredLength)
+                player.prepareAsync()
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                callback.onInterrupt(ex)
+            }
+            player.setOnErrorListener { mp, what, extra ->
+                callback.onInterrupt(RuntimeException("转场音效播放失败"))
+                return@setOnErrorListener false
+            }
+            player.setOnCompletionListener {
+                callback.onContinue(songInfo)
+            }
+        })
     }
 }
 

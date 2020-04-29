@@ -98,6 +98,7 @@ open class MediaQueueManager : MediaQueue {
                 }
 
                 override fun onBitmapFailed(errorDrawable: Drawable?) {
+                    mUpdateListener?.onMetadataChanged(metadata)
                 }
             })
         }
