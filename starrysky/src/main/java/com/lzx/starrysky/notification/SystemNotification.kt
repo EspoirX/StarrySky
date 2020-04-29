@@ -30,12 +30,13 @@ import com.lzx.starrysky.ext.id
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.notification.utils.NotificationUtils
 import com.lzx.starrysky.playback.player.Playback
+import com.lzx.starrysky.provider.SongInfo
+import com.lzx.starrysky.utils.StarrySkyUtils
 
 class SystemNotification constructor(
     val context: Context,
     var config: NotificationConfig = NotificationConfig()
-) :
-    BroadcastReceiver(), INotification {
+) : BroadcastReceiver(), INotification {
 
 
     private var mPlayIntent: PendingIntent? = null
@@ -139,11 +140,18 @@ class SystemNotification constructor(
         lastClickTime = nowTime
     }
 
-    override fun startNotification() {
-        if (!mStarted) {
+    override fun startNotification(songInfo: SongInfo?, playbackState: PlaybackStateCompat?) {
+        mPlaybackState = mController?.playbackState
+        if (mPlaybackState?.state != playbackState?.state) {
+            mPlaybackState = playbackState
+        }
+        if (mMetadata?.id != songInfo?.songId) {
+            mMetadata = songInfo?.let { StarrySkyUtils.toMediaMetadata(it) }
+            createNotification()
+        } else {
             mMetadata = mController?.metadata
-            mPlaybackState = mController?.playbackState
-
+        }
+        if (!mStarted) {
             // The notification must be updated after setting started to true
             val notification = createNotification()
             if (notification != null) {
@@ -189,16 +197,13 @@ class SystemNotification constructor(
         if (art == null) {
             fetchArtUrl = mMetadata?.albumArtUrl
             if (fetchArtUrl.isNullOrEmpty()) {
-                art = BitmapFactory.decodeResource(context.resources,
-                    R.drawable.default_art)
+                art = BitmapFactory.decodeResource(context.resources, R.drawable.default_art)
             }
         }
-
         //适配8.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationUtils.createNotificationChannel(context, mNotificationManager!!)
         }
-
         val notificationBuilder = NotificationCompat.Builder(context, INotification.CHANNEL_ID)
 
         val playPauseButtonPosition = addActions(notificationBuilder)
@@ -216,31 +221,26 @@ class SystemNotification constructor(
                 .setCancelButtonIntent(mStopIntent)
                 .setMediaSession(mSessionToken))
             .setDeleteIntent(mStopIntent)
-            //.setColor(mNotificationColor)
             .setColorized(true)
-            .setSmallIcon(smallIcon!!)
+            .setSmallIcon(smallIcon)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOnlyAlertOnce(true)
             .setContentTitle(description?.title) //歌名
             .setContentText(mMetadata?.artist) //艺术家
             .setLargeIcon(art)
-
         if (!config.targetClass.isNullOrEmpty()) {
             val clazz = NotificationUtils.getTargetClass(config.targetClass!!)
             if (clazz != null) {
                 val songId = mMetadata?.id
                 notificationBuilder.setContentIntent(NotificationUtils
-                    .createContentIntent(context, config, songId, config.targetClassBundle,
-                        clazz))
+                    .createContentIntent(context, config, songId, config.targetClassBundle, clazz))
             }
         }
-
         setNotificationPlaybackState(notificationBuilder)
 
         if (!fetchArtUrl.isNullOrEmpty()) {
             fetchBitmapFromURLAsync(fetchArtUrl, notificationBuilder)
         }
-
         return notificationBuilder.build()
     }
 

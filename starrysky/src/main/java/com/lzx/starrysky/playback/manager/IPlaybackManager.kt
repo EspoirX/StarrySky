@@ -72,8 +72,6 @@ interface IPlaybackManager {
     interface PlaybackServiceCallback {
         fun onPlaybackStart()
 
-        fun onNotificationRequired()
-
         fun onPlaybackStop(isStop: Boolean)
 
         fun onPlaybackStateUpdated(

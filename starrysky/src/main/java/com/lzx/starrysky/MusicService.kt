@@ -72,10 +72,12 @@ class MusicService : MediaBrowserServiceCompat(), MetadataUpdateListener, Playba
         }
         transportControls = mediaController?.transportControls
         mBecomingNoisyReceiver = BecomingNoisyReceiver(this, transportControls)
+
         //通知栏相关
         val manager = get().notificationManager()
         notification = manager.getNotification(this)
         mPlaybackManager?.registerNotification(notification)
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -141,13 +143,6 @@ class MusicService : MediaBrowserServiceCompat(), MetadataUpdateListener, Playba
     override fun onPlaybackStart() {
         mediaSession?.isActive = true
         mDelayedStopHandler.removeCallbacksAndMessages(null)
-    }
-
-    /**
-     * 状态是播放或暂停时回调
-     */
-    override fun onNotificationRequired() {
-        notification?.startNotification()
     }
 
     /**
