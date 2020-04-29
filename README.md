@@ -137,19 +137,16 @@ StarrySky 目前为止有 **8100+** 的下载量，感谢各位开发者的支�
 
 <a href="art/成功案例.png"><img src="art/成功案例.png"/></a>
 
-（如有违法或者侵权行为请联系我删除！）
+（还有很多 App，只不过没要到 😂 。如有违法或者侵权行为请联系我删除！）
 
 
 ## QQ群（929420228）
-
 
 <a href="art/qq_qun.jpg"><img src="art/qq_qun.jpg" width="30%"/></a>
 
 <br><br>
 
-
-
-你的打赏是我的动力，感谢每一位付出的人，愿意的话可以佛性打赏，我会非常开心。  
+你的打赏是我改 Bug 的动力
 <a href="art/biaoqing.gif"><img src="art/biaoqing.gif"/></a>
 
 <a href="art/WechatIMG1.jpeg"><img src="art/WechatIMG1.jpeg" width="30%"/></a>
