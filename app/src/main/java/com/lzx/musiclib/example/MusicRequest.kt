@@ -119,16 +119,20 @@ open class MusicRequest : CoroutineScope by MainScope() {
 
     fun requestSongUrl(songmid: String, callback: RequestInfoCallback) {
         launch(Dispatchers.IO) {
-            val url = "https://api.qq.jsososo.com/song/urls?id=$songmid"
-            val request = Request.Builder().url(url).build()
-            val response = client.newCall(request).execute()
-            if (response.isSuccessful) {
-                val json = response.body!!.string()
-                val jsonObject = JSONObject(json)
-                val url = jsonObject.getJSONObject("data").getString(songmid)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(url)
+            try {
+                val url = "https://api.qq.jsososo.com/song/urls?id=$songmid"
+                val request = Request.Builder().url(url).build()
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    val json = response.body!!.string()
+                    val jsonObject = JSONObject(json)
+                    val url = jsonObject.getJSONObject("data").getString(songmid)
+                    withContext(Dispatchers.Main) {
+                        callback.onSuccess(url)
+                    }
                 }
+            } catch (ex: java.lang.Exception) {
+                ex.printStackTrace()
             }
         }
     }

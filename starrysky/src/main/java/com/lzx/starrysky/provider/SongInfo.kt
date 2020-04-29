@@ -21,6 +21,8 @@ class SongInfo(
     @IgnoredOnParcel
     var objectValue: Any = Any()
 
+    var tag: Any? = null //为某些错误做准备的标签
+
     override fun clone(): Any {
         var obj: Any? = null
         //调用Object类的clone方法，返回一个Object实例

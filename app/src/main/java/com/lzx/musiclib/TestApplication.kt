@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.AssetFileDescriptor
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
@@ -18,9 +17,6 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.widget.Toast
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
 import com.lzx.musiclib.example.MusicRequest
 import com.lzx.musiclib.example.MusicRequest.RequestInfoCallback
@@ -32,8 +28,6 @@ import com.lzx.starrysky.common.PlaybackStage
 import com.lzx.starrysky.control.OnPlayerEventListener
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.control.RepeatMode
-import com.lzx.starrysky.imageloader.ImageLoaderCallBack
-import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
