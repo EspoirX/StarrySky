@@ -101,6 +101,8 @@ open class MediaQueueManager : MediaQueue {
                     mUpdateListener?.onMetadataChanged(metadata)
                 }
             })
+        } else {
+            mUpdateListener?.onMetadataChanged(metadata)
         }
     }
 }
