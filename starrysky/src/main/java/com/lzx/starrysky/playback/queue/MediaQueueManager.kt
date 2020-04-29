@@ -9,7 +9,8 @@ import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.StarrySkyUtils
 
-open class MediaQueueManager : MediaQueue {
+open class
+MediaQueueManager : MediaQueue {
 
     private var mCurrentIndex: Int = 0
     private var mUpdateListener: IMediaSourceProvider.MetadataUpdateListener? = null
@@ -98,8 +99,11 @@ open class MediaQueueManager : MediaQueue {
                 }
 
                 override fun onBitmapFailed(errorDrawable: Drawable?) {
+                    mUpdateListener?.onMetadataChanged(metadata)
                 }
             })
+        } else {
+            mUpdateListener?.onMetadataChanged(metadata)
         }
     }
 }
