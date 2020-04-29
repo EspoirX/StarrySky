@@ -85,6 +85,8 @@ class PlayDetailActivity : AppCompatActivity() {
                 }
                 PlaybackStage.STOP -> {
                     Log.i("PlayDetailActivity", "STOP")
+                    mListPlayAdapter?.notifyDataSetChanged()
+                    mTimerTask?.stopToUpdateProgress()
                     playPause.text = "播放"
                     mTimerTask?.stopToUpdateProgress()
                 }
@@ -96,7 +98,10 @@ class PlayDetailActivity : AppCompatActivity() {
                 }
                 PlaybackStage.BUFFERING -> Log.i("PlayDetailActivity", "BUFFERING")
                 PlaybackStage.ERROR -> {
+                    Log.i("PlayDetailActivity", "ERROR")
+                    StarrySky.with().stopMusic()
                     mTimerTask?.stopToUpdateProgress()
+                    mListPlayAdapter?.notifyDataSetChanged()
                     Toast.makeText(this, playbackStage.getErrorMessage(), Toast.LENGTH_SHORT)
                         .show()
                 }

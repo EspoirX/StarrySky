@@ -54,10 +54,10 @@ class PlaybackManager constructor(
      */
     override fun handlePlayRequest(isPlayWhenReady: Boolean, isActiveTrigger: Boolean) {
         val playSongInfo = mediaQueue.getCurrentSongInfo(isActiveTrigger) //要播放的歌曲信息
-        mediaQueue.updateMediaMetadata(playSongInfo) //更新媒体封面信息
         interceptorService.doInterceptions(playSongInfo, object : InterceptorCallback {
             override fun onContinue(songInfo: SongInfo?) {
                 MainLooper.instance.runOnUiThread(Runnable {
+                    mediaQueue.updateMediaMetadata(playSongInfo) //更新媒体封面信息
                     handPlayRequestImpl(songInfo, isPlayWhenReady)
                 })
             }
@@ -66,6 +66,7 @@ class PlaybackManager constructor(
                 MainLooper.instance.runOnUiThread(Runnable {
                     updatePlaybackState(playSongInfo, isOnlyUpdateActions = false, isError = true,
                         error = exception?.message)
+                    playback.currentMediaId = ""
                 })
             }
         })

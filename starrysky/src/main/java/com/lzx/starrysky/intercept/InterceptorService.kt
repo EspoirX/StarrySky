@@ -17,11 +17,16 @@ class InterceptorService {
                 try {
                     doImpl(0, interceptorCounter, songInfo)
                     interceptorCounter.await(StarrySky.get().interceptorTimeOut(), TimeUnit.SECONDS)
-                    if (interceptorCounter.count > 0) {
-                        callback?.onInterrupt(
-                            RuntimeException("拦截器超时啦，超时时间可通过 StarrySkyConfig 配置，默认 60 秒"))
-                    } else {
-                        callback?.onContinue(songInfo)
+                    when {
+                        interceptorCounter.count > 0 -> {
+                            callback?.onInterrupt(RuntimeException("拦截器超时啦，超时时间可通过 StarrySkyConfig 配置，默认 60 秒"))
+                        }
+                        null != songInfo?.tag -> {
+                            callback?.onInterrupt(RuntimeException(songInfo.tag.toString()))
+                        }
+                        else -> {
+                            callback?.onContinue(songInfo)
+                        }
                     }
                 } catch (ex: Exception) {
                     ex.printStackTrace()
@@ -45,6 +50,7 @@ class InterceptorService {
                 }
 
                 override fun onInterrupt(exception: Throwable?) {
+                    songInfo?.tag = if (null == exception) RuntimeException("No message.") else exception.message
                     interceptorCounter.cancel()
                 }
             })
