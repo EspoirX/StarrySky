@@ -155,16 +155,13 @@ class PlayVoiceBeforeRealPlay(context: Context) : StarrySkyInterceptor {
     private val player: MediaPlayer = MediaPlayer()
     private val file: AssetFileDescriptor = context.assets.openFd("111.mp3")
 
-    init {
-        player.setOnPreparedListener { it.start() }
-    }
+    init { player.setOnPreparedListener { it.start() } }
 
     override fun process(
         songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback
     ) {
         mainLooper.runOnUiThread(Runnable {
             try {
-                Log.i("TestApplication", "index = " + StarrySky.with().getNowPlayingIndex())
                 if (StarrySky.with().isPlaying()) {
                     StarrySky.with().stopMusic()
                 }

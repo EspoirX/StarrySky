@@ -15,6 +15,7 @@
  */
 package com.lzx.starrysky.playback.player
 
+import android.support.v4.media.session.PlaybackStateCompat
 import com.lzx.starrysky.provider.SongInfo
 
 /**
@@ -23,13 +24,13 @@ import com.lzx.starrysky.provider.SongInfo
 interface Playback {
 
     companion object {
-        const val STATE_NONE = 100      //什么都没开始
-        const val STATE_IDLE = 200      //空闲
-        const val STATE_BUFFERING = 300 //正在缓冲
-        const val STATE_PLAYING = 400   //正在播放
-        const val STATE_PAUSED = 500    //暂停
-        const val STATE_STOPPED = 600   //停止
-        const val STATE_ERROR = 700     //出错
+        const val STATE_NONE = PlaybackStateCompat.STATE_NONE      //什么都没开始
+        const val STATE_IDLE = PlaybackStateCompat.STATE_NONE      //空闲
+        const val STATE_BUFFERING = PlaybackStateCompat.STATE_BUFFERING //正在缓冲
+        const val STATE_PLAYING = PlaybackStateCompat.STATE_PLAYING   //正在播放
+        const val STATE_PAUSED = PlaybackStateCompat.STATE_PAUSED    //暂停
+        const val STATE_STOPPED = PlaybackStateCompat.STATE_STOPPED   //停止
+        const val STATE_ERROR = PlaybackStateCompat.STATE_ERROR     //出错
     }
 
     /**
