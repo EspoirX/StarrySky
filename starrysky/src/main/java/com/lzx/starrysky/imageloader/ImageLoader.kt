@@ -17,6 +17,10 @@ open class ImageLoader {
         if (mLoader == null) {
             mLoader = DefaultImageLoader()
         }
-        StarrySky.get().mLifecycle?.activity?.let { mLoader?.loadImage(it, url, callBack) }
+        if (StarrySky.get().mLifecycle?.activities?.size == 0) {
+            StarrySky.get().getContext()?.let { mLoader?.loadImage(it, url, callBack) }
+        } else {
+            StarrySky.get().mLifecycle?.activity?.let { mLoader?.loadImage(it, url, callBack) }
+        }
     }
 }

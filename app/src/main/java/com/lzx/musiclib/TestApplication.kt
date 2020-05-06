@@ -15,7 +15,6 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.widget.Toast
 import com.danikula.videocache.HttpProxyCacheServer
 import com.lzx.musiclib.example.MusicRequest
@@ -38,6 +37,7 @@ import com.lzx.starrysky.playback.queue.MediaQueue
 import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.MainLooper
+import com.lzx.starrysky.utils.SpUtil
 import com.lzx.starrysky.utils.StarrySkyUtils
 import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
@@ -59,8 +59,8 @@ open class TestApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
-
-//        val notificationConfig = NotificationConfig()
+        val notificationConfig = NotificationConfig()
+        notificationConfig.targetClass = "com.lzx.musiclib.example.PlayDetailActivity"
 //        notificationConfig.favoriteIntent = getPendingIntent(ACTION_FAVORITE)
 
         val config = StarrySkyConfig().newBuilder()
@@ -68,7 +68,7 @@ open class TestApplication : Application() {
             .addInterceptor(RequestSongInfoInterceptor())
 //            .addInterceptor(PlayVoiceBeforeRealPlay(this))
             .isOpenNotification(true)
-//            .setNotificationConfig(notificationConfig)
+            .setNotificationConfig(notificationConfig)
 //            .setNotificationFactory(StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY)
 //            .isOpenCache(true)
 //            .setCacheDestFileDir(
@@ -107,15 +107,22 @@ class PermissionInterceptor internal constructor(private val mContext: Context) 
             callback.onInterrupt(RuntimeException("SongInfo is null"))
             return
         }
+        val hasPermission = SpUtil.instance.getBoolean("HAS_PERMISSION", false)
+        if (hasPermission) {
+            callback.onContinue(songInfo)
+            return
+        }
         SoulPermission.getInstance().checkAndRequestPermissions(Permissions.build(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE),
             object : CheckRequestPermissionsListener {
                 override fun onAllPermissionOk(allPermissions: Array<Permission>) {
+                    SpUtil.instance.putBoolean("HAS_PERMISSION", true)
                     callback.onContinue(songInfo)
                 }
 
                 override fun onPermissionDenied(refusedPermissions: Array<Permission>) {
+                    SpUtil.instance.putBoolean("HAS_PERMISSION", false)
                     callback.onInterrupt(RuntimeException("没有权限，播放失败"))
                     mainLooper.runOnUiThread(Runnable {
                         Toast.makeText(mContext, "没有权限，播放失败", Toast.LENGTH_SHORT).show()
@@ -155,7 +162,9 @@ class PlayVoiceBeforeRealPlay(context: Context) : StarrySkyInterceptor {
     private val player: MediaPlayer = MediaPlayer()
     private val file: AssetFileDescriptor = context.assets.openFd("111.mp3")
 
-    init { player.setOnPreparedListener { it.start() } }
+    init {
+        player.setOnPreparedListener { it.start() }
+    }
 
     override fun process(
         songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback
@@ -187,7 +196,11 @@ class PlayVoiceBeforeRealPlay(context: Context) : StarrySkyInterceptor {
 class MyNotificationFactory : StarrySkyNotificationManager.NotificationFactory {
     override fun build(context: Context, config: NotificationConfig?): INotification {
         return object : INotification {
-            override fun startNotification(songInfo: SongInfo?, playbackState: PlaybackStateCompat?) {}
+            override fun startNotification(
+                songInfo: SongInfo?, playbackState: PlaybackStateCompat?
+            ) {
+            }
+
             override fun stopNotification() {}
             override fun onCommand(command: String?, extras: Bundle?) {}
         }

@@ -7,14 +7,14 @@ import com.lzx.starrysky.utils.StarrySkyUtils
 import java.util.ArrayList
 
 class StarrySkyActivityLifecycle : ActivityLifecycleCallbacks {
-    private val activities: MutableList<Activity> = ArrayList()
+    val activities: MutableList<Activity> = ArrayList()
 
     /**
      * 获取可用Activity
      */
     val activity: Activity?
         get() {
-            if ( activities.size == 0) {
+            if (activities.size == 0) {
                 return null
             }
             for (i in activities.indices.reversed()) {

@@ -119,9 +119,10 @@ open class ExoPlayback internal constructor(
             currentMediaId = mediaId
         }
         StarrySkyUtils.log(
-            "Playback#songUrl = " + songInfo.songUrl +
-                " 音频是否有改变 = " + mediaHasChanged +
-                " 是否立即播放 = " + isPlayWhenReady)
+            "title = " + songInfo.songName +
+                " \n音频是否有改变 = " + mediaHasChanged +
+                " \n是否立即播放 = " + isPlayWhenReady +
+                " \nurl = " + songInfo.songUrl)
         StarrySkyUtils.log("---------------------------------------")
         //url 处理
         var source = songInfo.songUrl
