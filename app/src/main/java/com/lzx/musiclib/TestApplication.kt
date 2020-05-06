@@ -42,6 +42,7 @@ import com.lzx.starrysky.playback.queue.MediaQueue
 import com.lzx.starrysky.provider.IMediaSourceProvider
 import com.lzx.starrysky.provider.SongInfo
 import com.lzx.starrysky.utils.MainLooper
+import com.lzx.starrysky.utils.SpUtil
 import com.lzx.starrysky.utils.StarrySkyUtils
 import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
@@ -64,14 +65,15 @@ open class TestApplication : Application() {
         super.onCreate()
         context = this
 
-//        val notificationConfig = NotificationConfig()
+        val notificationConfig = NotificationConfig()
+        notificationConfig.targetClass = "com.lzx.musiclib.example.PlayDetailActivity"
 //        notificationConfig.favoriteIntent = getPendingIntent(INotification.ACTION_FAVORITE)
 
         val config = StarrySkyConfig().newBuilder()
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
             .isOpenNotification(true)
-//            .setNotificationConfig(notificationConfig)
+            .setNotificationConfig(notificationConfig)
 //            .setNotificationFactory(StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY)
 //            .isOpenCache(true)
 //            .setCacheDestFileDir(
@@ -110,16 +112,22 @@ class PermissionInterceptor internal constructor(private val mContext: Context) 
             callback.onInterrupt(RuntimeException("SongInfo is null"))
             return
         }
-        Log.i("TestApplication", "------PermissionInterceptor-----")
+        val hasPermission = SpUtil.instance.getBoolean("HAS_PERMISSION", false)
+        if (hasPermission) {
+            callback.onContinue(songInfo)
+            return
+        }
         SoulPermission.getInstance().checkAndRequestPermissions(Permissions.build(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE),
             object : CheckRequestPermissionsListener {
                 override fun onAllPermissionOk(allPermissions: Array<Permission>) {
+                    SpUtil.instance.putBoolean("HAS_PERMISSION", true)
                     callback.onContinue(songInfo)
                 }
 
                 override fun onPermissionDenied(refusedPermissions: Array<Permission>) {
+                    SpUtil.instance.putBoolean("HAS_PERMISSION", false)
                     callback.onInterrupt(RuntimeException("没有权限，播放失败"))
                     mainLooper.runOnUiThread(Runnable {
                         Toast.makeText(mContext, "没有权限，播放失败", Toast.LENGTH_SHORT).show()
@@ -141,7 +149,6 @@ class RequestSongInfoInterceptor : StarrySkyInterceptor {
             callback.onInterrupt(RuntimeException("SongInfo is null"))
             return
         }
-        Log.i("TestApplication", "------RequestSongInfoInterceptor-----")
         if (songInfo.songUrl.isEmpty()) {
             mMusicRequest.requestSongUrl(songInfo.songId,
                 object : RequestInfoCallback {

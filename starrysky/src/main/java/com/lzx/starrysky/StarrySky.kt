@@ -2,6 +2,7 @@ package com.lzx.starrysky
 
 import android.app.Application
 import android.content.ComponentName
+import android.content.Context
 import com.lzx.starrysky.common.IMediaConnection
 import com.lzx.starrysky.common.IMediaConnection.OnConnectListener
 import com.lzx.starrysky.common.MediaSessionConnection
@@ -38,6 +39,10 @@ class StarrySky {
         }
         mLifecycle = StarrySkyActivityLifecycle()
         context.registerActivityLifecycleCallbacks(mLifecycle)
+    }
+
+    fun getContext(): Context? {
+        return globalContext
     }
 
     fun mediaQueueProvider(): IMediaSourceProvider {
