@@ -28,7 +28,9 @@ class DslOkHttp(var async: Boolean) {
 
     fun url(init: DslOkHttp.() -> String) {
         url = init()
-        doRequest()
+        if (async) {
+            doRequest()
+        }
     }
 
     fun onSuccess(onSuccess: (String) -> Unit) {
