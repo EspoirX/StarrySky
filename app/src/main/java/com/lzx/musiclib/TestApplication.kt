@@ -30,6 +30,7 @@ import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
+import com.lzx.starrysky.notification.INotification.Companion.ACTION_FAVORITE
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.playback.offline.ICache
@@ -59,9 +60,11 @@ open class TestApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
-        val notificationConfig = NotificationConfig()
-        notificationConfig.targetClass = "com.lzx.musiclib.example.PlayDetailActivity"
-//        notificationConfig.favoriteIntent = getPendingIntent(ACTION_FAVORITE)
+
+        val notificationConfig = NotificationConfig.create {
+            targetClass { "com.lzx.musiclib.example.PlayDetailActivity" }
+            favoriteIntent { getPendingIntent(ACTION_FAVORITE) }
+        }
 
         val config = StarrySkyConfig().newBuilder()
             .addInterceptor(PermissionInterceptor(this))
@@ -88,7 +91,7 @@ open class TestApplication : Application() {
         CrashReport.initCrashReport(applicationContext, "9e447caa98", false)
     }
 
-    fun getPendingIntent(action: String): PendingIntent? {
+    private fun getPendingIntent(action: String): PendingIntent? {
         val intent = Intent(action)
         intent.setClass(this, NotificationReceiver::class.java)
         return PendingIntent.getBroadcast(this, 0, intent, 0)

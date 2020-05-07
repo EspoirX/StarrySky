@@ -35,7 +35,7 @@ import com.lzx.starrysky.utils.StarrySkyUtils
 
 class SystemNotification constructor(
     val context: Context,
-    var config: NotificationConfig = NotificationConfig()
+    var config: NotificationConfig = NotificationConfig.Builder().build()
 ) : BroadcastReceiver(), INotification {
 
 
