@@ -9,9 +9,38 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
+
+fun String.toJsonObj(): JSONObject {
+    return JSONObject(this)
+}
+
+fun JSONObject.getObj(value: String): JSONObject {
+    return this.getJSONObject(value)
+}
+
+fun JSONObject.getArray(value: String): JSONArray {
+    return this.getJSONArray(value)
+}
+
+inline fun <reified T> JSONArray.getOrNull(index: Int): T? {
+    return if (index > 0 && index < this.length() - 1) {
+        this.getJSONObject(index) as T
+    } else {
+        null
+    }
+}
+
+fun JSONArray.iterator(): Iterator<JSONObject> =
+    (0 until length()).asSequence().map { get(it) as JSONObject }.iterator()
+
+inline fun <reified T> JSONArray.forEach(action: (T?) -> Unit) {
+    (0 until length()).forEach { action(get(it) as? T) }
+}
 
 open class MusicRequest : CoroutineScope by MainScope() {
 
@@ -19,6 +48,9 @@ open class MusicRequest : CoroutineScope by MainScope() {
         val songid: String, val songmid: String, val songname: String, val singer: String
     )
 
+    /**
+     * 获取列表
+     */
     private fun getSongList(): MutableList<MediaInfo> {
         val list = mutableListOf<MediaInfo>()
         val json = dslOkHttpSync {
@@ -27,26 +59,24 @@ open class MusicRequest : CoroutineScope by MainScope() {
                 Log.i("MusicRequest", "onFailure = $errorMsg")
             }
         }
-        val jsonArray = JSONObject(json).getJSONObject("data").getJSONArray("songlist")
-        for (i in 0 until jsonArray.length()) {
-            val obj = jsonArray.getJSONObject(i)
-            val singer = obj.getJSONArray("singer")
-            val artist = if (singer.length() > 0) {
-                singer.getJSONObject(0).getString("name")
-            } else {
-                "未知歌手"
-            }
+        json.toJsonObj().getObj("data").getArray("songlist").forEach<JSONObject> {
+            val singer = it?.getArray("singer")
+            val artist = singer?.getOrNull<JSONObject>(0)?.getString("name")
             val media = MediaInfo(
-                obj.getString("songid"),
-                obj.getString("songmid"),
-                obj.getString("songname"),
-                artist
+                it?.getString("songid") ?: "",
+                it?.getString("songmid") ?: "",
+                it?.getString("songname") ?: "",
+                artist ?: "未知歌手"
             )
             list.add(media)
         }
         return list
     }
 
+
+    /**
+     * 获取信息
+     */
     private fun getSongDetail(list: MutableList<MediaInfo>): MutableList<SongInfo> {
         val songList = mutableListOf<SongInfo>()
         val json = dslOkHttpSync {
@@ -63,12 +93,11 @@ open class MusicRequest : CoroutineScope by MainScope() {
                 Log.i("MusicRequest", "onFailure = $errorMsg")
             }
         }
-        val jsonObject = JSONObject(json)
+        val jsonObject = json.toJsonObj()
         list.forEach {
             val songInfo = SongInfo()
-            val data = jsonObject.getJSONObject("data").getJSONObject(it.songmid)
-            val mid =
-                data.getJSONObject("track_info").getJSONObject("album").getString("mid")
+            val data = jsonObject.getObj("data").getObj(it.songmid)
+            val mid = data.getObj("track_info").getObj("album").getString("mid")
             val songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg"
             songInfo.songId = it.songmid
             songInfo.songName = it.songname
@@ -79,12 +108,15 @@ open class MusicRequest : CoroutineScope by MainScope() {
         return songList
     }
 
+    /**
+     * 获取歌单列表信息
+     */
     fun requestSongList(callback: RequestCallback) {
         launch(Dispatchers.IO) {
             val list = async { getSongList() }
             val songList = async { getSongDetail(list.await()) }
+            val result = songList.await()
             withContext(Dispatchers.Main) {
-                val result = songList.await()
                 if (result.isEmpty()) {
                     Toast.makeText(TestApplication.context, "请求失败", Toast.LENGTH_SHORT).show();
                 }
@@ -93,6 +125,9 @@ open class MusicRequest : CoroutineScope by MainScope() {
         }
     }
 
+    /**
+     * 获取播放url
+     */
     fun requestSongUrl(songmid: String, callback: RequestInfoCallback) {
         launch(Dispatchers.IO) {
             val json = dslOkHttpSync {
@@ -101,7 +136,7 @@ open class MusicRequest : CoroutineScope by MainScope() {
                     Log.i("MusicRequest", "onFailure = $errorMsg")
                 }
             }
-            val url = JSONObject(json).getJSONObject("data").getString(songmid)
+            val url = json.toJsonObj().getObj("data").getString(songmid)
             withContext(Dispatchers.Main) {
                 callback.onSuccess(url)
             }
@@ -114,5 +149,9 @@ open class MusicRequest : CoroutineScope by MainScope() {
 
     interface RequestInfoCallback {
         fun onSuccess(songUrl: String)
+    }
+
+    fun clear() {
+        cancel()
     }
 }
