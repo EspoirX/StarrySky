@@ -41,7 +41,17 @@ open class MediaQueueManager : MediaQueue {
         }
         var index = mCurrentIndex + amount
         if (index < 0) {
-            index = 0
+            val repeatMode = StarrySkyUtils.repeatMode
+            index = if (repeatMode.isLoop) {
+                mPlayingQueue.size - 1
+            } else {
+                if (repeatMode.repeatMode == RepeatMode.REPEAT_MODE_ONE ||
+                    repeatMode.repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
+                    mPlayingQueue.size - 1
+                } else {
+                    0
+                }
+            }
         } else {
             index %= mPlayingQueue.size
         }

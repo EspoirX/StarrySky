@@ -170,7 +170,8 @@ class PlaybackManager constructor(
         var shouldPlayNext = true
         var shouldPlayPre = true
         val repeatMode = StarrySkyUtils.repeatMode
-        if (repeatMode.repeatMode != RepeatMode.REPEAT_MODE_SHUFFLE) {
+        if (repeatMode.repeatMode != RepeatMode.REPEAT_MODE_SHUFFLE &&
+            repeatMode.repeatMode != RepeatMode.REPEAT_MODE_ONE) {
             //如果没开启循环并且当前歌曲是最后一首，则不能下一首
             shouldPlayNext = !(!repeatMode.isLoop && mediaQueue.currSongIsLastSong())
             shouldPlayPre = !(!repeatMode.isLoop && mediaQueue.currSongIsFirstSong())
