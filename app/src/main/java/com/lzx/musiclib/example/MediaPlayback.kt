@@ -193,6 +193,8 @@ class MediaPlayback(context: Context, private val playbackCache: ICache?) : Play
         //
     }
 
+    override fun getPlaybackSpeed(): Float = 1.0f
+
     override fun setCallback(callback: Playback.Callback) {
         mCallback = callback
     }
