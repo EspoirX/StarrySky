@@ -238,6 +238,12 @@ open class ExoPlayback internal constructor(
         }
     }
 
+    override fun getPlaybackSpeed(): Float {
+        return mExoPlayer?.let {
+            it.playbackParameters.speed
+        } ?: 1.0f
+    }
+
     override fun setCallback(callback: Playback.Callback) {
         this.mCallback = callback
     }

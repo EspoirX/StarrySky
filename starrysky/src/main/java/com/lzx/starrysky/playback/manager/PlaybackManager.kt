@@ -133,7 +133,7 @@ class PlaybackManager constructor(
                 state = Playback.STATE_ERROR
             }
             //设置播放状态
-            stateBuilder?.setState(state, currentStreamPosition, 1.0f,
+            stateBuilder?.setState(state, currentStreamPosition, playback.getPlaybackSpeed(),
                 SystemClock.elapsedRealtime())
 
             //获取当前的 MediaMetadataCompat
