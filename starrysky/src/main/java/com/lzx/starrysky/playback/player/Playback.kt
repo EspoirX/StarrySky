@@ -120,6 +120,11 @@ interface Playback {
      */
     fun onDerailleur(refer: Boolean, multiple: Float)
 
+    /**
+     * 获取速度
+     */
+    fun getPlaybackSpeed(): Float
+
     interface Callback {
         /**
          * 播放完成回调
