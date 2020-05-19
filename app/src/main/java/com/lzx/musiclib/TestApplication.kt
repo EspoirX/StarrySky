@@ -13,7 +13,6 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
@@ -169,7 +168,11 @@ class RequestSongInfoInterceptor : StarrySkyInterceptor {
 class MyNotificationFactory : StarrySkyNotificationManager.NotificationFactory {
     override fun build(context: Context, config: NotificationConfig?): INotification {
         return object : INotification {
-            override fun startNotification(songInfo: SongInfo?, playbackState: PlaybackStateCompat?) {}
+            override fun startNotification(
+                songInfo: SongInfo?, playbackState: PlaybackStateCompat?
+            ) {
+            }
+
             override fun stopNotification() {}
             override fun onCommand(command: String?, extras: Bundle?) {}
         }
@@ -210,6 +213,8 @@ class MyPlayback : Playback {
     override fun onFastForward() {}
     override fun onRewind() {}
     override fun onDerailleur(refer: Boolean, multiple: Float) {}
+    override fun getPlaybackSpeed(): Float = 1.0f
+
     override fun setCallback(callback: Playback.Callback) {}
 }
 
