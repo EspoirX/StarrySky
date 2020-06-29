@@ -110,11 +110,11 @@ class StarrySky {
         private lateinit var playbackManager: PlaybackManager
         private lateinit var imageLoader: ImageLoader
 
-        @JvmOverloads
+        @JvmStatic
         fun init(
-            application: Application,
-            config: StarrySkyConfig = StarrySkyConfig(),
-            listener: OnConnectListener? = null
+                application: Application,
+                config: StarrySkyConfig = StarrySkyConfig(),
+                listener: OnConnectListener? = null
         ) {
             if (alreadyInit) {
                 return
@@ -138,10 +138,12 @@ class StarrySky {
             return sStarrySky!!
         }
 
+        @JvmStatic
         fun with(): PlayerControl {
             return playerControl
         }
 
+        @JvmStatic
         fun release() {
             get().mLifecycle?.let {
                 globalContext.unregisterActivityLifecycleCallbacks(it)
@@ -173,7 +175,7 @@ class StarrySky {
             requireNotNull(globalContext) { "StarrySky 初始化失败，上下文为 null" }
 
             notificationManager = StarrySkyNotificationManager(mStarrySkyConfig.isOpenNotification,
-                mStarrySkyConfig.notificationFactory)
+                    mStarrySkyConfig.notificationFactory)
 
             cache = if (mStarrySkyConfig.cache == null) {
                 ExoCache(globalContext)
