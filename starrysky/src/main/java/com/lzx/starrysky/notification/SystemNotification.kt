@@ -63,7 +63,7 @@ class SystemNotification constructor(
             e.printStackTrace()
         }
         mNotificationManager =
-            context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+                context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         packageName = context.applicationContext.packageName
 
         setStopIntent(config.stopIntent)
@@ -233,7 +233,8 @@ class SystemNotification constructor(
             if (clazz != null) {
                 val songId = mMetadata?.id
                 notificationBuilder.setContentIntent(NotificationUtils
-                    .createContentIntent(context, config, songId, config.targetClassBundle, clazz))
+                        .createContentIntent(context, config, songId, config.targetClassBundle,
+                                clazz))
             }
         }
         setNotificationPlaybackState(notificationBuilder)
@@ -256,8 +257,8 @@ class SystemNotification constructor(
      * 封面加载
      */
     private fun fetchBitmapFromURLAsync(
-        fetchArtUrl: String,
-        notificationBuilder: NotificationCompat.Builder
+            fetchArtUrl: String,
+            notificationBuilder: NotificationCompat.Builder
     ) {
         val imageLoader = StarrySky.get().imageLoader()
         imageLoader.load(fetchArtUrl, object : ImageLoaderCallBack {
@@ -267,7 +268,7 @@ class SystemNotification constructor(
                 }
                 notificationBuilder.setLargeIcon(bitmap)
                 mNotificationManager?.notify(INotification.NOTIFICATION_ID,
-                    notificationBuilder.build())
+                        notificationBuilder.build())
             }
 
             override fun onBitmapFailed(errorDrawable: Drawable?) {
@@ -282,18 +283,18 @@ class SystemNotification constructor(
         var playPauseButtonPosition = 0
         // 如果有上一首
         val hasPrevious = if (mPlaybackState == null) false else mPlaybackState!!.actions and
-            PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L
         if (hasPrevious) {
             notificationBuilder.addAction(
-                if (config.skipPreviousDrawableRes != -1)
-                    config.skipPreviousDrawableRes ?: -1
-                else
-                    R.drawable.ic_skip_previous_white_24dp,
-                if (!TextUtils.isEmpty(config.skipPreviousTitle))
-                    config.skipPreviousTitle
-                else
-                    context.getString(R.string.label_previous),
-                mPreviousIntent)
+                    if (config.skipPreviousDrawableRes != -1)
+                        config.skipPreviousDrawableRes ?: -1
+                    else
+                        R.drawable.ic_skip_previous_white_24dp,
+                    if (!TextUtils.isEmpty(config.skipPreviousTitle))
+                        config.skipPreviousTitle
+                    else
+                        context.getString(R.string.label_previous),
+                    mPreviousIntent)
             playPauseButtonPosition = 1
         }
 
@@ -328,18 +329,18 @@ class SystemNotification constructor(
 
         // 如果有下一首
         val hasNext = if (mPlaybackState == null) false else mPlaybackState!!.actions and
-            PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L
         if (hasNext) {
             notificationBuilder.addAction(
-                if (config.skipNextDrawableRes != -1)
-                    config.skipNextDrawableRes ?: -1
-                else
-                    R.drawable.ic_skip_next_white_24dp,
-                if (!TextUtils.isEmpty(config.skipNextTitle))
-                    config.skipNextTitle
-                else
-                    context.getString(R.string.label_next),
-                mNextIntent)
+                    if (config.skipNextDrawableRes != -1)
+                        config.skipNextDrawableRes ?: -1
+                    else
+                        R.drawable.ic_skip_next_white_24dp,
+                    if (!TextUtils.isEmpty(config.skipNextTitle))
+                        config.skipNextTitle
+                    else
+                        context.getString(R.string.label_next),
+                    mNextIntent)
         }
 
         return playPauseButtonPosition
