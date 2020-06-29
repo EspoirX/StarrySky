@@ -86,6 +86,7 @@ class SpUtil private constructor() {
         private var mContext: Context? = null
         private var mPref: SharedPreferences? = null
 
+        @JvmStatic
         fun init(context: Context?) {
             if (mContext == null) {
                 mContext = context
@@ -95,6 +96,7 @@ class SpUtil private constructor() {
             }
         }
 
+        @JvmStatic
         val instance: SpUtil
             get() {
                 if (null == mInstance) {
