@@ -26,7 +26,7 @@ public class TestAppJava extends Application {
     public void onCreate() {
         super.onCreate();
         NotificationConfig notificationConfig =
-                NotificationConfig.Companion.create(builder -> {
+                NotificationConfig.create(builder -> {
                     builder.setTargetClass("com.lzx.musiclib.example.PlayDetailActivity");
                     return builder;
                 });
@@ -38,7 +38,7 @@ public class TestAppJava extends Application {
                 .setNotificationConfig(notificationConfig)
                 .build();
 
-        StarrySky.Companion.init(this, config);
+        StarrySky.init(this, config, null);
 
     }
 
@@ -51,24 +51,28 @@ public class TestAppJava extends Application {
                 callback.onInterrupt(new RuntimeException("SongInfo is null"));
                 return;
             }
-            boolean hasPermission = SpUtil.Companion.getInstance().getBoolean("HAS_PERMISSION", false);
+            boolean hasPermission =
+                    SpUtil.getInstance().getBoolean("HAS_PERMISSION", false);
             if (hasPermission) {
                 callback.onContinue(songInfo);
                 return;
             }
             SoulPermission.getInstance()
-                    .checkAndRequestPermissions(Permissions.build(Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    .checkAndRequestPermissions(
+                            Permissions.build(Manifest.permission.READ_EXTERNAL_STORAGE,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE),
                             new CheckRequestPermissionsListener() {
                                 @Override
                                 public void onAllPermissionOk(Permission[] allPermissions) {
-                                    SpUtil.Companion.getInstance().putBoolean("HAS_PERMISSION", true);
+                                    SpUtil.getInstance()
+                                            .putBoolean("HAS_PERMISSION", true);
                                     callback.onContinue(songInfo);
                                 }
 
                                 @Override
                                 public void onPermissionDenied(Permission[] refusedPermissions) {
-                                    SpUtil.Companion.getInstance().putBoolean("HAS_PERMISSION", false);
+                                    SpUtil.getInstance()
+                                            .putBoolean("HAS_PERMISSION", false);
                                     callback.onInterrupt(new RuntimeException("没有权限，播放失败"));
                                 }
                             });

@@ -37,6 +37,7 @@ class NotificationConfig private constructor(
         const val MODE_BROADCAST = 1
         const val MODE_SERVICE = 2
 
+        @JvmStatic
         fun create(init: Builder.() -> Builder): NotificationConfig {
             val builder = Builder()
             builder.init()

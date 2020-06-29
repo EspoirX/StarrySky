@@ -200,11 +200,11 @@ class PlayDetailActivity : AppCompatActivity() {
     private fun initVolume() {
         volumeJia.setOnClickListener {
             val currVolume = StarrySky.with().getVolume()
-            StarrySky.with().setVolume(currVolume + 1)
+            StarrySky.with().setVolume(currVolume + 0.1F)
         }
         volumeJian.setOnClickListener {
             val currVolume = StarrySky.with().getVolume()
-            StarrySky.with().setVolume(currVolume - 1)
+            StarrySky.with().setVolume(currVolume - 0.1F)
         }
     }
 
