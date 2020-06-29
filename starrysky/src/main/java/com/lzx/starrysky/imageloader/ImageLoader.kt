@@ -17,10 +17,7 @@ open class ImageLoader {
         if (mLoader == null) {
             mLoader = DefaultImageLoader()
         }
-        if (StarrySky.get().mLifecycle?.activities?.size == 0) {
-            StarrySky.get().getContext()?.let { mLoader?.loadImage(it, url, callBack) }
-        } else {
-            StarrySky.get().mLifecycle?.activity?.let { mLoader?.loadImage(it, url, callBack) }
-        }
+        //只能用全局上下文，不然用glide的时候，在后台不加载
+        StarrySky.get().getContext()?.let { mLoader?.loadImage(it, url, callBack) }
     }
 }
