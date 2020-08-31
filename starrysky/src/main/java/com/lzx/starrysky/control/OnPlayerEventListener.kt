@@ -7,11 +7,6 @@ import com.lzx.starrysky.provider.SongInfo
  */
 interface OnPlayerEventListener {
     /**
-     * 切歌回调
-     */
-    fun onMusicSwitch(songInfo: SongInfo)
-
-    /**
      * 开始播放,与 onMusicSwitch 的关系是先回调 onMusicSwitch，再回调 onPlayerStart
      */
     fun onPlayerStart()

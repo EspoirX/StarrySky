@@ -247,20 +247,6 @@ class MediaSessionConnection constructor(context: Context, serviceComponent: Com
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             super.onMetadataChanged(metadata)
             nowPlaying.postValue(metadata ?: NOTHING_PLAYING)
-            if (metadata == null) {
-                return
-            }
-            val songId = metadata.id ?: return
-            val currPlayingId = StarrySky.with().getNowPlayingSongId()
-            if (currPlayingId.isNotEmpty() && songId != currPlayingId) {
-                val songInfo = StarrySky.get().mediaQueueProvider().getSongInfoById(songId)
-                playbackState.postValue(playbackStage.buildSwitch(songId))
-                //状态监听
-                val mPlayerEventListeners = StarrySky.with().getPlayerEventListeners()
-                for (listener in mPlayerEventListeners) {
-                    songInfo?.let { listener.onMusicSwitch(it) }
-                }
-            }
         }
 
         override fun onSessionDestroyed() {

@@ -12,7 +12,6 @@ class PlaybackStage constructor(private val stage: String?, private val songInfo
         const val START = "START"
         const val PAUSE = "PAUSE"
         const val STOP = "STOP"
-        const val SWITCH = "SWITCH"
         const val COMPLETION = "COMPLETION"
         const val BUFFERING = "BUFFERING"
         const val ERROR = "ERROR"
@@ -181,21 +180,6 @@ class PlaybackStage constructor(private val stage: String?, private val songInfo
                 .setSongId(songId)
                 .setErrorCode(errorCode)
                 .setErrorMsg(errorMsg)
-                .build()
-        } else {
-            key.offer()
-        }
-        return stage
-    }
-
-    internal fun buildSwitch(songId: String): PlaybackStage? {
-        check(!TextUtils.isEmpty(songId)) { "songId is null" }
-        val key = stateKey[SWITCH, songId]
-        var stage: PlaybackStage? = cacheMap[key]
-        if (stage == null) {
-            stage = Builder()
-                .setState(SWITCH)
-                .setSongId(songId)
                 .build()
         } else {
             key.offer()

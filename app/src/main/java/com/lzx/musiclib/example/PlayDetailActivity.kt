@@ -73,10 +73,6 @@ class PlayDetailActivity : AppCompatActivity() {
                     mListPlayAdapter?.notifyDataSetChanged()
                     mTimerTask?.startToUpdateProgress()
                 }
-                PlaybackStage.SWITCH -> {
-                    val songInfo: SongInfo? = playbackStage.getSongInfo()
-                    Log.i("PlayDetailActivity", "SWITCH = " + songInfo?.songName)
-                }
                 PlaybackStage.PAUSE -> {
                     Log.i("PlayDetailActivity", "PAUSE")
                     playPause.text = "播放"
