@@ -1,4 +1,6 @@
-package com.lzx.starrysky
+package com.lzx.starrysky.playback
+
+import com.lzx.starrysky.SongInfo
 
 /**
  * 存储播放数据源

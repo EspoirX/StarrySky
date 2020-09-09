@@ -115,11 +115,6 @@ interface Playback {
         fun onPlaybackCompletion()
 
         /**
-         * 播放状态改变回调
-         */
-        fun onPlaybackStatusChanged(songInfo: SongInfo?, state: Int)
-
-        /**
          * 播放出错回调
          */
         fun onPlaybackError(songInfo: SongInfo?, error: String)

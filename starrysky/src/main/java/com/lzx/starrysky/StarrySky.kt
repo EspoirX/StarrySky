@@ -8,7 +8,10 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import com.lzx.starrysky.control.PlayerControl
+import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.playback.Playback
+import com.lzx.starrysky.service.MusicService
+import com.lzx.starrysky.service.ServiceBridge
 import java.util.WeakHashMap
 
 
@@ -24,23 +27,26 @@ class StarrySky {
 
         @Volatile
         private var alreadyInit = false
+        private lateinit var config: StarrySkyConfig
         private lateinit var globalContext: Application
         private var connection: ServiceConnection? = null
         private var bridge: ServiceBridge? = null
         private val connectionMap = WeakHashMap<Context, ServiceConnection>()
         private var serviceToken: ServiceToken? = null
         private var playback: Playback? = null
+        private var imageLoader: ImageLoaderStrategy? = null
 
 
         /**
          * 上下文，连接服务监听
          */
         @JvmStatic
-        fun init(application: Application, connection: ServiceConnection? = null) {
+        fun init(application: Application, config: StarrySkyConfig = StarrySkyConfig(), connection: ServiceConnection? = null) {
             if (alreadyInit) {
                 return
             }
             alreadyInit = true
+            this.config = config
             globalContext = application
             this.connection = connection
             get()
@@ -51,10 +57,8 @@ class StarrySky {
          */
         @JvmStatic
         fun with(): PlayerControl {
-            if (bridge == null) {
-                throw NullPointerException("bridge is null，can you init StarrySky？")
-            }
-            return bridge!!.playerControl
+            val exceptionMsg = "bridge is null，can you init StarrySky？"
+            return bridge?.playerControl ?: throw NullPointerException(exceptionMsg)
         }
 
         /**
@@ -132,7 +136,12 @@ class StarrySky {
         private val serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 bridge = service as ServiceBridge?
+                config.interceptors.forEach {
+                    bridge?.addInterceptor(it)
+                }
                 bridge?.register?.playback = playback
+                bridge?.register?.imageLoader = imageLoader
+
                 connection?.onServiceConnected(name, service)
             }
 

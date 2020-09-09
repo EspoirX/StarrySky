@@ -1,10 +1,11 @@
 package com.lzx.starrysky.control
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import com.lzx.starrysky.OnPlayerEventListener
-import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.playback.PlaybackManager
+import com.lzx.starrysky.playback.PlaybackStage
 
 data class RepeatMode(val repeatMode: Int, val isLoop: Boolean) {
     companion object {
@@ -16,7 +17,7 @@ data class RepeatMode(val repeatMode: Int, val isLoop: Boolean) {
     }
 }
 
-interface PlayerControl {
+interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
 
     /**
      * 根据songId播放,调用前请确保已经设置了播放列表
@@ -205,29 +206,6 @@ interface PlayerControl {
      * 此方法仅在API 21+上受支持。
      */
     fun getPlaybackState(): Any?
-
-    /**
-     * 获取发送错误时的错误信息
-     */
-    fun getErrorMessage(): CharSequence
-
-    /**
-     * 获取发送错误时的错误码
-     * 0 : 这是默认的错误代码
-     * 1 : 当应用程序状态无效以满足请求时的错误代码。
-     * 2 : 应用程序不支持请求时的错误代码。
-     * 3 : 由于身份验证已过期而无法执行请求时出现错误代码。
-     * 4 : 成功请求需要高级帐户时的错误代码。
-     * 5 : 检测到太多并发流时的错误代码。
-     * 6 : 由于家长控制而阻止内容时出现错误代码。
-     * 7 : 内容因区域不可用而被阻止时的错误代码。
-     * 8 : 请求的内容已在播放时出现错误代码。
-     * 9 : 当应用程序无法跳过任何更多歌曲时出现错误代码，因为已达到跳过限制。
-     * 10: 由于某些外部事件而导致操作中断时的错误代码。
-     * 11: 由于队列耗尽而无法播放导航（上一个，下一个）时出现错误代码。
-     */
-    fun getErrorCode(): Int
-
 
     /**
      * 比较方便的判断当前媒体是否在播放

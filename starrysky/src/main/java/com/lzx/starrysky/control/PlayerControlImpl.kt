@@ -1,15 +1,15 @@
 package com.lzx.starrysky.control
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.os.Bundle
 import android.provider.MediaStore
-import com.lzx.starrysky.MediaSourceProvider
+import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.OnPlayerEventListener
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.utils.MD5
 import com.lzx.starrysky.utils.StarrySkyUtils
 import com.lzx.starrysky.utils.data
@@ -19,7 +19,7 @@ import com.lzx.starrysky.utils.title
 class PlayerControlImpl(
     private val provider: MediaSourceProvider,
     private val playbackManager: PlaybackManager
-) : PlayerControl, PlaybackManager.PlaybackServiceCallback {
+) : PlayerControl{
 
     override fun playMusicById(songId: String) {
         if (provider.hasSongInfo(songId)) {
@@ -34,7 +34,10 @@ class PlayerControlImpl(
 
     override fun playSingleMusicByInfo(info: SongInfo) {
         provider.clearSongInfos()
-        playMusicByInfo(info)
+        provider.addSongInfo(info)
+        val bundle = Bundle()
+        bundle.putInt("clearSongId", 1)
+        playMusicImpl(info.songId, bundle)
     }
 
     override fun playMusicByIndex(index: Int) {
@@ -92,10 +95,7 @@ class PlayerControlImpl(
     }
 
     override fun onDerailleur(refer: Boolean, multiple: Float) {
-        val bundle = Bundle()
-        bundle.putBoolean("refer", refer)
-        bundle.putFloat("multiple", multiple)
-        playbackManager.onDerailleur(bundle)
+        playbackManager.onDerailleur(refer, multiple)
     }
 
     override fun seekTo(pos: Long) {
@@ -174,14 +174,6 @@ class PlayerControlImpl(
 
     override fun getPlaybackState(): PlaybackStage? {
         return playbackManager.getPlaybackState()
-    }
-
-    override fun getErrorMessage(): CharSequence {
-        return playbackManager.getErrorMessage()
-    }
-
-    override fun getErrorCode(): Int {
-        return playbackManager.getErrorCode()
     }
 
     override fun isPlaying(): Boolean {
