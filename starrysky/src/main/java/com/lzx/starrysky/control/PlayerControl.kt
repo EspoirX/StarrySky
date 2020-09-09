@@ -1,9 +1,10 @@
 package com.lzx.starrysky.control
 
 import android.arch.lifecycle.MutableLiveData
-import android.os.Bundle
-import com.lzx.starrysky.common.PlaybackStage
-import com.lzx.starrysky.provider.SongInfo
+import android.content.Context
+import com.lzx.starrysky.OnPlayerEventListener
+import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.SongInfo
 
 data class RepeatMode(val repeatMode: Int, val isLoop: Boolean) {
     companion object {
@@ -26,6 +27,11 @@ interface PlayerControl {
      * 根据 SongInfo 播放，实际也是根据 songId 播放
      */
     fun playMusicByInfo(info: SongInfo)
+
+    /**
+     * 只播放当前这首歌，播完就停止
+     */
+    fun playSingleMusicByInfo(info: SongInfo)
 
     /**
      * 根据要播放的歌曲在播放列表中的下标播放,调用前请确保已经设置了播放列表
@@ -145,6 +151,11 @@ interface PlayerControl {
     fun removeSongInfo(songId: String)
 
     /**
+     * 清除播放列表
+     */
+    fun clearPlayList()
+
+    /**
      * 获取当前播放的歌曲信息
      */
     fun getNowPlayingSongInfo(): SongInfo?
@@ -153,6 +164,11 @@ interface PlayerControl {
      * 获取当前播放的歌曲songId
      */
     fun getNowPlayingSongId(): String
+
+    /**
+     *  获取当前播放的歌曲url
+     */
+    fun getNowPlayingSongUrl(): String
 
     /**
      * 获取当前播放歌曲的下标
@@ -212,17 +228,6 @@ interface PlayerControl {
      */
     fun getErrorCode(): Int
 
-    /**
-     * 获取当前的播放状态。
-     *  Playback.STATE_NONE = 100      //什么都没开始
-     *  Playback.STATE_IDLE = 200      //空闲
-     *  Playback.STATE_BUFFERING = 300 //正在缓冲
-     *  Playback.STATE_PLAYING = 400   //正在播放
-     *  Playback.STATE_PAUSED = 500    //暂停
-     *  Playback.STATE_STOPPED = 600   //停止
-     *  Playback.STATE_ERROR = 700     //出错
-     */
-    fun getState(): Int
 
     /**
      * 比较方便的判断当前媒体是否在播放
@@ -240,6 +245,11 @@ interface PlayerControl {
     fun isIdea(): Boolean
 
     /**
+     * 比较方便的判断当前媒体是否缓冲
+     */
+    fun isBuffering(): Boolean
+
+    /**
      * 判断传入的音乐是不是正在播放的音乐
      */
     fun isCurrMusicIsPlayingMusic(songId: String): Boolean
@@ -253,6 +263,16 @@ interface PlayerControl {
      * 判断传入的音乐是否正在暂停
      */
     fun isCurrMusicIsPaused(songId: String): Boolean
+
+    /**
+     * 判断传入的音乐是否空闲
+     */
+    fun isCurrMusicIsIdea(songId: String): Boolean
+
+    /**
+     * 判断传入的音乐是否缓冲
+     */
+    fun isCurrMusicIsBuffering(songId: String): Boolean
 
     /**
      * 设置音量
@@ -275,14 +295,9 @@ interface PlayerControl {
     fun getAudioSessionId(): Int
 
     /**
-     * 发送自定义事件
-     */
-    fun sendCommand(command: String, parameters: Bundle)
-
-    /**
      * 扫描本地媒体信息
      */
-    fun querySongInfoInLocal(): List<SongInfo>
+    fun querySongInfoInLocal(context: Context): List<SongInfo>
 
     /**
      * 添加一个状态监听

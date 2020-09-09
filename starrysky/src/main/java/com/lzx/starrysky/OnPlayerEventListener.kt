@@ -1,13 +1,11 @@
-package com.lzx.starrysky.control
-
-import com.lzx.starrysky.provider.SongInfo
+package com.lzx.starrysky
 
 /**
  * 播放监听
  */
 interface OnPlayerEventListener {
     /**
-     * 开始播放,与 onMusicSwitch 的关系是先回调 onMusicSwitch，再回调 onPlayerStart
+     * 开始播放
      */
     fun onPlayerStart()
 

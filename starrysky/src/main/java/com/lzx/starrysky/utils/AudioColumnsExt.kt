@@ -1,4 +1,4 @@
-package com.lzx.starrysky.ext
+package com.lzx.starrysky.utils
 
 import android.database.Cursor
 import android.provider.MediaStore
@@ -47,4 +47,3 @@ inline val Cursor.dateAdded: String
 
 inline val Cursor.dateModified: String
     get() = getLong(getColumnIndex(MediaStore.Audio.AudioColumns.DATE_MODIFIED)).toString()
-

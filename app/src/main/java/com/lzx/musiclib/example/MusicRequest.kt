@@ -4,7 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import com.lzx.musiclib.TestApplication
 import com.lzx.musiclib.dslOkHttpSync
-import com.lzx.starrysky.provider.SongInfo
+import com.lzx.starrysky.SongInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope

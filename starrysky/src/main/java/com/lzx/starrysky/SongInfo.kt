@@ -1,4 +1,4 @@
-package com.lzx.starrysky.provider
+package com.lzx.starrysky
 
 import android.os.Parcelable
 import kotlinx.android.parcel.IgnoredOnParcel
