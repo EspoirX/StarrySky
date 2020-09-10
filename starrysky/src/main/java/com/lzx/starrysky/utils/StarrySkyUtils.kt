@@ -5,11 +5,9 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Process
 import android.util.Log
-import com.google.android.exoplayer2.ExoPlayerLibraryInfo
 import com.lzx.starrysky.control.RepeatMode
 import org.json.JSONObject
 
@@ -47,22 +45,6 @@ object StarrySkyUtils {
             } while (info.pid != Process.myPid())
             info.processName.endsWith("patch")
         }
-    }
-
-    fun getUserAgent(
-        context: Context, applicationName: String
-    ): String {
-        val versionName: String
-        versionName = try {
-            val packageName = context.packageName
-            val info =
-                context.packageManager.getPackageInfo(packageName, 0)
-            info.versionName
-        } catch (e: PackageManager.NameNotFoundException) {
-            "?"
-        }
-        return (applicationName + "/" + versionName + " (Linux;Android " + Build.VERSION.RELEASE
-            + ") " + ExoPlayerLibraryInfo.VERSION_SLASHY)
     }
 
     /**
@@ -112,15 +94,10 @@ object StarrySkyUtils {
             }
         }
 
-    fun formatStackTrace(stackTrace: Array<StackTraceElement>): String {
-        val sb = StringBuilder()
-        for (element in stackTrace) {
-            sb.append("    at ").append(element.toString())
-            sb.append("\n")
-        }
-        return sb.toString()
+    //判断是否是android 5.0
+    fun isLollipop(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
     }
-
 
     fun log(msg: String?) {
         if (isDebug) {

@@ -3,6 +3,7 @@ package com.lzx.musiclib
 import android.app.Application
 import android.content.Context
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.StarrySkyConfig
 import com.tencent.bugly.crashreport.CrashReport
 
 /**
@@ -18,7 +19,10 @@ open class TestApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
-        StarrySky.init(this)
+        val config = StarrySkyConfig().newBuilder()
+            .isOpenNotification(true)
+            .build()
+        StarrySky.init(this, config)
         CrashReport.initCrashReport(applicationContext, "9e447caa98", false)
     }
 }

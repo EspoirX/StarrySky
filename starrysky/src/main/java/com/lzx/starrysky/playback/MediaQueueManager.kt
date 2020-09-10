@@ -9,7 +9,7 @@ import com.lzx.starrysky.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.utils.StarrySkyUtils
 import com.lzx.starrysky.utils.isIndexPlayable
 
-class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoader: ImageLoader) {
+class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoader: ImageLoader?) {
     var currentIndex: Int = 0
     val currentQueueSize: Int = provider.songList.size
 
@@ -73,15 +73,15 @@ class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoad
     }
 
     fun updateMusicArt(songInfo: SongInfo?) {
-        if (songInfo?.artBitmap == null) {
+        if (songInfo?.coverBitmap == null) {
             return
         }
         //更新封面 bitmap
         val coverUrl = songInfo.songCover
         if (coverUrl.isNotEmpty()) {
-            imageLoader.load(coverUrl, object : ImageLoaderCallBack {
+            imageLoader?.load(coverUrl, object : ImageLoaderCallBack {
                 override fun onBitmapLoaded(bitmap: Bitmap?) {
-                    songInfo.artBitmap = bitmap
+                    songInfo.coverBitmap = bitmap
                     provider.updateMusicArt(songInfo)
                 }
 

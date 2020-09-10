@@ -23,6 +23,9 @@ class MainActivity : AppCompatActivity() {
 
         playPause.setOnClickListener {
             val info = SongInfo("23", "http://re.aniic.com/files/Serchmaa%20-%20%E5%BF%83%E4%B9%8B%E5%AF%BB.mp3")
+            info.songName = "大手大脚大声点"
+            info.artist = "大声哭了多久"
+            info.songCover = "https://media.zenfs.com/ko/setn.com.tw/78f6f4c7d5ac5aed9455c8eeb9924e93"
             StarrySky.with()?.playMusicByInfo(info)
             timerTaskManager.startToUpdateProgress()
         }
@@ -54,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        StarrySky.with()?.playbackState()?.observe(this, Observer {
+        StarrySky.playbackState().observe(this, Observer {
             Log.i("XIAN", "playbackState = " + it.stage)
         })
     }

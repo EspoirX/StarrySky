@@ -85,7 +85,7 @@ open class MusicRequest : CoroutineScope by MainScope() {
                 list.forEach {
                     stringBuilder.append(it.songmid).append(",")
                 }
-                val result = stringBuilder.toString();
+                val result = stringBuilder.toString()
                 val ids = result.substring(0, result.length - 1)
                 return@url "https://api.qq.jsososo.com/song/batch?songmids=$ids"
             }
@@ -118,7 +118,7 @@ open class MusicRequest : CoroutineScope by MainScope() {
             val result = songList.await()
             withContext(Dispatchers.Main) {
                 if (result.isEmpty()) {
-                    Toast.makeText(TestApplication.context, "请求失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TestApplication.context, "请求失败", Toast.LENGTH_SHORT).show()
                 }
                 callback.onSuccess(songList.await())
             }

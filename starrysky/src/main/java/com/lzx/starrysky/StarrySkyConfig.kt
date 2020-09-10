@@ -3,6 +3,8 @@ package com.lzx.starrysky
 import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
+import com.lzx.starrysky.notification.NotificationConfig
+import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.playback.Playback
 
 /**
@@ -15,6 +17,14 @@ open class StarrySkyConfig internal constructor(
     //通知栏开关
     @get:JvmName("isOpenNotification")
     val isOpenNotification = builder.isOpenNotification
+
+    //通知栏配置
+    @get:JvmName("notificationConfig")
+    val notificationConfig: NotificationConfig? = builder.notificationConfig
+
+    @get:JvmName("notificationFactory")
+    val notificationFactory: StarrySkyNotificationManager.NotificationFactory? =
+        builder.notificationFactory
 
     //缓存开关
     @get:JvmName("isOpenCache")
@@ -42,6 +52,8 @@ open class StarrySkyConfig internal constructor(
 
     class Builder constructor() {
         internal var isOpenNotification = false
+        internal var notificationConfig: NotificationConfig? = null
+        internal var notificationFactory: StarrySkyNotificationManager.NotificationFactory? = null
         internal var isOpenCache = false
         internal var cacheDestFileDir: String? = null
         internal var cache: ICache? = null
@@ -51,6 +63,8 @@ open class StarrySkyConfig internal constructor(
 
         internal constructor(config: StarrySkyConfig) : this() {
             this.isOpenNotification = config.isOpenNotification
+            this.notificationConfig = config.notificationConfig
+            this.notificationFactory = config.notificationFactory
             this.isOpenCache = config.isOpenCache
             this.cacheDestFileDir = config.cacheDestFileDir
             this.interceptors += config.interceptors
@@ -60,6 +74,16 @@ open class StarrySkyConfig internal constructor(
 
         fun isOpenNotification(isOpenNotification: Boolean) = apply {
             this.isOpenNotification = isOpenNotification
+        }
+
+        fun setNotificationConfig(notificationConfig: NotificationConfig) = apply {
+            this.notificationConfig = notificationConfig
+        }
+
+        fun setNotificationFactory(
+            notificationFactory: StarrySkyNotificationManager.NotificationFactory
+        ) = apply {
+            this.notificationFactory = notificationFactory
         }
 
         fun isOpenCache(isOpenCache: Boolean) = apply {

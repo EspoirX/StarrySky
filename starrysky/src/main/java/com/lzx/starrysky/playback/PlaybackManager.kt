@@ -5,6 +5,7 @@ import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.InterceptorService
+import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.utils.MainLooper
 import com.lzx.starrysky.utils.StarrySkyUtils
 
@@ -14,6 +15,7 @@ class PlaybackManager(
     private val interceptorService: InterceptorService) : Playback.Callback {
 
     private var serviceCallback: PlaybackServiceCallback? = null
+    private var notification: INotification? = null
 
     init {
         playback.setCallback(this)
@@ -21,6 +23,10 @@ class PlaybackManager(
 
     fun setServiceCallback(serviceCallback: PlaybackServiceCallback) {
         this.serviceCallback = serviceCallback
+    }
+
+    fun registerNotification(notification: INotification?) {
+        this.notification = notification
     }
 
     fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
@@ -208,9 +214,11 @@ class PlaybackManager(
             }
             Playback.STATE_PLAYING -> {
                 newState = PlaybackStage.PLAYING
+                startNotification(currPlayInfo, newState)
             }
             Playback.STATE_PAUSED -> {
                 newState = PlaybackStage.PAUSE
+                startNotification(currPlayInfo, newState)
             }
             Playback.STATE_STOPPED -> {
                 newState = PlaybackStage.STOP
@@ -219,6 +227,7 @@ class PlaybackManager(
                 newState = PlaybackStage.ERROR
             }
         }
+        notification?.onPlaybackStateChanged(currPlayInfo, newState)
         StarrySkyUtils.log("PlaybackStage = $newState")
         val playbackStage = PlaybackStage()
         playbackStage.errorMsg = errorMsg
@@ -227,6 +236,9 @@ class PlaybackManager(
         serviceCallback?.onPlaybackStateUpdated(playbackStage)
     }
 
+    private fun startNotification(currPlayInfo: SongInfo?, state: String) {
+        notification?.startNotification(currPlayInfo, state)
+    }
 
     interface PlaybackServiceCallback {
         fun onPlaybackStateUpdated(playbackStage: PlaybackStage)

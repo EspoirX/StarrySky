@@ -7,10 +7,13 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.playback.Playback
+import com.lzx.starrysky.playback.PlaybackManager
+import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.service.ServiceBridge
 import com.lzx.starrysky.utils.SpUtil
@@ -37,6 +40,7 @@ class StarrySky {
         private var serviceToken: ServiceToken? = null
         private var playback: Playback? = null
         private var imageLoader: ImageLoaderStrategy? = null
+        private val playbackState = MutableLiveData<PlaybackStage>()
 
         /**
          * 上下文，连接服务监听
@@ -77,6 +81,9 @@ class StarrySky {
             return sStarrySky!!
         }
 
+        /**
+         * 初始化前检查
+         */
         private fun checkAndInitializeStarrySky() {
             check(!isInitializing) { "checkAndInitializeStarrySky" }
             isInitializing = true
@@ -89,6 +96,9 @@ class StarrySky {
             }
         }
 
+        /**
+         * 初始化
+         */
         private fun initializeStarrySky() {
             sStarrySky = StarrySky()
             bindService()
@@ -126,12 +136,22 @@ class StarrySky {
                 binder?.let {
                     contextWrapper?.unbindService(binder)
                     if (connectionMap.isEmpty()) {
+                        bridge?.setServiceCallback(null)
                         bridge = null
                     }
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
+        }
+
+        /**
+         * 获取状态LiveData，如果在MainActivity需要监听进度，建议用这个，因为主界面时可能服务还没连接
+         * 所以 with() 方法获取的对象可能为null
+         */
+        @JvmStatic
+        fun playbackState(): MutableLiveData<PlaybackStage> {
+            return playbackState
         }
 
         private val serviceConnection = object : ServiceConnection {
@@ -144,6 +164,15 @@ class StarrySky {
                 bridge?.register?.imageLoader = imageLoader
                 val cache = if (config.cache == null) ExoCache(globalContext, config.isOpenCache, config.cacheDestFileDir) else config.cache
                 bridge?.register?.cache = cache
+                bridge?.register?.isOpenNotification = config.isOpenNotification
+                bridge?.register?.notificationConfig = config.notificationConfig
+                bridge?.register?.notification = config.notificationFactory
+                bridge?.setServiceCallback(object : PlaybackManager.PlaybackServiceCallback {
+                    override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
+                        playbackState.value = playbackStage
+                    }
+                })
+                bridge?.start()
                 connection?.onServiceConnected(name, service)
             }
 
