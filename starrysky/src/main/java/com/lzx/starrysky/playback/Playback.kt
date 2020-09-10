@@ -110,9 +110,9 @@ interface Playback {
 
     interface Callback {
         /**
-         * 播放完成回调
+         * 其他播放状态回调
          */
-        fun onPlaybackCompletion()
+        fun onPlayerStateChanged(songInfo: SongInfo?, playWhenReady: Boolean, playbackState: Int)
 
         /**
          * 播放出错回调

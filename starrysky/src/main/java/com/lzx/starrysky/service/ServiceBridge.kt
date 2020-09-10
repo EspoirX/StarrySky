@@ -21,15 +21,17 @@ class ServiceBridge(private val service: WeakReference<MusicService>) : Binder()
     var playerControl: PlayerControl? = null
 
     fun start() {
+        val context = service.get()?.applicationContext ?: return
         val sourceProvider = MediaSourceProvider()
-        val imageLoader = ImageLoader(service.get()?.applicationContext)
+        val imageLoader = ImageLoader(context)
         if (register.imageLoader == null) {
             imageLoader.init(DefaultImageLoader())
         } else {
             imageLoader.init(register.imageLoader!!)
         }
         val mediaQueueManager = MediaQueueManager(sourceProvider, imageLoader)
-        val player = if (register.playback == null) ExoPlayback() else register.playback
+        val cache = register.cache
+        val player = if (register.playback == null) ExoPlayback(context, cache) else register.playback
         val interceptorService = InterceptorService(interceptors)
         val playbackManager = PlaybackManager(mediaQueueManager, player!!, interceptorService)
         playbackManager.setServiceCallback(object : PlaybackManager.PlaybackServiceCallback {

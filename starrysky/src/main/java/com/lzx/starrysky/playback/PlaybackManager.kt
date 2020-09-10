@@ -54,9 +54,6 @@ class PlaybackManager(
 
     private fun handPlayRequestImpl(songInfo: SongInfo?, playWhenReady: Boolean) {
         songInfo?.let {
-            if (playWhenReady) {
-                updatePlaybackState(songInfo, null, Playback.STATE_PLAYING)
-            }
             playback.play(it, playWhenReady)
         }
     }
@@ -64,7 +61,6 @@ class PlaybackManager(
     fun onPause() {
         if (playback.isPlaying) {
             playback.pause()
-            updatePlaybackState(playback.currPlayInfo, null, Playback.STATE_PAUSED)
         }
     }
 
@@ -154,9 +150,14 @@ class PlaybackManager(
         return true
     }
 
+    override fun onPlayerStateChanged(songInfo: SongInfo?, playWhenReady: Boolean, playbackState: Int) {
+        updatePlaybackState(songInfo, null, playbackState)
+        if (playbackState == Playback.STATE_IDLE) {
+            onPlaybackCompletion()
+        }
+    }
 
-    override fun onPlaybackCompletion() {
-        updatePlaybackState(playback.currPlayInfo, null, Playback.STATE_IDLE)
+    private fun onPlaybackCompletion() {
         val repeatMode = StarrySkyUtils.repeatMode
         when (repeatMode.repeatMode) {
             //顺序播放
@@ -191,10 +192,6 @@ class PlaybackManager(
 
     override fun onPlaybackError(songInfo: SongInfo?, error: String) {
         updatePlaybackState(songInfo, error, Playback.STATE_ERROR)
-    }
-
-    fun getPlaybackState(): PlaybackStage? {
-        TODO("Not yet implemented")
     }
 
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {

@@ -1,12 +1,12 @@
 package com.lzx.starrysky.control
 
-import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.os.Bundle
 import android.provider.MediaStore
-import com.lzx.starrysky.playback.MediaSourceProvider
+import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
@@ -19,7 +19,10 @@ import com.lzx.starrysky.utils.title
 class PlayerControlImpl(
     private val provider: MediaSourceProvider,
     private val playbackManager: PlaybackManager
-) : PlayerControl{
+) : PlayerControl {
+
+    private val playbackState = MutableLiveData<PlaybackStage>()
+    private val playerEventListener = mutableListOf<OnPlayerEventListener>()
 
     override fun playMusicById(songId: String) {
         if (provider.hasSongInfo(songId)) {
@@ -172,10 +175,6 @@ class PlayerControlImpl(
         return playbackManager.playback.getPlaybackSpeed()
     }
 
-    override fun getPlaybackState(): PlaybackStage? {
-        return playbackManager.getPlaybackState()
-    }
-
     override fun isPlaying(): Boolean {
         return playbackManager.playback.playbackState == Playback.STATE_PLAYING
     }
@@ -262,26 +261,35 @@ class PlayerControlImpl(
     }
 
     override fun addPlayerEventListener(listener: OnPlayerEventListener?) {
-        TODO("Not yet implemented")
+        listener?.let {
+            if (!playerEventListener.contains(it)) {
+                playerEventListener.add(it)
+            }
+        }
     }
 
     override fun removePlayerEventListener(listener: OnPlayerEventListener?) {
-        TODO("Not yet implemented")
+        listener?.let {
+            playerEventListener.remove(it)
+        }
     }
 
     override fun clearPlayerEventListener() {
-        TODO("Not yet implemented")
+        playerEventListener.clear()
     }
 
     override fun getPlayerEventListeners(): MutableList<OnPlayerEventListener> {
-        TODO("Not yet implemented")
+        return playerEventListener
     }
 
     override fun playbackState(): MutableLiveData<PlaybackStage> {
-        TODO("Not yet implemented")
+        return playbackState
     }
 
     override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
-        TODO("Not yet implemented")
+        playbackState.value = playbackStage
+        playerEventListener.forEach {
+            it.onPlaybackStageChange(playbackStage)
+        }
     }
 }

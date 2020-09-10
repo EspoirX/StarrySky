@@ -51,6 +51,11 @@ dependencies {
     api "com.google.android.exoplayer:exoplayer-core:2.11.3"
     api "com.google.android.exoplayer:extension-mediasession:2.11.3"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.0"
+
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.11.3'
+    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.11.3'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.11.3'
+    implementation 'com.google.android.exoplayer:extension-rtmp:2.11.3'
 }
 repositories {
     mavenCentral()

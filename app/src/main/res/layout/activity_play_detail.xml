@@ -106,6 +106,15 @@
         android:text="缓冲不播放"
         android:textSize="12sp" />
 
+    <Button
+        android:id="@+id/Pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/prepare"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="暂停" />
+
     <TextView
         android:id="@+id/songName"
         android:layout_width="wrap_content"

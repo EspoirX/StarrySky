@@ -1,5 +1,6 @@
 package com.lzx.starrysky
 
+import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.playback.Playback
@@ -23,9 +24,8 @@ open class StarrySkyConfig internal constructor(
     @get:JvmName("cacheDestFileDir")
     val cacheDestFileDir: String? = builder.cacheDestFileDir
 
-    //是否跳过https
-    @get:JvmName("skipSSLChain")
-    val skipSSLChain = builder.skipSSLChain
+    @get:JvmName("cacheManager")
+    val cache: ICache? = builder.cache
 
     @get:JvmName("interceptors")
     val interceptors: MutableList<StarrySkyInterceptor> = builder.interceptors
@@ -44,7 +44,7 @@ open class StarrySkyConfig internal constructor(
         internal var isOpenNotification = false
         internal var isOpenCache = false
         internal var cacheDestFileDir: String? = null
-        internal var skipSSLChain = false
+        internal var cache: ICache? = null
         internal val interceptors: MutableList<StarrySkyInterceptor> = mutableListOf()
         internal var imageLoaderStrategy: ImageLoaderStrategy? = null
         internal var playback: Playback? = null
@@ -53,7 +53,6 @@ open class StarrySkyConfig internal constructor(
             this.isOpenNotification = config.isOpenNotification
             this.isOpenCache = config.isOpenCache
             this.cacheDestFileDir = config.cacheDestFileDir
-            this.skipSSLChain = config.skipSSLChain
             this.interceptors += config.interceptors
             this.imageLoaderStrategy = config.imageLoader
             this.playback = config.playback
@@ -71,8 +70,8 @@ open class StarrySkyConfig internal constructor(
             this.cacheDestFileDir = cacheDestFileDir
         }
 
-        fun skipSSLChain(skipSSLChain: Boolean) = apply {
-            this.skipSSLChain = skipSSLChain
+        fun setCache(cache: ICache) = apply {
+            this.cache = cache
         }
 
         fun addInterceptor(interceptor: StarrySkyInterceptor) = apply {

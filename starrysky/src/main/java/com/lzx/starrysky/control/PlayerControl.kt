@@ -202,12 +202,6 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     fun getPlaybackSpeed(): Float
 
     /**
-     * 获取底层框架[android.media.session.PlaybackState]对象。
-     * 此方法仅在API 21+上受支持。
-     */
-    fun getPlaybackState(): Any?
-
-    /**
      * 比较方便的判断当前媒体是否在播放
      */
     fun isPlaying(): Boolean
