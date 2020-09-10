@@ -21,6 +21,7 @@ open class TestApplication : Application() {
         context = this
         val config = StarrySkyConfig().newBuilder()
             .isOpenNotification(true)
+            .isUserService(false)
             .build()
         StarrySky.init(this, config)
         CrashReport.initCrashReport(applicationContext, "9e447caa98", false)

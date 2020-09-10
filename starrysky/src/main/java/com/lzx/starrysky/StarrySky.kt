@@ -101,7 +101,12 @@ class StarrySky {
          */
         private fun initializeStarrySky() {
             sStarrySky = StarrySky()
-            bindService()
+            if (config.isUserService) {
+                bindService()
+            } else {
+                bridge = ServiceBridge(globalContext)
+                registerComponentsAndStart()
+            }
         }
 
         /**
@@ -157,22 +162,7 @@ class StarrySky {
         private val serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 bridge = service as ServiceBridge?
-                config.interceptors.forEach {
-                    bridge?.addInterceptor(it)
-                }
-                bridge?.register?.playback = playback
-                bridge?.register?.imageLoader = imageLoader
-                val cache = if (config.cache == null) ExoCache(globalContext, config.isOpenCache, config.cacheDestFileDir) else config.cache
-                bridge?.register?.cache = cache
-                bridge?.register?.isOpenNotification = config.isOpenNotification
-                bridge?.register?.notificationConfig = config.notificationConfig
-                bridge?.register?.notification = config.notificationFactory
-                bridge?.setServiceCallback(object : PlaybackManager.PlaybackServiceCallback {
-                    override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
-                        playbackState.value = playbackStage
-                    }
-                })
-                bridge?.start()
+                registerComponentsAndStart()
                 connection?.onServiceConnected(name, service)
             }
 
@@ -180,6 +170,28 @@ class StarrySky {
                 connection?.onServiceDisconnected(name)
                 bridge = null
             }
+        }
+
+        /**
+         * 注册组件并启动
+         */
+        private fun registerComponentsAndStart() {
+            config.interceptors.forEach {
+                bridge?.addInterceptor(it)
+            }
+            bridge?.register?.playback = playback
+            bridge?.register?.imageLoader = imageLoader
+            val cache = if (config.cache == null) ExoCache(globalContext, config.isOpenCache, config.cacheDestFileDir) else config.cache
+            bridge?.register?.cache = cache
+            bridge?.register?.isOpenNotification = config.isOpenNotification
+            bridge?.register?.notificationConfig = config.notificationConfig
+            bridge?.register?.notification = config.notificationFactory
+            bridge?.setServiceCallback(object : PlaybackManager.PlaybackServiceCallback {
+                override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
+                    playbackState.value = playbackStage
+                }
+            })
+            bridge?.start()
         }
 
         /**

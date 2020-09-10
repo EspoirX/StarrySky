@@ -13,7 +13,6 @@ import android.os.IBinder
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import com.lzx.starrysky.utils.StarrySkyUtils
-import java.lang.ref.WeakReference
 
 class MusicService : Service() {
 
@@ -25,7 +24,7 @@ class MusicService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        bridge = ServiceBridge(WeakReference(this))
+        bridge = ServiceBridge(this)
         return bridge
     }
 

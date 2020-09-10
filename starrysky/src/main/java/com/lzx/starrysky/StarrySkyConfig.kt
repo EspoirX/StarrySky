@@ -34,17 +34,25 @@ open class StarrySkyConfig internal constructor(
     @get:JvmName("cacheDestFileDir")
     val cacheDestFileDir: String? = builder.cacheDestFileDir
 
+    //缓存实现
     @get:JvmName("cacheManager")
     val cache: ICache? = builder.cache
 
+    //拦截器
     @get:JvmName("interceptors")
     val interceptors: MutableList<StarrySkyInterceptor> = builder.interceptors
 
+    //图片加载器
     @get:JvmName("imageLoaderStrategy")
     val imageLoader: ImageLoaderStrategy? = builder.imageLoaderStrategy
 
+    //播放器实现
     @get:JvmName("playback")
     val playback: Playback? = builder.playback
+
+    //是否需要后台服务
+    @get:JvmName("isUserService")
+    val isUserService: Boolean = builder.isUserService
 
     constructor() : this(Builder())
 
@@ -60,6 +68,7 @@ open class StarrySkyConfig internal constructor(
         internal val interceptors: MutableList<StarrySkyInterceptor> = mutableListOf()
         internal var imageLoaderStrategy: ImageLoaderStrategy? = null
         internal var playback: Playback? = null
+        internal var isUserService: Boolean = true
 
         internal constructor(config: StarrySkyConfig) : this() {
             this.isOpenNotification = config.isOpenNotification
@@ -70,6 +79,7 @@ open class StarrySkyConfig internal constructor(
             this.interceptors += config.interceptors
             this.imageLoaderStrategy = config.imageLoader
             this.playback = config.playback
+            this.isUserService = config.isUserService
         }
 
         fun isOpenNotification(isOpenNotification: Boolean) = apply {
@@ -105,6 +115,8 @@ open class StarrySkyConfig internal constructor(
         fun setImageLoader(imageLoader: ImageLoaderStrategy) = apply { this.imageLoaderStrategy = imageLoader }
 
         fun setPlayback(playback: Playback) = apply { this.playback = playback }
+
+        fun isUserService(isUserService: Boolean) = apply { this.isUserService = isUserService }
 
         fun build(): StarrySkyConfig {
             return StarrySkyConfig(this)
