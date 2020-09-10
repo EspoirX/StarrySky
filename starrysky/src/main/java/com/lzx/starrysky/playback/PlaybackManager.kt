@@ -163,6 +163,7 @@ class PlaybackManager(
             //顺序播放
             RepeatMode.REPEAT_MODE_NONE -> {
                 if (repeatMode.isLoop) {
+                    playback.currentMediaId = ""
                     onSkipToNext()
                 } else if (!mediaQueue.currSongIsLastSong()) {
                     onSkipToNext()
@@ -177,11 +178,13 @@ class PlaybackManager(
             }
             //随机播放
             RepeatMode.REPEAT_MODE_SHUFFLE -> {
+                playback.currentMediaId = ""
                 onSkipToNext()
             }
             //倒序播放
             RepeatMode.REPEAT_MODE_REVERSE -> {
                 if (repeatMode.isLoop) {
+                    playback.currentMediaId = ""
                     onSkipToPrevious()
                 } else if (!mediaQueue.currSongIsFirstSong()) {
                     onSkipToPrevious()
