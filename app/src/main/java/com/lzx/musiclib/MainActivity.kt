@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.utils.TimerTaskManager
@@ -15,11 +16,17 @@ import kotlinx.android.synthetic.main.activity_play_detail.stop
 
 class MainActivity : AppCompatActivity() {
 
+
+    private var viewModel: MusicViewModel? = null
     private var timerTaskManager = TimerTaskManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_detail)
+        viewModel = ViewModelProvider(this)[MusicViewModel::class.java]
+
+//        viewModel?.login()
+        viewModel?.getSongList("10")
 
         playPause.setOnClickListener {
             val info = SongInfo("23", "http://re.aniic.com/files/Serchmaa%20-%20%E5%BF%83%E4%B9%8B%E5%AF%BB.mp3")
@@ -30,6 +37,7 @@ class MainActivity : AppCompatActivity() {
             timerTaskManager.startToUpdateProgress()
         }
         Pause.setOnClickListener {
+            viewModel?.getSongList("10")
             StarrySky.with()?.pauseMusic()
             timerTaskManager.stopToUpdateProgress()
         }
