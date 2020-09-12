@@ -1,9 +1,14 @@
-package com.lzx.musiclib.example
+package com.lzx.musiclib.base
 
 import android.util.Log
 import android.widget.Toast
 import com.lzx.musiclib.TestApplication
 import com.lzx.musiclib.dslOkHttpSync
+import com.lzx.musiclib.forEach
+import com.lzx.musiclib.getArray
+import com.lzx.musiclib.getObj
+import com.lzx.musiclib.getOrNull
+import com.lzx.musiclib.toJsonObj
 import com.lzx.starrysky.SongInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,35 +17,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONObject
 
-fun String.toJsonObj(): JSONObject {
-    return JSONObject(this)
-}
 
-fun JSONObject.getObj(value: String): JSONObject {
-    return this.getJSONObject(value)
-}
-
-fun JSONObject.getArray(value: String): JSONArray {
-    return this.getJSONArray(value)
-}
-
-inline fun <reified T> JSONArray.getOrNull(index: Int): T? {
-    return if (index > 0 && index < this.length() - 1) {
-        this.getJSONObject(index) as T
-    } else {
-        null
-    }
-}
-
-fun JSONArray.iterator(): Iterator<JSONObject> =
-    (0 until length()).asSequence().map { get(it) as JSONObject }.iterator()
-
-inline fun <reified T> JSONArray.forEach(action: (T?) -> Unit) {
-    (0 until length()).forEach { action(get(it) as? T) }
-}
 
 open class MusicRequest : CoroutineScope by MainScope() {
 

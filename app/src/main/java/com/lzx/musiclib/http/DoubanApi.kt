@@ -8,7 +8,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-interface ApiInterface {
+interface DoubanApi {
     companion object {
         const val BASE_URL = "https://www.douban.com/"
         const val BASE_URL1 = "https://api.douban.com/"

@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyConfig
-import com.tencent.bugly.crashreport.CrashReport
 
 /**
  * create by lzx
@@ -24,6 +23,5 @@ open class TestApplication : Application() {
             .isUserService(false)
             .build()
         StarrySky.init(this, config)
-        CrashReport.initCrashReport(applicationContext, "9e447caa98", false)
     }
 }

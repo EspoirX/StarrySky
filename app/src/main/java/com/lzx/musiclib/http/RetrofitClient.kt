@@ -17,47 +17,21 @@ object RetrofitClient {
             return builder.build()
         }
 
-    fun <S> getService(serviceClass: Class<S>, baseUrl: String = ApiInterface.BASE_URL1): S {
+    fun <S> getService(serviceClass: Class<S>, baseUrl: String = DoubanApi.BASE_URL1): S {
         return Retrofit.Builder()
-            .client(client)
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(serviceClass)
+                .client(client)
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(serviceClass)
     }
 
-    fun getMusicService(): ApiInterface {
-        return getService(ApiInterface::class.java)
+    fun getDoubanMusic(): DoubanApi {
+        return getService(DoubanApi::class.java)
+    }
+
+    fun getQQMusic(): QQMusicApi {
+        return getService(QQMusicApi::class.java, QQMusicApi.BASE_URL)
     }
 }
 
-
-data class MusicResponse<out T>(val data: T)
-//
-//suspend fun <T : Any> MusicResponse<T>.executeResponse(successBlock: (suspend CoroutineScope.() -> Unit)? = null,
-//                                                       errorBlock: (suspend CoroutineScope.() -> Unit)? = null): Result<T> {
-//    return coroutineScope {
-//        if (errorCode == -1) {
-//            errorBlock?.let { it() }
-//            Result.Error(IOException(errorMsg))
-//        } else {
-//            successBlock?.let { it() }
-//            Result.Success(data)
-//        }
-//    }
-//}
-//
-//suspend fun <T : Any> MusicResponse<T>.doSuccess(successBlock: (suspend CoroutineScope.(T) -> Unit)? = null): MusicResponse<T> {
-//    return coroutineScope {
-//        if (errorCode != -1) successBlock?.invoke(this, this@doSuccess.data)
-//        this@doSuccess
-//    }
-//
-//}
-//
-//suspend fun <T : Any> MusicResponse<T>.doError(errorBlock: (suspend CoroutineScope.(String) -> Unit)? = null): MusicResponse<T> {
-//    return coroutineScope {
-//        if (errorCode == -1) errorBlock?.invoke(this, this@doError.errorMsg)
-//        this@doError
-//    }
-//}

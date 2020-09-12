@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <com.lzx.musiclib.weight.SlidingTabLayout
+        android:id="@+id/tabLayout"
         app:tl_textSelectColor="#000000"
         app:tl_textUnselectColor="#333333"
         app:tl_textsize="14sp"
@@ -13,4 +14,9 @@
         app:tl_underline_color="#EF1B1B"
         android:layout_width="match_parent"
         android:layout_height="50dp" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>
