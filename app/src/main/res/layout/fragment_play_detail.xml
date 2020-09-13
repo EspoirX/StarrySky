@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:ignore="MissingPrefix">
 
     <com.gcssloop.widget.RCImageView
         android:id="@+id/songCover"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_marginLeft="20dp"
-        android:src="#cccccc"
         android:layout_marginTop="20dp"
+        android:src="#cccccc"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:round_corner="8dp" />
@@ -19,11 +21,104 @@
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:textColor="#000"
-        android:textSize="20sp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:singleLine="true"
-        android:text="khfaksjhaskjdhaskdjhaskdjhas"
+        android:text="打算离开就大手大脚啊圣诞节啊睡了多久啊是肯德基阿萨德离开"
+        android:textColor="#000"
+        android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/songCover" />
+
+    <TextView
+        android:id="@+id/progressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/seekBar"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="20dp"
+        android:text="00:00"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/timeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:text="00:00"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/relativeLayout"  />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="20dp"
+        app:bl_corners_radius="25dp"
+        app:bl_solid_color="#d35650"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:background="#d35650">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/gdt_ic_pause" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/btnPreSong"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="20dp"
+        android:padding="5dp"
+        android:src="@drawable/ic_pre_song"
+        app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
+        app:layout_constraintEnd_toStartOf="@+id/relativeLayout"
+        app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
+
+    <ImageView
+        android:id="@+id/btnNextSong"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="20dp"
+        android:padding="5dp"
+        android:src="@drawable/ic_next_song"
+        app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
+        app:layout_constraintStart_toEndOf="@+id/relativeLayout"
+        app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
+
+    <ImageView
+        android:id="@+id/btnSongList"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="5dp"
+        android:src="@drawable/ic_songlist"
+        app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnNextSong"
+        app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
+
+    <ImageView
+        android:id="@+id/btnPlayMode"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="5dp"
+        android:src="@drawable/ic_shunxu"
+        app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
+        app:layout_constraintEnd_toStartOf="@+id/btnPreSong"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

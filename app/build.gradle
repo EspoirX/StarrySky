@@ -55,6 +55,7 @@ android {
         implementation 'com.danikula:videocache:2.7.1'
 
         implementation 'com.gcssloop.widget:rclayout:1.8.1'
+        implementation 'com.noober.background:core:1.6.5'
     }
 }
 dependencies {

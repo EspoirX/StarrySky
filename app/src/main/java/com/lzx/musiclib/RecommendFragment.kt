@@ -6,6 +6,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gcssloop.widget.RCImageView
 import com.lzx.musiclib.adapter.addItem
+import com.lzx.musiclib.adapter.itemClicked
 import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
@@ -55,6 +56,9 @@ class RecommendFragment : BaseFragment() {
                                 val icon = view.findViewById<RCImageView>(R.id.cover)
                                 icon.setMargins(if (index == 0) 15 else 0, right = 15)
                                 icon.loadImage(songInfo.songCover)
+                                view.setOnClickListener {
+                                    activity?.navigationTo<PlayDetailActivity>()
+                                }
                                 layout.addView(view)
                             }
                         }

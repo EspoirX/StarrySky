@@ -135,6 +135,7 @@ class MusicViewModel : ViewModel() {
                     songInfo.songCover = it?.getString("pic_huge") ?: ""
                     songlist.add(songInfo)
                 }
+                songlist.shuffle()
                 val channel = MusicChannel()
                 channel.songList = songlist
                 if (channelList.size > 3) {
