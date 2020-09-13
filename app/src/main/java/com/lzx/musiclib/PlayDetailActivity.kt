@@ -11,20 +11,23 @@ import kotlinx.android.synthetic.main.activity_main.tabLayout
 import kotlinx.android.synthetic.main.activity_main.viewPager
 
 class PlayDetailActivity : AppCompatActivity() {
+
+    private var songId: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_detail)
+        songId = intent.getStringExtra("songId")
         val list = mutableListOf<String>()
         list.add("详情")
         list.add("声音")
-        val adapter = DetailAdapter(supportFragmentManager, list)
+        val adapter = DetailAdapter(supportFragmentManager, list, songId)
         viewPager?.adapter = adapter
         tabLayout?.setViewPager(viewPager)
         tabLayout?.setCurrentTabOnly(1)
     }
 }
 
-class DetailAdapter(fm: FragmentManager, private val list: MutableList<String>) : FragmentStatePagerAdapter(fm) {
+class DetailAdapter(fm: FragmentManager, private val list: MutableList<String>, private val songId: String?) : FragmentStatePagerAdapter(fm) {
 
     private val fragmentMap = hashMapOf<String, Fragment>()
     override fun getItem(position: Int): Fragment {
@@ -35,7 +38,7 @@ class DetailAdapter(fm: FragmentManager, private val list: MutableList<String>) 
         var fragment: BaseFragment? = null
         when (position) {
             0 -> fragment = SongDetailFragment()
-            1 -> fragment = PlayDetailFragment()
+            1 -> fragment = PlayDetailFragment.newInstance(songId)
         }
         fragmentMap[value!!] = fragment!!
         return fragment

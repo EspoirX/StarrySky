@@ -164,4 +164,16 @@ class MusicViewModel : ViewModel() {
 
     }
 
+    fun getBaiduMusicUrl(songId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = RetrofitClient.getService(BaiduApi::class.java, BaiduApi.BASE_URL).getSongDetail(songId)
+            val json = result.string()
+            try {
+                val obj = JSONObject(json)
+
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
+    }
 }

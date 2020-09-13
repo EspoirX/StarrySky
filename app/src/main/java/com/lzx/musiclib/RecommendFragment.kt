@@ -57,7 +57,7 @@ class RecommendFragment : BaseFragment() {
                                 icon.setMargins(if (index == 0) 15 else 0, right = 15)
                                 icon.loadImage(songInfo.songCover)
                                 view.setOnClickListener {
-                                    activity?.navigationTo<PlayDetailActivity>()
+                                    activity?.navigationTo<PlayDetailActivity>("songId" to songInfo.songId)
                                 }
                                 layout.addView(view)
                             }
