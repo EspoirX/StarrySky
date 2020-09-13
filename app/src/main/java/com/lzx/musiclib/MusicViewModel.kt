@@ -4,13 +4,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lzx.musiclib.bean.MusicChannel
+import com.lzx.musiclib.http.BaiduApi
 import com.lzx.musiclib.http.DoubanApi
 import com.lzx.musiclib.http.RetrofitClient
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.utils.SpUtil
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
+/**
+ * 百度音乐
+ * https://www.zhihu.com/question/348928857/answer/858421542
+ * http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.billboard.billList&type=11&format=json
+ */
 class MusicViewModel : ViewModel() {
 
     companion object {
@@ -98,11 +106,14 @@ class MusicViewModel : ViewModel() {
     val musicChannelLiveData = MutableLiveData<MutableList<MusicChannel>>()
     fun getQQMusicRecommend() {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = RetrofitClient.getQQMusic().getQQMusicRecommend()
-            val json = result.string()
-            val list = mutableListOf<MusicChannel>()
+            val recommObj = async { RetrofitClient.getQQMusic().getQQMusicRecommend() }
+            val songListObj = async { RetrofitClient.getService(BaiduApi::class.java, BaiduApi.BASE_URL).getBaiduLeaderboard() }
+            val recommJson = recommObj.await().string()
+            val songJson = songListObj.await().string()
+
+            val channelList = mutableListOf<MusicChannel>()
             try {
-                val array = JSONObject(json).getJSONObject("data").getJSONArray("list")
+                val array = JSONObject(recommJson).getJSONObject("data").getJSONArray("list")
                 array.forEach<JSONObject> {
                     val channel = MusicChannel()
                     channel.contentId = it?.getString("content_id")
@@ -111,9 +122,25 @@ class MusicViewModel : ViewModel() {
                     channel.rcmdtemplate = it?.getString("rcmdtemplate")
                     channel.title = it?.getString("title")
                     channel.username = it?.getString("username")
-                    list.add(channel)
+                    channelList.add(channel)
                 }
-                musicChannelLiveData.postValue(list)
+                val songArray = JSONObject(songJson).getJSONArray("song_list")
+                val songlist = mutableListOf<SongInfo>()
+                songArray.forEach<JSONObject> {
+                    val songInfo = SongInfo()
+                    songInfo.songId = it?.getString("song_id")
+                            ?: System.currentTimeMillis().toString()
+                    songInfo.songName = it?.getString("title") ?: ""
+                    songInfo.artist = it?.getString("author") ?: ""
+                    songInfo.songCover = it?.getString("pic_huge") ?: ""
+                    songlist.add(songInfo)
+                }
+                val channel = MusicChannel()
+                channel.songList = songlist
+                if (channelList.size > 3) {
+                    channelList.add(3, channel)
+                }
+                musicChannelLiveData.postValue(channelList)
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

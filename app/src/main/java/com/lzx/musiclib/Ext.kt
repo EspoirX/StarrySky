@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
@@ -14,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.coroutines.CoroutineContext
 
 val Float.dp
     get() = TypedValue.applyDimension(
@@ -72,8 +76,8 @@ inline fun <reified T> JSONArray.forEach(action: (T?) -> Unit) {
     (0 until length()).forEach { action(get(it) as? T) }
 }
 
-fun ViewModel.safeLaunchOnMain(tryBlock: CoroutineScope.() -> Unit) {
-    viewModelScope.launch(Dispatchers.Main) {
+fun ViewModel.safeLaunch(context: CoroutineContext, tryBlock: CoroutineScope.() -> Unit) {
+    viewModelScope.launch(context) {
         try {
             tryBlock()
         } catch (e: Throwable) {
@@ -90,4 +94,26 @@ fun ImageView.loadImage(url: String?) {
 
 fun Context.showToast(msg: String) {
     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+}
+
+fun Int.getViewObj(context: Context, root: ViewGroup? = null, attachToRoot: Boolean = false): View {
+    return LayoutInflater.from(context).inflate(this, root, attachToRoot)
+}
+
+infix fun <T> Boolean.then(value: T?) = TernaryExpression(this, value)
+
+class TernaryExpression<out T>(val flag: Boolean, private val truly: T?) {
+    infix fun <T> or(falsy: T?) = if (flag) truly else falsy
+}
+
+fun View.setMargins( left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0,
+        requestLayout: Boolean = false
+) {
+    if (this.layoutParams is ViewGroup.MarginLayoutParams) {
+        val p = this.layoutParams as ViewGroup.MarginLayoutParams
+        p.setMargins(left.dp.toInt(), top.dp.toInt(), right.dp.toInt(), bottom.dp.toInt())
+        if (requestLayout) {
+            this.requestLayout()
+        }
+    }
 }

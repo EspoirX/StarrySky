@@ -1,6 +1,7 @@
 package com.lzx.musiclib
 
 import android.view.View
+import android.widget.LinearLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gcssloop.widget.RCImageView
@@ -32,15 +33,31 @@ class RecommendFragment : BaseFragment() {
     }
 
     private fun initRecycleView(list: MutableList<MusicChannel>) {
-        activity?.showToast("list = " + list.size)
         recycleView.setup<MusicChannel> {
             dataSource(list)
             adapter {
                 addItem(R.layout.item_recomment_channel) {
+                    isForViewType { data, position -> data?.songList.isNullOrEmpty() }
                     bindViewHolder { data, position, holder ->
                         val icon = holder.findViewById<RCImageView>(R.id.cover)
                         icon.loadImage(data?.cover)
                         setText(R.id.title to data?.title, R.id.desc to data?.rcmdtemplate, R.id.username to data?.username)
+                    }
+                }
+                addItem(R.layout.item_recomment_song) {
+                    isForViewType { data, position -> !data?.songList.isNullOrEmpty() }
+                    bindViewHolder { data, position, holder ->
+                        val layout = holder.findViewById<LinearLayout>(R.id.songLayout)
+                        layout.removeAllViews()
+                        data?.songList?.forEachIndexed { index, songInfo ->
+                            if (index < 5) {
+                                val view = R.layout.item_recom_song.getViewObj(context)
+                                val icon = view.findViewById<RCImageView>(R.id.cover)
+                                icon.setMargins(if (index == 0) 15 else 0, right = 15)
+                                icon.loadImage(songInfo.songCover)
+                                layout.addView(view)
+                            }
+                        }
                     }
                 }
             }

@@ -7,22 +7,31 @@
 
     <com.gcssloop.widget.RCImageView
         android:id="@+id/cover"
-        app:round_corner="4dp"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        app:round_corner="8dp"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
         android:layout_margin="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/cover"
+        app:layout_constraintEnd_toEndOf="@+id/cover"
+        app:layout_constraintStart_toStartOf="@+id/cover"
+        app:layout_constraintTop_toTopOf="@+id/cover" />
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginTop="10dp"
         android:ellipsize="end"
-        android:singleLine="true"
         android:text="dada"
+        android:textColor="#000000"
+        android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/cover"
         app:layout_constraintTop_toTopOf="@+id/cover" />
 
@@ -47,7 +56,6 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:text="dada"
-        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/cover"
         app:layout_constraintStart_toEndOf="@+id/cover" />
 
@@ -56,7 +64,7 @@
         android:layout_height="0.5dp"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="15dp"
-        android:background="#666666"
+        android:background="#f7f7f7"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cover" />
 </androidx.constraintlayout.widget.ConstraintLayout>

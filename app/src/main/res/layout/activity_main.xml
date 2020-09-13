@@ -8,10 +8,15 @@
     <com.lzx.musiclib.weight.SlidingTabLayout
         android:id="@+id/tabLayout"
         app:tl_textSelectColor="#000000"
-        app:tl_textUnselectColor="#333333"
+        app:tl_textUnselectColor="#838383"
         app:tl_textsize="14sp"
         app:tl_textSelectsize="18sp"
-        app:tl_underline_color="#EF1B1B"
+        app:tl_indicator_color="#ec6058"
+        app:tl_indicator_height="4dp"
+        app:tl_indicator_corner_radius="2dp"
+        app:tl_textBold="SELECT"
+        app:tl_indicator_margin_top="15dp"
+        app:tl_indicator_width="10dp"
         android:layout_width="match_parent"
         android:layout_height="50dp" />
 
