@@ -69,14 +69,15 @@ class PlayDetailFragment : BaseFragment() {
         }
         if (type == "baidu") {
             viewModel?.getBaiduMusicUrl(songId!!)
+        } else if (type == "qq") {
+            val songInfo = StarrySky.with()?.getPlayList()?.getOrNull(0)
+            if (songInfo != null) {
+                initDetailUI(songInfo)
+                StarrySky.with()?.playMusicByIndex(0)
+            }
         }
         viewModel?.songInfoLiveData?.observe(this, Observer {
-            songCover?.loadImage(it.songCover)
-            songName?.text = it.songName
-            timeText?.text = it.duration.formatTime()
-            if (StarrySky.with()?.isPlaying() == true && StarrySky.with()?.getNowPlayingSongId() != it.songId) {
-                StarrySky.with()?.stopMusic()
-            }
+            initDetailUI(it)
             StarrySky.with()?.playMusicByInfo(it)
         })
         StarrySky.with()?.playbackState()?.observe(this, Observer {
@@ -149,11 +150,21 @@ class PlayDetailFragment : BaseFragment() {
         }
     }
 
+    private fun initDetailUI(it: SongInfo) {
+        songCover?.loadImage(it.songCover)
+        songName?.text = it.songName
+        timeText?.text = it.duration.formatTime()
+        if (StarrySky.with()?.isPlaying() == true && StarrySky.with()?.getNowPlayingSongId() != it.songId) {
+            StarrySky.with()?.stopMusic()
+        }
+    }
+
     private fun showSongListDialog() {
         activity?.createMaterialDialog(CommonBehavior(R.style.dialog_base_style,
             "gravity" to Gravity.BOTTOM,
             "windowAnimations" to R.style.select_popup_bottom,
             "realHeight" to 453.dp.toInt()))?.show {
+            cancelOnTouchOutside(true)
             customView(R.layout.dialog_song_list) {
                 val customView = it.getCustomView() as ViewGroup
                 val playModel = customView.findViewById<TextView>(R.id.playModel)

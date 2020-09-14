@@ -23,6 +23,7 @@ open class TestApplication : Application() {
         super.onCreate()
         context = this
         val config = StarrySkyConfig().newBuilder()
+            .addInterceptor(RequestSongInfoInterceptor())
             .build()
         StarrySky.init(this, config)
     }
@@ -31,8 +32,22 @@ open class TestApplication : Application() {
      * 请求播放url拦截器
      */
     class RequestSongInfoInterceptor : StarrySkyInterceptor {
-        override fun process(songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback) {
-
+        private val viewModel = MusicViewModel()
+        override fun process(
+            songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback
+        ) {
+            if (songInfo == null) {
+                callback.onInterrupt(RuntimeException("SongInfo is null"))
+                return
+            }
+            if (songInfo.songUrl.isEmpty() && songInfo.headData?.get("source") == "qqMusic") {
+                viewModel.getQQMusicUrl(songInfo.songId) {
+                    songInfo.songUrl = it
+                    callback.onContinue(songInfo)
+                }
+            } else {
+                callback.onContinue(songInfo)
+            }
         }
     }
 }

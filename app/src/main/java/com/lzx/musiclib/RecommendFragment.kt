@@ -6,10 +6,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gcssloop.widget.RCImageView
 import com.lzx.musiclib.adapter.addItem
+import com.lzx.musiclib.adapter.itemClicked
 import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.bean.MusicChannel
+import com.lzx.starrysky.StarrySky
 import kotlinx.android.synthetic.main.fragment_recomment.recycleView
 
 class RecommendFragment : BaseFragment() {
@@ -30,6 +32,14 @@ class RecommendFragment : BaseFragment() {
         viewModel?.musicChannelLiveData?.observe(this, Observer {
             initRecycleView(it)
         })
+        viewModel?.qqMusicsLiveData?.observe(this, Observer {
+            if (it.isNotEmpty()) {
+                StarrySky.with()?.updatePlayList(it)
+                activity?.navigationTo<PlayDetailActivity>(
+                    "songId" to it[0].songId,
+                    "type" to "qq")
+            }
+        })
     }
 
     private fun initRecycleView(list: MutableList<MusicChannel>) {
@@ -42,6 +52,9 @@ class RecommendFragment : BaseFragment() {
                         val icon = holder.findViewById<RCImageView>(R.id.cover)
                         icon.loadImage(data?.cover)
                         setText(R.id.title to data?.title, R.id.desc to data?.rcmdtemplate, R.id.username to data?.username)
+                        itemClicked(View.OnClickListener {
+                            data?.contentId?.let { id -> viewModel?.getQQMusicSongList(id) }
+                        })
                     }
                 }
                 addItem(R.layout.item_recomment_song) {

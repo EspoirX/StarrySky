@@ -17,7 +17,7 @@ class SongInfo(
     var songCover: String = "",  //音乐封面
     var coverBitmap: Bitmap? = null,  //音乐封面
     var duration: Long = -1, //音乐长度
-    var headData: Map<String, String>? = hashMapOf() //header 信息
+    var headData: HashMap<String, String>? = hashMapOf() //header 信息
 ) : Parcelable, Cloneable {
 
     @IgnoredOnParcel

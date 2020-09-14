@@ -161,9 +161,64 @@ class MusicViewModel : ViewModel() {
 
     }
 
+    val qqMusicsLiveData = MutableLiveData<MutableList<SongInfo>>()
     fun getQQMusicSongList(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = RetrofitClient.getQQMusic().getQQMusicSongList(id)
+            val json = result.string()
+            try {
+                val obj = JSONObject(json).getJSONObject("data")
+                val songArray = obj.getJSONArray("songlist")
+                val songlist = mutableListOf<SongInfo>()
+                songArray.forEach<JSONObject> { it ->
+                    val songInfo = SongInfo()
+                    songInfo.songId = it?.getString("songmid")
+                        ?: System.currentTimeMillis().toString()
+                    songInfo.songName = it?.getString("songname") ?: ""
+                    var singer = ""
+                    val singerArray = it?.getJSONArray("singer")
+                    singerArray?.forEach<JSONObject> {
+                        singer += it?.getString("name") + " "
+                    }
+                    songInfo.artist = singer
+                    songInfo.headData?.put("source", "qqMusic")
+                    songlist.add(songInfo)
+                }
 
+                val stringBuilder = StringBuilder()
+                songlist.forEach {
+                    stringBuilder.append(it.songId).append(",")
+                }
+                val idsValue = stringBuilder.toString()
+                val ids = idsValue.substring(0, idsValue.length - 1)
+                val coverResult = RetrofitClient.getQQMusic().getQQMusicSongCover(ids)
+                val coverJson = coverResult.string()
+                songlist.forEach {
+                    val data = JSONObject(coverJson).getObj("data").getObj(it.songId)
+                    val mid = data.getObj("track_info").getObj("album").getString("mid")
+                    it.songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg"
+                }
+                qqMusicsLiveData.postValue(songlist)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
     }
+
+    fun getQQMusicUrl(songId: String, callback: ((url: String) -> Unit)? = null) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = RetrofitClient.getQQMusic().getQQMusicSongUrl(songId)
+            val json = result.string()
+            try {
+                val obj = JSONObject(json).getJSONObject("data")
+                val url = obj.getString(songId)
+                callback?.let { it(url) }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
+    }
+
 
     val songInfoLiveData = MutableLiveData<SongInfo>()
     fun getBaiduMusicUrl(songId: String) {
