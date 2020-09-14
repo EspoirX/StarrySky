@@ -29,17 +29,17 @@ class MusicViewModel : ViewModel() {
     fun login() {
         viewModelScope.launch(Dispatchers.IO) {
             val result = RetrofitClient.getService(DoubanApi::class.java, DoubanApi.BASE_URL).login(
-                    "application/x-www-form-urlencoded",
-                    "02646d3fb69a52ff072d47bf23cef8fd",
-                    "02646d3fb69a52ff072d47bf23cef8fd",
-                    "cde5d61429abcd7c",
-                    "b88146214e19b8a8244c9bc0e2789da68955234d",
-                    "b635779c65b816b13b330b68921c0f8edc049590",
-                    "b88146214e19b8a8244c9bc0e2789da68955234d",
-                    "password",
-                    "http://www.douban.com/mobile/fm",
-                    "13560357097",
-                    "lizixian18")
+                "application/x-www-form-urlencoded",
+                "02646d3fb69a52ff072d47bf23cef8fd",
+                "02646d3fb69a52ff072d47bf23cef8fd",
+                "cde5d61429abcd7c",
+                "b88146214e19b8a8244c9bc0e2789da68955234d",
+                "b635779c65b816b13b330b68921c0f8edc049590",
+                "b88146214e19b8a8244c9bc0e2789da68955234d",
+                "password",
+                "http://www.douban.com/mobile/fm",
+                "13560357097",
+                "lizixian18")
             val json = result.string()
             try {
                 val obj = JSONObject(json)
@@ -55,15 +55,15 @@ class MusicViewModel : ViewModel() {
     fun getChannelList() {
         viewModelScope.launch(Dispatchers.IO) {
             val result = RetrofitClient.getDoubanMusic().getChannelList(
-                    "json",
-                    "radio_iphone",
-                    "02646d3fb69a52ff072d47bf23cef8fd",
-                    "s:mobile|y:iOS 10.2|f:115|d:b88146214e19b8a8244c9bc0e2789da68955234d|e:iPhone7,1|m:appstore",
-                    "02646d3fb69a52ff072d47bf23cef8fd",
-                    "xlarge",
-                    "b88146214e19b8a8244c9bc0e2789da68955234d",
-                    "b635779c65b816b13b330b68921c0f8edc049590",
-                    "115")
+                "json",
+                "radio_iphone",
+                "02646d3fb69a52ff072d47bf23cef8fd",
+                "s:mobile|y:iOS 10.2|f:115|d:b88146214e19b8a8244c9bc0e2789da68955234d|e:iPhone7,1|m:appstore",
+                "02646d3fb69a52ff072d47bf23cef8fd",
+                "xlarge",
+                "b88146214e19b8a8244c9bc0e2789da68955234d",
+                "b635779c65b816b13b330b68921c0f8edc049590",
+                "115")
             val json = result.string()
             try {
                 val obj = JSONObject(json)
@@ -77,21 +77,22 @@ class MusicViewModel : ViewModel() {
     fun getSongList(channel: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = RetrofitClient.getDoubanMusic().getSongList(
-                    "Bearer " + SpUtil.instance.getString(KEY_TOKEN),
-                    "10",
-                    "mainsite",
-                    "0.0",
-                    "128",
-                    "aac",
-                    "json",
-                    "radio_iphone",
-                    "02646d3fb69a52ff072d47bf23cef8fd",
-                    "s:mobile|y:iOS 10.2|f:115|d:b88146214e19b8a8244c9bc0e2789da68955234d|e:iPhone7,1|m:appstore",
-                    "02646d3fb69a52ff072d47bf23cef8fd",
-                    "xlarge",
-                    "b88146214e19b8a8244c9bc0e2789da68955234d",
-                    "b635779c65b816b13b330b68921c0f8edc049590",
-                    "115")
+                "Bearer " + SpUtil.instance.getString(KEY_TOKEN),
+                "10",
+                "mainsite",
+                "n",
+                "0.0",
+                "128",
+                "aac",
+                "json",
+                "radio_iphone",
+                "02646d3fb69a52ff072d47bf23cef8fd",
+                "s:mobile|y:iOS 10.2|f:115|d:b88146214e19b8a8244c9bc0e2789da68955234d|e:iPhone7,1|m:appstore",
+                "02646d3fb69a52ff072d47bf23cef8fd",
+                "xlarge",
+                "b88146214e19b8a8244c9bc0e2789da68955234d",
+                "b635779c65b816b13b330b68921c0f8edc049590",
+                "115")
             val json = result.string()
             try {
                 val obj = JSONObject(json)
@@ -129,7 +130,7 @@ class MusicViewModel : ViewModel() {
                 songArray.forEach<JSONObject> {
                     val songInfo = SongInfo()
                     songInfo.songId = it?.getString("song_id")
-                            ?: System.currentTimeMillis().toString()
+                        ?: System.currentTimeMillis().toString()
                     songInfo.songName = it?.getString("title") ?: ""
                     songInfo.artist = it?.getString("author") ?: ""
                     songInfo.songCover = it?.getString("pic_huge") ?: ""
@@ -164,13 +165,23 @@ class MusicViewModel : ViewModel() {
 
     }
 
+    val songInfoLiveData = MutableLiveData<SongInfo>()
     fun getBaiduMusicUrl(songId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = RetrofitClient.getService(BaiduApi::class.java, BaiduApi.BASE_URL).getSongDetail(songId)
             val json = result.string()
             try {
                 val obj = JSONObject(json)
-
+                val bitrate = obj.getJSONObject("bitrate")
+                val detail = obj.getJSONObject("songinfo")
+                val songInfo = SongInfo()
+                songInfo.songId = detail.getString("song_id")
+                songInfo.songName = detail.getString("title")
+                songInfo.songCover = detail.getString("pic_huge")
+                songInfo.artist = detail.getString("author")
+                songInfo.songUrl = bitrate.getString("file_link")
+                songInfo.duration = bitrate.getLong("file_duration") * 1000
+                songInfoLiveData.postValue(songInfo)
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

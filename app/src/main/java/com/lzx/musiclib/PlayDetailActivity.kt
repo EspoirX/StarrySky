@@ -13,21 +13,27 @@ import kotlinx.android.synthetic.main.activity_main.viewPager
 class PlayDetailActivity : AppCompatActivity() {
 
     private var songId: String? = null
+    private var type: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_detail)
         songId = intent.getStringExtra("songId")
+        type = intent.getStringExtra("type")
         val list = mutableListOf<String>()
         list.add("详情")
         list.add("声音")
-        val adapter = DetailAdapter(supportFragmentManager, list, songId)
+        val adapter = DetailAdapter(supportFragmentManager, list, songId, type)
         viewPager?.adapter = adapter
         tabLayout?.setViewPager(viewPager)
         tabLayout?.setCurrentTabOnly(1)
     }
 }
 
-class DetailAdapter(fm: FragmentManager, private val list: MutableList<String>, private val songId: String?) : FragmentStatePagerAdapter(fm) {
+class DetailAdapter(fm: FragmentManager,
+                    private val list: MutableList<String>,
+                    private val songId: String?,
+                    private val type: String?
+) : FragmentStatePagerAdapter(fm) {
 
     private val fragmentMap = hashMapOf<String, Fragment>()
     override fun getItem(position: Int): Fragment {
@@ -37,8 +43,8 @@ class DetailAdapter(fm: FragmentManager, private val list: MutableList<String>, 
         }
         var fragment: BaseFragment? = null
         when (position) {
-            0 -> fragment = SongDetailFragment()
-            1 -> fragment = PlayDetailFragment.newInstance(songId)
+            0 -> fragment = PlayDetailFragment.newInstance(songId, type)
+            1 -> fragment = SongDetailFragment()
         }
         fragmentMap[value!!] = fragment!!
         return fragment

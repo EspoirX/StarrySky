@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private var viewModel: MusicViewModel? = null
-    private var timerTaskManager = TimerTaskManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

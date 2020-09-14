@@ -12,30 +12,72 @@
         android:layout_height="250dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
-        android:src="#cccccc"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:round_corner="8dp" />
 
     <TextView
+        android:id="@+id/songName"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:singleLine="true"
-        android:text="打算离开就大手大脚啊圣诞节啊睡了多久啊是肯德基阿萨德离开"
         android:textColor="#000"
         android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/songCover" />
+
+    <ImageView
+        android:id="@+id/btnRewind"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_rewind"
+        app:layout_constraintEnd_toStartOf="@+id/btnSpeedFast"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/songName" />
+
+
+    <ImageView
+        android:id="@+id/btnSpeedSlow"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_speed_slow"
+        app:layout_constraintEnd_toStartOf="@+id/btnSpeedFast"
+        app:layout_constraintStart_toEndOf="@+id/btnRewind"
+        app:layout_constraintTop_toBottomOf="@+id/songName" />
+
+    <ImageView
+        android:id="@+id/btnSpeedFast"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_speed_fast"
+        app:layout_constraintEnd_toStartOf="@+id/btnFastForward"
+        app:layout_constraintStart_toEndOf="@+id/btnSpeedSlow"
+        app:layout_constraintTop_toBottomOf="@+id/songName" />
+
+
+
+    <ImageView
+        android:id="@+id/btnFastForward"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_fast_forward"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnSpeedSlow"
+        app:layout_constraintTop_toBottomOf="@+id/songName" />
 
     <TextView
         android:id="@+id/progressText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/seekBar"
-        android:layout_marginBottom="15dp"
         android:layout_marginLeft="20dp"
+        android:layout_marginBottom="15dp"
         android:text="00:00"
         app:layout_constraintBottom_toTopOf="@+id/seekBar"
         app:layout_constraintStart_toStartOf="parent" />
@@ -45,8 +87,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="20dp"
-        android:text="00:00"
         android:layout_marginBottom="15dp"
+        android:text="00:00"
         app:layout_constraintBottom_toTopOf="@+id/seekBar"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -54,10 +96,10 @@
         android:id="@+id/seekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        app:layout_constraintBottom_toTopOf="@+id/relativeLayout"  />
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/relativeLayout" />
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
@@ -72,6 +114,7 @@
         tools:background="#d35650">
 
         <ImageView
+            android:id="@+id/btnPlayState"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerInParent="true"

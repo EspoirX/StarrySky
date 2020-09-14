@@ -54,6 +54,7 @@ interface DoubanApi {
         @Header("Authorization") Header: String,
         @Query("channel") channel: String,
         @Query("from") from: String,
+        @Query("type") type: String,
         @Query("pt") pt: String,
         @Query("kbps") kbps: String,
         @Query("formats") formats: String,
