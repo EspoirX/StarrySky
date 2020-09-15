@@ -229,8 +229,7 @@ class PlayDetailFragment : BaseFragment() {
                         }
                         setText(
                             R.id.songName to data?.songName,
-                            R.id.singer to "-" + data?.artist,
-                            R.id.time to data?.duration?.formatTime()
+                            R.id.singer to "-" + data?.artist
                         )
                         itemClicked(View.OnClickListener {
                             StarrySky.with()?.playMusicByIndex(position)

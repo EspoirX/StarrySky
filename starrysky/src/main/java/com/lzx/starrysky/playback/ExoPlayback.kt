@@ -319,6 +319,7 @@ class ExoPlayback(val context: Context, val cache: ICache?) : Playback {
         }
 
         override fun onPlayerError(error: ExoPlaybackException) {
+            error.printStackTrace()
             val what: String = when (error.type) {
                 ExoPlaybackException.TYPE_SOURCE -> error.sourceException.message.toString()
                 ExoPlaybackException.TYPE_RENDERER -> error.rendererException.message.toString()

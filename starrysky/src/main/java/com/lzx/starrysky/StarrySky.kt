@@ -7,6 +7,7 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.control.PlayerControl
@@ -116,8 +117,8 @@ class StarrySky {
             try {
                 val contextWrapper = ContextWrapper(globalContext)
                 val intent = Intent(contextWrapper, MusicService::class.java)
-                contextWrapper.startService(intent)
-                val result = contextWrapper.bindService(intent, serviceConnection, 0)
+                globalContext.startService(intent)
+                val result = globalContext.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
                 if (result) {
                     connectionMap[contextWrapper] = serviceConnection
                     serviceToken = ServiceToken(contextWrapper)

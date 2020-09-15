@@ -31,15 +31,4 @@
         android:text="dsad"
         android:textColor="#b2b2b2"
         android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/time"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
-        android:gravity="center_vertical"
-        android:text="dsad"
-        android:textColor="#b2b2b2"
-        android:textSize="12sp" />
 </RelativeLayout>

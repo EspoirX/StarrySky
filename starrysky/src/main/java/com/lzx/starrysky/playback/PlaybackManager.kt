@@ -141,7 +141,7 @@ class PlaybackManager(
         if (repeatMode.repeatMode == RepeatMode.REPEAT_MODE_NONE ||
             repeatMode.repeatMode == RepeatMode.REPEAT_MODE_ONE ||
             repeatMode.repeatMode == RepeatMode.REPEAT_MODE_REVERSE) {
-            return mediaQueue.currSongIsLastSong() && repeatMode.isLoop
+            return if (repeatMode.isLoop) true else !mediaQueue.currSongIsLastSong()
         }
         return true
     }
@@ -151,7 +151,7 @@ class PlaybackManager(
         if (repeatMode.repeatMode == RepeatMode.REPEAT_MODE_NONE ||
             repeatMode.repeatMode == RepeatMode.REPEAT_MODE_ONE ||
             repeatMode.repeatMode == RepeatMode.REPEAT_MODE_REVERSE) {
-            return mediaQueue.currSongIsFirstSong() && repeatMode.isLoop
+            return if (repeatMode.isLoop) true else !mediaQueue.currSongIsFirstSong()
         }
         return true
     }
