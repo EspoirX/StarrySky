@@ -21,6 +21,8 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
@@ -321,4 +323,10 @@ fun Activity.isActivityValid(): Boolean {
         return !this.isDestroyed
     }
     return true
+}
+
+fun Fragment.addFragmentToActivity(fragmentManager: FragmentManager, frameId: Int) {
+    val transaction = fragmentManager.beginTransaction()
+    transaction.add(frameId, this)
+    transaction.commit()
 }
