@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.lzx.musiclib.adapter.addItem
+import com.lzx.musiclib.adapter.itemClicked
 import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
@@ -83,6 +84,7 @@ class PlayDetailFragment : BaseFragment() {
         StarrySky.with()?.playbackState()?.observe(this, Observer {
             when (it.stage) {
                 PlaybackStage.PLAYING -> {
+                    it.songInfo?.let { info -> initDetailUI(info) }
                     btnPlayState?.setImageResource(R.drawable.gdt_ic_pause)
                     timerTaskManager.startToUpdateProgress()
                 }
@@ -207,6 +209,10 @@ class PlayDetailFragment : BaseFragment() {
                             R.id.singer to "-" + data?.artist,
                             R.id.time to data?.duration?.formatTime()
                         )
+                        itemClicked(View.OnClickListener {
+                            StarrySky.with()?.playMusicByIndex(position)
+                            notifyDataSetChanged()
+                        })
                     }
                 }
             }

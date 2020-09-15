@@ -184,21 +184,22 @@ class MusicViewModel : ViewModel() {
                     songInfo.headData?.put("source", "qqMusic")
                     songlist.add(songInfo)
                 }
-
-                val stringBuilder = StringBuilder()
-                songlist.forEach {
-                    stringBuilder.append(it.songId).append(",")
-                }
-                val idsValue = stringBuilder.toString()
-                val ids = idsValue.substring(0, idsValue.length - 1)
-                val coverResult = RetrofitClient.getQQMusic().getQQMusicSongCover(ids)
-                val coverJson = coverResult.string()
-                songlist.forEach {
-                    val data = JSONObject(coverJson).getObj("data").getObj(it.songId)
-                    val mid = data.getObj("track_info").getObj("album").getString("mid")
-                    it.songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg"
-                }
                 qqMusicsLiveData.postValue(songlist)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
+    }
+
+    fun getQQMusicSongCover(mid: String, callback: ((cover: String) -> Unit)? = null) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val coverResult = RetrofitClient.getQQMusic().getQQMusicSongCover(mid)
+            val coverJson = coverResult.string()
+            try {
+                val obj = JSONObject(coverJson).getJSONObject("data")
+                val mid = obj.getObj("track_info").getObj("album").getString("mid")
+                val songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg"
+                callback?.let { it(songCover) }
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

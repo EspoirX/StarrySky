@@ -32,44 +32,80 @@
         android:id="@+id/btnRewind"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginBottom="50dp"
         android:src="@drawable/ic_rewind"
+        app:layout_constraintBottom_toTopOf="@+id/progressText"
         app:layout_constraintEnd_toStartOf="@+id/btnSpeedFast"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/songName" />
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="快退"
+        app:layout_constraintEnd_toEndOf="@+id/btnRewind"
+        app:layout_constraintStart_toStartOf="@+id/btnRewind"
+        app:layout_constraintTop_toBottomOf="@+id/btnRewind" />
 
     <ImageView
         android:id="@+id/btnSpeedSlow"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="50dp"
         android:src="@drawable/ic_speed_slow"
+        app:layout_constraintBottom_toTopOf="@+id/progressText"
         app:layout_constraintEnd_toStartOf="@+id/btnSpeedFast"
-        app:layout_constraintStart_toEndOf="@+id/btnRewind"
-        app:layout_constraintTop_toBottomOf="@+id/songName" />
+        app:layout_constraintStart_toEndOf="@+id/btnRewind" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="变速慢"
+        app:layout_constraintEnd_toEndOf="@+id/btnSpeedSlow"
+        app:layout_constraintStart_toStartOf="@+id/btnSpeedSlow"
+        app:layout_constraintTop_toBottomOf="@+id/btnSpeedSlow" />
 
     <ImageView
         android:id="@+id/btnSpeedFast"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="50dp"
         android:src="@drawable/ic_speed_fast"
+        app:layout_constraintBottom_toTopOf="@+id/progressText"
         app:layout_constraintEnd_toStartOf="@+id/btnFastForward"
-        app:layout_constraintStart_toEndOf="@+id/btnSpeedSlow"
-        app:layout_constraintTop_toBottomOf="@+id/songName" />
+        app:layout_constraintStart_toEndOf="@+id/btnSpeedSlow" />
 
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="变速快"
+        app:layout_constraintEnd_toEndOf="@+id/btnSpeedFast"
+        app:layout_constraintStart_toStartOf="@+id/btnSpeedFast"
+        app:layout_constraintTop_toBottomOf="@+id/btnSpeedFast" />
 
     <ImageView
         android:id="@+id/btnFastForward"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="50dp"
         android:src="@drawable/ic_fast_forward"
+        app:layout_constraintBottom_toTopOf="@+id/progressText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnSpeedSlow"
-        app:layout_constraintTop_toBottomOf="@+id/songName" />
+        app:layout_constraintStart_toEndOf="@+id/btnSpeedSlow" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="快进"
+        app:layout_constraintEnd_toEndOf="@+id/btnFastForward"
+        app:layout_constraintStart_toStartOf="@+id/btnFastForward"
+        app:layout_constraintTop_toBottomOf="@+id/btnFastForward" />
 
     <TextView
         android:id="@+id/progressText"

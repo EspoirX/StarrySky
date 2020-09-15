@@ -20,8 +20,8 @@ interface QQMusicApi {
 
     ///song
     @Headers("User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)")
-    @GET("song/batch")
-    suspend fun getQQMusicSongCover(@Query("songmids") songmids: String): ResponseBody
+    @GET("song")
+    suspend fun getQQMusicSongCover(@Query("songmid") songmid: String): ResponseBody
 
     @Headers("User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)")
     @GET("song/urls")
