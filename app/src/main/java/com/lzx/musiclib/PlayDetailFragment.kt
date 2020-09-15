@@ -18,6 +18,7 @@ import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.weight.dialog.CommonBehavior
+import com.lzx.musiclib.weight.dialog.MaterialDialog
 import com.lzx.musiclib.weight.dialog.createMaterialDialog
 import com.lzx.musiclib.weight.dialog.getCustomView
 import com.lzx.starrysky.SongInfo
@@ -26,12 +27,15 @@ import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.utils.TimerTaskManager
 import kotlinx.android.synthetic.main.fragment_play_detail.btnFastForward
+import kotlinx.android.synthetic.main.fragment_play_detail.btnNextSong
 import kotlinx.android.synthetic.main.fragment_play_detail.btnPlayState
+import kotlinx.android.synthetic.main.fragment_play_detail.btnPreSong
 import kotlinx.android.synthetic.main.fragment_play_detail.btnRewind
 import kotlinx.android.synthetic.main.fragment_play_detail.btnSongList
 import kotlinx.android.synthetic.main.fragment_play_detail.btnSpeedFast
 import kotlinx.android.synthetic.main.fragment_play_detail.btnSpeedSlow
 import kotlinx.android.synthetic.main.fragment_play_detail.progressText
+import kotlinx.android.synthetic.main.fragment_play_detail.relativeLayout
 import kotlinx.android.synthetic.main.fragment_play_detail.seekBar
 import kotlinx.android.synthetic.main.fragment_play_detail.songCover
 import kotlinx.android.synthetic.main.fragment_play_detail.songName
@@ -57,6 +61,8 @@ class PlayDetailFragment : BaseFragment() {
     private var type: String? = null
     private var viewModel: MusicViewModel? = null
     private var timerTaskManager = TimerTaskManager()
+    private var dialog: MaterialDialog? = null
+
 
     @SuppressLint("SetTextI18n")
     override fun initView(view: View?) {
@@ -82,6 +88,10 @@ class PlayDetailFragment : BaseFragment() {
             StarrySky.with()?.playMusicByInfo(it)
         })
         StarrySky.with()?.playbackState()?.observe(this, Observer {
+            if (dialog?.isShowing == true) {
+                val recycleView = dialog?.getCustomView()?.findViewById<RecyclerView>(R.id.recycleView)
+                recycleView?.adapter?.notifyDataSetChanged()
+            }
             when (it.stage) {
                 PlaybackStage.PLAYING -> {
                     it.songInfo?.let { info -> initDetailUI(info) }
@@ -150,6 +160,19 @@ class PlayDetailFragment : BaseFragment() {
         btnSongList?.setOnClickListener {
             showSongListDialog()
         }
+        btnNextSong?.setOnClickListener {
+            StarrySky.with()?.skipToNext()
+        }
+        btnPreSong?.setOnClickListener {
+            StarrySky.with()?.skipToPrevious()
+        }
+        relativeLayout?.setOnClickListener {
+            if (StarrySky.with()?.isPlaying() == true) {
+                StarrySky.with()?.pauseMusic()
+            } else {
+                StarrySky.with()?.restoreMusic()
+            }
+        }
     }
 
     private fun initDetailUI(it: SongInfo) {
@@ -162,7 +185,7 @@ class PlayDetailFragment : BaseFragment() {
     }
 
     private fun showSongListDialog() {
-        activity?.createMaterialDialog(CommonBehavior(R.style.dialog_base_style,
+        dialog = activity?.createMaterialDialog(CommonBehavior(R.style.dialog_base_style,
             "gravity" to Gravity.BOTTOM,
             "windowAnimations" to R.style.select_popup_bottom,
             "realHeight" to 453.dp.toInt()))?.show {
@@ -211,7 +234,6 @@ class PlayDetailFragment : BaseFragment() {
                         )
                         itemClicked(View.OnClickListener {
                             StarrySky.with()?.playMusicByIndex(position)
-                            notifyDataSetChanged()
                         })
                     }
                 }

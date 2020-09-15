@@ -1,7 +1,10 @@
 package com.lzx.musiclib
 
 import android.app.Application
+import android.content.ComponentName
 import android.content.Context
+import android.content.ServiceConnection
+import android.os.IBinder
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyConfig
@@ -25,8 +28,17 @@ open class TestApplication : Application() {
         val config = StarrySkyConfig().newBuilder()
             .addInterceptor(RequestSongInfoInterceptor())
             .addInterceptor(RequestSongCoverInterceptor())
+            .isOpenNotification(true)
             .build()
-        StarrySky.init(this, config)
+        StarrySky.init(this, config, object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                this@TestApplication.showToast("连接成功")
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                this@TestApplication.showToast("连接失败")
+            }
+        })
     }
 
     /**
