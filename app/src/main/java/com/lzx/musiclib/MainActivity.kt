@@ -50,8 +50,6 @@ class MainActivity : AppCompatActivity() {
         val list = mutableListOf<String>()
         list.add("精品推荐")
         list.add("热门")
-        list.add("最新")
-        list.add("歌手")
         val adapter = ViewPagerAdapter(supportFragmentManager, list)
         viewPager?.adapter = adapter
         tabLayout?.setViewPager(viewPager)
@@ -93,9 +91,11 @@ class MainActivity : AppCompatActivity() {
             donutProgress.setProgress(position?.toFloat() ?: 0f)
         })
         songCover?.setOnClickListener {
-            navigationTo<PlayDetailActivity>(
-                "songId" to StarrySky.with()?.getNowPlayingSongId(),
-                "type" to "other")
+            StarrySky.with()?.getNowPlayingSongInfo()?.let {
+                navigationTo<PlayDetailActivity>(
+                    "songId" to it.songId,
+                    "type" to "other")
+            }
         }
     }
 
@@ -127,8 +127,6 @@ class ViewPagerAdapter(fm: FragmentManager, private val list: MutableList<String
         val fragment = when (position) {
             0 -> RecommendFragment.newInstance()
             1 -> HotFragment.newInstance()
-            2 -> NewFragment.newInstance()
-            3 -> SingerFragment.newInstance()
             else -> throw IllegalArgumentException()
         }
         fragmentMap[value!!] = fragment

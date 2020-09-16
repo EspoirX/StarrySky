@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
+import android.os.Build
 import android.os.IBinder
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
@@ -26,6 +27,15 @@ class MusicService : Service() {
     override fun onBind(intent: Intent?): IBinder? {
         bridge = ServiceBridge(this)
         return bridge
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        if (bridge?.playerControl?.isPlaying() == false) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                bridge?.sessionManager?.release()
+            }
+        }
+        return super.onUnbind(intent)
     }
 
     override fun onCreate() {

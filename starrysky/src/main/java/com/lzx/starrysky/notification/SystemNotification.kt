@@ -150,12 +150,15 @@ class SystemNotification constructor(
 
         val smallIcon = if (config.smallIconRes != -1) config.smallIconRes else
             R.drawable.ic_notification
+
+        val token = (context as MusicService).bridge?.sessionManager?.getMediaSession()
         notificationBuilder
             .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
                 // show only play/pause in compact view
                 .setShowActionsInCompactView(playPauseButtonPosition)
                 .setShowCancelButton(true)
-                .setCancelButtonIntent(mStopIntent))
+                .setCancelButtonIntent(mStopIntent)
+                .setMediaSession(token))
             .setDeleteIntent(mStopIntent)
             .setColorized(true)
             .setSmallIcon(smallIcon)

@@ -12,6 +12,7 @@ import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.playback.ExoPlayback
 import com.lzx.starrysky.playback.MediaQueueManager
+import com.lzx.starrysky.playback.MediaSessionManager
 import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
@@ -24,6 +25,7 @@ class ServiceBridge(private val context: Context) : Binder() {
     var playerControl: PlayerControl? = null
     var notification: INotification? = null
     var imageLoader: ImageLoader? = null
+    var sessionManager: MediaSessionManager? = null
 
     fun start() {
         //数据存储
@@ -55,10 +57,13 @@ class ServiceBridge(private val context: Context) : Binder() {
             override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
                 playerControl?.onPlaybackStateUpdated(playbackStage)
                 serviceCallback?.onPlaybackStateUpdated(playbackStage)
+                sessionManager?.updateMetaData(playbackStage.songInfo)
             }
         })
         //播放控制
         playerControl = PlayerControlImpl(sourceProvider, playbackManager)
+        //MediaSessionManager
+        sessionManager = MediaSessionManager(context, playerControl)
     }
 
     /**
