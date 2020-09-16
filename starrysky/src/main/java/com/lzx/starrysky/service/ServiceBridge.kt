@@ -64,6 +64,11 @@ class ServiceBridge(private val context: Context) : Binder() {
         playerControl = PlayerControlImpl(sourceProvider, playbackManager)
         //MediaSessionManager
         sessionManager = MediaSessionManager(context, playerControl)
+
+        //加个回调
+        if (context is MusicService) {
+            context.onCreateServiceBridgeSuccess()
+        }
     }
 
     /**

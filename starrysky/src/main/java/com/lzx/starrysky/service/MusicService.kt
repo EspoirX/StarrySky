@@ -49,6 +49,12 @@ class MusicService : Service() {
     }
 
     /**
+     *  bridge 里面的东西已经创建好
+     */
+    fun onCreateServiceBridgeSuccess() {
+    }
+
+    /**
      * 初始化电话监听服务，电话响了要暂停
      */
     private fun initTelephony() {
