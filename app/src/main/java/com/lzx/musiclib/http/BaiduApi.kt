@@ -18,4 +18,10 @@ interface BaiduApi {
     @Headers("User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)")
     @GET("v1/restserver/ting/song/playAAC")
     suspend fun getSongDetail(@Query("songid") songId: String): ResponseBody
+
+
+    @Headers("User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)")
+    @GET("v1/restserver/ting/billboard/billList?size=20&offset=0")
+    suspend fun getBaiduMusicList(@Query("type") type: String): ResponseBody
+
 }

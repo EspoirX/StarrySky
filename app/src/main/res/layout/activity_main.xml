@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,21 +7,52 @@
 
     <com.lzx.musiclib.weight.SlidingTabLayout
         android:id="@+id/tabLayout"
-        app:tl_textSelectColor="#000000"
-        app:tl_textUnselectColor="#838383"
-        app:tl_textsize="14sp"
-        app:tl_textSelectsize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         app:tl_indicator_color="#ec6058"
-        app:tl_indicator_height="4dp"
         app:tl_indicator_corner_radius="2dp"
-        app:tl_textBold="SELECT"
+        app:tl_indicator_height="4dp"
         app:tl_indicator_margin_top="15dp"
         app:tl_indicator_width="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="50dp" />
+        app:tl_textBold="SELECT"
+        app:tl_textSelectColor="#000000"
+        app:tl_textSelectsize="18sp"
+        app:tl_textUnselectColor="#838383"
+        app:tl_textsize="14sp" />
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tabLayout" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="80dp">
+
+        <com.gcssloop.widget.RCImageView
+            android:id="@+id/songCover"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            app:round_as_circle="true" />
+
+        <com.lzx.musiclib.weight.DonutProgress
+            android:id="@+id/donutProgress"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:layout_centerInParent="true"
+            app:donut_circle_starting_degree="-90"
+            app:donut_finished_color="@android:color/holo_red_light"
+            app:donut_finished_stroke_width="2dp"
+            app:donut_text_color="@android:color/transparent"
+            app:donut_unfinished_color="@android:color/white"
+            app:donut_unfinished_stroke_width="2dp" />
+    </RelativeLayout>
+</RelativeLayout>

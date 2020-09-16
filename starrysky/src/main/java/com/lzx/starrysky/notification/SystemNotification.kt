@@ -40,9 +40,6 @@ class SystemNotification constructor(
     private var mNextIntent: PendingIntent? = null
     private var mPreviousIntent: PendingIntent? = null
 
-    //    private var mSessionToken: MediaSessionCompat.Token? = null
-//    private var mController: MediaControllerCompat? = null
-//    private var mTransportControls: MediaControllerCompat.TransportControls? = null
     private var playbackState: String = PlaybackStage.IDEA
     private var songInfo: SongInfo? = null
 

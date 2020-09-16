@@ -17,10 +17,12 @@ import com.lzx.musiclib.adapter.itemClicked
 import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
+import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.musiclib.weight.dialog.CommonBehavior
 import com.lzx.musiclib.weight.dialog.MaterialDialog
 import com.lzx.musiclib.weight.dialog.createMaterialDialog
 import com.lzx.musiclib.weight.dialog.getCustomView
+import com.lzx.musiclib.weight.dialog.lifecycleOwner
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
@@ -28,6 +30,7 @@ import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.utils.TimerTaskManager
 import kotlinx.android.synthetic.main.fragment_play_detail.btnFastForward
 import kotlinx.android.synthetic.main.fragment_play_detail.btnNextSong
+import kotlinx.android.synthetic.main.fragment_play_detail.btnPlayMode
 import kotlinx.android.synthetic.main.fragment_play_detail.btnPlayState
 import kotlinx.android.synthetic.main.fragment_play_detail.btnPreSong
 import kotlinx.android.synthetic.main.fragment_play_detail.btnRewind
@@ -63,7 +66,6 @@ class PlayDetailFragment : BaseFragment() {
     private var timerTaskManager = TimerTaskManager()
     private var dialog: MaterialDialog? = null
 
-
     @SuppressLint("SetTextI18n")
     override fun initView(view: View?) {
         songId = arguments?.getString("songId")
@@ -78,9 +80,14 @@ class PlayDetailFragment : BaseFragment() {
             viewModel?.getBaiduMusicUrl(songId!!)
         } else if (type == "qq") {
             val songInfo = StarrySky.with()?.getPlayList()?.getOrNull(0)
-            if (songInfo != null) {
-                initDetailUI(songInfo)
+            songInfo?.let {
+                initDetailUI(it)
                 StarrySky.with()?.playMusicByIndex(0)
+            }
+        } else {
+            val songInfo = StarrySky.with()?.getNowPlayingSongInfo()
+            songInfo?.let {
+                initDetailUI(it)
             }
         }
         viewModel?.songInfoLiveData?.observe(this, Observer {
@@ -129,7 +136,6 @@ class PlayDetailFragment : BaseFragment() {
             progressText.text = position?.formatTime()
             timeText.text = duration?.formatTime()
         })
-
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -173,6 +179,51 @@ class PlayDetailFragment : BaseFragment() {
                 StarrySky.with()?.restoreMusic()
             }
         }
+        //点击逻辑:顺序播放->列表循环->单曲播放->单曲循环->随机播放->倒序播放->倒序列表循环->顺序播放
+        val repeatMode = StarrySky.with()?.getRepeatMode()
+        when (repeatMode?.repeatMode) {
+            RepeatMode.REPEAT_MODE_NONE -> btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
+            RepeatMode.REPEAT_MODE_ONE -> btnPlayMode?.setImageResource(R.drawable.ic_danqu)
+            RepeatMode.REPEAT_MODE_SHUFFLE -> btnPlayMode?.setImageResource(R.drawable.ic_shunji)
+            RepeatMode.REPEAT_MODE_REVERSE -> btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
+        }
+        btnPlayMode.setOnClickListener {
+            val model = StarrySky.with()?.getRepeatMode()
+            when (model?.repeatMode) {
+                RepeatMode.REPEAT_MODE_NONE -> if (model.isLoop) {
+                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_ONE, false)
+                    btnPlayMode?.setImageResource(R.drawable.ic_danqu)
+                    activity?.showToast("当前为单曲播放")
+                } else {
+                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_NONE, true)
+                    btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
+                    activity?.showToast("列表循环")
+                }
+                RepeatMode.REPEAT_MODE_ONE -> if (model.isLoop) {
+                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_SHUFFLE, false)
+                    btnPlayMode?.setImageResource(R.drawable.ic_shunji)
+                    activity?.showToast("随机播放")
+                } else {
+                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_ONE, true)
+                    btnPlayMode?.setImageResource(R.drawable.ic_danqu)
+                    activity?.showToast("单曲循环")
+                }
+                RepeatMode.REPEAT_MODE_SHUFFLE -> {
+                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_REVERSE, false)
+                    btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
+                    activity?.showToast("倒序播放")
+                }
+                RepeatMode.REPEAT_MODE_REVERSE -> if (model.isLoop) {
+                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_NONE, false)
+                    btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
+                    activity?.showToast("顺序播放")
+                } else {
+                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_REVERSE, true)
+                    btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
+                    activity?.showToast("倒序列表循环")
+                }
+            }
+        }
     }
 
     private fun initDetailUI(it: SongInfo) {
@@ -197,6 +248,7 @@ class PlayDetailFragment : BaseFragment() {
                 setUpRepeatMode(playModel)
                 setUpSongList(recycleView)
             }
+            lifecycleOwner(this@PlayDetailFragment)
         }
     }
 

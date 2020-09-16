@@ -26,4 +26,12 @@ interface QQMusicApi {
     @Headers("User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)")
     @GET("song/urls")
     suspend fun getQQMusicSongUrl(@Query("id") id: String): ResponseBody
+
+    @Headers("User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)")
+    @GET("recommend/banner")
+    suspend fun getQQMusicBanner(): ResponseBody
+
+    @Headers("User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)")
+    @GET("new/songs")
+    suspend fun getQQMusicNewSongRecommend(): ResponseBody
 }

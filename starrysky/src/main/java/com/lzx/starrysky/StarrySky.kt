@@ -117,8 +117,8 @@ class StarrySky {
             try {
                 val contextWrapper = ContextWrapper(globalContext)
                 val intent = Intent(contextWrapper, MusicService::class.java)
-                globalContext.startService(intent)
-                val result = globalContext.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+                contextWrapper.startService(intent)
+                val result = contextWrapper.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
                 if (result) {
                     connectionMap[contextWrapper] = serviceConnection
                     serviceToken = ServiceToken(contextWrapper)

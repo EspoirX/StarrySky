@@ -15,6 +15,7 @@ android {
             // 设置支持的SO库架构
             abiFilters 'armeabi' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
         }
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -53,7 +54,7 @@ android {
         implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-alpha07"
 
         implementation 'com.danikula:videocache:2.7.1'
-
+        implementation 'com.bigkoo:convenientbanner:2.1.5'
         implementation 'com.gcssloop.widget:rclayout:1.8.1'
         implementation 'com.noober.background:core:1.6.5'
     }

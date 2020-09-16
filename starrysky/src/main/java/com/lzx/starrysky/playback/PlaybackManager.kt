@@ -185,7 +185,9 @@ class PlaybackManager(
             //随机播放
             RepeatMode.REPEAT_MODE_SHUFFLE -> {
                 playback.currentMediaId = ""
-                onSkipToNext()
+                if (mediaQueue.skipQueuePosition(1)) {
+                    handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = false)
+                }
             }
             //倒序播放
             RepeatMode.REPEAT_MODE_REVERSE -> {

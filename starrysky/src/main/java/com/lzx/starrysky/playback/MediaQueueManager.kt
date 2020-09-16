@@ -14,14 +14,17 @@ class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoad
     val currentQueueSize: Int = provider.songList.size
 
 
+    /**
+     * isActiveTrigger 是否主动触发
+     */
     fun getCurrentSongInfo(isActiveTrigger: Boolean): SongInfo? {
         val repeatMode = StarrySkyUtils.repeatMode.repeatMode
-        val mPlayingQueue = if (!isActiveTrigger && repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
+        val playingQueue = if (!isActiveTrigger && repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
             provider.getShuffleSongList()
         } else {
             provider.songList
         }
-        return mPlayingQueue.elementAtOrNull(currentIndex)
+        return playingQueue.elementAtOrNull(currentIndex)
     }
 
     fun skipQueuePosition(amount: Int): Boolean {

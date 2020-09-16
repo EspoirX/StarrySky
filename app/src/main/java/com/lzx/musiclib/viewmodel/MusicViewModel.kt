@@ -1,17 +1,27 @@
-package com.lzx.musiclib
+package com.lzx.musiclib.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lzx.musiclib.bean.HotSongInfo
+import com.lzx.musiclib.bean.MusicBanner
 import com.lzx.musiclib.bean.MusicChannel
+import com.lzx.musiclib.forEach
+import com.lzx.musiclib.getArray
+import com.lzx.musiclib.getObj
 import com.lzx.musiclib.http.BaiduApi
 import com.lzx.musiclib.http.DoubanApi
 import com.lzx.musiclib.http.RetrofitClient
+import com.lzx.musiclib.toJsonObj
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.utils.SpUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import org.json.JSONObject
 
 /**
@@ -149,18 +159,6 @@ class MusicViewModel : ViewModel() {
         }
     }
 
-    fun getQQMusicNewList() {
-
-    }
-
-    fun getQQMusicHotList() {
-
-    }
-
-    fun getQQMusicSinger() {
-
-    }
-
     val qqMusicsLiveData = MutableLiveData<MutableList<SongInfo>>()
     fun getQQMusicSongList(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -222,7 +220,7 @@ class MusicViewModel : ViewModel() {
 
 
     val songInfoLiveData = MutableLiveData<SongInfo>()
-    fun getBaiduMusicUrl(songId: String) {
+    fun getBaiduMusicUrl(songId: String, callback: ((info: SongInfo) -> Unit)? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = RetrofitClient.getService(BaiduApi::class.java, BaiduApi.BASE_URL).getSongDetail(songId)
             val json = result.string()
@@ -237,10 +235,137 @@ class MusicViewModel : ViewModel() {
                 songInfo.artist = detail.getString("author")
                 songInfo.songUrl = bitrate.getString("file_link")
                 songInfo.duration = bitrate.getLong("file_duration") * 1000
+                callback?.let { it(songInfo) }
                 songInfoLiveData.postValue(songInfo)
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
         }
     }
+
+    val hotListLiveData = MutableLiveData<Pair<MutableList<MusicBanner>, MutableList<HotSongInfo>>>()
+    fun getBaiduRankList() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val bannerArray = async { RetrofitClient.getQQMusic().getQQMusicBanner() }.await()
+                .string().toJsonObj().getArray("data")
+            val oneArray = async { getBaiduMusicListById("1") }.await().string().toJsonObj()
+                .getArray("song_list")
+            val twoArray = async { getBaiduMusicListById("2") }.await().string().toJsonObj()
+                .getArray("song_list")
+            val threeArray = async { getBaiduMusicListById("21") }.await().string().toJsonObj()
+                .getArray("song_list")
+            val fourArray = async { getBaiduMusicListById("23") }.await().string().toJsonObj()
+                .getArray("song_list")
+            try {
+                val bannerList = mutableListOf<MusicBanner>()
+                bannerArray.forEach<JSONObject> {
+                    val banner = MusicBanner()
+                    banner.type = it?.getString("type")
+                    banner.id = it?.getString("id")
+                    banner.picUrl = it?.getString("picUrl")
+                    banner.h5Url = it?.getString("h5Url")
+                    banner.typeStr = it?.getString("typeStr")
+                    bannerList.add(banner)
+                }
+                val list = mutableListOf<HotSongInfo>()
+                val hotSongInfo1 = HotSongInfo()
+                val songList1 = mutableListOf<SongInfo>()
+                hotSongInfo1.title = "寻找心动的故事🔥"
+                oneArray.forEach<JSONObject> {
+                    val songInfo = SongInfo()
+                    songInfo.songId = it?.getString("song_id")
+                        ?: System.currentTimeMillis().toString()
+                    songInfo.songName = it?.getString("title") ?: ""
+                    songInfo.artist = it?.getString("author") ?: ""
+                    songInfo.songCover = it?.getString("pic_huge") ?: ""
+                    songInfo.headData?.put("source", "baiduMusic")
+                    songList1.add(songInfo)
+                }
+                songList1.shuffle()
+                hotSongInfo1.infoList = songList1
+                list.add(hotSongInfo1)
+
+                val hotSongInfo2 = HotSongInfo()
+                val songList2 = mutableListOf<SongInfo>()
+                hotSongInfo2.title = "治愈小酒馆🍸"
+                twoArray.forEach<JSONObject> {
+                    val songInfo = SongInfo()
+                    songInfo.songId = it?.getString("song_id")
+                        ?: System.currentTimeMillis().toString()
+                    songInfo.songName = it?.getString("title") ?: ""
+                    songInfo.artist = it?.getString("author") ?: ""
+                    songInfo.songCover = it?.getString("pic_huge") ?: ""
+                    songInfo.headData?.put("source", "baiduMusic")
+                    songList2.add(songInfo)
+                }
+                songList2.shuffle()
+                hotSongInfo2.infoList = songList2
+                list.add(hotSongInfo2)
+
+                val hotSongInfo3 = HotSongInfo()
+                val songList3 = mutableListOf<SongInfo>()
+                hotSongInfo3.title = "陪你说晚安🌙"
+                threeArray.forEach<JSONObject> {
+                    val songInfo = SongInfo()
+                    songInfo.songId = it?.getString("song_id")
+                        ?: System.currentTimeMillis().toString()
+                    songInfo.songName = it?.getString("title") ?: ""
+                    songInfo.artist = it?.getString("author") ?: ""
+                    songInfo.songCover = it?.getString("pic_huge") ?: ""
+                    songInfo.headData?.put("source", "baiduMusic")
+                    songList3.add(songInfo)
+                }
+                songList3.shuffle()
+                hotSongInfo3.infoList = songList3
+                list.add(hotSongInfo3)
+
+                val hotSongInfo4 = HotSongInfo()
+                val songList4 = mutableListOf<SongInfo>()
+                fourArray.forEach<JSONObject> {
+                    val songInfo = SongInfo()
+                    songInfo.songId = it?.getString("song_id")
+                        ?: System.currentTimeMillis().toString()
+                    songInfo.songName = it?.getString("title") ?: ""
+                    songInfo.artist = it?.getString("author") ?: ""
+                    songInfo.songCover = it?.getString("pic_huge") ?: ""
+                    songInfo.headData?.put("source", "baiduMusic")
+                    songList4.add(songInfo)
+                }
+                songList4.shuffle()
+                hotSongInfo4.infoList = songList4
+                list.add(hotSongInfo4)
+
+                hotListLiveData.postValue(Pair(bannerList, list))
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
+    }
+
+    fun playWhenStartApp() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val list = mutableListOf<SongInfo>()
+            val array = getBaiduMusicListById("25").string().toJsonObj().getArray("song_list")
+            array.forEach<JSONObject> {
+                val songInfo = SongInfo()
+                songInfo.songId = it?.getString("song_id") ?: System.currentTimeMillis().toString()
+                songInfo.songName = it?.getString("title") ?: ""
+                songInfo.artist = it?.getString("author") ?: ""
+                songInfo.songCover = it?.getString("pic_huge") ?: ""
+                songInfo.headData?.put("source", "baiduMusic")
+                list.add(songInfo)
+            }
+            list.shuffle()
+            withContext(Dispatchers.Main) {
+                Log.i("XIAN", "list = " + list.size)
+                StarrySky.with()?.playMusic(list, 0)
+            }
+        }
+    }
+
+    private suspend fun getBaiduMusicListById(type: String): ResponseBody {
+        return RetrofitClient.getService(BaiduApi::class.java, BaiduApi.BASE_URL).getBaiduMusicList(type)
+    }
+
+
 }
