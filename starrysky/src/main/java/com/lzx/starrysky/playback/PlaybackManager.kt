@@ -5,6 +5,7 @@ import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.InterceptorService
+import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.utils.MainLooper
 import com.lzx.starrysky.utils.StarrySkyUtils
@@ -16,15 +17,11 @@ class PlaybackManager(
 
     private var serviceCallback: PlaybackServiceCallback? = null
     private var notification: INotification? = null
-    private var refrainPlayback: Playback? = null
+    var refrainPlayback: Playback? = null
 
     init {
         playback.setCallback(this)
         refrainPlayback?.setCallback(this)
-    }
-
-    fun setRefrainPlayback(refrainPlayback: Playback?) {
-        this.refrainPlayback = refrainPlayback
     }
 
     fun setServiceCallback(serviceCallback: PlaybackServiceCallback) {
@@ -57,13 +54,7 @@ class PlaybackManager(
         refrainPlayback?.stop()
     }
 
-    fun setRefrainVolume(audioVolume: Float) {
-        refrainPlayback?.volume = audioVolume
-    }
-
-    fun getRefrainVolume(): Float {
-        return refrainPlayback?.volume ?: 0f
-    }
+    fun isRefrainPlaying(): Boolean = refrainPlayback?.isPlaying ?: false
 
     fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
         mediaId?.apply {
@@ -249,7 +240,7 @@ class PlaybackManager(
     }
 
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {
-        val isRefrain = "Refrain" == currPlayInfo?.headData?.get("SongType")
+//        val isRefrain = "Refrain" == currPlayInfo?.headData?.get("SongType")
         var newState = PlaybackStage.IDEA
         when (state) {
             Playback.STATE_IDLE -> {
@@ -260,13 +251,13 @@ class PlaybackManager(
             }
             Playback.STATE_PLAYING -> {
                 newState = PlaybackStage.PLAYING
-                if (!isRefrain) {
+                if (!currPlayInfo.isRefrain()) {
                     startNotification(currPlayInfo, newState)
                 }
             }
             Playback.STATE_PAUSED -> {
                 newState = PlaybackStage.PAUSE
-                if (!isRefrain) {
+                if (!currPlayInfo.isRefrain()) {
                     startNotification(currPlayInfo, newState)
                 }
             }
@@ -277,7 +268,7 @@ class PlaybackManager(
                 newState = PlaybackStage.ERROR
             }
         }
-        if (!isRefrain) {
+        if (!currPlayInfo.isRefrain()) {
             notification?.onPlaybackStateChanged(currPlayInfo, newState)
         }
         StarrySkyUtils.log("PlaybackStage = $newState")

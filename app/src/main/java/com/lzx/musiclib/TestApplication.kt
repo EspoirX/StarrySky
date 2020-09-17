@@ -14,6 +14,7 @@ import com.lzx.starrysky.StarrySkyConfig
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.utils.MainLooper
+import com.tencent.bugly.crashreport.CrashReport
 
 
 /**
@@ -29,10 +30,13 @@ open class TestApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
+        CrashReport.initCrashReport(applicationContext, "9e447caa98", false)
         val config = StarrySkyConfig().newBuilder()
             .addInterceptor(RequestSongInfoInterceptor())
             .addInterceptor(RequestSongCoverInterceptor())
             .isOpenNotification(true)
+            .isCreateRefrainPlayer(true)
+            .isAutoManagerFocus(false)
             .build()
         StarrySky.init(this, config, object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

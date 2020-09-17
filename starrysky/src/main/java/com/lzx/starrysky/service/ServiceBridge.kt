@@ -57,7 +57,7 @@ class ServiceBridge(private val context: Context) : Binder() {
         }
         //播放管理
         val playbackManager = PlaybackManager(mediaQueueManager, player!!, interceptorService)
-        playbackManager.setRefrainPlayback(refrainPlayback)
+        playbackManager.refrainPlayback = refrainPlayback
         playbackManager.registerNotification(notification)
         playbackManager.setServiceCallback(object : PlaybackManager.PlaybackServiceCallback {
             override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {

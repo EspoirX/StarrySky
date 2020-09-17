@@ -57,6 +57,9 @@ android {
         implementation 'com.bigkoo:convenientbanner:2.1.5'
         implementation 'com.gcssloop.widget:rclayout:1.8.1'
         implementation 'com.noober.background:core:1.6.5'
+
+        implementation 'com.tencent.bugly:crashreport:3.1.0'
+        implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
     }
 }
 dependencies {

@@ -78,6 +78,7 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
      * 会创建另一个播放实例去播放，有播放回调，有拦截器功能，该音频的 headData 里面
      * 统一都添加了 key = SongType,value = Refrain 的标记
      * 如果使用了该方法，请在回调监听和拦截器功能的时候做好区分
+     * SongInfo 有扩展方法 isRefrain 可以方便判断
      */
     fun playRefrain(info: SongInfo)
 
@@ -88,6 +89,8 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     fun getRefrainVolume(): Float
 
     fun getRefrainInfo(): SongInfo?
+
+    fun isRefrainPlaying(): Boolean
 
     /**
      * 下一首

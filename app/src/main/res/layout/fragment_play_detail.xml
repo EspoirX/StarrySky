@@ -7,35 +7,64 @@
     tools:ignore="MissingPrefix">
 
     <ImageView
+        android:id="@+id/bgImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        android:src="@drawable/unnamed" />
+        android:scaleType="centerCrop" />
 
-    <com.gcssloop.widget.RCImageView
-        android:id="@+id/songCover"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="100dp"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:round_corner="8dp" />
+    <!--    <com.gcssloop.widget.RCImageView-->
+    <!--        android:id="@+id/songCover"-->
+    <!--        android:layout_width="250dp"-->
+    <!--        android:layout_height="250dp"-->
+    <!--        android:layout_marginLeft="20dp"-->
+    <!--        android:layout_marginTop="50dp"-->
+    <!--        android:adjustViewBounds="true"-->
+    <!--        android:scaleType="centerCrop"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:round_corner="8dp" />-->
 
     <TextView
         android:id="@+id/songName"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="100dp"
         android:singleLine="true"
         android:textColor="#000"
         android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/songCover" />
+        app:layout_constraintTop_toBottomOf="@+id/songCover"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnRefrain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:text="伴奏关"
+        app:layout_constraintBottom_toTopOf="@+id/btnRewind"
+        app:layout_constraintEnd_toStartOf="@+id/btnRefrainJia"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnRefrainJia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="伴奏音量+"
+        app:layout_constraintEnd_toStartOf="@+id/btnRefrain"
+        app:layout_constraintStart_toEndOf="@+id/btnRefrainJian"
+        app:layout_constraintTop_toTopOf="@+id/btnRefrain" />
+
+    <Button
+        android:id="@+id/btnRefrainJian"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="伴奏音量-"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnRefrainJia"
+        app:layout_constraintTop_toTopOf="@+id/btnRefrain" />
 
     <ImageView
         android:id="@+id/btnRewind"
@@ -108,6 +137,7 @@
         app:layout_constraintStart_toEndOf="@+id/btnSpeedSlow" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"

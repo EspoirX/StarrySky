@@ -3,6 +3,7 @@ package com.lzx.musiclib
 import android.annotation.SuppressLint
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -26,13 +27,19 @@ import com.lzx.musiclib.weight.dialog.lifecycleOwner
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
+import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.utils.MD5
 import com.lzx.starrysky.utils.TimerTaskManager
+import kotlinx.android.synthetic.main.fragment_play_detail.bgImage
 import kotlinx.android.synthetic.main.fragment_play_detail.btnFastForward
 import kotlinx.android.synthetic.main.fragment_play_detail.btnNextSong
 import kotlinx.android.synthetic.main.fragment_play_detail.btnPlayMode
 import kotlinx.android.synthetic.main.fragment_play_detail.btnPlayState
 import kotlinx.android.synthetic.main.fragment_play_detail.btnPreSong
+import kotlinx.android.synthetic.main.fragment_play_detail.btnRefrain
+import kotlinx.android.synthetic.main.fragment_play_detail.btnRefrainJia
+import kotlinx.android.synthetic.main.fragment_play_detail.btnRefrainJian
 import kotlinx.android.synthetic.main.fragment_play_detail.btnRewind
 import kotlinx.android.synthetic.main.fragment_play_detail.btnSongList
 import kotlinx.android.synthetic.main.fragment_play_detail.btnSpeedFast
@@ -40,7 +47,6 @@ import kotlinx.android.synthetic.main.fragment_play_detail.btnSpeedSlow
 import kotlinx.android.synthetic.main.fragment_play_detail.progressText
 import kotlinx.android.synthetic.main.fragment_play_detail.relativeLayout
 import kotlinx.android.synthetic.main.fragment_play_detail.seekBar
-import kotlinx.android.synthetic.main.fragment_play_detail.songCover
 import kotlinx.android.synthetic.main.fragment_play_detail.songName
 import kotlinx.android.synthetic.main.fragment_play_detail.timeText
 
@@ -65,6 +71,18 @@ class PlayDetailFragment : BaseFragment() {
     private var viewModel: MusicViewModel? = null
     private var timerTaskManager = TimerTaskManager()
     private var dialog: MaterialDialog? = null
+    private var refrainList = mutableListOf<String>()
+
+    //节拍坐标
+    private var nextBeat = -1
+
+    //节拍时间
+    private var beatTime = String.format("%.2f", 60.00 / 120.00).toDouble()
+
+    //节拍开始时间
+    private var beatStartTime = String.format("%.2f", 0.50).toDouble()
+
+    private var isStartRefraining: Boolean = false
 
     @SuppressLint("SetTextI18n")
     override fun initView(view: View?) {
@@ -76,25 +94,45 @@ class PlayDetailFragment : BaseFragment() {
             activity?.finish()
             return
         }
-        if (type == "baidu") {
-            viewModel?.getBaiduMusicUrl(songId!!)
-        } else if (type == "qq") {
-            val songInfo = StarrySky.with().getPlayList().getOrNull(0)
-            songInfo?.let {
-                initDetailUI(it)
-                StarrySky.with().playMusicByIndex(0)
+        when (type) {
+            "baidu" -> {
+                viewModel?.getBaiduMusicUrl(songId!!)
             }
-        } else {
-            val songInfo = StarrySky.with().getNowPlayingSongInfo()
-            songInfo?.let {
-                initDetailUI(it)
+            "qq" -> {
+                val songInfo = StarrySky.with().getPlayList().getOrNull(0)
+                songInfo?.let {
+                    initDetailUI(it)
+                    StarrySky.with().playMusicByIndex(0)
+                }
+            }
+            else -> {
+                val songInfo = StarrySky.with().getNowPlayingSongInfo()
+                songInfo?.let {
+                    initDetailUI(it)
+                }
             }
         }
+
+        refrainList.add("file:///android_asset/hglo1.ogg")
+        refrainList.add("file:///android_asset/hglo2.ogg")
+        refrainList.add("file:///android_asset/hglo3.ogg")
+        refrainList.add("file:///android_asset/hglo4.ogg")
+        refrainList.add("file:///android_asset/hglo5.ogg")
+        refrainList.add("file:///android_asset/hglo6.ogg")
+        refrainList.add("file:///android_asset/hglo7.ogg")
+        refrainList.add("file:///android_asset/hglo8.ogg")
+
         viewModel?.songInfoLiveData?.observe(this, Observer {
             initDetailUI(it)
             StarrySky.with().playMusicByInfo(it)
         })
         StarrySky.with().playbackState().observe(this, Observer {
+            if (it.songInfo.isRefrain()) {
+                if (it.stage == PlaybackStage.PLAYING) {
+                    nextBeat = -1
+                }
+                return@Observer
+            }
             if (dialog?.isShowing == true) {
                 val recycleView = dialog?.getCustomView()?.findViewById<RecyclerView>(R.id.recycleView)
                 recycleView?.adapter?.notifyDataSetChanged()
@@ -109,9 +147,6 @@ class PlayDetailFragment : BaseFragment() {
                 PlaybackStage.STOP -> {
                     btnPlayState?.setImageResource(R.drawable.gdt_ic_play)
                     timerTaskManager.stopToUpdateProgress()
-                }
-                PlaybackStage.BUFFERING -> {
-
                 }
                 PlaybackStage.ERROR -> {
                     btnPlayState?.setImageResource(R.drawable.gdt_ic_pause)
@@ -135,6 +170,7 @@ class PlayDetailFragment : BaseFragment() {
             seekBar.secondaryProgress = buffered.toInt()
             progressText.text = position.formatTime()
             timeText.text = duration.formatTime()
+            setUpRefrain(position)
         })
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
@@ -224,10 +260,64 @@ class PlayDetailFragment : BaseFragment() {
                 }
             }
         }
+
+        if (StarrySky.with().isRefrainPlaying()) {
+            btnRefrain?.text = "伴奏关"
+            isStartRefraining = true
+        } else {
+            btnRefrain?.text = "伴奏开"
+            isStartRefraining = false
+        }
+        btnRefrain?.setOnClickListener {
+            isStartRefraining = if (StarrySky.with().isRefrainPlaying()) {
+                StarrySky.with().stopRefrain()
+                btnRefrain?.text = "伴奏开"
+                false
+            } else {
+                btnRefrain?.text = "伴奏关"
+                true
+            }
+        }
+
+        btnRefrainJia.setOnClickListener {
+            val currVolume = StarrySky.with().getRefrainVolume()
+            StarrySky.with().setRefrainVolume(currVolume + 0.1F)
+        }
+        btnRefrainJian.setOnClickListener {
+            val currVolume = StarrySky.with().getRefrainVolume()
+            StarrySky.with().setRefrainVolume(currVolume - 0.1F)
+        }
+    }
+
+    private fun setUpRefrain(position: Long) {
+        if (!isStartRefraining) return
+        val playPosition = String.format("%f", position.toDouble() / 1000.00).toDouble()
+        val next = String.format("%.0f", (playPosition - beatStartTime) / beatTime).toDouble()
+        Log.i("当前节拍1", "next = " + next + " nextBeat = " + nextBeat)
+        if (next < 0) return
+        if (nextBeat == next.toInt()) return
+        nextBeat = next.toInt()
+        Log.i("当前节拍", "$nextBeat")
+        when (nextBeat % 8) {
+            0 -> showSound(0, playPosition)
+            1 -> showSound(1, playPosition)
+            2 -> showSound(2, playPosition)
+            3 -> showSound(3, playPosition)
+            4 -> showSound(4, playPosition)
+            5 -> showSound(5, playPosition)
+            6 -> showSound(6, playPosition)
+            7 -> showSound(7, playPosition)
+        }
+    }
+
+    private fun showSound(i: Int, position: Double) {
+        Log.i("当前节拍88", "节拍 $i   ->beatStartTime:$beatStartTime   ->position:$position")
+        val url = refrainList[i]
+        StarrySky.with().playRefrain(SongInfo(MD5.hexdigest(url), url))
     }
 
     private fun initDetailUI(it: SongInfo) {
-        songCover?.loadImage(it.songCover)
+        bgImage?.loadImage(it.songCover)
         songName?.text = it.songName
         timeText?.text = it.duration.formatTime()
         if (StarrySky.with().isPlaying() && StarrySky.with().getNowPlayingSongId() != it.songId) {

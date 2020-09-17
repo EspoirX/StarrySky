@@ -3,6 +3,7 @@ package com.lzx.starrysky.utils
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import com.lzx.starrysky.notification.INotification
 
 fun <T> Int.isIndexPlayable(queue: List<T>?): Boolean {
@@ -36,4 +37,8 @@ fun Context.getPendingIntent(action: String): PendingIntent {
     val intent = Intent(action)
     intent.setPackage(packageName)
     return PendingIntent.getBroadcast(this, INotification.REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+}
+
+fun Context.showToast(msg: String?) {
+    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 }

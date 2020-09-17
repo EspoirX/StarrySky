@@ -60,11 +60,11 @@ open class StarrySkyConfig internal constructor(
 
     //设置焦点管理监听
     @get:JvmName("focusChangeListener")
-    val focusChangeListener: AudioFocusChangeListener? = null
+    val focusChangeListener: AudioFocusChangeListener? = builder.focusChangeListener
 
     //是否需要创建副歌播放器
     @get:JvmName("isCreateRefrainPlayer")
-    val isCreateRefrainPlayer: Boolean = false
+    val isCreateRefrainPlayer: Boolean = builder.isCreateRefrainPlayer
 
     constructor() : this(Builder())
 

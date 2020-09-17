@@ -31,6 +31,7 @@ import com.google.android.exoplayer2.util.Util
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.cache.ICache
+import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.playback.Playback.Companion.STATE_BUFFERING
 import com.lzx.starrysky.playback.Playback.Companion.STATE_IDLE
 import com.lzx.starrysky.playback.Playback.Companion.STATE_PAUSED
@@ -175,6 +176,9 @@ class ExoPlayback(val context: Context,
         //如果准备好就播放
         if (isPlayWhenReady) {
             player?.playWhenReady = true
+        }
+        if (songInfo.isRefrain()){
+            StarrySkyUtils.log("播放伴奏 = ${songInfo.songId}")
         }
     }
 

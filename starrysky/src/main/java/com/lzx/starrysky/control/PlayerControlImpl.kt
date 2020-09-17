@@ -93,14 +93,21 @@ class PlayerControlImpl(
     }
 
     override fun setRefrainVolume(audioVolume: Float) {
-        playbackManager.setRefrainVolume(audioVolume)
+        var volume = audioVolume
+        if (volume < 0) {
+            volume = 0f
+        }
+        if (volume > 1) {
+            volume = 1f
+        }
+        playbackManager.refrainPlayback?.volume = volume
     }
 
-    override fun getRefrainVolume(): Float {
-        return playbackManager.getRefrainVolume()
-    }
+    override fun getRefrainVolume(): Float = playbackManager.refrainPlayback?.volume ?: -0f
 
     override fun getRefrainInfo(): SongInfo? = provider.refrain
+
+    override fun isRefrainPlaying(): Boolean = playbackManager.isRefrainPlaying()
 
     override fun skipToNext() {
         playbackManager.onSkipToNext()
