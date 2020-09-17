@@ -7,7 +7,6 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.control.PlayerControl
@@ -63,8 +62,11 @@ class StarrySky {
          * 获取控制播放对象
          */
         @JvmStatic
-        fun with(): PlayerControl? {
-            return bridge?.playerControl
+        fun with(): PlayerControl {
+            if (bridge == null || bridge?.playerControl == null) {
+                throw NullPointerException("请确保 with 方法在服务连接成功后调用")
+            }
+            return bridge?.playerControl!!
         }
 
         /**

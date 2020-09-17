@@ -53,8 +53,8 @@ class MusicViewModel : ViewModel() {
             val json = result.string()
             try {
                 val obj = JSONObject(json)
-                SpUtil.instance.putString(KEY_TOKEN, obj.getString("access_token"))
-                SpUtil.instance.putString(KEY_EXPIRES, obj.getString("expires_in"))
+                SpUtil.instance?.putString(KEY_TOKEN, obj.getString("access_token"))
+                SpUtil.instance?.putString(KEY_EXPIRES, obj.getString("expires_in"))
                 getChannelList()
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -87,7 +87,7 @@ class MusicViewModel : ViewModel() {
     fun getSongList(channel: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = RetrofitClient.getDoubanMusic().getSongList(
-                "Bearer " + SpUtil.instance.getString(KEY_TOKEN),
+                "Bearer " + SpUtil.instance?.getString(KEY_TOKEN),
                 "10",
                 "mainsite",
                 "n",

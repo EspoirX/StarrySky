@@ -70,7 +70,7 @@ object StarrySkyUtils {
             val jsonObject = JSONObject()
             jsonObject.put("repeatMode", repeatMode)
             jsonObject.put("isLoop", isLoop)
-            SpUtil.instance.putString(
+            SpUtil.instance?.putString(
                 RepeatMode.KEY_REPEAT_MODE, jsonObject.toString())
         } catch (ex: Exception) {
             ex.printStackTrace()
@@ -79,9 +79,9 @@ object StarrySkyUtils {
 
     val repeatMode: RepeatMode
         get() {
-            val json = SpUtil.instance.getString(RepeatMode.KEY_REPEAT_MODE)
+            val json = SpUtil.instance?.getString(RepeatMode.KEY_REPEAT_MODE)
             val defaultMode = RepeatMode(RepeatMode.REPEAT_MODE_NONE, true)
-            return if (json.isEmpty()) {
+            return if (json.isNullOrEmpty()) {
                 defaultMode
             } else {
                 try {
