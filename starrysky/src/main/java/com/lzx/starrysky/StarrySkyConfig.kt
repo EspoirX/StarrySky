@@ -54,6 +54,14 @@ open class StarrySkyConfig internal constructor(
     @get:JvmName("isUserService")
     val isUserService: Boolean = builder.isUserService
 
+    //是否让播放器自动管理焦点
+    @get:JvmName("isAutoManagerFocus")
+    val isAutoManagerFocus: Boolean = builder.isAutoManagerFocus
+
+    //设置焦点管理监听
+    @get:JvmName("focusChangeListener")
+    val focusChangeListener: AudioFocusChangeListener? = null
+
     constructor() : this(Builder())
 
     open fun newBuilder(): Builder = Builder(this)
@@ -69,6 +77,8 @@ open class StarrySkyConfig internal constructor(
         internal var imageLoaderStrategy: ImageLoaderStrategy? = null
         internal var playback: Playback? = null
         internal var isUserService: Boolean = true
+        internal var isAutoManagerFocus: Boolean = true
+        internal var focusChangeListener: AudioFocusChangeListener? = null
 
         internal constructor(config: StarrySkyConfig) : this() {
             this.isOpenNotification = config.isOpenNotification
@@ -80,6 +90,8 @@ open class StarrySkyConfig internal constructor(
             this.imageLoaderStrategy = config.imageLoader
             this.playback = config.playback
             this.isUserService = config.isUserService
+            this.isAutoManagerFocus = config.isAutoManagerFocus
+            this.focusChangeListener = config.focusChangeListener
         }
 
         fun isOpenNotification(isOpenNotification: Boolean) = apply {
@@ -118,8 +130,20 @@ open class StarrySkyConfig internal constructor(
 
         fun isUserService(isUserService: Boolean) = apply { this.isUserService = isUserService }
 
+        fun isAutoManagerFocus(isAutoManagerFocus: Boolean) = apply { this.isAutoManagerFocus = isAutoManagerFocus }
+
+        fun setOnAudioFocusChangeListener(listener: AudioFocusChangeListener) = apply { this.focusChangeListener = listener }
+
         fun build(): StarrySkyConfig {
             return StarrySkyConfig(this)
         }
     }
+}
+
+
+interface AudioFocusChangeListener {
+    /**
+     * state 定义见 FocusAndLockManager 类
+     */
+    fun onAudioFocusChange(state: Int)
 }

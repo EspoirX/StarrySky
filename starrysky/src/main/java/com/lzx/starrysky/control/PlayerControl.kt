@@ -1,7 +1,7 @@
 package com.lzx.starrysky.control
 
-import androidx.lifecycle.MutableLiveData
 import android.content.Context
+import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.playback.PlaybackManager
@@ -285,6 +285,11 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
      * 删除所有状态监听
      */
     fun clearPlayerEventListener()
+
+    /**
+     * 焦点变化监听
+     */
+    fun focusStateChange(): MutableLiveData<Int>
 
     fun getPlayerEventListeners(): MutableList<OnPlayerEventListener>
 

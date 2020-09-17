@@ -6,7 +6,6 @@ import android.preference.PreferenceManager
 
 class SpUtil private constructor() {
 
-
     fun putString(key: String?, value: String?): Boolean {
         val editor = mPref?.edit()
         editor?.putString(key, value)

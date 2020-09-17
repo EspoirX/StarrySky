@@ -193,8 +193,12 @@ class StarrySky {
                 override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
                     playbackState.value = playbackStage
                 }
+
+                override fun onFocusStateChange(currentAudioFocusState: Int) {
+                    config.focusChangeListener?.onAudioFocusChange(currentAudioFocusState)
+                }
             })
-            bridge?.start()
+            bridge?.start(config.isAutoManagerFocus)
         }
 
         /**

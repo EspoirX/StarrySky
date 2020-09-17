@@ -27,7 +27,7 @@ class ServiceBridge(private val context: Context) : Binder() {
     var imageLoader: ImageLoader? = null
     var sessionManager: MediaSessionManager? = null
 
-    fun start() {
+    fun start(isAutoManagerFocus: Boolean = true) {
         //数据存储
         val sourceProvider = MediaSourceProvider()
         //图片加载
@@ -42,7 +42,7 @@ class ServiceBridge(private val context: Context) : Binder() {
         //缓存
         val cache = register.cache
         //播放器
-        val player = if (register.playback == null) ExoPlayback(context, cache) else register.playback
+        val player = if (register.playback == null) ExoPlayback(context, cache, isAutoManagerFocus) else register.playback
         //拦截器
         val interceptorService = InterceptorService(interceptors)
         if (context is MusicService) {
@@ -58,6 +58,10 @@ class ServiceBridge(private val context: Context) : Binder() {
                 playerControl?.onPlaybackStateUpdated(playbackStage)
                 serviceCallback?.onPlaybackStateUpdated(playbackStage)
                 sessionManager?.updateMetaData(playbackStage.songInfo)
+            }
+
+            override fun onFocusStateChange(currentAudioFocusState: Int) {
+
             }
         })
         //播放控制

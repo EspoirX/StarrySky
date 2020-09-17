@@ -118,6 +118,11 @@ interface Playback {
          * 播放出错回调
          */
         fun onPlaybackError(songInfo: SongInfo?, error: String)
+
+        /**
+         * 焦点改变
+         */
+        fun onFocusStateChange(currentAudioFocusState: Int)
     }
 
     /**

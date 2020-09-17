@@ -57,7 +57,6 @@ android {
         implementation 'com.bigkoo:convenientbanner:2.1.5'
         implementation 'com.gcssloop.widget:rclayout:1.8.1'
         implementation 'com.noober.background:core:1.6.5'
-        implementation 'com.github.bogerchan:Nier-Visualizer:v0.1.3'
     }
 }
 dependencies {
