@@ -99,7 +99,7 @@ class HotFragment : BaseFragment() {
                                     view.setMargins(0, 0, 2.dp.toInt(), 0)
                                 }
                                 view.setOnClickListener {
-                                    StarrySky.with()?.playMusic(info.infoList, index)
+                                    StarrySky.with().playMusic(info.infoList, index)
                                 }
                             }
                         }
@@ -113,7 +113,7 @@ class HotFragment : BaseFragment() {
                         icon.loadImage(info.songCover)
                         setText(R.id.title to info.songName, R.id.desc to "热门推荐", R.id.username to data.artist)
                         itemClicked(View.OnClickListener {
-                            StarrySky.with()?.playMusicByInfo(info)
+                            StarrySky.with().playMusicByInfo(info)
                         })
                     }
                 }

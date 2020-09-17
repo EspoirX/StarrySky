@@ -35,7 +35,7 @@ class RecommendFragment : BaseFragment() {
         })
         viewModel?.qqMusicsLiveData?.observe(this, Observer {
             if (it.isNotEmpty()) {
-                StarrySky.with()?.updatePlayList(it)
+                StarrySky.with().updatePlayList(it)
                 activity?.navigationTo<PlayDetailActivity>(
                     "songId" to it[0].songId,
                     "type" to "qq")

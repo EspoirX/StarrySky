@@ -79,22 +79,22 @@ class PlayDetailFragment : BaseFragment() {
         if (type == "baidu") {
             viewModel?.getBaiduMusicUrl(songId!!)
         } else if (type == "qq") {
-            val songInfo = StarrySky.with()?.getPlayList()?.getOrNull(0)
+            val songInfo = StarrySky.with().getPlayList().getOrNull(0)
             songInfo?.let {
                 initDetailUI(it)
-                StarrySky.with()?.playMusicByIndex(0)
+                StarrySky.with().playMusicByIndex(0)
             }
         } else {
-            val songInfo = StarrySky.with()?.getNowPlayingSongInfo()
+            val songInfo = StarrySky.with().getNowPlayingSongInfo()
             songInfo?.let {
                 initDetailUI(it)
             }
         }
         viewModel?.songInfoLiveData?.observe(this, Observer {
             initDetailUI(it)
-            StarrySky.with()?.playMusicByInfo(it)
+            StarrySky.with().playMusicByInfo(it)
         })
-        StarrySky.with()?.playbackState()?.observe(this, Observer {
+        StarrySky.with().playbackState().observe(this, Observer {
             if (dialog?.isShowing == true) {
                 val recycleView = dialog?.getCustomView()?.findViewById<RecyclerView>(R.id.recycleView)
                 recycleView?.adapter?.notifyDataSetChanged()
@@ -125,100 +125,100 @@ class PlayDetailFragment : BaseFragment() {
             }
         })
         timerTaskManager.setUpdateProgressTask(Runnable {
-            val position = StarrySky.with()?.getPlayingPosition()
-            val duration = StarrySky.with()?.getDuration()
-            val buffered = StarrySky.with()?.getBufferedPosition()
+            val position = StarrySky.with().getPlayingPosition()
+            val duration = StarrySky.with().getDuration()
+            val buffered = StarrySky.with().getBufferedPosition()
             if (seekBar.max.toLong() != duration) {
-                seekBar.max = duration?.toInt() ?: 0
+                seekBar.max = duration.toInt()
             }
-            seekBar.progress = position?.toInt() ?: 0
-            seekBar.secondaryProgress = buffered?.toInt() ?: 0
-            progressText.text = position?.formatTime()
-            timeText.text = duration?.formatTime()
+            seekBar.progress = position.toInt()
+            seekBar.secondaryProgress = buffered.toInt()
+            progressText.text = position.formatTime()
+            timeText.text = duration.formatTime()
         })
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                StarrySky.with()?.seekTo(seekBar.progress.toLong())
+                StarrySky.with().seekTo(seekBar.progress.toLong())
             }
         })
         btnRewind?.setOnClickListener {
-            if (StarrySky.with()?.isPlaying() == true) {
-                StarrySky.with()?.rewind()
+            if (StarrySky.with().isPlaying()) {
+                StarrySky.with().rewind()
             }
         }
         btnFastForward?.setOnClickListener {
-            if (StarrySky.with()?.isPlaying() == true) {
-                StarrySky.with()?.fastForward()
+            if (StarrySky.with().isPlaying()) {
+                StarrySky.with().fastForward()
             }
         }
         btnSpeedSlow?.setOnClickListener {
-            if (StarrySky.with()?.isPlaying() == true) {
-                StarrySky.with()?.onDerailleur(true, 0.1f)
+            if (StarrySky.with().isPlaying()) {
+                StarrySky.with().onDerailleur(true, 0.1f)
             }
         }
         btnSpeedFast?.setOnClickListener {
-            if (StarrySky.with()?.isPlaying() == true) {
-                StarrySky.with()?.onDerailleur(true, 1.1f)
+            if (StarrySky.with().isPlaying()) {
+                StarrySky.with().onDerailleur(true, 1.1f)
             }
         }
         btnSongList?.setOnClickListener {
             showSongListDialog()
         }
         btnNextSong?.setOnClickListener {
-            StarrySky.with()?.skipToNext()
+            StarrySky.with().skipToNext()
         }
         btnPreSong?.setOnClickListener {
-            StarrySky.with()?.skipToPrevious()
+            StarrySky.with().skipToPrevious()
         }
         relativeLayout?.setOnClickListener {
-            if (StarrySky.with()?.isPlaying() == true) {
-                StarrySky.with()?.pauseMusic()
+            if (StarrySky.with().isPlaying()) {
+                StarrySky.with().pauseMusic()
             } else {
-                StarrySky.with()?.restoreMusic()
+                StarrySky.with().restoreMusic()
             }
         }
         //点击逻辑:顺序播放->列表循环->单曲播放->单曲循环->随机播放->倒序播放->倒序列表循环->顺序播放
-        val repeatMode = StarrySky.with()?.getRepeatMode()
-        when (repeatMode?.repeatMode) {
+        val repeatMode = StarrySky.with().getRepeatMode()
+        when (repeatMode.repeatMode) {
             RepeatMode.REPEAT_MODE_NONE -> btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
             RepeatMode.REPEAT_MODE_ONE -> btnPlayMode?.setImageResource(R.drawable.ic_danqu)
             RepeatMode.REPEAT_MODE_SHUFFLE -> btnPlayMode?.setImageResource(R.drawable.ic_shunji)
             RepeatMode.REPEAT_MODE_REVERSE -> btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
         }
         btnPlayMode.setOnClickListener {
-            val model = StarrySky.with()?.getRepeatMode()
-            when (model?.repeatMode) {
+            val model = StarrySky.with().getRepeatMode()
+            when (model.repeatMode) {
                 RepeatMode.REPEAT_MODE_NONE -> if (model.isLoop) {
-                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_ONE, false)
+                    StarrySky.with().setRepeatMode(RepeatMode.REPEAT_MODE_ONE, false)
                     btnPlayMode?.setImageResource(R.drawable.ic_danqu)
                     activity?.showToast("当前为单曲播放")
                 } else {
-                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_NONE, true)
+                    StarrySky.with().setRepeatMode(RepeatMode.REPEAT_MODE_NONE, true)
                     btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
                     activity?.showToast("列表循环")
                 }
                 RepeatMode.REPEAT_MODE_ONE -> if (model.isLoop) {
-                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_SHUFFLE, false)
+                    StarrySky.with().setRepeatMode(RepeatMode.REPEAT_MODE_SHUFFLE, false)
                     btnPlayMode?.setImageResource(R.drawable.ic_shunji)
                     activity?.showToast("随机播放")
                 } else {
-                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_ONE, true)
+                    StarrySky.with().setRepeatMode(RepeatMode.REPEAT_MODE_ONE, true)
                     btnPlayMode?.setImageResource(R.drawable.ic_danqu)
                     activity?.showToast("单曲循环")
                 }
                 RepeatMode.REPEAT_MODE_SHUFFLE -> {
-                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_REVERSE, false)
+                    StarrySky.with().setRepeatMode(RepeatMode.REPEAT_MODE_REVERSE, false)
                     btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
                     activity?.showToast("倒序播放")
                 }
                 RepeatMode.REPEAT_MODE_REVERSE -> if (model.isLoop) {
-                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_NONE, false)
+                    StarrySky.with().setRepeatMode(RepeatMode.REPEAT_MODE_NONE, false)
                     btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
                     activity?.showToast("顺序播放")
                 } else {
-                    StarrySky.with()?.setRepeatMode(RepeatMode.REPEAT_MODE_REVERSE, true)
+                    StarrySky.with().setRepeatMode(RepeatMode.REPEAT_MODE_REVERSE, true)
                     btnPlayMode?.setImageResource(R.drawable.ic_shunxu)
                     activity?.showToast("倒序列表循环")
                 }
@@ -230,8 +230,8 @@ class PlayDetailFragment : BaseFragment() {
         songCover?.loadImage(it.songCover)
         songName?.text = it.songName
         timeText?.text = it.duration.formatTime()
-        if (StarrySky.with()?.isPlaying() == true && StarrySky.with()?.getNowPlayingSongId() != it.songId) {
-            StarrySky.with()?.stopMusic()
+        if (StarrySky.with().isPlaying() && StarrySky.with().getNowPlayingSongId() != it.songId) {
+            StarrySky.with().stopMusic()
         }
     }
 
@@ -254,37 +254,37 @@ class PlayDetailFragment : BaseFragment() {
 
     @SuppressLint("SetTextI18n")
     private fun setUpRepeatMode(playMode: TextView?) {
-        val repeatMode = StarrySky.with()?.getRepeatMode()
+        val repeatMode = StarrySky.with().getRepeatMode()
         var playModeText = "顺序播放"
-        when (repeatMode?.repeatMode) {
+        when (repeatMode.repeatMode) {
             RepeatMode.REPEAT_MODE_NONE -> playModeText = if (repeatMode.isLoop) "列表循环" else "顺序播放"
             RepeatMode.REPEAT_MODE_ONE -> playModeText = if (repeatMode.isLoop) "单曲循环" else "单曲播放"
             RepeatMode.REPEAT_MODE_SHUFFLE -> playModeText = "随机播放"
             RepeatMode.REPEAT_MODE_REVERSE -> playModeText = if (repeatMode.isLoop) "倒序列表循环" else "倒序播放"
         }
-        playMode?.text = playModeText + "（" + StarrySky.with()?.getPlayList()?.size + "）"
+        playMode?.text = playModeText + "（" + StarrySky.with().getPlayList().size + "）"
     }
 
     private fun setUpSongList(recycleView: RecyclerView?) {
         recycleView?.setup<SongInfo> {
-            dataSource(StarrySky.with()?.getPlayList() ?: mutableListOf())
+            dataSource(StarrySky.with().getPlayList() ?: mutableListOf())
             adapter {
                 addItem(R.layout.item_dialog_song_list) {
                     bindViewHolder { data, position, holder ->
                         val imgAnim = holder.findViewById<ImageView>(R.id.imgAnim)
                         val anim = imgAnim.drawable as AnimationDrawable
                         anim.start()
-                        if (StarrySky.with()?.isCurrMusicIsPlaying(data?.songId!!) == true) {
+                        if (StarrySky.with().isCurrMusicIsPlaying(data?.songId!!)) {
                             imgAnim.visibility = View.VISIBLE
                         } else {
                             imgAnim.visibility = View.GONE
                         }
                         setText(
-                            R.id.songName to data?.songName,
-                            R.id.singer to "-" + data?.artist
+                            R.id.songName to data.songName,
+                            R.id.singer to "-" + data.artist
                         )
                         itemClicked(View.OnClickListener {
-                            StarrySky.with()?.playMusicByIndex(position)
+                            StarrySky.with().playMusicByIndex(position)
                         })
                     }
                 }

@@ -83,15 +83,15 @@ class MainActivity : AppCompatActivity() {
             }
         })
         timerTaskManager.setUpdateProgressTask(Runnable {
-            val position = StarrySky.with()?.getPlayingPosition()
-            val duration = StarrySky.with()?.getDuration()
+            val position = StarrySky.with().getPlayingPosition()
+            val duration = StarrySky.with().getDuration()
             if (donutProgress.getMax().toLong() != duration) {
-                donutProgress.setMax(duration?.toInt() ?: 0)
+                donutProgress.setMax(duration.toInt())
             }
-            donutProgress.setProgress(position?.toFloat() ?: 0f)
+            donutProgress.setProgress(position.toFloat())
         })
         songCover?.setOnClickListener {
-            StarrySky.with()?.getNowPlayingSongInfo()?.let {
+            StarrySky.with().getNowPlayingSongInfo()?.let {
                 navigationTo<PlayDetailActivity>(
                     "songId" to it.songId,
                     "type" to "other")
