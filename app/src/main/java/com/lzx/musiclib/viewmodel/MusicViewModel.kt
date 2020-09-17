@@ -344,21 +344,26 @@ class MusicViewModel : ViewModel() {
 
     fun playWhenStartApp() {
         viewModelScope.launch(Dispatchers.IO) {
-            val list = mutableListOf<SongInfo>()
-            val array = getBaiduMusicListById("25").string().toJsonObj().getArray("song_list")
-            array.forEach<JSONObject> {
-                val songInfo = SongInfo()
-                songInfo.songId = it?.getString("song_id") ?: System.currentTimeMillis().toString()
-                songInfo.songName = it?.getString("title") ?: ""
-                songInfo.artist = it?.getString("author") ?: ""
-                songInfo.songCover = it?.getString("pic_huge") ?: ""
-                songInfo.headData?.put("source", "baiduMusic")
-                list.add(songInfo)
-            }
-            list.shuffle()
-            withContext(Dispatchers.Main) {
-                Log.i("XIAN", "list = " + list.size)
-                StarrySky.with().playMusic(list, 0)
+            try {
+                val list = mutableListOf<SongInfo>()
+                val array = getBaiduMusicListById("25").string().toJsonObj().getArray("song_list")
+                array.forEach<JSONObject> {
+                    val songInfo = SongInfo()
+                    songInfo.songId = it?.getString("song_id")
+                        ?: System.currentTimeMillis().toString()
+                    songInfo.songName = it?.getString("title") ?: ""
+                    songInfo.artist = it?.getString("author") ?: ""
+                    songInfo.songCover = it?.getString("pic_huge") ?: ""
+                    songInfo.headData?.put("source", "baiduMusic")
+                    list.add(songInfo)
+                }
+                list.shuffle()
+                withContext(Dispatchers.Main) {
+                    Log.i("XIAN", "list = " + list.size)
+                    StarrySky.with().playMusic(list, 0)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
             }
         }
     }

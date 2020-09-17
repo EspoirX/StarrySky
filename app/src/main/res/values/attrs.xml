@@ -27,4 +27,26 @@
         <attr name="donut_show_text" format="boolean"/>
         <attr name="donut_inner_drawable" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="SimpleMarqueeView">
+        <attr name="textSize" format="dimension"/>
+        <attr name="textColor" format="reference|color"/>
+        <attr name="textStyle" format="enum">
+            <enum name="normal" value="1"/>
+            <enum name="bold" value="2"/>
+            <enum name="italic" value="3"/>
+            <enum name="bold_italic" value="4"/>
+        </attr>
+        <attr name="left_drawable" format="reference"/>
+        <attr name="speed" format="integer"/>
+        <attr name="delay" format="integer"/>
+        <attr name="margin_txt" format="dimension"/>
+        <attr name="text" format="string"/>
+        <attr name="shadow_width" format="dimension"/>
+        <attr name="isScrollAllTextWidth" format="boolean"/>
+        <attr name="gravity" format="enum">
+            <enum name="start" value="1"/>
+            <enum name="center_horizontal" value="2"/>
+        </attr>
+    </declare-styleable>
 </resources>

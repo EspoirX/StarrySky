@@ -1,6 +1,7 @@
 package com.lzx.musiclib
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.util.Log
@@ -72,6 +73,7 @@ class PlayDetailFragment : BaseFragment() {
     private var timerTaskManager = TimerTaskManager()
     private var dialog: MaterialDialog? = null
     private var refrainList = mutableListOf<String>()
+    private var imageColorList = mutableListOf<Int>()
 
     //节拍坐标
     private var nextBeat = -1
@@ -122,6 +124,15 @@ class PlayDetailFragment : BaseFragment() {
         refrainList.add("file:///android_asset/hglo7.ogg")
         refrainList.add("file:///android_asset/hglo8.ogg")
 
+        imageColorList.add(Color.RED)
+        imageColorList.add(Color.YELLOW)
+        imageColorList.add(Color.GREEN)
+        imageColorList.add(Color.BLUE)
+        imageColorList.add(Color.CYAN)
+        imageColorList.add(Color.MAGENTA)
+        imageColorList.add(Color.DKGRAY)
+        imageColorList.add(Color.GRAY)
+
         viewModel?.songInfoLiveData?.observe(this, Observer {
             initDetailUI(it)
             StarrySky.with().playMusicByInfo(it)
@@ -142,20 +153,24 @@ class PlayDetailFragment : BaseFragment() {
                     it.songInfo?.let { info -> initDetailUI(info) }
                     btnPlayState?.setImageResource(R.drawable.gdt_ic_pause)
                     timerTaskManager.startToUpdateProgress()
+                    it.songInfo?.songId?.let { id -> songName?.startToScroll(id) }
                 }
                 PlaybackStage.PAUSE,
                 PlaybackStage.STOP -> {
                     btnPlayState?.setImageResource(R.drawable.gdt_ic_play)
                     timerTaskManager.stopToUpdateProgress()
+                    songName?.stop()
                 }
                 PlaybackStage.ERROR -> {
                     btnPlayState?.setImageResource(R.drawable.gdt_ic_pause)
                     timerTaskManager.stopToUpdateProgress()
                     activity?.showToast("播放失败：" + it.errorMsg)
+                    songName?.stop()
                 }
                 PlaybackStage.IDEA -> {
                     btnPlayState?.setImageResource(R.drawable.gdt_ic_play)
                     timerTaskManager.stopToUpdateProgress()
+                    songName?.stop()
                 }
             }
         })
@@ -290,10 +305,8 @@ class PlayDetailFragment : BaseFragment() {
     }
 
     private fun setUpRefrain(position: Long) {
-        if (!isStartRefraining) return
         val playPosition = String.format("%f", position.toDouble() / 1000.00).toDouble()
         val next = String.format("%.0f", (playPosition - beatStartTime) / beatTime).toDouble()
-        Log.i("当前节拍1", "next = " + next + " nextBeat = " + nextBeat)
         if (next < 0) return
         if (nextBeat == next.toInt()) return
         nextBeat = next.toInt()
@@ -312,13 +325,17 @@ class PlayDetailFragment : BaseFragment() {
 
     private fun showSound(i: Int, position: Double) {
         Log.i("当前节拍88", "节拍 $i   ->beatStartTime:$beatStartTime   ->position:$position")
+        bgImage.borderColor = imageColorList[i]
+        bgImage.shadowColor = imageColorList[i]
+        if (!isStartRefraining) return
         val url = refrainList[i]
         StarrySky.with().playRefrain(SongInfo(MD5.hexdigest(url), url))
     }
 
     private fun initDetailUI(it: SongInfo) {
         bgImage?.loadImage(it.songCover)
-        songName?.text = it.songName
+        songName?.setText(it.songId, it.songName)
+        songName?.setScrollDuration(20000)
         timeText?.text = it.duration.formatTime()
         if (StarrySky.with().isPlaying() && StarrySky.with().getNowPlayingSongId() != it.songId) {
             StarrySky.with().stopMusic()
