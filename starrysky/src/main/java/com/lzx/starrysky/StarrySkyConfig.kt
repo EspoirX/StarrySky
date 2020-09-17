@@ -62,6 +62,10 @@ open class StarrySkyConfig internal constructor(
     @get:JvmName("focusChangeListener")
     val focusChangeListener: AudioFocusChangeListener? = null
 
+    //是否需要创建副歌播放器
+    @get:JvmName("isCreateRefrainPlayer")
+    val isCreateRefrainPlayer: Boolean = false
+
     constructor() : this(Builder())
 
     open fun newBuilder(): Builder = Builder(this)
@@ -79,6 +83,7 @@ open class StarrySkyConfig internal constructor(
         internal var isUserService: Boolean = true
         internal var isAutoManagerFocus: Boolean = true
         internal var focusChangeListener: AudioFocusChangeListener? = null
+        internal var isCreateRefrainPlayer: Boolean = false
 
         internal constructor(config: StarrySkyConfig) : this() {
             this.isOpenNotification = config.isOpenNotification
@@ -92,6 +97,7 @@ open class StarrySkyConfig internal constructor(
             this.isUserService = config.isUserService
             this.isAutoManagerFocus = config.isAutoManagerFocus
             this.focusChangeListener = config.focusChangeListener
+            this.isCreateRefrainPlayer = config.isCreateRefrainPlayer
         }
 
         fun isOpenNotification(isOpenNotification: Boolean) = apply {
@@ -133,6 +139,9 @@ open class StarrySkyConfig internal constructor(
         fun isAutoManagerFocus(isAutoManagerFocus: Boolean) = apply { this.isAutoManagerFocus = isAutoManagerFocus }
 
         fun setOnAudioFocusChangeListener(listener: AudioFocusChangeListener) = apply { this.focusChangeListener = listener }
+
+        fun isCreateRefrainPlayer(isCreateRefrainPlayer: Boolean) = apply { this.isCreateRefrainPlayer = isCreateRefrainPlayer }
+
 
         fun build(): StarrySkyConfig {
             return StarrySkyConfig(this)

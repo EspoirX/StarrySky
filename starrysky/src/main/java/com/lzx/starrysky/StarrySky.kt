@@ -183,6 +183,9 @@ class StarrySky {
                 bridge?.addInterceptor(it)
             }
             bridge?.register?.playback = playback
+            if (config.isCreateRefrainPlayer) {
+                bridge?.register?.refrainPlayback = playback
+            }
             bridge?.register?.imageLoader = imageLoader
             val cache = if (config.cache == null) ExoCache(globalContext, config.isOpenCache, config.cacheDestFileDir) else config.cache
             bridge?.register?.cache = cache
@@ -198,7 +201,7 @@ class StarrySky {
                     config.focusChangeListener?.onAudioFocusChange(currentAudioFocusState)
                 }
             })
-            bridge?.start(config.isAutoManagerFocus)
+            bridge?.start(config.isAutoManagerFocus, config.isCreateRefrainPlayer)
         }
 
         /**

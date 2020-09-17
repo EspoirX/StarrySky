@@ -8,6 +8,7 @@ import com.lzx.starrysky.playback.Playback
 
 class StarrySkyRegister {
     var playback: Playback? = null
+    var refrainPlayback: Playback? = null
     var imageLoader: ImageLoaderStrategy? = null
     var cache: ICache? = null
     var isOpenNotification: Boolean = false

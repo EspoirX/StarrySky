@@ -82,6 +82,26 @@ class PlayerControlImpl(
         }
     }
 
+    override fun playRefrain(info: SongInfo) {
+        info.headData?.put("SongType", "Refrain")
+        provider.refrain = info
+        playbackManager.onPlayRefrain(info)
+    }
+
+    override fun stopRefrain() {
+        playbackManager.stopRefrain()
+    }
+
+    override fun setRefrainVolume(audioVolume: Float) {
+        playbackManager.setRefrainVolume(audioVolume)
+    }
+
+    override fun getRefrainVolume(): Float {
+        return playbackManager.getRefrainVolume()
+    }
+
+    override fun getRefrainInfo(): SongInfo? = provider.refrain
+
     override fun skipToNext() {
         playbackManager.onSkipToNext()
     }
@@ -111,13 +131,9 @@ class PlayerControlImpl(
         playbackManager.setRepeatMode(repeatMode, isLoop)
     }
 
-    override fun getRepeatMode(): RepeatMode {
-        return StarrySkyUtils.repeatMode
-    }
+    override fun getRepeatMode(): RepeatMode = StarrySkyUtils.repeatMode
 
-    override fun getPlayList(): MutableList<SongInfo> {
-        return provider.songList
-    }
+    override fun getPlayList(): MutableList<SongInfo> = provider.songList
 
     override fun updatePlayList(songInfos: MutableList<SongInfo>) {
         provider.songList = songInfos
@@ -139,58 +155,34 @@ class PlayerControlImpl(
         provider.clearSongInfos()
     }
 
-    override fun getNowPlayingSongInfo(): SongInfo? {
-        return playbackManager.playback.currPlayInfo
-    }
+    override fun getNowPlayingSongInfo(): SongInfo? = playbackManager.playback.currPlayInfo
 
-    override fun getNowPlayingSongId(): String {
-        return getNowPlayingSongInfo()?.songId ?: ""
-    }
+    override fun getNowPlayingSongId(): String = getNowPlayingSongInfo()?.songId ?: ""
 
-    override fun getNowPlayingSongUrl(): String {
-        return getNowPlayingSongInfo()?.songUrl ?: ""
-    }
+    override fun getNowPlayingSongUrl(): String = getNowPlayingSongInfo()?.songUrl ?: ""
 
     override fun getNowPlayingIndex(): Int {
         val songId = getNowPlayingSongId()
         return provider.getIndexById(songId)
     }
 
-    override fun getBufferedPosition(): Long {
-        return playbackManager.playback.bufferedPosition
-    }
+    override fun getBufferedPosition(): Long = playbackManager.playback.bufferedPosition
 
-    override fun getPlayingPosition(): Long {
-        return playbackManager.playback.currentStreamPosition
-    }
+    override fun getPlayingPosition(): Long = playbackManager.playback.currentStreamPosition
 
-    override fun isSkipToNextEnabled(): Boolean {
-        return playbackManager.isSkipToNextEnabled()
-    }
+    override fun isSkipToNextEnabled(): Boolean = playbackManager.isSkipToNextEnabled()
 
-    override fun isSkipToPreviousEnabled(): Boolean {
-        return playbackManager.isSkipToPreviousEnabled()
-    }
+    override fun isSkipToPreviousEnabled(): Boolean = playbackManager.isSkipToPreviousEnabled()
 
-    override fun getPlaybackSpeed(): Float {
-        return playbackManager.playback.getPlaybackSpeed()
-    }
+    override fun getPlaybackSpeed(): Float = playbackManager.playback.getPlaybackSpeed()
 
-    override fun isPlaying(): Boolean {
-        return playbackManager.playback.playbackState == Playback.STATE_PLAYING
-    }
+    override fun isPlaying(): Boolean = playbackManager.playback.playbackState == Playback.STATE_PLAYING
 
-    override fun isPaused(): Boolean {
-        return playbackManager.playback.playbackState == Playback.STATE_PAUSED
-    }
+    override fun isPaused(): Boolean = playbackManager.playback.playbackState == Playback.STATE_PAUSED
 
-    override fun isIdea(): Boolean {
-        return playbackManager.playback.playbackState == Playback.STATE_IDLE
-    }
+    override fun isIdea(): Boolean = playbackManager.playback.playbackState == Playback.STATE_IDLE
 
-    override fun isBuffering(): Boolean {
-        return playbackManager.playback.playbackState == Playback.STATE_BUFFERING
-    }
+    override fun isBuffering(): Boolean = playbackManager.playback.playbackState == Playback.STATE_BUFFERING
 
     override fun isCurrMusicIsPlayingMusic(songId: String): Boolean {
         return if (songId.isEmpty()) {
@@ -201,21 +193,13 @@ class PlayerControlImpl(
         }
     }
 
-    override fun isCurrMusicIsPlaying(songId: String): Boolean {
-        return isCurrMusicIsPlayingMusic(songId) && isPlaying()
-    }
+    override fun isCurrMusicIsPlaying(songId: String): Boolean = isCurrMusicIsPlayingMusic(songId) && isPlaying()
 
-    override fun isCurrMusicIsPaused(songId: String): Boolean {
-        return isCurrMusicIsPlayingMusic(songId) && isPaused()
-    }
+    override fun isCurrMusicIsPaused(songId: String): Boolean = isCurrMusicIsPlayingMusic(songId) && isPaused()
 
-    override fun isCurrMusicIsIdea(songId: String): Boolean {
-        return isCurrMusicIsPlayingMusic(songId) && isIdea()
-    }
+    override fun isCurrMusicIsIdea(songId: String): Boolean = isCurrMusicIsPlayingMusic(songId) && isIdea()
 
-    override fun isCurrMusicIsBuffering(songId: String): Boolean {
-        return isCurrMusicIsPlayingMusic(songId) && isBuffering()
-    }
+    override fun isCurrMusicIsBuffering(songId: String): Boolean = isCurrMusicIsPlayingMusic(songId) && isBuffering()
 
     override fun setVolume(audioVolume: Float) {
         var volume = audioVolume
@@ -228,17 +212,11 @@ class PlayerControlImpl(
         playbackManager.playback.volume = volume
     }
 
-    override fun getVolume(): Float {
-        return playbackManager.playback.volume
-    }
+    override fun getVolume(): Float = playbackManager.playback.volume
 
-    override fun getDuration(): Long {
-        return playbackManager.playback.duration
-    }
+    override fun getDuration(): Long = playbackManager.playback.duration
 
-    override fun getAudioSessionId(): Int {
-        return playbackManager.playback.audioSessionId
-    }
+    override fun getAudioSessionId(): Int = playbackManager.playback.audioSessionId
 
     override fun querySongInfoInLocal(context: Context): List<SongInfo> {
         val songInfos = mutableListOf<SongInfo>()
@@ -279,18 +257,11 @@ class PlayerControlImpl(
         playerEventListener.clear()
     }
 
-    override fun getPlayerEventListeners(): MutableList<OnPlayerEventListener> {
-        return playerEventListener
-    }
+    override fun getPlayerEventListeners(): MutableList<OnPlayerEventListener> = playerEventListener
 
+    override fun focusStateChange(): MutableLiveData<Int> = focusChangeState
 
-    override fun focusStateChange(): MutableLiveData<Int> {
-        return focusChangeState
-    }
-
-    override fun playbackState(): MutableLiveData<PlaybackStage> {
-        return playbackState
-    }
+    override fun playbackState(): MutableLiveData<PlaybackStage> = playbackState
 
     override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
         playbackState.value = playbackStage

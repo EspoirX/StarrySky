@@ -16,9 +16,15 @@ class PlaybackManager(
 
     private var serviceCallback: PlaybackServiceCallback? = null
     private var notification: INotification? = null
+    private var refrainPlayback: Playback? = null
 
     init {
         playback.setCallback(this)
+        refrainPlayback?.setCallback(this)
+    }
+
+    fun setRefrainPlayback(refrainPlayback: Playback?) {
+        this.refrainPlayback = refrainPlayback
     }
 
     fun setServiceCallback(serviceCallback: PlaybackServiceCallback) {
@@ -27,6 +33,36 @@ class PlaybackManager(
 
     fun registerNotification(notification: INotification?) {
         this.notification = notification
+    }
+
+    fun onPlayRefrain(info: SongInfo?) {
+        interceptorService.doInterceptions(info, object : InterceptorCallback {
+            override fun onContinue(songInfo: SongInfo?) {
+                if (songInfo == null) return
+                MainLooper.instance.runOnUiThread(Runnable {
+                    refrainPlayback?.currentMediaId = ""
+                    refrainPlayback?.play(songInfo, true)
+                })
+            }
+
+            override fun onInterrupt(exception: Throwable?) {
+                MainLooper.instance.runOnUiThread(Runnable {
+                    refrainPlayback?.currentMediaId = ""
+                })
+            }
+        })
+    }
+
+    fun stopRefrain() {
+        refrainPlayback?.stop()
+    }
+
+    fun setRefrainVolume(audioVolume: Float) {
+        refrainPlayback?.volume = audioVolume
+    }
+
+    fun getRefrainVolume(): Float {
+        return refrainPlayback?.volume ?: 0f
     }
 
     fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
@@ -158,6 +194,9 @@ class PlaybackManager(
 
     override fun onPlayerStateChanged(songInfo: SongInfo?, playWhenReady: Boolean, playbackState: Int) {
         updatePlaybackState(songInfo, null, playbackState)
+        if ("Refrain" == songInfo?.headData?.get("SongType")) {
+            return
+        }
         if (playbackState == Playback.STATE_IDLE) {
             onPlaybackCompletion()
         }
@@ -210,6 +249,7 @@ class PlaybackManager(
     }
 
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {
+        val isRefrain = "Refrain" == currPlayInfo?.headData?.get("SongType")
         var newState = PlaybackStage.IDEA
         when (state) {
             Playback.STATE_IDLE -> {
@@ -220,11 +260,15 @@ class PlaybackManager(
             }
             Playback.STATE_PLAYING -> {
                 newState = PlaybackStage.PLAYING
-                startNotification(currPlayInfo, newState)
+                if (!isRefrain) {
+                    startNotification(currPlayInfo, newState)
+                }
             }
             Playback.STATE_PAUSED -> {
                 newState = PlaybackStage.PAUSE
-                startNotification(currPlayInfo, newState)
+                if (!isRefrain) {
+                    startNotification(currPlayInfo, newState)
+                }
             }
             Playback.STATE_STOPPED -> {
                 newState = PlaybackStage.STOP
@@ -233,7 +277,9 @@ class PlaybackManager(
                 newState = PlaybackStage.ERROR
             }
         }
-        notification?.onPlaybackStateChanged(currPlayInfo, newState)
+        if (!isRefrain) {
+            notification?.onPlaybackStateChanged(currPlayInfo, newState)
+        }
         StarrySkyUtils.log("PlaybackStage = $newState")
         val playbackStage = PlaybackStage()
         playbackStage.errorMsg = errorMsg

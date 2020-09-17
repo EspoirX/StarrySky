@@ -12,6 +12,9 @@ class MediaSourceProvider {
     //随机模式下的数据源
     private var shuffleSongSources = mutableListOf<SongInfo>()
 
+    //副歌数据
+    var refrain: SongInfo? = null
+
     var songList: MutableList<SongInfo>
         get() {
             val list = mutableListOf<SongInfo>()

@@ -73,6 +73,23 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     fun prepareFromSongId(songId: String)
 
     /**
+     * 使用该方法前请在初始化时将 isCreateRefrainPlayer 标记设为 true
+     * 允许同时播放另一个音频，该音频没有队列管理概念，没有通知栏功能
+     * 会创建另一个播放实例去播放，有播放回调，有拦截器功能，该音频的 headData 里面
+     * 统一都添加了 key = SongType,value = Refrain 的标记
+     * 如果使用了该方法，请在回调监听和拦截器功能的时候做好区分
+     */
+    fun playRefrain(info: SongInfo)
+
+    fun stopRefrain()
+
+    fun setRefrainVolume(audioVolume: Float)
+
+    fun getRefrainVolume(): Float
+
+    fun getRefrainInfo(): SongInfo?
+
+    /**
      * 下一首
      */
     fun skipToNext()

@@ -14,6 +14,7 @@ import com.lzx.starrysky.playback.ExoPlayback
 import com.lzx.starrysky.playback.MediaQueueManager
 import com.lzx.starrysky.playback.MediaSessionManager
 import com.lzx.starrysky.playback.MediaSourceProvider
+import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
 
@@ -27,7 +28,7 @@ class ServiceBridge(private val context: Context) : Binder() {
     var imageLoader: ImageLoader? = null
     var sessionManager: MediaSessionManager? = null
 
-    fun start(isAutoManagerFocus: Boolean = true) {
+    fun start(isAutoManagerFocus: Boolean = true, isCreateRefrainPlayer: Boolean = false) {
         //数据存储
         val sourceProvider = MediaSourceProvider()
         //图片加载
@@ -43,6 +44,10 @@ class ServiceBridge(private val context: Context) : Binder() {
         val cache = register.cache
         //播放器
         val player = if (register.playback == null) ExoPlayback(context, cache, isAutoManagerFocus) else register.playback
+        var refrainPlayback: Playback? = null
+        if (isCreateRefrainPlayer) {
+            refrainPlayback = if (register.refrainPlayback == null) ExoPlayback(context, cache, isAutoManagerFocus) else register.refrainPlayback
+        }
         //拦截器
         val interceptorService = InterceptorService(interceptors)
         if (context is MusicService) {
@@ -52,6 +57,7 @@ class ServiceBridge(private val context: Context) : Binder() {
         }
         //播放管理
         val playbackManager = PlaybackManager(mediaQueueManager, player!!, interceptorService)
+        playbackManager.setRefrainPlayback(refrainPlayback)
         playbackManager.registerNotification(notification)
         playbackManager.setServiceCallback(object : PlaybackManager.PlaybackServiceCallback {
             override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
@@ -61,7 +67,7 @@ class ServiceBridge(private val context: Context) : Binder() {
             }
 
             override fun onFocusStateChange(currentAudioFocusState: Int) {
-
+                serviceCallback?.onFocusStateChange(currentAudioFocusState)
             }
         })
         //播放控制
