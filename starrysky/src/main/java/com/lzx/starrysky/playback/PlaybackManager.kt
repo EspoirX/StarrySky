@@ -54,8 +54,6 @@ class PlaybackManager(
         refrainPlayback?.stop()
     }
 
-    fun isRefrainPlaying(): Boolean = refrainPlayback?.playbackState == Playback.STATE_PLAYING
-
     fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
         mediaId?.apply {
             if (extras != null && extras.getInt("clearSongId", 0) == 1) {

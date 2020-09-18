@@ -107,7 +107,13 @@ class PlayerControlImpl(
 
     override fun getRefrainInfo(): SongInfo? = provider.refrain
 
-    override fun isRefrainPlaying(): Boolean = playbackManager.isRefrainPlaying()
+    override fun isRefrainPlaying(): Boolean {
+        return playbackManager.refrainPlayback?.playbackState == Playback.STATE_PLAYING
+    }
+
+    override fun isRefrainBuffering(): Boolean {
+        return playbackManager.refrainPlayback?.playbackState == Playback.STATE_BUFFERING
+    }
 
     override fun skipToNext() {
         playbackManager.onSkipToNext()

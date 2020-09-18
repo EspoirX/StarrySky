@@ -95,6 +95,8 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
 
     fun isRefrainPlaying(): Boolean
 
+    fun isRefrainBuffering(): Boolean
+
     /**
      * 下一首
      */
