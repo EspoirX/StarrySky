@@ -74,6 +74,9 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
 
     /**
      * 使用该方法前请在初始化时将 isCreateRefrainPlayer 标记设为 true
+     * 将 isAutoManagerFocus 是否自动管理焦点设为 false，否则无法同时播放
+     * 需求焦点管理的请实现 setOnAudioFocusChangeListener 方法监听焦点自己处理
+     *
      * 允许同时播放另一个音频，该音频没有队列管理概念，没有通知栏功能
      * 会创建另一个播放实例去播放，有播放回调，有拦截器功能，该音频的 headData 里面
      * 统一都添加了 key = SongType,value = Refrain 的标记
