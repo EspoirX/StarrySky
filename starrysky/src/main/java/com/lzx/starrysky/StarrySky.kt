@@ -17,6 +17,7 @@ import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.service.ServiceBridge
 import com.lzx.starrysky.utils.SpUtil
+import com.lzx.starrysky.utils.isMainProcess
 import java.util.WeakHashMap
 
 
@@ -47,6 +48,9 @@ class StarrySky {
          */
         @JvmStatic
         fun init(application: Application, config: StarrySkyConfig = StarrySkyConfig(), connection: ServiceConnection? = null) {
+            if (!application.isMainProcess()){
+                return
+            }
             if (alreadyInit) {
                 return
             }

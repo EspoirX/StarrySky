@@ -284,7 +284,7 @@ class PlayDetailFragment : BaseFragment() {
             isStartRefraining = false
         }
         btnRefrain?.setOnClickListener {
-            isStartRefraining = if (StarrySky.with().isRefrainPlaying()) {
+            isStartRefraining = if (StarrySky.with().isRefrainPlaying() || StarrySky.with().isRefrainBuffering()) {
                 StarrySky.with().stopRefrain()
                 btnRefrain?.text = "伴奏开"
                 false
@@ -299,8 +299,10 @@ class PlayDetailFragment : BaseFragment() {
             StarrySky.with().setRefrainVolume(currVolume + 0.1F)
         }
         btnRefrainJian.setOnClickListener {
-            val currVolume = StarrySky.with().getRefrainVolume()
-            StarrySky.with().setRefrainVolume(currVolume - 0.1F)
+//            val currVolume = StarrySky.with().getRefrainVolume()
+//            StarrySky.with().setRefrainVolume(currVolume - 0.1F)
+            val url = "file:///android_asset/庄心妍 - 想不到 [mqms2].flac"
+            StarrySky.with().playMusicByInfo(SongInfo("123131", url))
         }
     }
 

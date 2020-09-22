@@ -1,8 +1,12 @@
 package com.lzx.starrysky.utils
 
+import android.app.ActivityManager
+import android.app.ActivityManager.RunningAppProcessInfo
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
+import android.os.Process
 import android.widget.Toast
 import com.lzx.starrysky.notification.INotification
 
@@ -41,4 +45,22 @@ fun Context.getPendingIntent(action: String): PendingIntent {
 
 fun Context.showToast(msg: String?) {
     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+}
+
+fun Context.isMainProcess(): Boolean {
+    val am = this.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+    val runningApp = am.runningAppProcesses
+    return if (runningApp == null) {
+        false
+    } else {
+        val var3: Iterator<*> = runningApp.iterator()
+        var info: RunningAppProcessInfo
+        do {
+            if (!var3.hasNext()) {
+                return false
+            }
+            info = var3.next() as RunningAppProcessInfo
+        } while (info.pid != Process.myPid())
+        this.packageName == info.processName
+    }
 }

@@ -11,6 +11,7 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory
+import com.google.android.exoplayer2.extractor.mkv.MatroskaExtractor
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.dash.DashMediaSource
@@ -177,7 +178,7 @@ class ExoPlayback(val context: Context,
         if (isPlayWhenReady) {
             player?.playWhenReady = true
         }
-        if (songInfo.isRefrain()){
+        if (songInfo.isRefrain()) {
             StarrySkyUtils.log("播放伴奏 = ${songInfo.songId}")
         }
     }
@@ -207,17 +208,37 @@ class ExoPlayback(val context: Context,
                     .createMediaSource(uri)
             }
             TYPE_FLAC -> {
-                ProgressiveMediaSource.Factory(RtmpDataSourceFactory())
+                ProgressiveMediaSource.Factory(dataSourceFactory, MatroskaExtractor.FACTORY)
                     .createMediaSource(uri)
             }
             else -> throw IllegalStateException("Unsupported type: $type")
         }
     }
+//
+//    private class MyRenderersFactory(context: Context) : DefaultRenderersFactory(context) {
+//        override fun buildAudioRenderers(context: Context,
+//                                         extensionRendererMode: Int,
+//                                         mediaCodecSelector: MediaCodecSelector,
+//                                         drmSessionManager: DrmSessionManager<FrameworkMediaCrypto>?,
+//                                         playClearSamplesWithoutKeys: Boolean,
+//                                         enableDecoderFallback: Boolean,
+//                                         audioProcessors: Array<out AudioProcessor>,
+//                                         eventHandler: Handler,
+//                                         eventListener: AudioRendererEventListener,
+//                                         out: ArrayList<Renderer>) {
+//            val audioSink = CapturingAudioSink(DefaultAudioSink(null, arrayOf()))
+//            val audioRenderer = LibflacAudioRenderer(null, null, audioSink)
+//            out.add(audioRenderer)
+//            super.buildAudioRenderers(context, extensionRendererMode, mediaCodecSelector, drmSessionManager, playClearSamplesWithoutKeys, enableDecoderFallback, audioProcessors, eventHandler, eventListener, out)
+//        }
+//    }
 
     private fun createExoPlayer() {
         if (player == null) {
             @ExtensionRendererMode val extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
-            val renderersFactory = DefaultRenderersFactory(context).setExtensionRendererMode(extensionRendererMode)
+            val renderersFactory = DefaultRenderersFactory(context)
+                .setExtensionRendererMode(extensionRendererMode)
+
 
             val builder = ParametersBuilder(context)
             if (Util.SDK_INT >= 21) {
@@ -227,6 +248,9 @@ class ExoPlayback(val context: Context,
             val trackSelectionFactory: TrackSelection.Factory = AdaptiveTrackSelection.Factory()
             trackSelector = DefaultTrackSelector(context, trackSelectionFactory)
             trackSelector?.parameters = trackSelectorParameters as DefaultTrackSelector.Parameters
+
+
+
 
             player = SimpleExoPlayer.Builder(context, renderersFactory)
                 .setTrackSelector(trackSelector!!)

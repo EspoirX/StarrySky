@@ -13,6 +13,9 @@ import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyConfig
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
+import com.lzx.starrysky.notification.INotification
+import com.lzx.starrysky.notification.NotificationConfig
+import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.utils.MainLooper
 import com.tencent.bugly.crashreport.CrashReport
 
@@ -35,6 +38,11 @@ open class TestApplication : Application() {
             .addInterceptor(RequestSongInfoInterceptor())
             .addInterceptor(RequestSongCoverInterceptor())
             .isOpenNotification(true)
+            .setNotificationFactory(object : StarrySkyNotificationManager.NotificationFactory {
+                override fun build(context: Context, config: NotificationConfig?): INotification {
+                    return StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY.build(context, config)
+                }
+            })
             .isCreateRefrainPlayer(true)
             .isAutoManagerFocus(false)
             .build()
