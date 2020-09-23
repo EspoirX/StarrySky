@@ -359,7 +359,6 @@ class MusicViewModel : ViewModel() {
                 }
                 list.shuffle()
                 withContext(Dispatchers.Main) {
-                    Log.i("XIAN", "list = " + list.size)
                     StarrySky.with().playMusic(list, 0)
                 }
             } catch (ex: Exception) {

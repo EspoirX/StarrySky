@@ -299,10 +299,8 @@ class PlayDetailFragment : BaseFragment() {
             StarrySky.with().setRefrainVolume(currVolume + 0.1F)
         }
         btnRefrainJian.setOnClickListener {
-//            val currVolume = StarrySky.with().getRefrainVolume()
-//            StarrySky.with().setRefrainVolume(currVolume - 0.1F)
-            val url = "file:///android_asset/庄心妍 - 想不到 [mqms2].flac"
-            StarrySky.with().playMusicByInfo(SongInfo("123131", url))
+            val currVolume = StarrySky.with().getRefrainVolume()
+            StarrySky.with().setRefrainVolume(currVolume - 0.1F)
         }
     }
 

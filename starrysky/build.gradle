@@ -56,6 +56,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.11.3'
     implementation 'com.google.android.exoplayer:exoplayer-hls:2.11.3'
     implementation 'com.google.android.exoplayer:extension-rtmp:2.11.3'
+//    implementation 'com.github.PaulWoitaschek.ExoPlayer-Extensions:extension-flac:2.11.3'
 }
 repositories {
     mavenCentral()

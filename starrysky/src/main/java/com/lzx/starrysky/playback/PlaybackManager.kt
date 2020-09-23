@@ -183,7 +183,10 @@ class PlaybackManager(
 
     override fun onPlayerStateChanged(songInfo: SongInfo?, playWhenReady: Boolean, playbackState: Int) {
         updatePlaybackState(songInfo, null, playbackState)
-        if ("Refrain" == songInfo?.headData?.get("SongType")) {
+        if (songInfo.isRefrain()) {
+            return
+        }
+        if ("playSingle" == songInfo?.headData?.get("SongType")) {
             return
         }
         if (playbackState == Playback.STATE_IDLE) {
@@ -238,7 +241,6 @@ class PlaybackManager(
     }
 
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {
-//        val isRefrain = "Refrain" == currPlayInfo?.headData?.get("SongType")
         var newState = PlaybackStage.IDEA
         when (state) {
             Playback.STATE_IDLE -> {

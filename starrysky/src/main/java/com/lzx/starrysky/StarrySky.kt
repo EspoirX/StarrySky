@@ -48,7 +48,7 @@ class StarrySky {
          */
         @JvmStatic
         fun init(application: Application, config: StarrySkyConfig = StarrySkyConfig(), connection: ServiceConnection? = null) {
-            if (!application.isMainProcess()){
+            if (!application.isMainProcess()) {
                 return
             }
             if (alreadyInit) {
@@ -198,7 +198,7 @@ class StarrySky {
             bridge?.register?.notification = config.notificationFactory
             bridge?.setServiceCallback(object : PlaybackManager.PlaybackServiceCallback {
                 override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
-                    playbackState.value = playbackStage
+                    playbackState.postValue(playbackStage)
                 }
 
                 override fun onFocusStateChange(currentAudioFocusState: Int) {

@@ -41,6 +41,7 @@ class PlayerControlImpl(
         provider.addSongInfo(info)
         val bundle = Bundle()
         bundle.putInt("clearSongId", 1)
+        info.headData?.put("SongType", "playSingle")
         playMusicImpl(info.songId, bundle)
     }
 
@@ -277,13 +278,13 @@ class PlayerControlImpl(
     override fun playbackState(): MutableLiveData<PlaybackStage> = playbackState
 
     override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
-        playbackState.value = playbackStage
+        playbackState.postValue(playbackStage)
         playerEventListener.forEach {
             it.onPlaybackStageChange(playbackStage)
         }
     }
 
     override fun onFocusStateChange(currentAudioFocusState: Int) {
-        focusChangeState.value = currentAudioFocusState
+        focusChangeState.postValue(currentAudioFocusState)
     }
 }
