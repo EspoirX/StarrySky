@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.lzx.starrysky.flac;
+package com.lzx.extension_flac2120;
 
 import android.os.Handler;
 
@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.RendererCapabilities;
 import com.google.android.exoplayer2.audio.AudioProcessor;
 import com.google.android.exoplayer2.audio.AudioRendererEventListener;
 import com.google.android.exoplayer2.audio.AudioSink;
@@ -85,7 +86,7 @@ public final class LibflacAudioRenderer extends DecoderAudioRenderer<FlacDecoder
   protected int supportsFormatInternal(Format format) {
     if (!FlacLibrary.isAvailable()
         || !MimeTypes.AUDIO_FLAC.equalsIgnoreCase(format.sampleMimeType)) {
-      return FORMAT_UNSUPPORTED_TYPE;
+      return RendererCapabilities.FORMAT_UNSUPPORTED_TYPE;
     }
     // Compute the format that the FLAC decoder will output.
     Format outputFormat;
@@ -104,11 +105,11 @@ public final class LibflacAudioRenderer extends DecoderAudioRenderer<FlacDecoder
       outputFormat = getOutputFormat(streamMetadata);
     }
     if (!sinkSupportsFormat(outputFormat)) {
-      return FORMAT_UNSUPPORTED_SUBTYPE;
+      return RendererCapabilities.FORMAT_UNSUPPORTED_SUBTYPE;
     } else if (format.exoMediaCryptoType != null) {
-      return FORMAT_UNSUPPORTED_DRM;
+      return RendererCapabilities.FORMAT_UNSUPPORTED_DRM;
     } else {
-      return FORMAT_HANDLED;
+      return RendererCapabilities.FORMAT_HANDLED;
     }
   }
 

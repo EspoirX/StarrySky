@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.lzx.starrysky.flac;
+package com.lzx.extension_flac2120;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -34,6 +34,7 @@ import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.ParsableByteArray;
+import com.google.android.exoplayer2.util.Util;
 
 
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
@@ -151,11 +152,11 @@ public final class FlacExtractor implements Extractor {
       }
       int outputSize = outputByteBuffer.limit();
       if (outputSize == 0) {
-        return RESULT_END_OF_INPUT;
+        return Extractor.RESULT_END_OF_INPUT;
       }
 
       outputSample(outputBuffer, outputSize, decoderJni.getLastFrameTimestamp(), trackOutput);
-      return decoderJni.isEndOfData() ? RESULT_END_OF_INPUT : RESULT_CONTINUE;
+      return decoderJni.isEndOfData() ? Extractor.RESULT_END_OF_INPUT : Extractor.RESULT_CONTINUE;
     } finally {
       decoderJni.clearData();
     }
@@ -237,7 +238,7 @@ public final class FlacExtractor implements Extractor {
       throws IOException {
     int seekResult = binarySearchSeeker.handlePendingSeek(input, seekPosition);
     ByteBuffer outputByteBuffer = outputFrameHolder.byteBuffer;
-    if (seekResult == RESULT_CONTINUE && outputByteBuffer.limit() > 0) {
+    if (seekResult == Extractor.RESULT_CONTINUE && outputByteBuffer.limit() > 0) {
       outputSample(outputBuffer, outputByteBuffer.limit(), outputFrameHolder.timeUs, trackOutput);
     }
     return seekResult;
@@ -282,7 +283,7 @@ public final class FlacExtractor implements Extractor {
             .setMaxInputSize(streamMetadata.getMaxDecodedFrameSize())
             .setChannelCount(streamMetadata.channels)
             .setSampleRate(streamMetadata.sampleRate)
-            .setPcmEncoding(getPcmEncoding(streamMetadata.bitsPerSample))
+            .setPcmEncoding(Util.getPcmEncoding(streamMetadata.bitsPerSample))
             .setMetadata(metadata)
             .build();
     output.format(mediaFormat);

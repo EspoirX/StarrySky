@@ -1,1 +1,2 @@
+include ':extension-flac2120'
 include ':app', ':starrysky'

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.lzx.starrysky.flac;
+package com.lzx.extension_flac2120;
 
 import com.google.android.exoplayer2.extractor.BinarySearchSeeker;
 import com.google.android.exoplayer2.extractor.ExtractorInput;
@@ -77,7 +77,7 @@ import static java.lang.Math.max;
         /* floorBytePosition= */ firstFramePosition,
         /* ceilingBytePosition= */ inputLength,
         /* approxBytesPerFrame= */ streamMetadata.getApproxBytesPerFrame(),
-        /* minimumSearchRange= */ max(
+        /* minimumSearchRange= */ Math.max(
             FlacConstants.MIN_FRAME_HEADER_SIZE, streamMetadata.minFrameSize));
     this.decoderJni = Assertions.checkNotNull(decoderJni);
   }
