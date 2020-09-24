@@ -6,12 +6,13 @@ import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.DefaultRenderersFactory.ExtensionRendererMode
 import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory
-import com.google.android.exoplayer2.extractor.mkv.MatroskaExtractor
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.dash.DashMediaSource
@@ -24,10 +25,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelection
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
-import com.google.android.exoplayer2.upstream.FileDataSource
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
-import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.cache.ExoCache
@@ -155,7 +154,7 @@ class ExoPlayback(val context: Context,
             releaseResources(false)  // release everything except the player
             //创建播放器实例
             createExoPlayer()
-            player?.prepare(mediaSource!!)
+            player?.prepare()
             if (!isAutoManagerFocus) {
                 focusAndLockManager.acquireWifiLock()
             }
@@ -163,7 +162,7 @@ class ExoPlayback(val context: Context,
         //当错误发生时，如果还播放同一首歌，
         //这时候需要重新加载一下，并且吧进度 seekTo 到出错的地方
         if (sourceTypeErrorInfo.happenSourceError && !mediaHasChanged) {
-            player?.prepare(mediaSource!!)
+            player?.prepare()
             if (sourceTypeErrorInfo.currPositionWhenError != 0L) {
                 if (sourceTypeErrorInfo.seekToPositionWhenError != 0L) {
                     player?.seekTo(sourceTypeErrorInfo.seekToPositionWhenError)
@@ -195,43 +194,34 @@ class ExoPlayback(val context: Context,
         }
         dataSourceFactory = buildDataSourceFactory()
         return when (type) {
-            C.TYPE_DASH -> DashMediaSource.Factory(dataSourceFactory!!)
-                .createMediaSource(uri)
-            C.TYPE_SS -> SsMediaSource.Factory(dataSourceFactory!!)
-                .createMediaSource(uri)
-            C.TYPE_HLS -> HlsMediaSource.Factory(dataSourceFactory!!)
-                .createMediaSource(uri)
-            C.TYPE_OTHER -> ProgressiveMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(uri)
+            C.TYPE_DASH -> {
+                DashMediaSource.Factory(dataSourceFactory!!)
+                    .createMediaSource(MediaItem.fromUri(uri))
+            }
+            C.TYPE_SS -> {
+                SsMediaSource.Factory(dataSourceFactory!!)
+                    .createMediaSource(MediaItem.fromUri(uri))
+            }
+            C.TYPE_HLS -> {
+                HlsMediaSource.Factory(dataSourceFactory!!)
+                    .createMediaSource(MediaItem.fromUri(uri))
+            }
+            C.TYPE_OTHER -> {
+                ProgressiveMediaSource.Factory(dataSourceFactory!!)
+                    .createMediaSource(MediaItem.fromUri(uri))
+            }
             TYPE_RTMP -> {
                 ProgressiveMediaSource.Factory(RtmpDataSourceFactory())
-                    .createMediaSource(uri)
+                    .createMediaSource(MediaItem.fromUri(uri))
             }
             TYPE_FLAC -> {
-                ProgressiveMediaSource.Factory(dataSourceFactory, MatroskaExtractor.FACTORY)
-                    .createMediaSource(uri)
+                val extractorsFactory = DefaultExtractorsFactory()
+                ProgressiveMediaSource.Factory(dataSourceFactory!!, extractorsFactory)
+                    .createMediaSource(MediaItem.fromUri(uri))
             }
             else -> throw IllegalStateException("Unsupported type: $type")
         }
     }
-//
-//    private class MyRenderersFactory(context: Context) : DefaultRenderersFactory(context) {
-//        override fun buildAudioRenderers(context: Context,
-//                                         extensionRendererMode: Int,
-//                                         mediaCodecSelector: MediaCodecSelector,
-//                                         drmSessionManager: DrmSessionManager<FrameworkMediaCrypto>?,
-//                                         playClearSamplesWithoutKeys: Boolean,
-//                                         enableDecoderFallback: Boolean,
-//                                         audioProcessors: Array<out AudioProcessor>,
-//                                         eventHandler: Handler,
-//                                         eventListener: AudioRendererEventListener,
-//                                         out: ArrayList<Renderer>) {
-//            val audioSink = CapturingAudioSink(DefaultAudioSink(null, arrayOf()))
-//            val audioRenderer = LibflacAudioRenderer(null, null, audioSink)
-//            out.add(audioRenderer)
-//            super.buildAudioRenderers(context, extensionRendererMode, mediaCodecSelector, drmSessionManager, playClearSamplesWithoutKeys, enableDecoderFallback, audioProcessors, eventHandler, eventListener, out)
-//        }
-//    }
 
     private fun createExoPlayer() {
         if (player == null) {
@@ -249,12 +239,11 @@ class ExoPlayback(val context: Context,
             trackSelector = DefaultTrackSelector(context, trackSelectionFactory)
             trackSelector?.parameters = trackSelectorParameters as DefaultTrackSelector.Parameters
 
-
-
-
             player = SimpleExoPlayer.Builder(context, renderersFactory)
                 .setTrackSelector(trackSelector!!)
                 .build()
+
+            player?.setMediaSource(mediaSource!!)
             player?.addListener(mEventListener)
             player?.setAudioAttributes(AudioAttributes.DEFAULT, isAutoManagerFocus)
         }
@@ -270,15 +259,14 @@ class ExoPlayback(val context: Context,
         }
     }
 
-    private fun buildReadOnlyCacheDataSource(
-        upstreamFactory: DataSource.Factory?, cache: Cache?): CacheDataSourceFactory? {
-        return CacheDataSourceFactory(
-            cache,
-            upstreamFactory,
-            FileDataSource.Factory(),  /* cacheWriteDataSinkFactory= */
-            null,
-            CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR,  /* eventListener= */
-            null)
+    private fun buildReadOnlyCacheDataSource(upstreamFactory: DataSource.Factory?, cache: Cache?): CacheDataSource.Factory? {
+        return cache?.let {
+            CacheDataSource.Factory()
+                .setCache(it)
+                .setUpstreamDataSourceFactory(upstreamFactory)
+                .setCacheWriteDataSinkFactory(null)
+                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+        }
     }
 
     private fun releaseResources(releasePlayer: Boolean) {

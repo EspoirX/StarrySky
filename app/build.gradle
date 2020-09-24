@@ -64,5 +64,10 @@ android {
 
     }
 }
+repositories {
+    flatDir {
+        dirs project(':starrysky').file('libs')
+    }
+}
 dependencies {
 }

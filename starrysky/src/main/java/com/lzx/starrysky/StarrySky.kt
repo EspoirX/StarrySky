@@ -10,6 +10,7 @@ import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.control.PlayerControl
+import com.lzx.starrysky.flac.FlacLibrary
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
@@ -54,6 +55,7 @@ class StarrySky {
             if (alreadyInit) {
                 return
             }
+            FlacLibrary.isAvailable()
             alreadyInit = true
             this.config = config
             globalContext = application

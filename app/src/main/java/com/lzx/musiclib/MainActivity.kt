@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity() {
                     "type" to "other")
             }
         }
+
     }
 
     override fun onDestroy() {
@@ -110,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     inner class ServiceConnectedReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == "onServiceConnectedSuccessAction") {
-                viewModel?.playWhenStartApp()
+                //viewModel?.playWhenStartApp()
             }
         }
     }

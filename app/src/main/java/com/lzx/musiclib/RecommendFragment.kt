@@ -12,6 +12,7 @@ import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.bean.MusicChannel
 import com.lzx.musiclib.viewmodel.MusicViewModel
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import kotlinx.android.synthetic.main.fragment_recomment.recycleView
 
@@ -54,7 +55,10 @@ class RecommendFragment : BaseFragment() {
                         icon.loadImage(data?.cover)
                         setText(R.id.title to data?.title, R.id.desc to data?.rcmdtemplate, R.id.username to data?.username)
                         itemClicked(View.OnClickListener {
-                            data?.contentId?.let { id -> viewModel?.getQQMusicSongList(id) }
+                            //data?.contentId?.let { id -> viewModel?.getQQMusicSongList(id) }
+
+                            val url = "file:///android_asset/11.flac"
+                            StarrySky.with().playSingleMusicByInfo(SongInfo("1313",url))
                         })
                     }
                 }

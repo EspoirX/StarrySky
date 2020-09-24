@@ -18,6 +18,13 @@ android {
         }
     }
 
+    sourceSets {
+        main {
+            jniLibs.srcDir 'src/main/libs'
+            jni.srcDirs = [] // Disable the automatic ndk-build call by Android Studio.
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -48,16 +55,20 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //noinspection GradleCompatible
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    api "com.google.android.exoplayer:exoplayer-core:2.11.3"
-    api "com.google.android.exoplayer:extension-mediasession:2.11.3"
+    api "com.google.android.exoplayer:exoplayer-core:2.12.0"
+    api "com.google.android.exoplayer:extension-mediasession:2.12.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.0"
 
-    implementation 'com.google.android.exoplayer:exoplayer-dash:2.11.3'
-    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.11.3'
-    implementation 'com.google.android.exoplayer:exoplayer-hls:2.11.3'
-    implementation 'com.google.android.exoplayer:extension-rtmp:2.11.3'
-//    implementation 'com.github.PaulWoitaschek.ExoPlayer-Extensions:extension-flac:2.11.3'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.0'
+    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.12.0'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.0'
+    implementation 'com.google.android.exoplayer:extension-rtmp:2.12.0'
+
+    compileOnly 'org.checkerframework:checker-qual:3.3.0'
 }
 repositories {
     mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
 }
