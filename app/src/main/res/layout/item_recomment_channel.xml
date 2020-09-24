@@ -13,6 +13,8 @@
         android:layout_width="95dp"
         android:layout_height="95dp"
         android:layout_margin="15dp"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:round_corner="8dp" />

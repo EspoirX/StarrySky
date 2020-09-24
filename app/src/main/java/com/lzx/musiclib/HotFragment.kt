@@ -19,7 +19,7 @@ import com.lzx.musiclib.bean.MusicBanner
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
-import kotlinx.android.synthetic.main.dialog_song_list.recycleView
+import kotlinx.android.synthetic.main.fragment_recomment.recycleView
 
 class HotFragment : BaseFragment() {
     companion object {

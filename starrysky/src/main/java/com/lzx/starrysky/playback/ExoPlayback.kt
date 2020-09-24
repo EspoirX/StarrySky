@@ -14,10 +14,8 @@ import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.source.dash.DashMediaSource
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
@@ -193,18 +191,52 @@ class ExoPlayback(val context: Context,
 
         }
         dataSourceFactory = buildDataSourceFactory()
+        val basePath = "com.google.android.exoplayer2.source."
         return when (type) {
             C.TYPE_DASH -> {
-                DashMediaSource.Factory(dataSourceFactory!!)
-                    .createMediaSource(MediaItem.fromUri(uri))
+                try {
+                    val clazz = Class.forName(basePath + "dash.DashMediaSource" + "\$Factory")
+                    val constructors = clazz.getConstructor(DataSource.Factory::class.java)
+                    constructors.isAccessible = true
+                    val factory = constructors.newInstance(dataSourceFactory) as MediaSourceFactory
+                    return factory.createMediaSource(MediaItem.fromUri(uri))
+                } catch (e: ClassNotFoundException) {
+                    throw RuntimeException("Error instantiating ClassNotFoundException DashMediaSource", e)
+                } catch (e: Exception) {
+                    throw RuntimeException("Error instantiating DASH extension", e)
+                }
+//                DashMediaSource.Factory(dataSourceFactory!!)
+//                    .createMediaSource(MediaItem.fromUri(uri))
             }
             C.TYPE_SS -> {
-                SsMediaSource.Factory(dataSourceFactory!!)
-                    .createMediaSource(MediaItem.fromUri(uri))
+                try {
+                    val clazz = Class.forName(basePath + "smoothstreaming.SsMediaSource" + "\$Factory")
+                    val constructors = clazz.getConstructor(DataSource.Factory::class.java)
+                    constructors.isAccessible = true
+                    val factory = constructors.newInstance(dataSourceFactory) as MediaSourceFactory
+                    return factory.createMediaSource(MediaItem.fromUri(uri))
+                } catch (e: ClassNotFoundException) {
+                    throw RuntimeException("Error instantiating ClassNotFoundException SsMediaSource", e)
+                } catch (e: Exception) {
+                    throw RuntimeException("Error instantiating SS extension", e)
+                }
+//                SsMediaSource.Factory(dataSourceFactory!!)
+//                    .createMediaSource(MediaItem.fromUri(uri))
             }
             C.TYPE_HLS -> {
-                HlsMediaSource.Factory(dataSourceFactory!!)
-                    .createMediaSource(MediaItem.fromUri(uri))
+                try {
+                    val clazz = Class.forName(basePath + "hls.HlsMediaSource" + "\$Factory")
+                    val constructors = clazz.getConstructor(DataSource.Factory::class.java)
+                    constructors.isAccessible = true
+                    val factory = constructors.newInstance(dataSourceFactory) as MediaSourceFactory
+                    return factory.createMediaSource(MediaItem.fromUri(uri))
+                } catch (e: ClassNotFoundException) {
+                    throw RuntimeException("Error instantiating ClassNotFoundException HlsMediaSource", e)
+                } catch (e: Exception) {
+                    throw RuntimeException("Error instantiating HLS extension", e)
+                }
+//                HlsMediaSource.Factory(dataSourceFactory!!)
+//                    .createMediaSource(MediaItem.fromUri(uri))
             }
             C.TYPE_OTHER -> {
                 ProgressiveMediaSource.Factory(dataSourceFactory!!)

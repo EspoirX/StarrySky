@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 28
+        versionCode 100
+        versionName "1.0.0"
 
         consumerProguardFiles "consumer-rules.pro"
 
@@ -30,6 +30,16 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    publish {
+        repoName = 'StarrySky'
+        userOrg = 'lizixian'
+        groupId = 'com.lzx'
+        artifactId = 'StarrySkyFlacExt'
+        publishVersion = '1.0.0'
+        desc = 'A Powerful and Streamline MusicLibrary'
+        website = "https://github.com/lizixian18/StarrySky"
     }
 }
 

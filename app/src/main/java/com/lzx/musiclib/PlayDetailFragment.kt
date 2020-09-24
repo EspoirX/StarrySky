@@ -55,11 +55,12 @@ import kotlinx.android.synthetic.main.fragment_play_detail.timeText
 class PlayDetailFragment : BaseFragment() {
 
     companion object {
-        fun newInstance(songId: String?, type: String?): PlayDetailFragment {
+        fun newInstance(songId: String?, type: String?, position: Int = 0): PlayDetailFragment {
             val fragment = PlayDetailFragment()
             val bundle = Bundle()
             bundle.putString("songId", songId)
             bundle.putString("type", type)
+            bundle.putInt("position", position)
             fragment.arguments = bundle
             return fragment
         }
@@ -69,6 +70,7 @@ class PlayDetailFragment : BaseFragment() {
 
     private var songId: String? = null
     private var type: String? = null
+    private var position: Int = 0
     private var viewModel: MusicViewModel? = null
     private var timerTaskManager = TimerTaskManager()
     private var dialog: MaterialDialog? = null
@@ -90,6 +92,7 @@ class PlayDetailFragment : BaseFragment() {
     override fun initView(view: View?) {
         songId = arguments?.getString("songId")
         type = arguments?.getString("type")
+        position = arguments?.getInt("position", 0) ?: 0
         viewModel = ViewModelProvider(this)[MusicViewModel::class.java]
         timerTaskManager.bindLifecycle(lifecycle)
         if (songId.isNullOrEmpty()) {
@@ -105,6 +108,13 @@ class PlayDetailFragment : BaseFragment() {
                 songInfo?.let {
                     initDetailUI(it)
                     StarrySky.with().playMusicByIndex(0)
+                }
+            }
+            "flac" -> {
+                val songInfo = StarrySky.with().getPlayList().getOrNull(position)
+                songInfo?.let {
+                    initDetailUI(it)
+                    StarrySky.with().playMusicByInfo(it)
                 }
             }
             else -> {

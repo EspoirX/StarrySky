@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         val list = mutableListOf<String>()
         list.add("精品推荐")
         list.add("热门")
+        list.add("FLAC无损")
         val adapter = ViewPagerAdapter(supportFragmentManager, list)
         viewPager?.adapter = adapter
         tabLayout?.setViewPager(viewPager)
@@ -111,7 +112,7 @@ class MainActivity : AppCompatActivity() {
     inner class ServiceConnectedReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == "onServiceConnectedSuccessAction") {
-                //viewModel?.playWhenStartApp()
+                viewModel?.playWhenStartApp()
             }
         }
     }
@@ -128,6 +129,7 @@ class ViewPagerAdapter(fm: FragmentManager, private val list: MutableList<String
         val fragment = when (position) {
             0 -> RecommendFragment.newInstance()
             1 -> HotFragment.newInstance()
+            2 -> FlacFragment.newInstance()
             else -> throw IllegalArgumentException()
         }
         fragmentMap[value!!] = fragment
