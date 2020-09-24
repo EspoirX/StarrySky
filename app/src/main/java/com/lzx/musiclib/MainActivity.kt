@@ -18,6 +18,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.lzx.musiclib.base.BaseFragment
+import com.lzx.musiclib.tab.FlacFragment
+import com.lzx.musiclib.tab.HotFragment
+import com.lzx.musiclib.tab.M3u8Fragment
+import com.lzx.musiclib.tab.RecommendFragment
+import com.lzx.musiclib.tab.RtmpFragment
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.playback.PlaybackStage
@@ -51,6 +56,8 @@ class MainActivity : AppCompatActivity() {
         list.add("精品推荐")
         list.add("热门")
         list.add("FLAC无损")
+        list.add("电台(m3u8 HLS)")
+        list.add("RTMP 流")
         val adapter = ViewPagerAdapter(supportFragmentManager, list)
         viewPager?.adapter = adapter
         tabLayout?.setViewPager(viewPager)
@@ -80,6 +87,9 @@ class MainActivity : AppCompatActivity() {
                 PlaybackStage.STOP -> {
                     rotationAnim?.cancel()
                     timerTaskManager.stopToUpdateProgress()
+                    if (it.stage == PlaybackStage.ERROR) {
+                        showToast("播放失败，请查看log了解原因")
+                    }
                 }
             }
         })
@@ -112,7 +122,7 @@ class MainActivity : AppCompatActivity() {
     inner class ServiceConnectedReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == "onServiceConnectedSuccessAction") {
-                viewModel?.playWhenStartApp()
+//                viewModel?.playWhenStartApp()
             }
         }
     }
@@ -130,6 +140,8 @@ class ViewPagerAdapter(fm: FragmentManager, private val list: MutableList<String
             0 -> RecommendFragment.newInstance()
             1 -> HotFragment.newInstance()
             2 -> FlacFragment.newInstance()
+            3 -> M3u8Fragment.newInstance()
+            4 -> RtmpFragment.newInstance()
             else -> throw IllegalArgumentException()
         }
         fragmentMap[value!!] = fragment

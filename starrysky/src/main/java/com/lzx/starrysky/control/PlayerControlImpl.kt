@@ -101,19 +101,19 @@ class PlayerControlImpl(
         if (volume > 1) {
             volume = 1f
         }
-        playbackManager.refrainPlayback?.volume = volume
+        playbackManager.getRefrainPlayback()?.volume = volume
     }
 
-    override fun getRefrainVolume(): Float = playbackManager.refrainPlayback?.volume ?: -0f
+    override fun getRefrainVolume(): Float = playbackManager.getRefrainPlayback()?.volume ?: -0f
 
     override fun getRefrainInfo(): SongInfo? = provider.refrain
 
     override fun isRefrainPlaying(): Boolean {
-        return playbackManager.refrainPlayback?.playbackState == Playback.STATE_PLAYING
+        return playbackManager.getRefrainPlayback()?.playbackState == Playback.STATE_PLAYING
     }
 
     override fun isRefrainBuffering(): Boolean {
-        return playbackManager.refrainPlayback?.playbackState == Playback.STATE_BUFFERING
+        return playbackManager.getRefrainPlayback()?.playbackState == Playback.STATE_BUFFERING
     }
 
     override fun skipToNext() {

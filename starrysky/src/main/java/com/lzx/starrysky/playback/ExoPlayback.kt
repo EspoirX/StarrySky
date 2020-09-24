@@ -11,7 +11,6 @@ import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.MediaSourceFactory
@@ -205,8 +204,6 @@ class ExoPlayback(val context: Context,
                 } catch (e: Exception) {
                     throw RuntimeException("Error instantiating DASH extension", e)
                 }
-//                DashMediaSource.Factory(dataSourceFactory!!)
-//                    .createMediaSource(MediaItem.fromUri(uri))
             }
             C.TYPE_SS -> {
                 try {
@@ -220,8 +217,6 @@ class ExoPlayback(val context: Context,
                 } catch (e: Exception) {
                     throw RuntimeException("Error instantiating SS extension", e)
                 }
-//                SsMediaSource.Factory(dataSourceFactory!!)
-//                    .createMediaSource(MediaItem.fromUri(uri))
             }
             C.TYPE_HLS -> {
                 try {
@@ -235,16 +230,20 @@ class ExoPlayback(val context: Context,
                 } catch (e: Exception) {
                     throw RuntimeException("Error instantiating HLS extension", e)
                 }
-//                HlsMediaSource.Factory(dataSourceFactory!!)
-//                    .createMediaSource(MediaItem.fromUri(uri))
             }
             C.TYPE_OTHER -> {
-                ProgressiveMediaSource.Factory(dataSourceFactory!!)
-                    .createMediaSource(MediaItem.fromUri(uri))
+                ProgressiveMediaSource.Factory(dataSourceFactory!!).createMediaSource(MediaItem.fromUri(uri))
             }
             TYPE_RTMP -> {
-                ProgressiveMediaSource.Factory(RtmpDataSourceFactory())
-                    .createMediaSource(MediaItem.fromUri(uri))
+                try {
+                    val clazz = Class.forName("com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory")
+                    val factory: DataSource.Factory = clazz.newInstance() as DataSource.Factory
+                    return ProgressiveMediaSource.Factory(factory).createMediaSource(MediaItem.fromUri(uri))
+                } catch (e: ClassNotFoundException) {
+                    throw RuntimeException("Error instantiating ClassNotFoundException RtmpDataSourceFactory", e)
+                } catch (e: Exception) {
+                    throw RuntimeException("Error instantiating RTMP extension", e)
+                }
             }
             TYPE_FLAC -> {
                 val extractorsFactory = DefaultExtractorsFactory()

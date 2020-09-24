@@ -17,12 +17,18 @@ class PlaybackManager(
 
     private var serviceCallback: PlaybackServiceCallback? = null
     private var notification: INotification? = null
-    var refrainPlayback: Playback? = null
+    private var refrainPlayback: Playback? = null
 
     init {
         playback.setCallback(this)
-        refrainPlayback?.setCallback(this)
     }
+
+    fun setRefrainPlayback(refrainPlayback: Playback?) {
+        this.refrainPlayback = refrainPlayback
+        this.refrainPlayback?.setCallback(this)
+    }
+
+    fun getRefrainPlayback() = refrainPlayback
 
     fun setServiceCallback(serviceCallback: PlaybackServiceCallback) {
         this.serviceCallback = serviceCallback

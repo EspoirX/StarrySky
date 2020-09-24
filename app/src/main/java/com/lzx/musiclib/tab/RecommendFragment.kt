@@ -1,16 +1,22 @@
-package com.lzx.musiclib
+package com.lzx.musiclib.tab
 
 import android.view.View
 import android.widget.LinearLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gcssloop.widget.RCImageView
+import com.lzx.musiclib.PlayDetailActivity
+import com.lzx.musiclib.R
 import com.lzx.musiclib.adapter.addItem
 import com.lzx.musiclib.adapter.itemClicked
 import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.bean.MusicChannel
+import com.lzx.musiclib.getViewObj
+import com.lzx.musiclib.loadImage
+import com.lzx.musiclib.navigationTo
+import com.lzx.musiclib.setMargins
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.StarrySky
 import kotlinx.android.synthetic.main.fragment_recomment.recycleView

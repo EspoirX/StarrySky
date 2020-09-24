@@ -64,3 +64,7 @@ fun Context.isMainProcess(): Boolean {
         this.packageName == info.processName
     }
 }
+
+fun String.md5(): String {
+    return MD5.hexdigest(this)
+}

@@ -99,6 +99,9 @@ class PlayDetailFragment : BaseFragment() {
             activity?.finish()
             return
         }
+        if (StarrySky.with().getNowPlayingSongId() != songId) {
+            StarrySky.with().stopMusic()
+        }
         when (type) {
             "baidu" -> {
                 viewModel?.getBaiduMusicUrl(songId!!)
@@ -110,6 +113,8 @@ class PlayDetailFragment : BaseFragment() {
                     StarrySky.with().playMusicByIndex(0)
                 }
             }
+            "rtmp",
+            "m3u8",
             "flac" -> {
                 val songInfo = StarrySky.with().getPlayList().getOrNull(position)
                 songInfo?.let {
