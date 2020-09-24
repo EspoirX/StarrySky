@@ -45,18 +45,18 @@ android {
         implementation "com.squareup.retrofit2:retrofit:2.9.0"
         implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
         implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-
-        implementation 'com.qw:soulpermission:1.3.0'
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7"
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3"
+        implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-alpha07"
 
         implementation project(':starrysky')
         implementation 'com.lzx:StarrySkyFlacExt:1.0.0'
         implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.0'
         implementation 'com.google.android.exoplayer:extension-rtmp:2.12.0'
+        implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.0'
+        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.12.0'
 
-        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7"
-        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3"
-        implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-alpha07"
-
+        implementation 'com.qw:soulpermission:1.3.0'
         implementation 'com.danikula:videocache:2.7.1'
         implementation 'com.bigkoo:convenientbanner:2.1.5'
         implementation 'com.gcssloop.widget:rclayout:1.8.1'
