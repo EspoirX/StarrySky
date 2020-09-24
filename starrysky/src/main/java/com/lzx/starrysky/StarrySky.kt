@@ -201,8 +201,8 @@ class StarrySky {
                     playbackState.postValue(playbackStage)
                 }
 
-                override fun onFocusStateChange(currentAudioFocusState: Int) {
-                    config.focusChangeListener?.onAudioFocusChange(currentAudioFocusState)
+                override fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int) {
+                    config.focusChangeListener?.onAudioFocusChange(songInfo, currentAudioFocusState)
                 }
             })
             bridge?.start(config.isAutoManagerFocus, config.isCreateRefrainPlayer)

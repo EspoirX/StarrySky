@@ -5,12 +5,20 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.os.IBinder
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyConfig
+import com.lzx.starrysky.imageloader.ImageLoaderCallBack
+import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
@@ -34,17 +42,45 @@ open class TestApplication : Application() {
         super.onCreate()
         context = this
         CrashReport.initCrashReport(applicationContext, "9e447caa98", false)
+
+        val notificationConfig = NotificationConfig.create {
+            targetClass { "com.lzx.musiclib.MainActivity" }
+            targetClassBundle {
+                val bundle = Bundle()
+                bundle.putString("notifyKey", "我是点击通知栏转跳带的参数")
+                return@targetClassBundle bundle
+            }
+        }
         val config = StarrySkyConfig().newBuilder()
             .addInterceptor(RequestSongInfoInterceptor())
             .addInterceptor(RequestSongCoverInterceptor())
+            .setImageLoader(object : ImageLoaderStrategy {
+                //使用自定义图片加载器
+                override fun loadImage(context: Context, url: String?, callBack: ImageLoaderCallBack) {
+                    Glide.with(context).asBitmap().load(url).into(object : CustomTarget<Bitmap?>() {
+                        override fun onLoadCleared(placeholder: Drawable?) {}
+
+                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                            callBack.onBitmapLoaded(resource)
+                        }
+
+                        override fun onLoadFailed(errorDrawable: Drawable?) {
+                            super.onLoadFailed(errorDrawable)
+                            callBack.onBitmapFailed(errorDrawable)
+                        }
+                    })
+                }
+            })
             .isOpenNotification(true)
+            .setNotificationConfig(notificationConfig)
             .setNotificationFactory(object : StarrySkyNotificationManager.NotificationFactory {
                 override fun build(context: Context, config: NotificationConfig?): INotification {
+                    //使用自定义通知栏
                     return StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY.build(context, config)
                 }
             })
             .isCreateRefrainPlayer(true)
-            .isAutoManagerFocus(false)
+            .isAutoManagerFocus(false)  //因为开了伴奏播放器，所以要关闭自动焦点管理功能
             .build()
         StarrySky.init(this, config, object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

@@ -2,6 +2,7 @@ package com.lzx.starrysky.service
 
 import android.content.Context
 import android.os.Binder
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.control.PlayerControlImpl
 import com.lzx.starrysky.imageloader.DefaultImageLoader
@@ -66,8 +67,8 @@ class ServiceBridge(private val context: Context) : Binder() {
                 sessionManager?.updateMetaData(playbackStage.songInfo)
             }
 
-            override fun onFocusStateChange(currentAudioFocusState: Int) {
-                serviceCallback?.onFocusStateChange(currentAudioFocusState)
+            override fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int) {
+                serviceCallback?.onFocusStateChange(songInfo, currentAudioFocusState)
             }
         })
         //播放控制

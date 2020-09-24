@@ -24,6 +24,7 @@ import com.lzx.musiclib.tab.M3u8Fragment
 import com.lzx.musiclib.tab.RecommendFragment
 import com.lzx.musiclib.tab.RtmpFragment
 import com.lzx.musiclib.viewmodel.MusicViewModel
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.utils.TimerTaskManager
@@ -40,6 +41,20 @@ class MainActivity : AppCompatActivity() {
     private var rotationAnim: ObjectAnimator? = null
     private var localBroadcastManager: LocalBroadcastManager? = null
     private var connectedReceiver: ServiceConnectedReceiver? = null
+
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val songInfo = intent?.getParcelableExtra<SongInfo?>("songInfo")
+        val bundleInfo = intent?.getBundleExtra("bundleInfo")
+        songInfo?.let {
+            showToast("从通知栏点击进来,songName = " + it.songName)
+        }
+        bundleInfo?.let {
+            val notifyKey = bundleInfo.getString("notifyKey") ?: "null"
+            showToast("从通知栏点击进来,自定义参数 = $notifyKey")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,7 +123,6 @@ class MainActivity : AppCompatActivity() {
                     "type" to "other")
             }
         }
-
     }
 
     override fun onDestroy() {

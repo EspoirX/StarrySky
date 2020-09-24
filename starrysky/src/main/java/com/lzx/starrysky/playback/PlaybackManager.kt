@@ -242,8 +242,8 @@ class PlaybackManager(
         updatePlaybackState(songInfo, error, Playback.STATE_ERROR)
     }
 
-    override fun onFocusStateChange(currentAudioFocusState: Int) {
-        serviceCallback?.onFocusStateChange(currentAudioFocusState)
+    override fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int) {
+        serviceCallback?.onFocusStateChange(songInfo, currentAudioFocusState)
     }
 
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {
@@ -291,6 +291,6 @@ class PlaybackManager(
 
     interface PlaybackServiceCallback {
         fun onPlaybackStateUpdated(playbackStage: PlaybackStage)
-        fun onFocusStateChange(currentAudioFocusState: Int)
+        fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int)
     }
 }

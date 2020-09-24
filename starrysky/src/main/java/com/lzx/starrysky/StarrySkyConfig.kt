@@ -154,5 +154,5 @@ interface AudioFocusChangeListener {
     /**
      * state 定义见 FocusAndLockManager 类
      */
-    fun onAudioFocusChange(state: Int)
+    fun onAudioFocusChange(songInfo: SongInfo?, state: Int)
 }

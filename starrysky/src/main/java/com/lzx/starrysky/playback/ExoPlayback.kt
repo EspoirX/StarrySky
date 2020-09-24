@@ -415,7 +415,7 @@ class ExoPlayback(val context: Context,
         if (isAutoManagerFocus) {
             return
         }
-        callback?.onFocusStateChange(focusAndLockManager.currentAudioFocusState)
+        callback?.onFocusStateChange(currSongInfo, focusAndLockManager.currentAudioFocusState)
     }
 }
 
