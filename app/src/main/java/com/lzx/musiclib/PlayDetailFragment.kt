@@ -416,5 +416,4 @@ class PlayDetailFragment : BaseFragment() {
 
     override fun unInitView() {
     }
-
 }

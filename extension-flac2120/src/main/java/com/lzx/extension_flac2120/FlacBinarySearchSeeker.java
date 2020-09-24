@@ -25,8 +25,6 @@ import com.google.android.exoplayer2.util.FlacConstants;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static java.lang.Math.max;
-
 /**
  * A {@link SeekMap} implementation for FLAC stream using binary search.
  *

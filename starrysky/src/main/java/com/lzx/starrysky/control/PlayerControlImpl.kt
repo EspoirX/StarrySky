@@ -10,10 +10,10 @@ import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.utils.MD5
 import com.lzx.starrysky.utils.StarrySkyUtils
 import com.lzx.starrysky.utils.data
 import com.lzx.starrysky.utils.duration
+import com.lzx.starrysky.utils.md5
 import com.lzx.starrysky.utils.title
 
 class PlayerControlImpl(
@@ -234,18 +234,15 @@ class PlayerControlImpl(
 
     override fun querySongInfoInLocal(context: Context): List<SongInfo> {
         val songInfos = mutableListOf<SongInfo>()
-        val cursor = context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            null, null, null, null)
-            ?: return songInfos
+        val cursor = context.contentResolver.query(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null,
+            null, MediaStore.Audio.AudioColumns.IS_MUSIC) ?: return songInfos
         while (cursor.moveToNext()) {
             val song = SongInfo()
             song.songUrl = cursor.data
             song.songName = cursor.title
             song.duration = cursor.duration
-            val songId = if (song.songUrl.isNotEmpty())
-                MD5.hexdigest(song.songUrl)
-            else
-                MD5.hexdigest(System.currentTimeMillis().toString())
+            val songId = if (song.songUrl.isNotEmpty()) song.songUrl.md5() else System.currentTimeMillis().toString().md5()
             song.songId = songId
             songInfos.add(song)
         }

@@ -44,7 +44,7 @@ class StarrySky {
         private val playbackState = MutableLiveData<PlaybackStage>()
 
         /**
-         * 上下文，连接服务监听
+         * 上下文，配置，连接服务监听
          */
         @JvmStatic
         fun init(application: Application, config: StarrySkyConfig = StarrySkyConfig(), connection: ServiceConnection? = null) {

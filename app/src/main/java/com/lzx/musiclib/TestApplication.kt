@@ -41,6 +41,7 @@ open class TestApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
+        //bugly
         CrashReport.initCrashReport(applicationContext, "9e447caa98", false)
 
         val notificationConfig = NotificationConfig.create {

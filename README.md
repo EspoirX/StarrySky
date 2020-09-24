@@ -21,7 +21,7 @@
 - 集成和调用API非常简单，音频功能几乎可以集成到一个语句中。
 - 提供丰富的API方法来轻松实现各种功能。
 - 方便集成自定义通知栏和系统通知栏。
-- 使用 ExoPlayer 作为底层播放器，但支持自定义实现
+- 使用 ExoPlayer 作为默认底层播放器，但支持自定义实现
 - 基于 ExoPlayer 支持多种普通音频格式并支持多种流式音频格式(DASH, SmoothStreaming, HLS，rtmp，flac)。
 - 支持边播边存功能，没网也能播。支持自定义缓存实现。
 - 支持改变播放速度。
@@ -48,8 +48,7 @@ dependencies {
 
 x.x.x 填的是当前的版本号。
 
-
-请使用 Java8。
+请使用 Java8。此为 androidx 版本，请支持 androidx。
 
 如果导入不了可以试试加上这个：
 ```groovy
@@ -59,71 +58,73 @@ maven{
 ```
 
 ## 按需导入
+因为目前默认播放器 ExoPlayer 使用的是 2.12.0 版本，所以以下依赖都使用相同版本
 
 若要支持 dash 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:exoplayer-dash:2.10.4'
+   implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.0'
 }
 ```
 
 若要支持 hls 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:exoplayer-hls:2.10.4'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.0'
 }
 ```
 
 若要支持 smoothstreaming 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.10.4'
+    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.12.0'
 }
 ```
 
 若要支持 rtmp 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:extension-rtmp:2.10.4'
+    implementation 'com.google.android.exoplayer:extension-rtmp:2.12.0'
 }
 ```
+
+若需支持 flac 无损音频，请另外导入
+```groovy
+dependencies {
+    implementation 'com.lzx:StarrySkyFlacExt:1.0.0'
+}
+```
+flac 音频特别说明：  
+ExoPlayer 要播放 flac 音频，是需要自己编译 so 的，具体怎么操作可以看 ExoPlayer 的 github，本项目已经把编译好的代码放在了 extension-flac2120 
+这个 module 里面，2120 代表 版本号是 2.12.0。大家可以通过上面说明添加依赖即可轻松使用。
+
 
 若不知道要导入哪一种，可以在播放时抛出的异常崩溃中根据异常信息提示导入。
 
 ## 初始化
 
-下面是最简单的初始化以及播放音频代码，更多功能请阅读使用文档。
+下面是最简单的初始化以及播放音频代码，更多功能请阅读使用文档或者查看项目demo。
 
-```java
-public class TestApplication extends Application {
+```kotlin
+open class TestApplication : Application() {
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-        StarrySky.init(this);
+    override fun onCreate() {
+        super.onCreate()
+       StarrySky.init(this)
     }
 }
 
-//播放一首歌曲
-SongInfo info = new SongInfo();
-info.setSongId("111");
-info.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3");
-StarrySky.with().playMusicByInfo(info);
+//简单播放一首歌曲
+val info = SongInfo()
+info.songId = "111" 
+info.songUrl = "http://music.163.com/song/media/outer/url?id=317151.mp3"
+StarrySky.with().playMusicByInfo(info)
 ```
 
 ## 使用文档
 
-- [版本更新记录](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/version.md)
-- [StarrySky介绍](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky介绍.md)
-- [StarrySky各种API功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky各种API功能.md)
-- [自定义实现图片加载器](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义图片加载器说明.md)
-- [快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)
-- [拦截器](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/拦截器.md)
-- [媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/媒体缓存功能.md)
-- [自定义播放器说明](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义播放器说明.md)
-- [自定义播放队列管理说明](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义播放队列管理说明.md)
-- [自定义音频数据提供器说明](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/自定义音频数据提供器说明.md)
-- [Flac音频格式集成说明](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/Flac格式集成说明.md)
+- [StarrySky使用说明 点我！点我！点我！](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky使用说明.md)
 
 
 PS：
