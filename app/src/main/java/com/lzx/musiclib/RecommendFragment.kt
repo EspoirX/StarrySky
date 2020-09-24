@@ -57,7 +57,7 @@ class RecommendFragment : BaseFragment() {
                         itemClicked(View.OnClickListener {
                             //data?.contentId?.let { id -> viewModel?.getQQMusicSongList(id) }
 
-                            val url = "file:///android_asset/11.flac"
+                            val url = "file:///android_asset/想不到.flac"
                             StarrySky.with().playSingleMusicByInfo(SongInfo("1313",url))
                         })
                     }
