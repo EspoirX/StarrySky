@@ -9,6 +9,7 @@ buildscript {
 //            url 'https://maven.google.com/'
 //            name 'Google'
 //        }
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0'
@@ -22,10 +23,12 @@ allprojects {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
+        maven { url "https://dl.bintray.com/lizixian/StarrySky/" }
 //        maven {
 //            url 'https://maven.google.com/'
 //            name 'Google'
 //        }
+        maven { url "http://lib.gcssloop.com:8081/repository/gcssloop-central/" }
     }
     tasks.withType(JavaCompile) {    //设置全局编码
         options.encoding = "UTF-8"

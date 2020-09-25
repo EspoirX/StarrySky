@@ -1,16 +1,11 @@
 package com.lzx.starrysky
 
-import com.lzx.starrysky.common.IMediaConnection
-import com.lzx.starrysky.control.PlayerControl
+import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
-import com.lzx.starrysky.playback.offline.ICache
-import com.lzx.starrysky.playback.player.Playback
-import com.lzx.starrysky.playback.queue.MediaQueue
-import com.lzx.starrysky.playback.queue.MediaQueueManager
-import com.lzx.starrysky.provider.IMediaSourceProvider
+import com.lzx.starrysky.playback.Playback
 
 /**
  * StarrySky 初始化配置类
@@ -19,17 +14,17 @@ open class StarrySkyConfig internal constructor(
     builder: Builder
 ) : Cloneable {
 
-    //媒体信息存储管理类
-    @get:JvmName("mediaQueueProvider")
-    val mediaQueueProvider: IMediaSourceProvider? = builder.mediaQueueProvider
-
-    //播放队列管理类
-    @get:JvmName("mediaQueue")
-    val mediaQueue: MediaQueue = builder.mediaQueue
-
     //通知栏开关
     @get:JvmName("isOpenNotification")
     val isOpenNotification = builder.isOpenNotification
+
+    //通知栏配置
+    @get:JvmName("notificationConfig")
+    val notificationConfig: NotificationConfig? = builder.notificationConfig
+
+    @get:JvmName("notificationFactory")
+    val notificationFactory: StarrySkyNotificationManager.NotificationFactory? =
+        builder.notificationFactory
 
     //缓存开关
     @get:JvmName("isOpenCache")
@@ -39,98 +34,84 @@ open class StarrySkyConfig internal constructor(
     @get:JvmName("cacheDestFileDir")
     val cacheDestFileDir: String? = builder.cacheDestFileDir
 
-    //超时时间设置
-    @get:JvmName("httpConnectTimeout")
-    val httpConnectTimeout: Long = builder.httpConnectTimeout
-
-    @get:JvmName("httpReadTimeout")
-    val httpReadTimeout: Long = builder.httpReadTimeout
-
-    //是否跳过https
-    @get:JvmName("skipSSLChain")
-    val skipSSLChain = builder.skipSSLChain
-
-    @get:JvmName("interceptors")
-    val interceptors: MutableList<StarrySkyInterceptor> = builder.interceptors
-
-    @get:JvmName("interceptorTimeOut")
-    val interceptorTimeOut: Long = builder.interceptorTimeOut
-
-    @get:JvmName("imageLoader")
-    val imageLoader: ImageLoaderStrategy? = builder.imageLoader
-
-    @get:JvmName("notificationFactory")
-    val notificationFactory: StarrySkyNotificationManager.NotificationFactory? =
-        builder.notificationFactory
-
-    @get:JvmName("notificationConfig")
-    val notificationConfig: NotificationConfig? = builder.notificationConfig
-
+    //缓存实现
     @get:JvmName("cacheManager")
     val cache: ICache? = builder.cache
 
-    @get:JvmName("mediaConnection")
-    val mediaConnection: IMediaConnection? = builder.mediaConnection
+    //拦截器
+    @get:JvmName("interceptors")
+    val interceptors: MutableList<StarrySkyInterceptor> = builder.interceptors
 
-    @get:JvmName("playerControl")
-    val playerControl: PlayerControl? = builder.playerControl
+    //图片加载器
+    @get:JvmName("imageLoaderStrategy")
+    val imageLoader: ImageLoaderStrategy? = builder.imageLoaderStrategy
 
+    //播放器实现
     @get:JvmName("playback")
     val playback: Playback? = builder.playback
+
+    //是否需要后台服务
+    @get:JvmName("isUserService")
+    val isUserService: Boolean = builder.isUserService
+
+    //是否让播放器自动管理焦点
+    @get:JvmName("isAutoManagerFocus")
+    val isAutoManagerFocus: Boolean = builder.isAutoManagerFocus
+
+    //设置焦点管理监听
+    @get:JvmName("focusChangeListener")
+    val focusChangeListener: AudioFocusChangeListener? = builder.focusChangeListener
+
+    //是否需要创建副歌播放器
+    @get:JvmName("isCreateRefrainPlayer")
+    val isCreateRefrainPlayer: Boolean = builder.isCreateRefrainPlayer
 
     constructor() : this(Builder())
 
     open fun newBuilder(): Builder = Builder(this)
 
     class Builder constructor() {
-        internal var mediaQueueProvider: IMediaSourceProvider? = null
-        internal var mediaQueue: MediaQueue = MediaQueueManager()
         internal var isOpenNotification = false
+        internal var notificationConfig: NotificationConfig? = null
+        internal var notificationFactory: StarrySkyNotificationManager.NotificationFactory? = null
         internal var isOpenCache = false
         internal var cacheDestFileDir: String? = null
-        internal var httpConnectTimeout: Long = -1
-        internal var httpReadTimeout: Long = -1
-        internal var skipSSLChain = false
-        internal val interceptors: MutableList<StarrySkyInterceptor> = mutableListOf()
-        internal var interceptorTimeOut = 60L   //拦截器超时时间
-        internal var imageLoader: ImageLoaderStrategy? = null
-        internal var mediaConnection: IMediaConnection? = null
-        internal var notificationFactory: StarrySkyNotificationManager.NotificationFactory? = null
-        internal var notificationConfig: NotificationConfig? = null
         internal var cache: ICache? = null
+        internal val interceptors: MutableList<StarrySkyInterceptor> = mutableListOf()
+        internal var imageLoaderStrategy: ImageLoaderStrategy? = null
         internal var playback: Playback? = null
-        internal var playerControl: PlayerControl? = null
+        internal var isUserService: Boolean = true
+        internal var isAutoManagerFocus: Boolean = true
+        internal var focusChangeListener: AudioFocusChangeListener? = null
+        internal var isCreateRefrainPlayer: Boolean = false
 
         internal constructor(config: StarrySkyConfig) : this() {
-            this.mediaQueueProvider = config.mediaQueueProvider
-            this.mediaQueue = config.mediaQueue
             this.isOpenNotification = config.isOpenNotification
+            this.notificationConfig = config.notificationConfig
+            this.notificationFactory = config.notificationFactory
             this.isOpenCache = config.isOpenCache
             this.cacheDestFileDir = config.cacheDestFileDir
-            this.httpConnectTimeout = config.httpConnectTimeout
-            this.httpReadTimeout = config.httpReadTimeout
-            this.skipSSLChain = config.skipSSLChain
             this.interceptors += config.interceptors
-            this.interceptorTimeOut = config.interceptorTimeOut
-            this.imageLoader = config.imageLoader
-            this.notificationFactory = config.notificationFactory
-            this.notificationConfig = config.notificationConfig
-            this.cache = config.cache
+            this.imageLoaderStrategy = config.imageLoader
             this.playback = config.playback
-            this.mediaConnection = config.mediaConnection
-            this.playerControl = config.playerControl
-        }
-
-        fun setMediaQueueProvider(mediaQueueProvider: IMediaSourceProvider) = apply {
-            this.mediaQueueProvider = mediaQueueProvider
-        }
-
-        fun setMediaQueue(mediaQueue: MediaQueue) = apply {
-            this.mediaQueue = mediaQueue
+            this.isUserService = config.isUserService
+            this.isAutoManagerFocus = config.isAutoManagerFocus
+            this.focusChangeListener = config.focusChangeListener
+            this.isCreateRefrainPlayer = config.isCreateRefrainPlayer
         }
 
         fun isOpenNotification(isOpenNotification: Boolean) = apply {
             this.isOpenNotification = isOpenNotification
+        }
+
+        fun setNotificationConfig(notificationConfig: NotificationConfig) = apply {
+            this.notificationConfig = notificationConfig
+        }
+
+        fun setNotificationFactory(
+            notificationFactory: StarrySkyNotificationManager.NotificationFactory
+        ) = apply {
+            this.notificationFactory = notificationFactory
         }
 
         fun isOpenCache(isOpenCache: Boolean) = apply {
@@ -141,54 +122,37 @@ open class StarrySkyConfig internal constructor(
             this.cacheDestFileDir = cacheDestFileDir
         }
 
-        fun setHttpConnectTimeout(httpConnectTimeout: Long) =
-            apply { this.httpConnectTimeout = httpConnectTimeout }
-
-        fun setHttpReadTimeout(httpReadTimeout: Long) =
-            apply { this.httpReadTimeout = httpReadTimeout }
-
-        fun skipSSLChain(skipSSLChain: Boolean) = apply {
-            this.skipSSLChain = skipSSLChain
+        fun setCache(cache: ICache) = apply {
+            this.cache = cache
         }
 
         fun addInterceptor(interceptor: StarrySkyInterceptor) = apply {
             interceptors += interceptor
         }
 
-        fun setInterceptorTimeOut(interceptorTimeOut: Long) =
-            apply { this.interceptorTimeOut = interceptorTimeOut }
+        fun setImageLoader(imageLoader: ImageLoaderStrategy) = apply { this.imageLoaderStrategy = imageLoader }
 
-        fun setImageLoader(imageLoader: ImageLoaderStrategy) =
-            apply { this.imageLoader = imageLoader }
+        fun setPlayback(playback: Playback) = apply { this.playback = playback }
 
-        fun setIMediaConnection(mediaConnection: IMediaConnection) = apply {
-            this.mediaConnection = mediaConnection
-        }
+        fun isUserService(isUserService: Boolean) = apply { this.isUserService = isUserService }
 
-        fun setNotificationFactory(
-            notificationFactory: StarrySkyNotificationManager.NotificationFactory
-        ) = apply {
-            this.notificationFactory = notificationFactory
-        }
+        fun isAutoManagerFocus(isAutoManagerFocus: Boolean) = apply { this.isAutoManagerFocus = isAutoManagerFocus }
 
-        fun setNotificationConfig(notificationConfig: NotificationConfig) = apply {
-            this.notificationConfig = notificationConfig
-        }
+        fun setOnAudioFocusChangeListener(listener: AudioFocusChangeListener) = apply { this.focusChangeListener = listener }
 
-        fun setCache(cache: ICache) = apply {
-            this.cache = cache
-        }
+        fun isCreateRefrainPlayer(isCreateRefrainPlayer: Boolean) = apply { this.isCreateRefrainPlayer = isCreateRefrainPlayer }
 
-        fun setPlayback(playback: Playback) = apply {
-            this.playback = playback
-        }
-
-        fun setPlayerControl(playerControl: PlayerControl) = apply {
-            this.playerControl = playerControl
-        }
 
         fun build(): StarrySkyConfig {
             return StarrySkyConfig(this)
         }
     }
+}
+
+
+interface AudioFocusChangeListener {
+    /**
+     * state 定义见 FocusAndLockManager 类
+     */
+    fun onAudioFocusChange(songInfo: SongInfo?, state: Int)
 }

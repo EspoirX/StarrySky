@@ -4,16 +4,12 @@ import android.app.Notification
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import androidx.core.graphics.ColorUtils
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RemoteViews
 import android.widget.TextView
+import androidx.core.graphics.ColorUtils
 import com.lzx.starrysky.utils.MainLooper
-
 import java.util.concurrent.CountDownLatch
 
 /**

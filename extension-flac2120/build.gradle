@@ -1,0 +1,51 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 100
+        versionName "1.0.0"
+
+        consumerProguardFiles "consumer-rules.pro"
+
+        sourceSets {
+            main {
+                jniLibs.srcDir 'libs'
+                jni.srcDirs = [] // Disable the automatic ndk-build call by Android Studio.
+            }
+        }
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    publish {
+        repoName = 'StarrySky'
+        userOrg = 'lizixian'
+        groupId = 'com.lzx'
+        artifactId = 'StarrySkyFlacExt'
+        publishVersion = '1.0.0'
+        desc = 'A Powerful and Streamline MusicLibrary'
+        website = "https://github.com/lizixian18/StarrySky"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation "com.google.android.exoplayer:exoplayer-core:2.12.0"
+    compileOnly 'org.checkerframework:checker-qual:3.3.0'
+}

@@ -37,42 +37,5 @@ NotificationManager：通知栏管理，默认实现了两个通知栏，分别�
 
 <img src="https://raw.githubusercontent.com/lizixian18/MusicLibrary/StarrySkyJava/art/StarrySky播放流程.png">
 
-
-## 初始化
-```java
-//使用默认配置
-public class TestApplication extends Application {
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        StarrySky.init(this);
-    }
-}
-
-//使用自定义配置
-public class TestApplication extends Application {
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        StarrySkyConfig config = StarrySkyConfig.newBuilder()
-                                 .setXXX()
-                                 .setXXX()
-                                 .setXXX()
-                                 .build()
-        StarrySky.init(this, config);
-    }
-}
-```
-
-## 简单播放
-```java
-SongInfo info = new SongInfo();
-info.setSongId("111");
-info.setSongUrl("http://music.163.com/song/media/outer/url?id=317151.mp3");
-StarrySky.with().playMusicByInfo(info);
-```
-
-
+ 
 如果问题请加群咨询。

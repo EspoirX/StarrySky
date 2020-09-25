@@ -1,22 +1,21 @@
 package com.lzx.starrysky.intercept
 
 import android.os.AsyncTask
-import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.provider.SongInfo
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.utils.MainLooper
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class InterceptorService {
+class InterceptorService(private val interceptors: MutableList<StarrySkyInterceptor>) {
 
     fun doInterceptions(songInfo: SongInfo?, callback: InterceptorCallback?) {
-        if (StarrySky.get().interceptors().isNotEmpty()) {
+        if (interceptors.isNotEmpty()) {
             AsyncTask.THREAD_POOL_EXECUTOR.execute {
                 val interceptorCounter =
-                    CancelableCountDownLatch(StarrySky.get().interceptors().size)
+                    CancelableCountDownLatch(interceptors.size)
                 try {
                     doImpl(0, interceptorCounter, songInfo)
-                    interceptorCounter.await(StarrySky.get().interceptorTimeOut(), TimeUnit.SECONDS)
+                    interceptorCounter.await(60L, TimeUnit.SECONDS)
                     when {
                         interceptorCounter.count > 0 -> {
                             callback?.onInterrupt(RuntimeException("拦截器超时啦，超时时间可通过 StarrySkyConfig 配置，默认 60 秒"))
@@ -41,8 +40,8 @@ class InterceptorService {
     private fun doImpl(
         index: Int, interceptorCounter: CancelableCountDownLatch, songInfo: SongInfo?
     ) {
-        if (index < StarrySky.get().interceptors().size) {
-            val interceptor = StarrySky.get().interceptors()[index]
+        if (index < interceptors.size) {
+            val interceptor = interceptors[index]
             interceptor.process(songInfo, MainLooper.instance, object : InterceptorCallback {
                 override fun onContinue(songInfo: SongInfo?) {
                     interceptorCounter.countDown()

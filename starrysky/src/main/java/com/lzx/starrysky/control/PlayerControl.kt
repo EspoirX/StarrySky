@@ -1,9 +1,11 @@
 package com.lzx.starrysky.control
 
-import android.os.Bundle
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.lzx.starrysky.common.PlaybackStage
-import com.lzx.starrysky.provider.SongInfo
+import com.lzx.starrysky.OnPlayerEventListener
+import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.playback.PlaybackManager
+import com.lzx.starrysky.playback.PlaybackStage
 
 data class RepeatMode(val repeatMode: Int, val isLoop: Boolean) {
     companion object {
@@ -15,7 +17,7 @@ data class RepeatMode(val repeatMode: Int, val isLoop: Boolean) {
     }
 }
 
-interface PlayerControl {
+interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
 
     /**
      * 根据songId播放,调用前请确保已经设置了播放列表
@@ -26,6 +28,11 @@ interface PlayerControl {
      * 根据 SongInfo 播放，实际也是根据 songId 播放
      */
     fun playMusicByInfo(info: SongInfo)
+
+    /**
+     * 只播放当前这首歌，播完就停止
+     */
+    fun playSingleMusicByInfo(info: SongInfo)
 
     /**
      * 根据要播放的歌曲在播放列表中的下标播放,调用前请确保已经设置了播放列表
@@ -64,6 +71,49 @@ interface PlayerControl {
      * 准备播放，根据songId
      */
     fun prepareFromSongId(songId: String)
+
+    /**
+     * 使用该方法前请在初始化时将 isCreateRefrainPlayer 标记设为 true
+     * 将 isAutoManagerFocus 是否自动管理焦点设为 false，否则无法同时播放
+     * 需求焦点管理的请实现 setOnAudioFocusChangeListener 方法监听焦点自己处理
+     *
+     * 允许同时播放另一个音频，该音频没有队列管理概念，没有通知栏功能
+     * 会创建另一个播放实例去播放，有播放回调，有拦截器功能，该音频的 headData 里面
+     * 统一都添加了 key = SongType,value = Refrain 的标记
+     * 如果使用了该方法，请在回调监听和拦截器功能的时候做好区分
+     * SongInfo 有扩展方法 isRefrain 可以方便判断
+     */
+    fun playRefrain(info: SongInfo)
+
+    /**
+     * 停止另一个音频
+     */
+    fun stopRefrain()
+
+    /**
+     * 另一个音频设置音量
+     */
+    fun setRefrainVolume(audioVolume: Float)
+
+    /**
+     * 获取另一个音频音量
+     */
+    fun getRefrainVolume(): Float
+
+    /**
+     * 获取另一个音频信息
+     */
+    fun getRefrainInfo(): SongInfo?
+
+    /**
+     * 判断另一个音频是否在播放
+     */
+    fun isRefrainPlaying(): Boolean
+
+    /**
+     * 判断另一个音频是否缓冲
+     */
+    fun isRefrainBuffering(): Boolean
 
     /**
      * 下一首
@@ -145,6 +195,11 @@ interface PlayerControl {
     fun removeSongInfo(songId: String)
 
     /**
+     * 清除播放列表
+     */
+    fun clearPlayList()
+
+    /**
      * 获取当前播放的歌曲信息
      */
     fun getNowPlayingSongInfo(): SongInfo?
@@ -153,6 +208,11 @@ interface PlayerControl {
      * 获取当前播放的歌曲songId
      */
     fun getNowPlayingSongId(): String
+
+    /**
+     *  获取当前播放的歌曲url
+     */
+    fun getNowPlayingSongUrl(): String
 
     /**
      * 获取当前播放歌曲的下标
@@ -185,46 +245,6 @@ interface PlayerControl {
     fun getPlaybackSpeed(): Float
 
     /**
-     * 获取底层框架[android.media.session.PlaybackState]对象。
-     * 此方法仅在API 21+上受支持。
-     */
-    fun getPlaybackState(): Any?
-
-    /**
-     * 获取发送错误时的错误信息
-     */
-    fun getErrorMessage(): CharSequence
-
-    /**
-     * 获取发送错误时的错误码
-     * 0 : 这是默认的错误代码
-     * 1 : 当应用程序状态无效以满足请求时的错误代码。
-     * 2 : 应用程序不支持请求时的错误代码。
-     * 3 : 由于身份验证已过期而无法执行请求时出现错误代码。
-     * 4 : 成功请求需要高级帐户时的错误代码。
-     * 5 : 检测到太多并发流时的错误代码。
-     * 6 : 由于家长控制而阻止内容时出现错误代码。
-     * 7 : 内容因区域不可用而被阻止时的错误代码。
-     * 8 : 请求的内容已在播放时出现错误代码。
-     * 9 : 当应用程序无法跳过任何更多歌曲时出现错误代码，因为已达到跳过限制。
-     * 10: 由于某些外部事件而导致操作中断时的错误代码。
-     * 11: 由于队列耗尽而无法播放导航（上一个，下一个）时出现错误代码。
-     */
-    fun getErrorCode(): Int
-
-    /**
-     * 获取当前的播放状态。
-     *  Playback.PLAYBACK_STATE_NONE = 100      //什么都没开始
-     *  Playback.PLAYBACK_STATE_IDLE = 200      //空闲
-     *  Playback.PLAYBACK_STATE_BUFFERING = 300 //正在缓冲
-     *  Playback.PLAYBACK_STATE_PLAYING = 400   //正在播放
-     *  Playback.PLAYBACK_STATE_PAUSED = 500    //暂停
-     *  Playback.PLAYBACK_STATE_STOPPED = 600   //停止
-     *  Playback.PLAYBACK_STATE_ERROR = 700     //出错
-     */
-    fun getState(): Int
-
-    /**
      * 比较方便的判断当前媒体是否在播放
      */
     fun isPlaying(): Boolean
@@ -240,6 +260,11 @@ interface PlayerControl {
     fun isIdea(): Boolean
 
     /**
+     * 比较方便的判断当前媒体是否缓冲
+     */
+    fun isBuffering(): Boolean
+
+    /**
      * 判断传入的音乐是不是正在播放的音乐
      */
     fun isCurrMusicIsPlayingMusic(songId: String): Boolean
@@ -253,6 +278,16 @@ interface PlayerControl {
      * 判断传入的音乐是否正在暂停
      */
     fun isCurrMusicIsPaused(songId: String): Boolean
+
+    /**
+     * 判断传入的音乐是否空闲
+     */
+    fun isCurrMusicIsIdea(songId: String): Boolean
+
+    /**
+     * 判断传入的音乐是否缓冲
+     */
+    fun isCurrMusicIsBuffering(songId: String): Boolean
 
     /**
      * 设置音量
@@ -275,14 +310,9 @@ interface PlayerControl {
     fun getAudioSessionId(): Int
 
     /**
-     * 发送自定义事件
-     */
-    fun sendCommand(command: String, parameters: Bundle)
-
-    /**
      * 扫描本地媒体信息
      */
-    fun querySongInfoInLocal(): List<SongInfo>
+    fun querySongInfoInLocal(context: Context): List<SongInfo>
 
     /**
      * 添加一个状态监听
@@ -298,6 +328,11 @@ interface PlayerControl {
      * 删除所有状态监听
      */
     fun clearPlayerEventListener()
+
+    /**
+     * 焦点变化监听
+     */
+    fun focusStateChange(): MutableLiveData<Pair<SongInfo?, Int>>
 
     fun getPlayerEventListeners(): MutableList<OnPlayerEventListener>
 

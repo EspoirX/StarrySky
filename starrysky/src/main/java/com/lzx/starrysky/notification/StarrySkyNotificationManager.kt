@@ -1,11 +1,10 @@
 package com.lzx.starrysky.notification
 
 import android.content.Context
-import com.lzx.starrysky.MusicService
-import com.lzx.starrysky.StarrySky
 
 class StarrySkyNotificationManager constructor(
     isOpenNotification: Boolean,
+    private val config: NotificationConfig?,
     factory: NotificationFactory?
 ) {
     private var isOpenNotification: Boolean = false
@@ -26,7 +25,6 @@ class StarrySkyNotificationManager constructor(
     fun getNotification(context: Context): INotification? {
         return notification ?: synchronized(this) {
             if (notification == null && factory != null) {
-                val config = StarrySky.get().notificationConfig()
                 notification = factory?.build(context, config)
             }
             return notification
@@ -42,7 +40,7 @@ class StarrySkyNotificationManager constructor(
             override fun build(
                 context: Context, config: NotificationConfig?
             ): INotification {
-                return if(config==null) SystemNotification(context) else SystemNotification(context, config)
+                return if (config == null) SystemNotification(context) else SystemNotification(context, config)
             }
         }
 
@@ -50,7 +48,7 @@ class StarrySkyNotificationManager constructor(
             override fun build(
                 context: Context, config: NotificationConfig?
             ): INotification {
-                return if(config==null) CustomNotification(context) else CustomNotification(context, config)
+                return if (config == null) CustomNotification(context) else CustomNotification(context, config)
             }
         }
     }

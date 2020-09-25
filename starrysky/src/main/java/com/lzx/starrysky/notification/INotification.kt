@@ -1,8 +1,7 @@
 package com.lzx.starrysky.notification
 
 import android.os.Bundle
-import android.support.v4.media.session.PlaybackStateCompat
-import com.lzx.starrysky.provider.SongInfo
+import com.lzx.starrysky.SongInfo
 
 interface INotification {
 
@@ -10,7 +9,7 @@ interface INotification {
      * 展示通知栏
      * songInfo 当前播放的音频
      */
-    fun startNotification(songInfo: SongInfo?, playbackState: PlaybackStateCompat?)
+    fun startNotification(songInfo: SongInfo?, playbackState: String)
 
     /**
      * 关闭通知栏
@@ -21,6 +20,11 @@ interface INotification {
      * 自定义事件
      */
     fun onCommand(command: String?, extras: Bundle?)
+
+    /**
+     * 状态改变
+     */
+    fun onPlaybackStateChanged(songInfo: SongInfo?, playbackState: String)
 
     companion object {
         const val NOTIFICATION_ID = 412
@@ -44,6 +48,7 @@ interface INotification {
         //布局
         const val LAYOUT_NOTIFY_PLAY = "view_notify_play" //普通布局
         const val LAYOUT_NOTIFY_BIG_PLAY = "view_notify_big_play" //大布局
+
         //id
         const val ID_IMG_NOTIFY_PLAY = "img_notifyPlay" //播放按钮id
         const val ID_IMG_NOTIFY_PAUSE = "img_notifyPause" //暂停按钮id
@@ -58,9 +63,11 @@ interface INotification {
         const val ID_IMG_NOTIFY_ICON = "img_notifyIcon" //封面图片id
         const val ID_TXT_NOTIFY_SONGNAME = "txt_notifySongName" //歌名TextView id
         const val ID_TXT_NOTIFY_ARTISTNAME = "txt_notifyArtistName"//艺术家TextView id
+
         //资源
         const val DRAWABLE_NOTIFY_BTN_FAVORITE = "notify_btn_favorite_checked"//喜欢按钮选中时的图片资源
         const val DRAWABLE_NOTIFY_BTN_LYRICS = "notify_btn_lyrics_checked"//歌词按钮选中时的图片资源
+
         //通知栏白色背景资源
         const val DRAWABLE_NOTIFY_BTN_LIGHT_PLAY_SELECTOR =
             "notify_btn_light_play_selector" //白色背景时播放按钮selector
@@ -80,6 +87,7 @@ interface INotification {
             "notify_btn_light_prev_pressed"   //白色背景时上一首按钮按下时的图片资源
         const val DRAWABLE_NOTIFY_BTN_LIGHT_PREV_SELECTOR =
             "notify_btn_light_prev_selector" //白色背景时上一首按钮selector
+
         //通知栏黑色背景资源
         const val DRAWABLE_NOTIFY_BTN_DARK_PLAY_SELECTOR =
             "notify_btn_dark_play_selector" //黑色背景时播放按钮selector

@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lzx.starrysky">
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -13,27 +14,13 @@
     <application android:networkSecurityConfig="@xml/network_security_config">
 
         <service
-            android:name=".MusicService"
+            android:name=".service.MusicService"
             android:enabled="true"
             android:exported="false"
-            tools:ignore="ExportedService">
-
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name=".playback.offline.ExoDownloadService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.lzx.starrysky.downloadService.action.RESTART" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
+            tools:ignore="ExportedService" />
 
         <!--4.4机器上如果不注册这个会报错-->
-        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
+        <receiver android:name="androidx.media.session.MediaButtonReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>

@@ -13,29 +13,24 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.os.RemoteException
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
-import android.text.TextUtils
 import androidx.core.app.NotificationCompat
-import com.lzx.starrysky.MusicService
 import com.lzx.starrysky.R
-import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.ext.albumArt
-import com.lzx.starrysky.ext.albumArtUrl
-import com.lzx.starrysky.ext.artist
-import com.lzx.starrysky.ext.id
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack
+import com.lzx.starrysky.notification.INotification.Companion.ACTION_NEXT
+import com.lzx.starrysky.notification.INotification.Companion.ACTION_PAUSE
+import com.lzx.starrysky.notification.INotification.Companion.ACTION_PLAY
+import com.lzx.starrysky.notification.INotification.Companion.ACTION_PREV
+import com.lzx.starrysky.notification.INotification.Companion.ACTION_STOP
 import com.lzx.starrysky.notification.utils.NotificationUtils
-import com.lzx.starrysky.playback.player.Playback
-import com.lzx.starrysky.provider.SongInfo
-import com.lzx.starrysky.utils.StarrySkyUtils
+import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.service.MusicService
+import com.lzx.starrysky.utils.getPendingIntent
+import com.lzx.starrysky.utils.getTargetClass
 
 class SystemNotification constructor(
     val context: Context,
-    var config: NotificationConfig = NotificationConfig()
+    var config: NotificationConfig = NotificationConfig.Builder().build()
 ) : BroadcastReceiver(), INotification {
 
 
@@ -45,11 +40,8 @@ class SystemNotification constructor(
     private var mNextIntent: PendingIntent? = null
     private var mPreviousIntent: PendingIntent? = null
 
-    private var mSessionToken: MediaSessionCompat.Token? = null
-    private var mController: MediaControllerCompat? = null
-    private var mTransportControls: MediaControllerCompat.TransportControls? = null
-    private var mPlaybackState: PlaybackStateCompat? = null
-    private var mMetadata: MediaMetadataCompat? = null
+    private var playbackState: String = PlaybackStage.IDEA
+    private var songInfo: SongInfo? = null
 
     private val mNotificationManager: NotificationManager?
     private val packageName: String
@@ -57,68 +49,27 @@ class SystemNotification constructor(
     private var lastClickTime: Long = 0
 
     init {
-        try {
-            updateSessionToken()
-        } catch (e: RemoteException) {
-            e.printStackTrace()
-        }
-        mNotificationManager =
-                context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+        mNotificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         packageName = context.applicationContext.packageName
 
-        setStopIntent(config.stopIntent)
-        setNextPendingIntent(config.nextIntent)
-        setPrePendingIntent(config.preIntent)
-        setPlayPendingIntent(config.playIntent)
-        setPausePendingIntent(config.pauseIntent)
+        mStopIntent = config.stopIntent ?: ACTION_STOP.getPendingIntent()
+        mNextIntent = config.nextIntent ?: ACTION_NEXT.getPendingIntent()
+        mPreviousIntent = config.preIntent ?: ACTION_PREV.getPendingIntent()
+        mPlayIntent = config.playIntent ?: ACTION_PLAY.getPendingIntent()
+        mPauseIntent = config.pauseIntent ?: ACTION_PAUSE.getPendingIntent()
 
         mNotificationManager.cancelAll()
     }
 
-    @Throws(RemoteException::class)
-    private fun updateSessionToken() {
-        val freshToken = (context as MusicService).sessionToken
-        if (mSessionToken == null && freshToken != null || mSessionToken != null && mSessionToken != freshToken) {
-            mController?.unregisterCallback(mCb)
-            mSessionToken = freshToken
-            if (mSessionToken != null) {
-                mController = MediaControllerCompat(context, mSessionToken!!)
-                mTransportControls = mController?.transportControls
-                if (mStarted) {
-                    mController?.registerCallback(mCb)
-                }
-            }
-        }
-    }
-
-    /**
-     * 通知栏点击监听
-     */
-    private val mCb = object : MediaControllerCompat.Callback() {
-        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            super.onPlaybackStateChanged(state)
-            mPlaybackState = state
-            if (state?.state == Playback.STATE_STOPPED || state?.state == Playback.STATE_NONE) {
-                stopNotification()
-            } else {
-                val notification = createNotification()
-                if (notification != null && state?.state != Playback.STATE_BUFFERING) {
-                    mNotificationManager?.notify(INotification.NOTIFICATION_ID, notification)
-                }
-            }
-        }
-
-        override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-            super.onMetadataChanged(metadata)
-            mMetadata = metadata
-        }
-
-        override fun onSessionDestroyed() {
-            super.onSessionDestroyed()
-            try {
-                updateSessionToken()
-            } catch (e: RemoteException) {
-                e.printStackTrace()
+    override fun onPlaybackStateChanged(songInfo: SongInfo?, playbackState: String) {
+        this.playbackState = playbackState
+        this.songInfo = songInfo
+        if (playbackState == PlaybackStage.STOP || playbackState == PlaybackStage.IDEA) {
+            stopNotification()
+        } else {
+            val notification = createNotification()
+            if (notification != null && playbackState != PlaybackStage.BUFFERING) {
+                mNotificationManager?.notify(INotification.NOTIFICATION_ID, notification)
             }
         }
     }
@@ -129,41 +80,33 @@ class SystemNotification constructor(
         if (nowTime - lastClickTime <= INotification.TIME_INTERVAL) {
             return
         }
+        val playerControl = (context as MusicService).bridge?.playerControl
         when (action) {
-            INotification.ACTION_PAUSE -> mTransportControls?.pause()
-            INotification.ACTION_PLAY -> mTransportControls?.play()
-            INotification.ACTION_NEXT -> mTransportControls?.skipToNext()
-            INotification.ACTION_PREV -> mTransportControls?.skipToPrevious()
-            else -> {
-            }
+            ACTION_PAUSE -> playerControl?.pauseMusic()
+            ACTION_PLAY -> playerControl?.restoreMusic()
+            ACTION_NEXT -> playerControl?.skipToNext()
+            ACTION_PREV -> playerControl?.skipToPrevious()
         }
         lastClickTime = nowTime
     }
 
-    override fun startNotification(songInfo: SongInfo?, playbackState: PlaybackStateCompat?) {
-        mPlaybackState = mController?.playbackState
-        if (mPlaybackState?.state != playbackState?.state) {
-            mPlaybackState = playbackState
-        }
-        if (mMetadata?.id != songInfo?.songId) {
-            mMetadata = songInfo?.let { StarrySkyUtils.toMediaMetadata(it) }
+    override fun startNotification(songInfo: SongInfo?, playbackState: String) {
+        this.playbackState = playbackState
+        if (this.songInfo?.songId != songInfo?.songId) {
+            this.songInfo = songInfo
             createNotification()
-        } else {
-            mMetadata = mController?.metadata
         }
         if (!mStarted) {
             // The notification must be updated after setting started to true
             val notification = createNotification()
             if (notification != null) {
-                mController?.registerCallback(mCb)
                 val filter = IntentFilter()
-                filter.addAction(INotification.ACTION_NEXT)
-                filter.addAction(INotification.ACTION_PAUSE)
-                filter.addAction(INotification.ACTION_PLAY)
-                filter.addAction(INotification.ACTION_PREV)
-
+                filter.addAction(ACTION_NEXT)
+                filter.addAction(ACTION_PAUSE)
+                filter.addAction(ACTION_PLAY)
+                filter.addAction(ACTION_PREV)
                 context.registerReceiver(this, filter)
-
+                MusicService.isRunningForeground = true
                 (context as MusicService).startForeground(INotification.NOTIFICATION_ID, notification)
                 mStarted = true
             }
@@ -173,29 +116,26 @@ class SystemNotification constructor(
     override fun stopNotification() {
         if (mStarted) {
             mStarted = false
-            mController?.unregisterCallback(mCb)
             try {
                 mNotificationManager?.cancel(INotification.NOTIFICATION_ID)
                 context.unregisterReceiver(this)
             } catch (ex: IllegalArgumentException) {
                 ex.printStackTrace()
             }
-
+            MusicService.isRunningForeground = false
             (context as MusicService).stopForeground(true)
         }
     }
 
     private fun createNotification(): Notification? {
-        if (mMetadata == null || mPlaybackState == null) {
+        if (songInfo == null) {
             return null
         }
-        val description = mMetadata?.description
-
-        var art: Bitmap? = mMetadata?.albumArt
+        var art: Bitmap? = songInfo?.coverBitmap
 
         var fetchArtUrl: String? = null
         if (art == null) {
-            fetchArtUrl = mMetadata?.albumArtUrl
+            fetchArtUrl = songInfo?.songCover
             if (fetchArtUrl.isNullOrEmpty()) {
                 art = BitmapFactory.decodeResource(context.resources, R.drawable.default_art)
             }
@@ -208,33 +148,30 @@ class SystemNotification constructor(
 
         val playPauseButtonPosition = addActions(notificationBuilder)
 
-        val smallIcon = if (config.smallIconRes != -1)
-            config.smallIconRes
-        else
+        val smallIcon = if (config.smallIconRes != -1) config.smallIconRes else
             R.drawable.ic_notification
 
+        val token = (context as MusicService).bridge?.sessionManager?.getMediaSession()
         notificationBuilder
             .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
                 // show only play/pause in compact view
                 .setShowActionsInCompactView(playPauseButtonPosition)
                 .setShowCancelButton(true)
                 .setCancelButtonIntent(mStopIntent)
-                .setMediaSession(mSessionToken))
+                .setMediaSession(token))
             .setDeleteIntent(mStopIntent)
             .setColorized(true)
             .setSmallIcon(smallIcon)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOnlyAlertOnce(true)
-            .setContentTitle(description?.title) //歌名
-            .setContentText(mMetadata?.artist) //艺术家
+            .setContentTitle(songInfo?.songName) //歌名
+            .setContentText(songInfo?.artist) //艺术家
             .setLargeIcon(art)
         if (!config.targetClass.isNullOrEmpty()) {
-            val clazz = NotificationUtils.getTargetClass(config.targetClass!!)
-            if (clazz != null) {
-                val songId = mMetadata?.id
-                notificationBuilder.setContentIntent(NotificationUtils
-                        .createContentIntent(context, config, songId, config.targetClassBundle,
-                                clazz))
+            val clazz = config.targetClass.getTargetClass()
+            clazz?.let {
+                val intent = NotificationUtils.createContentIntent(context, config, songInfo, config.targetClassBundle, it)
+                notificationBuilder.setContentIntent(intent)
             }
         }
         setNotificationPlaybackState(notificationBuilder)
@@ -246,29 +183,30 @@ class SystemNotification constructor(
     }
 
     private fun setNotificationPlaybackState(builder: NotificationCompat.Builder) {
-        if (mPlaybackState == null || !mStarted) {
+        if (!mStarted) {
+            MusicService.isRunningForeground = false
             (context as MusicService).stopForeground(true)
             return
         }
-        builder.setOngoing(mPlaybackState?.state == Playback.STATE_PLAYING)
+        builder.setOngoing(playbackState == PlaybackStage.PLAYING)
     }
 
     /**
      * 封面加载
      */
     private fun fetchBitmapFromURLAsync(
-            fetchArtUrl: String,
-            notificationBuilder: NotificationCompat.Builder
+        fetchArtUrl: String,
+        notificationBuilder: NotificationCompat.Builder
     ) {
-        val imageLoader = StarrySky.get().imageLoader()
-        imageLoader.load(fetchArtUrl, object : ImageLoaderCallBack {
+        val imageLoader = (context as MusicService).bridge?.imageLoader
+        imageLoader?.load(fetchArtUrl, object : ImageLoaderCallBack {
             override fun onBitmapLoaded(bitmap: Bitmap?) {
                 if (bitmap == null) {
                     return
                 }
                 notificationBuilder.setLargeIcon(bitmap)
                 mNotificationManager?.notify(INotification.NOTIFICATION_ID,
-                        notificationBuilder.build())
+                    notificationBuilder.build())
             }
 
             override fun onBitmapFailed(errorDrawable: Drawable?) {
@@ -281,20 +219,15 @@ class SystemNotification constructor(
      */
     private fun addActions(notificationBuilder: NotificationCompat.Builder): Int {
         var playPauseButtonPosition = 0
+        val playerControl = (context as MusicService).bridge?.playerControl
+        val hasNext = playerControl?.isSkipToNextEnabled() ?: false
+        val hasPrevious = playerControl?.isSkipToPreviousEnabled() ?: false
+
         // 如果有上一首
-        val hasPrevious = if (mPlaybackState == null) false else mPlaybackState!!.actions and
-                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS != 0L
         if (hasPrevious) {
-            notificationBuilder.addAction(
-                    if (config.skipPreviousDrawableRes != -1)
-                        config.skipPreviousDrawableRes ?: -1
-                    else
-                        R.drawable.ic_skip_previous_white_24dp,
-                    if (!TextUtils.isEmpty(config.skipPreviousTitle))
-                        config.skipPreviousTitle
-                    else
-                        context.getString(R.string.label_previous),
-                    mPreviousIntent)
+            val icon = if (config.skipPreviousDrawableRes != -1) config.skipPreviousDrawableRes else R.drawable.ic_skip_previous_white_24dp
+            val title = if (config.skipPreviousTitle.isNotEmpty()) config.skipPreviousTitle else context.getString(R.string.label_previous)
+            notificationBuilder.addAction(icon, title, mPreviousIntent)
             playPauseButtonPosition = 1
         }
 
@@ -303,75 +236,31 @@ class SystemNotification constructor(
         val icon: Int
         val intent: PendingIntent?
 
-        if (mPlaybackState?.state == Playback.STATE_PLAYING) {
-            label = if (!TextUtils.isEmpty(config.labelPlay))
-                config.labelPlay ?: ""
-            else
-                context.getString(R.string.label_pause)
-            icon = if (config.pauseDrawableRes != -1)
-                config.pauseDrawableRes ?: -1
-            else
-                R.drawable.ic_pause_white_24dp
+        if (playbackState == PlaybackStage.PLAYING) {
+            label = if (config.labelPlay.isNotEmpty()) config.labelPlay else context.getString(R.string.label_pause)
+            icon = if (config.pauseDrawableRes != -1) config.pauseDrawableRes else R.drawable.ic_pause_white_24dp
             intent = mPauseIntent
         } else {
-            label = if (!TextUtils.isEmpty(config.labelPause))
-                config.labelPause ?: ""
-            else
-                context.getString(R.string.label_play)
-            icon = if (config.playDrawableRes != -1)
-                config.playDrawableRes ?: -1
-            else
-                R.drawable.ic_play_arrow_white_24dp
+            label = if (config.labelPause.isNotEmpty()) config.labelPause else context.getString(R.string.label_play)
+            icon = if (config.playDrawableRes != -1) config.playDrawableRes else R.drawable.ic_play_arrow_white_24dp
             intent = mPlayIntent
         }
 
         notificationBuilder.addAction(NotificationCompat.Action(icon, label, intent))
 
         // 如果有下一首
-        val hasNext = if (mPlaybackState == null) false else mPlaybackState!!.actions and
-                PlaybackStateCompat.ACTION_SKIP_TO_NEXT != 0L
         if (hasNext) {
-            notificationBuilder.addAction(
-                    if (config.skipNextDrawableRes != -1)
-                        config.skipNextDrawableRes ?: -1
-                    else
-                        R.drawable.ic_skip_next_white_24dp,
-                    if (!TextUtils.isEmpty(config.skipNextTitle))
-                        config.skipNextTitle
-                    else
-                        context.getString(R.string.label_next),
-                    mNextIntent)
+            val actionIcon = if (config.skipNextDrawableRes != -1) config.skipNextDrawableRes else R.drawable.ic_skip_next_white_24dp
+            val title = if (config.skipNextTitle.isNotEmpty()) config.skipNextTitle else context.getString(R.string.label_next)
+            notificationBuilder.addAction(actionIcon, title, mNextIntent)
         }
 
         return playPauseButtonPosition
     }
 
-    private fun setStopIntent(pendingIntent: PendingIntent?) {
-        mStopIntent = pendingIntent ?: getPendingIntent(INotification.ACTION_STOP)
-    }
-
-    private fun setNextPendingIntent(pendingIntent: PendingIntent?) {
-        mNextIntent = pendingIntent ?: getPendingIntent(INotification.ACTION_NEXT)
-    }
-
-    private fun setPrePendingIntent(pendingIntent: PendingIntent?) {
-        mPreviousIntent = pendingIntent ?: getPendingIntent(INotification.ACTION_PREV)
-    }
-
-    private fun setPlayPendingIntent(pendingIntent: PendingIntent?) {
-        mPlayIntent = pendingIntent ?: getPendingIntent(INotification.ACTION_PLAY)
-    }
-
-    private fun setPausePendingIntent(pendingIntent: PendingIntent?) {
-        mPauseIntent = pendingIntent ?: getPendingIntent(INotification.ACTION_PAUSE)
-    }
-
-    private fun getPendingIntent(action: String): PendingIntent {
-        val intent = Intent(action)
-        intent.setPackage(packageName)
-        return PendingIntent.getBroadcast(context, INotification.REQUEST_CODE, intent,
-            PendingIntent.FLAG_CANCEL_CURRENT)
-    }
-
     override fun onCommand(command: String?, extras: Bundle?) {}
+
+    private fun String.getPendingIntent(): PendingIntent {
+        return context.getPendingIntent(this)
+    }
 }
