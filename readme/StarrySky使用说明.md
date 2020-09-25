@@ -1,9 +1,5 @@
 # StarrySky 使用说明
 
-
-## 其他说明（如有需要请先阅读说明）
-- [StarrySky介绍](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky介绍.md)
-
 ## 初始化
 
 ```kotlin
@@ -127,12 +123,12 @@ val config = StarrySkyConfig().newBuilder()
         })
     .build()
 ```
-具体实现就是实现 ImageLoaderStrategy 接口，然后通过 callback 返回。注意参数中的 Context 上下文并不是 Activity 的上下文，而是音频服务  
+具体实现就是实现 ImageLoaderStrategy 接口，然后通过 callback 返回。注意参数中的 Context 上下文并不是 Activity 的上下文，而是音频服务
 MusicService 的上下文，如果你配置了不需要后台服务的话，那它就是 Application 的上下文。
 
 ### 6. 配置播放器实现
 StarrySky 的默认播放器实现是 ExoPlayer ，并且支持了多种音频格式：DASH, SmoothStreaming, HLS，rtmp，flac，  
-但是在某些特殊需求里，或许默认的播放实现并不能满足你的需要，所有 StarrySky 支持配置自定义播放器，播放器实现需要实现 Playback 接口。
+但是在某些特殊需求里，或许默认的播放实现并不能满足你的需要，所以 StarrySky 支持配置自定义播放器，播放器实现需要实现 Playback 接口。
 默认的实现类是 ExoPlayback ，大家若有自定义播放器的需要可以先看看这个类，参加实现。如何配置自定义播放器？只需要配置 playback 方法即可：
 ```kotlin
 val config = StarrySkyConfig().newBuilder()
@@ -166,7 +162,7 @@ val config = StarrySkyConfig().newBuilder()
 ```
 当然这个监听只有在 isAutoManagerFocus 为 false 的时候才会生效。参数里，songInfo 就是当前播放的音频信息。state 就是焦点状态。  
 state 的取值为 AUDIO_NO_FOCUS_NO_DUCK，AUDIO_NO_FOCUS_CAN_DUCK，AUDIO_FOCUSED。都定义在 FocusAndLockManager 中。  
-而 state 在什么时候取什么值，也可以查看 FocusAndLockManager 这个类了解，就不多说了。
+而 state 在什么时候取什么值，也可以查看 FocusAndLockManager 这个类了解，跟这个类里面的 currentAudioFocusState 取值相同。就不多说了。
 
 ### 8. 配置副歌播放器
 副歌播放器？说白了就是允许同时播放 2 个音频的功能，比如在正常播放的同时再播放一些伴奏，播放一些音效的功能，通过 isCreateRefrainPlayer 即可开启：
@@ -180,3 +176,6 @@ val config = StarrySkyConfig().newBuilder()
 如何操作第二个音频播放停止这些功能，可以阅读一下 PlayerControl 这个类，里面定义了音频操作的所有方法，并且都有注释，写得很清楚。  
 如何实现这个功能的？原理就是创建了 2 个播放器实例，如果你的需求要同时播放 3 个音频，那么你可以根据这个原理去自己改源码。
 
+
+ 
+如果问题请查看项目 demo 或者加群咨询。
