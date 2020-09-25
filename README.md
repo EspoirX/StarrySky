@@ -1,7 +1,7 @@
 # A Powerful and Streamline MusicLibrary
 
 [ ![](https://img.shields.io/badge/platform-android-green.svg) ](http://developer.android.com/index.html)
-[ ![Download](https://api.bintray.com/packages/lizixian/StarrySky/StarrySkyKt/images/download.svg)](https://bintray.com/lizixian/StarrySky/StarrySkyKt/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/lizixian/StarrySky/StarrySkyX/images/download.svg)](https://bintray.com/lizixian/StarrySky/StarrySkyX/_latestVersion)
 [ ![](https://img.shields.io/badge/license-MIT-green.svg) ](http://choosealicense.com/licenses/mit/)
 
 <a href="art/logo.jpg"><img src="art/logo.jpg" /></a>
