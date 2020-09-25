@@ -85,16 +85,34 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
      */
     fun playRefrain(info: SongInfo)
 
+    /**
+     * 停止另一个音频
+     */
     fun stopRefrain()
 
+    /**
+     * 另一个音频设置音量
+     */
     fun setRefrainVolume(audioVolume: Float)
 
+    /**
+     * 获取另一个音频音量
+     */
     fun getRefrainVolume(): Float
 
+    /**
+     * 获取另一个音频信息
+     */
     fun getRefrainInfo(): SongInfo?
 
+    /**
+     * 判断另一个音频是否在播放
+     */
     fun isRefrainPlaying(): Boolean
 
+    /**
+     * 判断另一个音频是否缓冲
+     */
     fun isRefrainBuffering(): Boolean
 
     /**
