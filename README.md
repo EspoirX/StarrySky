@@ -14,7 +14,6 @@
 
 一个丰富的音乐播放封装库，针对快速集成音频播放功能，减少大家搬砖的时间，你值得拥有。
 
-11
 ## 特点
 
 - 轻松播放本地和网络音频
@@ -116,7 +115,9 @@ StarrySky.with().playMusicByInfo(info)
 
 ## 使用文档
 
-- [StarrySky使用说明 点我！点我！点我！](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/StarrySky使用说明.md)
+- [StarrySky使用说明 点我！点我！点我！](https://github.com/EspoirX/StarrySky/blob/developer/readme/StarrySky%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
+- [StarrySky使用说明 点我！点我！点我！](https://github.com/EspoirX/StarrySky/blob/developer/readme/StarrySky%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
+- [StarrySky使用说明 点我！点我！点我！](https://github.com/EspoirX/StarrySky/blob/developer/readme/StarrySky%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
 
 
 PS：
