@@ -37,7 +37,7 @@ dependencies {
 }
 ```
 
-x.x.x 填的是当前的版本号。
+x.x.x 填的是当前的版本号。(有些人反馈说看不到版本号，版本号在 Readme 一开始就有标明，若看不到可以查看代码 gradle 文件或者加群咨询)
 
 请使用 Java8。此为 androidx 版本，请支持 androidx。
 
