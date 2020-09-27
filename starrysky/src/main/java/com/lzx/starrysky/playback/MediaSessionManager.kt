@@ -15,7 +15,8 @@ import com.lzx.starrysky.control.PlayerControl
 class MediaSessionManager(val context: Context, val playerControl: PlayerControl?) {
     companion object {
         //指定可以接收的来自锁屏页面的按键信息
-        private const val MEDIA_SESSION_ACTIONS = (PlaybackStateCompat.ACTION_PLAY
+        private const val MEDIA_SESSION_ACTIONS = (
+            PlaybackStateCompat.ACTION_PLAY
             or PlaybackStateCompat.ACTION_PAUSE
             or PlaybackStateCompat.ACTION_PLAY_PAUSE
             or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
@@ -43,7 +44,7 @@ class MediaSessionManager(val context: Context, val playerControl: PlayerControl
     /**
      * 更新播放状态
      */
-    fun updatePlaybackState() {
+    private fun updatePlaybackState() {
         val state = if (isPlaying()) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
         mediaSession?.setPlaybackState(PlaybackStateCompat.Builder()
             .setActions(MEDIA_SESSION_ACTIONS)
@@ -66,7 +67,7 @@ class MediaSessionManager(val context: Context, val playerControl: PlayerControl
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, songInfo.artist)
             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, songInfo.songName)
             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, songInfo.artist)
-            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, songInfo.duration)
+//            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, songInfo.duration)  //加上这个通知栏会有进度条
         if (songInfo.coverBitmap != null) {
             metaDta.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, songInfo.coverBitmap)
         }

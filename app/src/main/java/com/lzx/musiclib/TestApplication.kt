@@ -1,5 +1,6 @@
 package com.lzx.musiclib
 
+import android.Manifest
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
@@ -8,6 +9,7 @@ import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Environment
 import android.os.IBinder
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
@@ -25,6 +27,11 @@ import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.utils.MainLooper
+import com.lzx.starrysky.utils.SpUtil
+import com.qw.soul.permission.SoulPermission
+import com.qw.soul.permission.bean.Permission
+import com.qw.soul.permission.bean.Permissions
+import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import com.tencent.bugly.crashreport.CrashReport
 
 
@@ -53,6 +60,9 @@ open class TestApplication : Application() {
             }
         }
         val config = StarrySkyConfig().newBuilder()
+            .isOpenCache(true)
+            .setCacheDestFileDir(Environment.getExternalStorageDirectory().absolutePath.toString() + "/01010101/")
+            .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
             .addInterceptor(RequestSongCoverInterceptor())
             .setImageLoader(object : ImageLoaderStrategy {
@@ -74,12 +84,12 @@ open class TestApplication : Application() {
             })
             .isOpenNotification(true)
             .setNotificationConfig(notificationConfig)
-            .setNotificationFactory(object : StarrySkyNotificationManager.NotificationFactory {
-                override fun build(context: Context, config: NotificationConfig?): INotification {
-                    //使用自定义通知栏
-                    return StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY.build(context, config)
-                }
-            })
+//            .setNotificationFactory(object : StarrySkyNotificationManager.NotificationFactory {
+//                override fun build(context: Context, config: NotificationConfig?): INotification {
+//                    //使用自定义通知栏
+//                    return StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY.build(context, config)
+//                }
+//            })
             .isCreateRefrainPlayer(true)
             .isAutoManagerFocus(false)  //因为开了伴奏播放器，所以要关闭自动焦点管理功能
             .build()
@@ -94,6 +104,40 @@ open class TestApplication : Application() {
                 this@TestApplication.showToast("连接失败")
             }
         })
+    }
+
+    /**
+     * 权限申请拦截器
+     */
+    class PermissionInterceptor internal constructor(private val mContext: Context) : StarrySkyInterceptor {
+        override fun process(songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback) {
+            if (songInfo == null) {
+                callback.onInterrupt(RuntimeException("SongInfo is null"))
+                return
+            }
+            val hasPermission = SpUtil.instance?.getBoolean("HAS_PERMISSION", false)
+            if (hasPermission == true) {
+                callback.onContinue(songInfo)
+                return
+            }
+            SoulPermission.getInstance().checkAndRequestPermissions(Permissions.build(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                object : CheckRequestPermissionsListener {
+                    override fun onAllPermissionOk(allPermissions: Array<Permission>) {
+                        SpUtil.instance?.putBoolean("HAS_PERMISSION", true)
+                        callback.onContinue(songInfo)
+                    }
+
+                    override fun onPermissionDenied(refusedPermissions: Array<Permission>) {
+                        SpUtil.instance?.putBoolean("HAS_PERMISSION", false)
+                        callback.onInterrupt(RuntimeException("没有权限，播放失败"))
+                        mainLooper.runOnUiThread(Runnable {
+                            mContext.showToast("没有权限，播放失败")
+                        })
+                    }
+                })
+        }
     }
 
     /**

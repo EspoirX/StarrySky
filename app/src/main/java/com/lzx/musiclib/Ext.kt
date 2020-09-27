@@ -26,6 +26,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
+import com.lzx.starrysky.utils.MainLooper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -108,7 +109,9 @@ fun ImageView.loadImage(url: String?) {
 }
 
 fun Context.showToast(msg: String?) {
-    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    MainLooper.instance.post {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
 }
 
 fun Int.getViewObj(context: Context, root: ViewGroup? = null, attachToRoot: Boolean = false): View {

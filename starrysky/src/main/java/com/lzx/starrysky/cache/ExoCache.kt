@@ -47,42 +47,33 @@ class ExoCache(private val context: Context, private val openCache: Boolean, pri
      */
     @Synchronized
     fun getDownloadCache(): Cache? {
-
         if (exoCache == null) {
             val cacheFile = getCacheDirectory(context, cacheDir) ?: return null
-            val path = cacheFile.absolutePath
-            val isLocked = SimpleCache.isCacheFolderLocked(File(path))
-            if (!isLocked) {
-                val cacheEvictor = LeastRecentlyUsedCacheEvictor(512 * 1024 * 1024)
-                exoCache = SimpleCache(cacheFile, cacheEvictor, ExoDatabaseProvider(context))
-            }
+            val cacheEvictor = LeastRecentlyUsedCacheEvictor(512 * 1024 * 1024)
+            exoCache = SimpleCache(cacheFile, cacheEvictor, ExoDatabaseProvider(context))
         }
         return exoCache
     }
 
     override fun isCache(url: String): Boolean {
-        var isCache = true
+        val isCache: Boolean
         val cache = getDownloadCache()
         if (url.isNotEmpty()) {
-            if (url.isNotEmpty()) {
-                val cachedSpans = cache?.getCachedSpans(url)
-                if (cachedSpans?.size == 0) {
-                    isCache = false
-                } else {
-                    isCache = cache?.let {
-                        val contentLength =
-                            cache.getContentMetadata(url)["exo_len", C.LENGTH_UNSET.toLong()]
-                        var currentLength: Long = 0
-                        for (cachedSpan in cachedSpans ?: hashSetOf<CacheSpan>()) {
-                            currentLength += cache.getCachedLength(url, cachedSpan.position,
-                                cachedSpan.length)
-                        }
-                        return currentLength >= contentLength
-                    } ?: false
-                }
-            } else {
+            val cachedSpans = cache?.getCachedSpans(url)
+            if (cachedSpans?.size == 0) {
                 isCache = false
+            } else {
+                isCache = cache?.let {
+                    val contentLength = cache.getContentMetadata(url)["exo_len", C.LENGTH_UNSET.toLong()]
+                    var currentLength: Long = 0
+                    for (cachedSpan in cachedSpans ?: hashSetOf<CacheSpan>()) {
+                        currentLength += cache.getCachedLength(url, cachedSpan.position, cachedSpan.length)
+                    }
+                    return currentLength >= contentLength
+                } ?: false
             }
+        } else {
+            isCache = false
         }
         return isCache
     }

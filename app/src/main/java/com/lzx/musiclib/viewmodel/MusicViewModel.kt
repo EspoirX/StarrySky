@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lzx.musiclib.TestApplication
 import com.lzx.musiclib.bean.HotSongInfo
 import com.lzx.musiclib.bean.MusicBanner
 import com.lzx.musiclib.bean.MusicChannel
@@ -13,6 +14,7 @@ import com.lzx.musiclib.getObj
 import com.lzx.musiclib.http.BaiduApi
 import com.lzx.musiclib.http.DoubanApi
 import com.lzx.musiclib.http.RetrofitClient
+import com.lzx.musiclib.showToast
 import com.lzx.musiclib.toJsonObj
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
@@ -155,6 +157,7 @@ class MusicViewModel : ViewModel() {
                 musicChannelLiveData.postValue(channelList)
             } catch (ex: Exception) {
                 ex.printStackTrace()
+                TestApplication.context?.showToast("请求失败：" + ex.message)
             }
         }
     }
@@ -162,9 +165,9 @@ class MusicViewModel : ViewModel() {
     val qqMusicsLiveData = MutableLiveData<MutableList<SongInfo>>()
     fun getQQMusicSongList(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = RetrofitClient.getQQMusic().getQQMusicSongList(id)
-            val json = result.string()
             try {
+                val result = RetrofitClient.getQQMusic().getQQMusicSongList(id)
+                val json = result.string()
                 val obj = JSONObject(json).getJSONObject("data")
                 val songArray = obj.getJSONArray("songlist")
                 val songlist = mutableListOf<SongInfo>()
@@ -185,35 +188,38 @@ class MusicViewModel : ViewModel() {
                 qqMusicsLiveData.postValue(songlist)
             } catch (ex: Exception) {
                 ex.printStackTrace()
+                TestApplication.context?.showToast("请求失败：" + ex.message)
             }
         }
     }
 
     fun getQQMusicSongCover(mid: String, callback: ((cover: String) -> Unit)? = null) {
         viewModelScope.launch(Dispatchers.IO) {
-            val coverResult = RetrofitClient.getQQMusic().getQQMusicSongCover(mid)
-            val coverJson = coverResult.string()
             try {
+                val coverResult = RetrofitClient.getQQMusic().getQQMusicSongCover(mid)
+                val coverJson = coverResult.string()
                 val obj = JSONObject(coverJson).getJSONObject("data")
                 val mid = obj.getObj("track_info").getObj("album").getString("mid")
                 val songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg"
                 callback?.let { it(songCover) }
             } catch (ex: Exception) {
                 ex.printStackTrace()
+                TestApplication.context?.showToast("请求失败：" + ex.message)
             }
         }
     }
 
     fun getQQMusicUrl(songId: String, callback: ((url: String) -> Unit)? = null) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = RetrofitClient.getQQMusic().getQQMusicSongUrl(songId)
-            val json = result.string()
             try {
+                val result = RetrofitClient.getQQMusic().getQQMusicSongUrl(songId)
+                val json = result.string()
                 val obj = JSONObject(json).getJSONObject("data")
                 val url = obj.getString(songId)
                 callback?.let { it(url) }
             } catch (ex: Exception) {
                 ex.printStackTrace()
+                TestApplication.context?.showToast("请求失败：" + ex.message)
             }
         }
     }
@@ -222,9 +228,9 @@ class MusicViewModel : ViewModel() {
     val songInfoLiveData = MutableLiveData<SongInfo>()
     fun getBaiduMusicUrl(songId: String, callback: ((info: SongInfo) -> Unit)? = null) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = RetrofitClient.getService(BaiduApi::class.java, BaiduApi.BASE_URL).getSongDetail(songId)
-            val json = result.string()
             try {
+                val result = RetrofitClient.getService(BaiduApi::class.java, BaiduApi.BASE_URL).getSongDetail(songId)
+                val json = result.string()
                 val obj = JSONObject(json)
                 val bitrate = obj.getJSONObject("bitrate")
                 val detail = obj.getJSONObject("songinfo")
@@ -239,6 +245,7 @@ class MusicViewModel : ViewModel() {
                 songInfoLiveData.postValue(songInfo)
             } catch (ex: Exception) {
                 ex.printStackTrace()
+                TestApplication.context?.showToast("请求失败：" + ex.message)
             }
         }
     }
@@ -246,17 +253,17 @@ class MusicViewModel : ViewModel() {
     val hotListLiveData = MutableLiveData<Pair<MutableList<MusicBanner>, MutableList<HotSongInfo>>>()
     fun getBaiduRankList() {
         viewModelScope.launch(Dispatchers.IO) {
-            val bannerArray = async { RetrofitClient.getQQMusic().getQQMusicBanner() }.await()
-                .string().toJsonObj().getArray("data")
-            val oneArray = async { getBaiduMusicListById("1") }.await().string().toJsonObj()
-                .getArray("song_list")
-            val twoArray = async { getBaiduMusicListById("2") }.await().string().toJsonObj()
-                .getArray("song_list")
-            val threeArray = async { getBaiduMusicListById("21") }.await().string().toJsonObj()
-                .getArray("song_list")
-            val fourArray = async { getBaiduMusicListById("23") }.await().string().toJsonObj()
-                .getArray("song_list")
             try {
+                val bannerArray = async { RetrofitClient.getQQMusic().getQQMusicBanner() }.await()
+                    .string().toJsonObj().getArray("data")
+                val oneArray = async { getBaiduMusicListById("1") }.await().string().toJsonObj()
+                    .getArray("song_list")
+                val twoArray = async { getBaiduMusicListById("2") }.await().string().toJsonObj()
+                    .getArray("song_list")
+                val threeArray = async { getBaiduMusicListById("21") }.await().string().toJsonObj()
+                    .getArray("song_list")
+                val fourArray = async { getBaiduMusicListById("23") }.await().string().toJsonObj()
+                    .getArray("song_list")
                 val bannerList = mutableListOf<MusicBanner>()
                 bannerArray.forEach<JSONObject> {
                     Log.i("XIAN", " BANNER = " + it.toString())
@@ -339,6 +346,7 @@ class MusicViewModel : ViewModel() {
                 hotListLiveData.postValue(Pair(bannerList, list))
             } catch (ex: Exception) {
                 ex.printStackTrace()
+                TestApplication.context?.showToast("请求失败：" + ex.message)
             }
         }
     }
@@ -364,6 +372,7 @@ class MusicViewModel : ViewModel() {
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
+                TestApplication.context?.showToast("请求失败：" + ex.message)
             }
         }
     }

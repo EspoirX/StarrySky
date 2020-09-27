@@ -96,6 +96,8 @@ ExoPlayer 要播放 flac 音频，是需要自己编译 so 的，具体怎么操
 
 下面是最简单的初始化以及播放音频代码，更多功能请阅读使用文档或者查看项目demo。
 
+注意：项目 demo 中的音乐接口皆为白嫖得来，不知道哪天会请求不了。
+
 ```kotlin
 open class TestApplication : Application() {
 

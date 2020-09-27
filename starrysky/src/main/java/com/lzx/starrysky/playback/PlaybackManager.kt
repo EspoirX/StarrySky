@@ -160,7 +160,7 @@ class PlaybackManager(
     }
 
     fun setRepeatMode(repeatMode: Int, loop: Boolean) {
-        if (StarrySkyUtils.repeatMode.repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
+        if (repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
             mediaQueue.provider.updateShuffleSongList()
         } else {
             mediaQueue.updateIndexBySongId(playback.currentMediaId)

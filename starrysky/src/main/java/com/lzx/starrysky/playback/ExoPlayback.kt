@@ -151,6 +151,7 @@ class ExoPlayback(val context: Context,
             releaseResources(false)  // release everything except the player
             //创建播放器实例
             createExoPlayer()
+            player?.setMediaSource(mediaSource!!)
             player?.prepare()
             if (!isAutoManagerFocus) {
                 focusAndLockManager.acquireWifiLock()
@@ -159,6 +160,7 @@ class ExoPlayback(val context: Context,
         //当错误发生时，如果还播放同一首歌，
         //这时候需要重新加载一下，并且吧进度 seekTo 到出错的地方
         if (sourceTypeErrorInfo.happenSourceError && !mediaHasChanged) {
+            player?.setMediaSource(mediaSource!!)
             player?.prepare()
             if (sourceTypeErrorInfo.currPositionWhenError != 0L) {
                 if (sourceTypeErrorInfo.seekToPositionWhenError != 0L) {
@@ -179,6 +181,7 @@ class ExoPlayback(val context: Context,
         }
     }
 
+    @Synchronized
     private fun createMediaSource(source: String): MediaSource {
         val uri = Uri.parse(source)
         val isRtmpSource = source.toLowerCase(Locale.getDefault()).startsWith("rtmp://")
@@ -254,6 +257,7 @@ class ExoPlayback(val context: Context,
         }
     }
 
+    @Synchronized
     private fun createExoPlayer() {
         if (player == null) {
             @ExtensionRendererMode val extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
@@ -274,22 +278,23 @@ class ExoPlayback(val context: Context,
                 .setTrackSelector(trackSelector!!)
                 .build()
 
-            player?.setMediaSource(mediaSource!!)
             player?.addListener(mEventListener)
             player?.setAudioAttributes(AudioAttributes.DEFAULT, isAutoManagerFocus)
         }
     }
 
+    @Synchronized
     private fun buildDataSourceFactory(): DataSource.Factory? {
         val userAgent = Util.getUserAgent(context, "StarrySky")
-        val upstreamFactory = DefaultDataSourceFactory(context, DefaultHttpDataSourceFactory(userAgent))
         return if (cache?.isOpenCache() == true && cache is ExoCache) {
+            val upstreamFactory = DefaultDataSourceFactory(context, DefaultHttpDataSourceFactory(userAgent))
             buildReadOnlyCacheDataSource(upstreamFactory, cache.getDownloadCache())
         } else {
             DefaultDataSourceFactory(context, DefaultHttpDataSourceFactory(userAgent))
         }
     }
 
+    @Synchronized
     private fun buildReadOnlyCacheDataSource(upstreamFactory: DataSource.Factory?, cache: Cache?): CacheDataSource.Factory? {
         return cache?.let {
             CacheDataSource.Factory()

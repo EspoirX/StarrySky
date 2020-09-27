@@ -124,6 +124,7 @@ class StarrySky {
                 val contextWrapper = ContextWrapper(globalContext)
                 val intent = Intent(contextWrapper, MusicService::class.java)
                 //ContextCompat.startForegroundService(contextWrapper, intent)
+                //contextWrapper.startService(intent)
                 val result = contextWrapper.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
                 if (result) {
                     connectionMap[contextWrapper] = serviceConnection
@@ -175,7 +176,6 @@ class StarrySky {
 
             override fun onServiceDisconnected(name: ComponentName?) {
                 connection?.onServiceDisconnected(name)
-                bridge = null
             }
         }
 
