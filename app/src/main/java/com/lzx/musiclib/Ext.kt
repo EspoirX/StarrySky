@@ -7,6 +7,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Looper
 import android.os.Parcelable
 import android.util.TypedValue
@@ -332,4 +333,8 @@ fun Fragment.addFragmentToActivity(fragmentManager: FragmentManager, frameId: In
     val transaction = fragmentManager.beginTransaction()
     transaction.add(frameId, this)
     transaction.commit()
+}
+
+fun String.toSdcardPath(): String {
+    return Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + this
 }

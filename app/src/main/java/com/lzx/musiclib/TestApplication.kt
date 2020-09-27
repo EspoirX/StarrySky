@@ -15,17 +15,17 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.danikula.videocache.HttpProxyCacheServer
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyConfig
+import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
-import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
-import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.utils.MainLooper
 import com.lzx.starrysky.utils.SpUtil
 import com.qw.soul.permission.SoulPermission
@@ -33,6 +33,7 @@ import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import com.tencent.bugly.crashreport.CrashReport
+import java.io.File
 
 
 /**
@@ -61,7 +62,7 @@ open class TestApplication : Application() {
         }
         val config = StarrySkyConfig().newBuilder()
             .isOpenCache(true)
-            .setCacheDestFileDir(Environment.getExternalStorageDirectory().absolutePath.toString() + "/01010101/")
+            .setCache(MyCache(this))
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
             .addInterceptor(RequestSongCoverInterceptor())
@@ -84,12 +85,6 @@ open class TestApplication : Application() {
             })
             .isOpenNotification(true)
             .setNotificationConfig(notificationConfig)
-//            .setNotificationFactory(object : StarrySkyNotificationManager.NotificationFactory {
-//                override fun build(context: Context, config: NotificationConfig?): INotification {
-//                    //使用自定义通知栏
-//                    return StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY.build(context, config)
-//                }
-//            })
             .isCreateRefrainPlayer(true)
             .isAutoManagerFocus(false)  //因为开了伴奏播放器，所以要关闭自动焦点管理功能
             .build()
@@ -190,6 +185,59 @@ open class TestApplication : Application() {
             } else {
                 callback.onContinue(songInfo)
             }
+        }
+    }
+
+    class MyCache(private val context: Context) : ICache {
+
+        private var proxy: HttpProxyCacheServer? = null
+        private var cacheFile: File? = null
+
+        override fun startCache(url: String) {
+            //什么都不做
+        }
+
+        private fun getProxy(): HttpProxyCacheServer? {
+            return if (proxy == null) newProxy().also { proxy = it } else proxy
+        }
+
+        private fun newProxy(): HttpProxyCacheServer? {
+            return HttpProxyCacheServer.Builder(context)
+                .maxCacheSize(1024 * 1024 * 1024)       // 1 Gb for cache
+                .cacheDirectory(getCacheDirectory(context, ""))
+                .build()
+        }
+
+        override fun getProxyUrl(url: String): String? {
+            return getProxy()?.getProxyUrl(url)
+        }
+
+        override fun isOpenCache(): Boolean {
+            return super.isOpenCache()
+        }
+
+        override fun getCacheDirectory(context: Context, destFileDir: String?): File? {
+            var fileDir = destFileDir
+            if (fileDir.isNullOrEmpty()) {
+                fileDir = "StarrySkyCache/".toSdcardPath()
+            }
+            if (cacheFile == null && fileDir.isNotEmpty()) {
+                cacheFile = File(fileDir)
+                if (cacheFile?.exists() == false) {
+                    cacheFile?.mkdirs()
+                }
+            }
+            if (cacheFile == null) {
+                cacheFile = context.getExternalFilesDir(null)
+                if (cacheFile == null) {
+                    cacheFile = context.filesDir
+                }
+            }
+            return cacheFile
+        }
+
+        override fun isCache(url: String): Boolean {
+            return getProxy()?.isCached(url) ?: false
         }
     }
 }
