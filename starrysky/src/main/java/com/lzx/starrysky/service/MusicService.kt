@@ -49,21 +49,6 @@ class MusicService : Service() {
         noisyReceiver?.register()
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-//        var notification: Notification? = null
-//        //适配8.0
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-//            NotificationUtils.createNotificationChannel(this, manager)
-//            notification = NotificationCompat.Builder(this, INotification.CHANNEL_ID).build()
-//            startForeground(1, notification)
-//            MainLooper.instance.postDelayed({
-//                stopForeground(true)
-//            }, 100)
-//        }
-        return super.onStartCommand(intent, flags, startId)
-    }
-
     /**
      *  bridge 里面的东西已经创建好
      */
