@@ -15,6 +15,7 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import com.lzx.starrysky.utils.StarrySkyUtils
 
+
 class MusicService : Service() {
 
     var bridge: ServiceBridge? = null
@@ -46,6 +47,21 @@ class MusicService : Service() {
         initTelephony()
         noisyReceiver = BecomingNoisyReceiver(this)
         noisyReceiver?.register()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+//        var notification: Notification? = null
+//        //适配8.0
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+//            NotificationUtils.createNotificationChannel(this, manager)
+//            notification = NotificationCompat.Builder(this, INotification.CHANNEL_ID).build()
+//            startForeground(1, notification)
+//            MainLooper.instance.postDelayed({
+//                stopForeground(true)
+//            }, 100)
+//        }
+        return super.onStartCommand(intent, flags, startId)
     }
 
     /**

@@ -123,7 +123,7 @@ class StarrySky {
             try {
                 val contextWrapper = ContextWrapper(globalContext)
                 val intent = Intent(contextWrapper, MusicService::class.java)
-                contextWrapper.startService(intent)
+                //ContextCompat.startForegroundService(contextWrapper, intent)
                 val result = contextWrapper.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
                 if (result) {
                     connectionMap[contextWrapper] = serviceConnection
