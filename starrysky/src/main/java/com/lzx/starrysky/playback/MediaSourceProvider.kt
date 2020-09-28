@@ -1,6 +1,7 @@
 package com.lzx.starrysky.playback
 
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.utils.isIndexPlayable
 
 /**
  * 存储播放数据源
@@ -48,6 +49,22 @@ class MediaSourceProvider {
     fun addSongInfo(info: SongInfo) {
         if (!hasSongInfo(info.songId)) {
             songSources[info.songId] = info
+        }
+    }
+
+    fun addSongInfo(index: Int, info: SongInfo) {
+        if (!hasSongInfo(info.songId)) {
+            val list = mutableListOf<Pair<String, SongInfo>>()
+            songSources.forEach {
+                list.add(Pair(it.key, it.value))
+            }
+            if (index.isIndexPlayable(list)) {
+                list.add(index, Pair(info.songId, info))
+            }
+            songSources.clear()
+            list.forEach {
+                songSources[it.first] = it.second
+            }
         }
     }
 

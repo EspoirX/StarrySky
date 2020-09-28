@@ -161,6 +161,10 @@ class PlayerControlImpl(
         provider.addSongInfo(info)
     }
 
+    override fun addSongInfo(index: Int, info: SongInfo) {
+        provider.addSongInfo(index, info)
+    }
+
     override fun removeSongInfo(songId: String) {
         provider.deleteSongInfoById(songId)
     }

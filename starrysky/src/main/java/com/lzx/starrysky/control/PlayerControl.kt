@@ -190,6 +190,11 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     fun addSongInfo(info: SongInfo)
 
     /**
+     * 添加一首歌,指定位置
+     */
+    fun addSongInfo(index: Int, info: SongInfo)
+
+    /**
      * 删除
      */
     fun removeSongInfo(songId: String)
