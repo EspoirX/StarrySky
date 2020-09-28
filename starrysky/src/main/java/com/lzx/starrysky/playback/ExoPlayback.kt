@@ -192,7 +192,7 @@ class ExoPlayback(val context: Context,
             else -> Util.inferContentType(uri, null)
 
         }
-        dataSourceFactory = buildDataSourceFactory()
+        dataSourceFactory = buildDataSourceFactory(type)
         val basePath = "com.google.android.exoplayer2.source."
         return when (type) {
             C.TYPE_DASH -> {
@@ -264,7 +264,6 @@ class ExoPlayback(val context: Context,
             val renderersFactory = DefaultRenderersFactory(context)
                 .setExtensionRendererMode(extensionRendererMode)
 
-
             val builder = ParametersBuilder(context)
             if (Util.SDK_INT >= 21) {
                 builder.setTunnelingAudioSessionId(C.generateAudioSessionIdV21(context))
@@ -284,23 +283,26 @@ class ExoPlayback(val context: Context,
     }
 
     @Synchronized
-    private fun buildDataSourceFactory(): DataSource.Factory? {
+    private fun buildDataSourceFactory(type: Int): DataSource.Factory? {
         val userAgent = Util.getUserAgent(context, "StarrySky")
-        return if (cache?.isOpenCache() == true && cache is ExoCache) {
+        return if (cache?.isOpenCache() == true && cache is ExoCache && !type.isStreamingType()) {
             val upstreamFactory = DefaultDataSourceFactory(context, DefaultHttpDataSourceFactory(userAgent))
-            buildReadOnlyCacheDataSource(upstreamFactory, cache.getDownloadCache())
+            buildCacheDataSource(upstreamFactory, cache.getDownloadCache())
         } else {
             DefaultDataSourceFactory(context, DefaultHttpDataSourceFactory(userAgent))
         }
     }
 
+    private fun Int.isStreamingType(): Boolean {
+        return this == TYPE_RTMP || this == C.TYPE_DASH || this == C.TYPE_SS || this == C.TYPE_HLS
+    }
+
     @Synchronized
-    private fun buildReadOnlyCacheDataSource(upstreamFactory: DataSource.Factory?, cache: Cache?): CacheDataSource.Factory? {
+    private fun buildCacheDataSource(upstreamFactory: DataSource.Factory?, cache: Cache?): CacheDataSource.Factory? {
         return cache?.let {
             CacheDataSource.Factory()
                 .setCache(it)
                 .setUpstreamDataSourceFactory(upstreamFactory)
-                .setCacheWriteDataSinkFactory(null)
                 .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
         }
     }

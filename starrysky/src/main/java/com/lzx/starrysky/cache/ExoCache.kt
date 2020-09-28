@@ -49,8 +49,12 @@ class ExoCache(private val context: Context, private val openCache: Boolean, pri
     fun getDownloadCache(): Cache? {
         if (exoCache == null) {
             val cacheFile = getCacheDirectory(context, cacheDir) ?: return null
-            val cacheEvictor = LeastRecentlyUsedCacheEvictor(512 * 1024 * 1024)
-            exoCache = SimpleCache(cacheFile, cacheEvictor, ExoDatabaseProvider(context))
+//            val cacheEvictor = LeastRecentlyUsedCacheEvictor(512 * 1024 * 1024)
+//            exoCache = SimpleCache(cacheFile, cacheEvictor, ExoDatabaseProvider(context))
+
+            val evictor = LeastRecentlyUsedCacheEvictor((100 * 1024 * 1024).toLong())
+            val databaseProvider = ExoDatabaseProvider(context)
+            exoCache = SimpleCache(cacheFile, evictor, databaseProvider)
         }
         return exoCache
     }

@@ -9,7 +9,6 @@ import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Environment
 import android.os.IBinder
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
@@ -62,7 +61,8 @@ open class TestApplication : Application() {
         }
         val config = StarrySkyConfig().newBuilder()
             .isOpenCache(true)
-            .setCache(MyCache(this))
+            .setCacheDestFileDir("StarrySkyCache/".toSdcardPath())
+//            .setCache(MyCache(this))
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
             .addInterceptor(RequestSongCoverInterceptor())
