@@ -115,6 +115,8 @@ info.songUrl = "http://music.163.com/song/media/outer/url?id=317151.mp3"
 StarrySky.with().playMusicByInfo(info)
 ```
 
+几乎所有 API 都是通过 StarrySky.with() 方法去调用，API 本身也会有注释。
+
 ## 使用文档
 
 - [StarrySky使用说明 点我！点我！点我！](https://github.com/EspoirX/StarrySky/blob//androidx/readme/StarrySky%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
