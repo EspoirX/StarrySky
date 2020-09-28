@@ -21,7 +21,7 @@ class PlayerControlImpl(
     private val playbackManager: PlaybackManager
 ) : PlayerControl {
 
-    private val focusChangeState = MutableLiveData<Pair<SongInfo?, Int>>()
+    private val focusChangeState = MutableLiveData<Triple<SongInfo?, Int, Boolean>>()
     private val playbackState = MutableLiveData<PlaybackStage>()
     private val playerEventListener = mutableListOf<OnPlayerEventListener>()
 
@@ -274,7 +274,7 @@ class PlayerControlImpl(
 
     override fun getPlayerEventListeners(): MutableList<OnPlayerEventListener> = playerEventListener
 
-    override fun focusStateChange(): MutableLiveData<Pair<SongInfo?, Int>> = focusChangeState
+    override fun focusStateChange(): MutableLiveData<Triple<SongInfo?, Int, Boolean>> = focusChangeState
 
     override fun playbackState(): MutableLiveData<PlaybackStage> = playbackState
 
@@ -285,7 +285,7 @@ class PlayerControlImpl(
         }
     }
 
-    override fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int) {
-        focusChangeState.postValue(Pair(songInfo, currentAudioFocusState))
+    override fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int, focusGain: Boolean) {
+        focusChangeState.postValue(Triple(songInfo, currentAudioFocusState, focusGain))
     }
 }

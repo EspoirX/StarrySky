@@ -67,8 +67,8 @@ class ServiceBridge(private val context: Context) : Binder() {
                 sessionManager?.updateMetaData(playbackStage.songInfo)
             }
 
-            override fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int) {
-                serviceCallback?.onFocusStateChange(songInfo, currentAudioFocusState)
+            override fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int, focusGain: Boolean) {
+                serviceCallback?.onFocusStateChange(songInfo, currentAudioFocusState, focusGain)
             }
         })
         //播放控制

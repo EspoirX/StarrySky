@@ -1,7 +1,6 @@
 package com.lzx.starrysky.playback
 
 import android.os.Bundle
-import com.google.android.exoplayer2.source.LoopingMediaSource
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.intercept.InterceptorCallback
@@ -243,8 +242,8 @@ class PlaybackManager(
         updatePlaybackState(songInfo, error, Playback.STATE_ERROR)
     }
 
-    override fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int) {
-        serviceCallback?.onFocusStateChange(songInfo, currentAudioFocusState)
+    override fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int, focusGain: Boolean) {
+        serviceCallback?.onFocusStateChange(songInfo, currentAudioFocusState, focusGain)
     }
 
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {
@@ -292,6 +291,6 @@ class PlaybackManager(
 
     interface PlaybackServiceCallback {
         fun onPlaybackStateUpdated(playbackStage: PlaybackStage)
-        fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int)
+        fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int, focusGain: Boolean)
     }
 }

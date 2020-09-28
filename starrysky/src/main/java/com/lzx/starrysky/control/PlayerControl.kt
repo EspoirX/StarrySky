@@ -337,7 +337,7 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     /**
      * 焦点变化监听
      */
-    fun focusStateChange(): MutableLiveData<Pair<SongInfo?, Int>>
+    fun focusStateChange(): MutableLiveData<Triple<SongInfo?, Int, Boolean>>
 
     fun getPlayerEventListeners(): MutableList<OnPlayerEventListener>
 

@@ -154,13 +154,24 @@ val config = StarrySkyConfig().newBuilder()
 val config = StarrySkyConfig().newBuilder()
     .isAutoManagerFocus(false)
     .setOnAudioFocusChangeListener(object : AudioFocusChangeListener {
-        override fun onAudioFocusChange(songInfo: SongInfo?, state: Int) {
-             //...
+        override fun onAudioFocusChange(songInfo: SongInfo?, state: Int, focusGain: Boolean) {
+            if (state == FocusAndLockManager.AUDIO_NO_FOCUS_NO_DUCK) {
+                StarrySky.with().pauseMusic()
+            } else {
+                if (state == FocusAndLockManager.AUDIO_NO_FOCUS_CAN_DUCK) {
+                    StarrySky.with().setVolume(FocusAndLockManager.VOLUME_DUCK)
+                } else {
+                    StarrySky.with().setVolume(FocusAndLockManager.VOLUME_NORMAL)
+                }
+                if (focusGain) {
+                    StarrySky.with().restoreMusic()
+                }
+            }
         }
     })
     .build()
 ```
-当然这个监听只有在 isAutoManagerFocus 为 false 的时候才会生效。参数里，songInfo 就是当前播放的音频信息。state 就是焦点状态。  
+上面的代码是自己实现焦点管理的一个示例代码，当然这个监听只有在 isAutoManagerFocus 为 false 的时候才会生效。参数里，songInfo 就是当前播放的音频信息。state 就是焦点状态。  
 state 的取值为 AUDIO_NO_FOCUS_NO_DUCK，AUDIO_NO_FOCUS_CAN_DUCK，AUDIO_FOCUSED。都定义在 FocusAndLockManager 中。  
 而 state 在什么时候取什么值，也可以查看 FocusAndLockManager 这个类了解，跟这个类里面的 currentAudioFocusState 取值相同。就不多说了。
 

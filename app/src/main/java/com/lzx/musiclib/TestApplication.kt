@@ -16,6 +16,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
 import com.lzx.musiclib.viewmodel.MusicViewModel
+import com.lzx.starrysky.AudioFocusChangeListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyConfig
@@ -25,6 +26,7 @@ import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
+import com.lzx.starrysky.playback.FocusAndLockManager
 import com.lzx.starrysky.utils.MainLooper
 import com.lzx.starrysky.utils.SpUtil
 import com.qw.soul.permission.SoulPermission
@@ -87,6 +89,23 @@ open class TestApplication : Application() {
             .setNotificationConfig(notificationConfig)
             .isCreateRefrainPlayer(true)
             .isAutoManagerFocus(false)  //因为开了伴奏播放器，所以要关闭自动焦点管理功能
+            //自己管理焦点的示例代码
+//            .setOnAudioFocusChangeListener(object : AudioFocusChangeListener {
+//                override fun onAudioFocusChange(songInfo: SongInfo?, state: Int, focusGain: Boolean) {
+//                    if (state == FocusAndLockManager.AUDIO_NO_FOCUS_NO_DUCK) {
+//                        StarrySky.with().pauseMusic()
+//                    } else {
+//                        if (state == FocusAndLockManager.AUDIO_NO_FOCUS_CAN_DUCK) {
+//                            StarrySky.with().setVolume(FocusAndLockManager.VOLUME_DUCK)
+//                        } else {
+//                            StarrySky.with().setVolume(FocusAndLockManager.VOLUME_NORMAL)
+//                        }
+//                        if (focusGain) {
+//                            StarrySky.with().restoreMusic()
+//                        }
+//                    }
+//                }
+//            })
             .build()
         StarrySky.init(this, config, object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
