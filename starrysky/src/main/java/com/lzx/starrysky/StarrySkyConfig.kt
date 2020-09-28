@@ -38,6 +38,9 @@ open class StarrySkyConfig internal constructor(
     @get:JvmName("cacheManager")
     val cache: ICache? = builder.cache
 
+    //最大缓存size
+    var cacheMaxBytes: Long = builder.cacheMaxBytes
+
     //拦截器
     @get:JvmName("interceptors")
     val interceptors: MutableList<StarrySkyInterceptor> = builder.interceptors
@@ -77,6 +80,7 @@ open class StarrySkyConfig internal constructor(
         internal var isOpenCache = false
         internal var cacheDestFileDir: String? = null
         internal var cache: ICache? = null
+        internal var cacheMaxBytes: Long = 512 * 1024 * 1024
         internal val interceptors: MutableList<StarrySkyInterceptor> = mutableListOf()
         internal var imageLoaderStrategy: ImageLoaderStrategy? = null
         internal var playback: Playback? = null
@@ -91,6 +95,7 @@ open class StarrySkyConfig internal constructor(
             this.notificationFactory = config.notificationFactory
             this.isOpenCache = config.isOpenCache
             this.cacheDestFileDir = config.cacheDestFileDir
+            this.cacheMaxBytes = config.cacheMaxBytes
             this.interceptors += config.interceptors
             this.imageLoaderStrategy = config.imageLoader
             this.playback = config.playback
@@ -100,35 +105,21 @@ open class StarrySkyConfig internal constructor(
             this.isCreateRefrainPlayer = config.isCreateRefrainPlayer
         }
 
-        fun isOpenNotification(isOpenNotification: Boolean) = apply {
-            this.isOpenNotification = isOpenNotification
-        }
+        fun isOpenNotification(isOpenNotification: Boolean) = apply { this.isOpenNotification = isOpenNotification }
 
-        fun setNotificationConfig(notificationConfig: NotificationConfig) = apply {
-            this.notificationConfig = notificationConfig
-        }
+        fun setNotificationConfig(config: NotificationConfig) = apply { this.notificationConfig = config }
 
-        fun setNotificationFactory(
-            notificationFactory: StarrySkyNotificationManager.NotificationFactory
-        ) = apply {
-            this.notificationFactory = notificationFactory
-        }
+        fun setNotificationFactory(factory: StarrySkyNotificationManager.NotificationFactory) = apply { this.notificationFactory = factory }
 
-        fun isOpenCache(isOpenCache: Boolean) = apply {
-            this.isOpenCache = isOpenCache
-        }
+        fun isOpenCache(isOpenCache: Boolean) = apply { this.isOpenCache = isOpenCache }
 
-        fun setCacheDestFileDir(cacheDestFileDir: String) = apply {
-            this.cacheDestFileDir = cacheDestFileDir
-        }
+        fun setCacheDestFileDir(cacheDestFileDir: String) = apply { this.cacheDestFileDir = cacheDestFileDir }
 
-        fun setCache(cache: ICache) = apply {
-            this.cache = cache
-        }
+        fun setCacheMaxBytes(maxBytes: Long) = apply { this.cacheMaxBytes = maxBytes }
 
-        fun addInterceptor(interceptor: StarrySkyInterceptor) = apply {
-            interceptors += interceptor
-        }
+        fun setCache(cache: ICache) = apply { this.cache = cache }
+
+        fun addInterceptor(interceptor: StarrySkyInterceptor) = apply { interceptors += interceptor }
 
         fun setImageLoader(imageLoader: ImageLoaderStrategy) = apply { this.imageLoaderStrategy = imageLoader }
 
@@ -141,7 +132,6 @@ open class StarrySkyConfig internal constructor(
         fun setOnAudioFocusChangeListener(listener: AudioFocusChangeListener) = apply { this.focusChangeListener = listener }
 
         fun isCreateRefrainPlayer(isCreateRefrainPlayer: Boolean) = apply { this.isCreateRefrainPlayer = isCreateRefrainPlayer }
-
 
         fun build(): StarrySkyConfig {
             return StarrySkyConfig(this)

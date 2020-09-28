@@ -9,7 +9,11 @@ import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvicto
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import java.io.File
 
-class ExoCache(private val context: Context, private val openCache: Boolean, private val cacheDir: String?) : ICache {
+class ExoCache(private val context: Context,
+               private val openCache: Boolean,
+               private val cacheDir: String?,
+               private val cacheMaxBytes: Long
+) : ICache {
 
     private var cacheFile: File? = null
     private var exoCache: Cache? = null
@@ -49,12 +53,8 @@ class ExoCache(private val context: Context, private val openCache: Boolean, pri
     fun getDownloadCache(): Cache? {
         if (exoCache == null) {
             val cacheFile = getCacheDirectory(context, cacheDir) ?: return null
-//            val cacheEvictor = LeastRecentlyUsedCacheEvictor(512 * 1024 * 1024)
-//            exoCache = SimpleCache(cacheFile, cacheEvictor, ExoDatabaseProvider(context))
-
-            val evictor = LeastRecentlyUsedCacheEvictor((100 * 1024 * 1024).toLong())
-            val databaseProvider = ExoDatabaseProvider(context)
-            exoCache = SimpleCache(cacheFile, evictor, databaseProvider)
+            val cacheEvictor = LeastRecentlyUsedCacheEvictor(cacheMaxBytes)
+            exoCache = SimpleCache(cacheFile, cacheEvictor, ExoDatabaseProvider(context))
         }
         return exoCache
     }

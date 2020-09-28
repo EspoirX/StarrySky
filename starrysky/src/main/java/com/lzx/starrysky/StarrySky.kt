@@ -191,7 +191,12 @@ class StarrySky {
                 bridge?.register?.refrainPlayback = playback
             }
             bridge?.register?.imageLoader = imageLoader
-            val cache = if (config.cache == null) ExoCache(globalContext, config.isOpenCache, config.cacheDestFileDir) else config.cache
+            val cache = if (config.cache == null) {
+                ExoCache(globalContext,
+                    config.isOpenCache,
+                    config.cacheDestFileDir,
+                    config.cacheMaxBytes)
+            } else config.cache
             bridge?.register?.cache = cache
             bridge?.register?.isOpenNotification = config.isOpenNotification
             bridge?.register?.notificationConfig = config.notificationConfig
