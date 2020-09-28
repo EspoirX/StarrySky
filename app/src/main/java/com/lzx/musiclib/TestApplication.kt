@@ -64,7 +64,7 @@ open class TestApplication : Application() {
         val config = StarrySkyConfig().newBuilder()
             .isOpenCache(true)
             .setCacheDestFileDir("StarrySkyCache/".toSdcardPath())
-//            .setCache(MyCache(this))
+//            .setCache(AndroidVideoCache(this))
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
             .addInterceptor(RequestSongCoverInterceptor())
@@ -207,7 +207,10 @@ open class TestApplication : Application() {
         }
     }
 
-    class MyCache(private val context: Context) : ICache {
+    /**
+     * 使用 AndroidVideoCache 这个第三方库做缓存的例子
+     */
+    class AndroidVideoCache(private val context: Context) : ICache {
 
         private var proxy: HttpProxyCacheServer? = null
         private var cacheFile: File? = null
