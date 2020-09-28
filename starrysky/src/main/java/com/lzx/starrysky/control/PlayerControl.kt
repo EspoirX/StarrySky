@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
 
@@ -337,7 +338,7 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     /**
      * 焦点变化监听
      */
-    fun focusStateChange(): MutableLiveData<Triple<SongInfo?, Int, Boolean>>
+    fun focusStateChange(): MutableLiveData<FocusInfo>
 
     fun getPlayerEventListeners(): MutableList<OnPlayerEventListener>
 

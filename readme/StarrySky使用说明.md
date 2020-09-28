@@ -148,32 +148,47 @@ val config = StarrySkyConfig().newBuilder()
     .isAutoManagerFocus(false) 
     .build()
 ```
-那么关掉之后，想要自己处理怎么办，StarrySky 默认实现了一套自定义焦点管理，具体的实现类是 FocusAndLockManager，在配置中可以通过 setOnAudioFocusChangeListener 
+那么关掉之后，想要自己处理怎么办，StarrySky 默认实现了一套自定义焦点管理，具体的实现类是 FocusManager，在配置中可以通过 setOnAudioFocusChangeListener 
 去监听焦点变化以便自己去做一些操作：
 ```kotlin
 val config = StarrySkyConfig().newBuilder()
     .isAutoManagerFocus(false)
     .setOnAudioFocusChangeListener(object : AudioFocusChangeListener {
-        override fun onAudioFocusChange(songInfo: SongInfo?, state: Int, focusGain: Boolean) {
-            if (state == FocusAndLockManager.AUDIO_NO_FOCUS_NO_DUCK) {
-                StarrySky.with().pauseMusic()
-            } else {
-                if (state == FocusAndLockManager.AUDIO_NO_FOCUS_CAN_DUCK) {
-                    StarrySky.with().setVolume(FocusAndLockManager.VOLUME_DUCK)
-                } else {
-                    StarrySky.with().setVolume(FocusAndLockManager.VOLUME_NORMAL)
-                }
-                if (focusGain) {
+            override fun onAudioFocusChange(focusInfo: FocusInfo) {
+                StarrySky.with().setVolume(focusInfo.volume)
+                if (focusInfo.playerCommand == FocusManager.DO_NOT_PLAY || focusInfo.playerCommand == FocusManager.WAIT_FOR_CALLBACK) {
+                    StarrySky.with().pauseMusic()
+                } else if (focusInfo.playerCommand == FocusManager.PLAY_WHEN_READY) {
                     StarrySky.with().restoreMusic()
                 }
             }
-        }
-    })
+        })
     .build()
 ```
-上面的代码是自己实现焦点管理的一个示例代码，当然这个监听只有在 isAutoManagerFocus 为 false 的时候才会生效。参数里，songInfo 就是当前播放的音频信息。state 就是焦点状态。  
-state 的取值为 AUDIO_NO_FOCUS_NO_DUCK，AUDIO_NO_FOCUS_CAN_DUCK，AUDIO_FOCUSED。都定义在 FocusAndLockManager 中。  
-而 state 在什么时候取什么值，也可以查看 FocusAndLockManager 这个类了解，跟这个类里面的 currentAudioFocusState 取值相同。就不多说了。
+上面的代码是自己实现焦点管理的一个示例代码，当然这个监听只有在 isAutoManagerFocus 为 false 的时候才会生效。  
+参数 FocusInfo 包含了焦点变化相关的信息：
+```kotlin
+/**
+ *  songInfo : 当前播放的音频信息
+ *  audioFocusState：焦点状态，4 个值：
+ *  STATE_NO_FOCUS            -> 当前没有音频焦点
+ *  STATE_HAVE_FOCUS          -> 所请求的音频焦点当前处于保持状态
+ *  STATE_LOSS_TRANSIENT      -> 音频焦点已暂时丢失
+ *  STATE_LOSS_TRANSIENT_DUCK -> 音频焦点已暂时丢失，但播放时音量可能会降低
+ *
+ *  playerCommand：播放指令，3 个值：
+ *  DO_NOT_PLAY       -> 不要播放
+ *  WAIT_FOR_CALLBACK -> 等待回调播放
+ *  PLAY_WHEN_READY   -> 可以播放
+ *
+ *  volume：焦点变化后推荐设置的音量，两个值：
+ *  VOLUME_DUCK   -> 0.2f
+ *  VOLUME_NORMAL ->  1.0f
+ */
+data class FocusInfo(var songInfo: SongInfo?, var audioFocusState: Int, var playerCommand: Int, var volume: Float)
+```
+具体意义可看注释，其中变量的定义都在 FocusManager 中。有兴趣可以了解一下。
+
 
 ### 8. 配置副歌播放器
 副歌播放器？说白了就是允许同时播放 2 个音频的功能，比如在正常播放的同时再播放一些伴奏，播放一些音效的功能，通过 isCreateRefrainPlayer 即可开启：

@@ -266,7 +266,6 @@ class MusicViewModel : ViewModel() {
                     .getArray("song_list")
                 val bannerList = mutableListOf<MusicBanner>()
                 bannerArray.forEach<JSONObject> {
-                    Log.i("XIAN", " BANNER = " + it.toString())
                     val banner = MusicBanner()
                     banner.type = it?.getString("type")
                     banner.id = it?.getString("id")

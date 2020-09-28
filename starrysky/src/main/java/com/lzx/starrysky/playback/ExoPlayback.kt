@@ -41,7 +41,8 @@ import java.util.Locale
  */
 class ExoPlayback(val context: Context,
                   private val cache: ICache?,
-                  private val isAutoManagerFocus: Boolean) : Playback, FocusAndLockManager.AudioFocusChangeListener {
+                  private val isAutoManagerFocus: Boolean)
+    : Playback, FocusManager.OnFocusStateChangeListener {
 
     companion object {
         const val TYPE_RTMP = 4
@@ -55,12 +56,15 @@ class ExoPlayback(val context: Context,
     private var trackSelectorParameters: DefaultTrackSelector.Parameters? = null
 
     private var currSongInfo: SongInfo? = null
-    private var playOnFocusGain: Boolean = false
     private var exoPlayerNullIsStopped = false
     private var callback: Playback.Callback? = null
     private val mEventListener by lazy { ExoPlayerEventListener() }
     private var sourceTypeErrorInfo: SourceTypeErrorInfo = SourceTypeErrorInfo()
-    private var focusAndLockManager = FocusAndLockManager(context, this)
+    private var focusManager = FocusManager(context)
+
+    init {
+        focusManager.listener = this
+    }
 
     override val playbackState: Int
         get() {
@@ -83,7 +87,7 @@ class ExoPlayback(val context: Context,
         get() = true
 
     override val isPlaying: Boolean
-        get() = playOnFocusGain || player?.playWhenReady == true
+        get() = player?.playWhenReady == true
 
     override val currentStreamPosition: Long
         get() = player?.currentPosition ?: 0
@@ -108,18 +112,9 @@ class ExoPlayback(val context: Context,
     override val audioSessionId: Int
         get() = player?.audioSessionId ?: 0
 
-    override fun stop() {
-        if (!isAutoManagerFocus) {
-            focusAndLockManager.giveUpAudioFocus()
-        }
-        releaseResources(true)
-    }
+    private fun getPlayWhenReady() = player?.playWhenReady ?: false
 
     override fun play(songInfo: SongInfo, isPlayWhenReady: Boolean) {
-        playOnFocusGain = true
-        if (!isAutoManagerFocus) {
-            focusAndLockManager.tryToGetAudioFocus()
-        }
         val mediaId = songInfo.songId
         if (mediaId.isEmpty()) {
             return
@@ -154,7 +149,7 @@ class ExoPlayback(val context: Context,
             player?.setMediaSource(mediaSource!!)
             player?.prepare()
             if (!isAutoManagerFocus) {
-                focusAndLockManager.acquireWifiLock()
+                focusManager.updateAudioFocus(getPlayWhenReady(), STATE_BUFFERING)
             }
         }
         //当错误发生时，如果还播放同一首歌，
@@ -162,6 +157,9 @@ class ExoPlayback(val context: Context,
         if (sourceTypeErrorInfo.happenSourceError && !mediaHasChanged) {
             player?.setMediaSource(mediaSource!!)
             player?.prepare()
+            if (!isAutoManagerFocus) {
+                focusManager.updateAudioFocus(getPlayWhenReady(), STATE_BUFFERING)
+            }
             if (sourceTypeErrorInfo.currPositionWhenError != 0L) {
                 if (sourceTypeErrorInfo.seekToPositionWhenError != 0L) {
                     player?.seekTo(sourceTypeErrorInfo.seekToPositionWhenError)
@@ -175,6 +173,9 @@ class ExoPlayback(val context: Context,
         //如果准备好就播放
         if (isPlayWhenReady) {
             player?.playWhenReady = true
+            if (!isAutoManagerFocus) {
+                player?.playbackState?.let { focusManager.updateAudioFocus(getPlayWhenReady(), it) }
+            }
         }
         if (songInfo.isRefrain()) {
             StarrySkyUtils.log("播放伴奏 = ${songInfo.songId}")
@@ -279,6 +280,9 @@ class ExoPlayback(val context: Context,
 
             player?.addListener(mEventListener)
             player?.setAudioAttributes(AudioAttributes.DEFAULT, isAutoManagerFocus)
+            if (!isAutoManagerFocus) {
+                player?.playbackState?.let { focusManager.updateAudioFocus(getPlayWhenReady(), it) }
+            }
         }
     }
 
@@ -313,18 +317,21 @@ class ExoPlayback(val context: Context,
             player?.removeListener(mEventListener)
             player = null
             exoPlayerNullIsStopped = true
-            playOnFocusGain = false
-        }
-        if (!isAutoManagerFocus) {
-            focusAndLockManager.releaseWifiLock()
+            if (!isAutoManagerFocus) {
+                focusManager.release()
+            }
         }
     }
 
+    override fun stop() {
+        releaseResources(true)
+    }
+
     override fun pause() {
-        if (!isAutoManagerFocus) {
-            focusAndLockManager.giveUpAudioFocus()
-        }
         player?.playWhenReady = false
+        if (!isAutoManagerFocus) {
+            player?.playbackState?.let { focusManager.updateAudioFocus(getPlayWhenReady(), it) }
+        }
         releaseResources(false)
     }
 
@@ -410,19 +417,11 @@ class ExoPlayback(val context: Context,
         }
     }
 
-    override fun onAudioFocusLossTransient() {
-        playOnFocusGain = player != null && playbackState == STATE_PLAYING
-    }
-
-    override fun onAudioFocusChange() {
-        configurePlayerState()
-    }
-
-    private fun configurePlayerState() {
+    override fun focusStateChange(info: FocusInfo) {
         if (isAutoManagerFocus) {
             return
         }
-        callback?.onFocusStateChange(currSongInfo, focusAndLockManager.currentAudioFocusState, playOnFocusGain)
+        callback?.onFocusStateChange(FocusInfo(currSongInfo, info.audioFocusState, info.playerCommand, info.volume))
     }
 }
 

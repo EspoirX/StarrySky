@@ -5,6 +5,7 @@ import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
+import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.Playback
 
 /**
@@ -141,8 +142,5 @@ open class StarrySkyConfig internal constructor(
 
 
 interface AudioFocusChangeListener {
-    /**
-     * state 定义见 FocusAndLockManager 类
-     */
-    fun onAudioFocusChange(songInfo: SongInfo?, state: Int, focusGain: Boolean)
+    fun onAudioFocusChange(focusInfo: FocusInfo)
 }

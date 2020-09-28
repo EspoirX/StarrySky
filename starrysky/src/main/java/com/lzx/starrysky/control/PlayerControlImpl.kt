@@ -6,6 +6,7 @@ import android.provider.MediaStore
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
@@ -21,7 +22,7 @@ class PlayerControlImpl(
     private val playbackManager: PlaybackManager
 ) : PlayerControl {
 
-    private val focusChangeState = MutableLiveData<Triple<SongInfo?, Int, Boolean>>()
+    private val focusChangeState = MutableLiveData<FocusInfo>()
     private val playbackState = MutableLiveData<PlaybackStage>()
     private val playerEventListener = mutableListOf<OnPlayerEventListener>()
 
@@ -274,7 +275,7 @@ class PlayerControlImpl(
 
     override fun getPlayerEventListeners(): MutableList<OnPlayerEventListener> = playerEventListener
 
-    override fun focusStateChange(): MutableLiveData<Triple<SongInfo?, Int, Boolean>> = focusChangeState
+    override fun focusStateChange(): MutableLiveData<FocusInfo> = focusChangeState
 
     override fun playbackState(): MutableLiveData<PlaybackStage> = playbackState
 
@@ -285,7 +286,7 @@ class PlayerControlImpl(
         }
     }
 
-    override fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int, focusGain: Boolean) {
-        focusChangeState.postValue(Triple(songInfo, currentAudioFocusState, focusGain))
+    override fun onFocusStateChange(info: FocusInfo) {
+        focusChangeState.postValue(info)
     }
 }

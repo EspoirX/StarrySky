@@ -122,7 +122,7 @@ interface Playback {
         /**
          * 焦点改变
          */
-        fun onFocusStateChange(songInfo: SongInfo?, currentAudioFocusState: Int, focusGain: Boolean)
+        fun onFocusStateChange(info: FocusInfo)
     }
 
     /**

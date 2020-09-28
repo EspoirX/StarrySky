@@ -10,6 +10,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -26,7 +27,8 @@ import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
-import com.lzx.starrysky.playback.FocusAndLockManager
+import com.lzx.starrysky.playback.FocusInfo
+import com.lzx.starrysky.playback.FocusManager
 import com.lzx.starrysky.utils.MainLooper
 import com.lzx.starrysky.utils.SpUtil
 import com.qw.soul.permission.SoulPermission
@@ -92,18 +94,13 @@ open class TestApplication : Application() {
             .isAutoManagerFocus(false)  //因为开了伴奏播放器，所以要关闭自动焦点管理功能
             //自己管理焦点的示例代码
 //            .setOnAudioFocusChangeListener(object : AudioFocusChangeListener {
-//                override fun onAudioFocusChange(songInfo: SongInfo?, state: Int, focusGain: Boolean) {
-//                    if (state == FocusAndLockManager.AUDIO_NO_FOCUS_NO_DUCK) {
+//                override fun onAudioFocusChange(focusInfo: FocusInfo) {
+//                    Log.i("TestApplication", "焦点state=" + focusInfo.audioFocusState + " 播放=" + focusInfo.playerCommand + " 音量=" + focusInfo.volume)
+//                    StarrySky.with().setVolume(focusInfo.volume)
+//                    if (focusInfo.playerCommand == FocusManager.DO_NOT_PLAY || focusInfo.playerCommand == FocusManager.WAIT_FOR_CALLBACK) {
 //                        StarrySky.with().pauseMusic()
-//                    } else {
-//                        if (state == FocusAndLockManager.AUDIO_NO_FOCUS_CAN_DUCK) {
-//                            StarrySky.with().setVolume(FocusAndLockManager.VOLUME_DUCK)
-//                        } else {
-//                            StarrySky.with().setVolume(FocusAndLockManager.VOLUME_NORMAL)
-//                        }
-//                        if (focusGain) {
-//                            StarrySky.with().restoreMusic()
-//                        }
+//                    } else if (focusInfo.playerCommand == FocusManager.PLAY_WHEN_READY) {
+//                        StarrySky.with().restoreMusic()
 //                    }
 //                }
 //            })
