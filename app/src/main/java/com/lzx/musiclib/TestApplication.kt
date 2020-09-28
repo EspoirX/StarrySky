@@ -64,6 +64,7 @@ open class TestApplication : Application() {
         val config = StarrySkyConfig().newBuilder()
             .isOpenCache(true)
             .setCacheDestFileDir("StarrySkyCache/".toSdcardPath())
+//            .setCacheMaxBytes(1024 * 1024 * 1024)  //设置缓存上限，默认 512 * 1024 * 1024
 //            .setCache(AndroidVideoCache(this))
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
