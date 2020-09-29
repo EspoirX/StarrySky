@@ -118,7 +118,7 @@ class FocusManager(val context: Context) {
     private fun requestAudioFocusDefault(): Int {
         return audioManager?.requestAudioFocus(
             focusListener,
-            AudioManager.STREAM_MUSIC,
+            Util.getStreamTypeForAudioUsage(audioAttributes.usage),
             focusGain) ?: 0
     }
 
@@ -128,7 +128,11 @@ class FocusManager(val context: Context) {
     @RequiresApi(26)
     private fun requestAudioFocusV26(): Int {
         if (audioFocusRequest == null || rebuildAudioFocusRequest) {
-            val builder = if (audioFocusRequest == null) AudioFocusRequest.Builder(focusGain) else AudioFocusRequest.Builder(audioFocusRequest!!)
+            val builder = if (audioFocusRequest == null) {
+                AudioFocusRequest.Builder(focusGain)
+            } else {
+                AudioFocusRequest.Builder(audioFocusRequest!!)
+            }
             val willPauseWhenDucked: Boolean = willPauseWhenDucked()
             audioFocusRequest = builder
                 .setAudioAttributes(audioAttributes.audioAttributesV21)
