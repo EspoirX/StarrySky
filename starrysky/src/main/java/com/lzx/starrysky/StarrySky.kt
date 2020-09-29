@@ -22,209 +22,188 @@ import com.lzx.starrysky.utils.isMainProcess
 import java.util.WeakHashMap
 
 
-class StarrySky {
+object StarrySky {
 
-    companion object {
+    @Volatile
+    private var isBindService = false
 
-        @Volatile
-        private var sStarrySky: StarrySky? = null
+    private lateinit var config: StarrySkyConfig
+    private lateinit var globalContext: Application
+    private var connection: ServiceConnection? = null
+    private var bridge: ServiceBridge? = null
+    private val connectionMap = WeakHashMap<Context, ServiceConnection>()
+    private var serviceToken: ServiceToken? = null
+    private var playback: Playback? = null
+    private var imageLoader: ImageLoaderStrategy? = null
+    private val playbackState = MutableLiveData<PlaybackStage>()
 
-        @Volatile
-        private var isInitializing = false
+    /**
+     * 上下文，配置，连接服务监听
+     */
+    @JvmStatic
+    fun init(application: Application, config: StarrySkyConfig = StarrySkyConfig(), connection: ServiceConnection? = null) {
+        if (!application.isMainProcess()) {
+            return
+        }
+        this.config = config
+        globalContext = application
+        this.connection = connection
+        SpUtil.init(globalContext)
+        checkAndInitializeStarrySky()
+    }
 
-        @Volatile
-        private var alreadyInit = false
-        private lateinit var config: StarrySkyConfig
-        private lateinit var globalContext: Application
-        private var connection: ServiceConnection? = null
-        private var bridge: ServiceBridge? = null
-        private val connectionMap = WeakHashMap<Context, ServiceConnection>()
-        private var serviceToken: ServiceToken? = null
-        private var playback: Playback? = null
-        private var imageLoader: ImageLoaderStrategy? = null
-        private val playbackState = MutableLiveData<PlaybackStage>()
+    /**
+     * 获取控制播放对象
+     */
+    @JvmStatic
+    fun with(): PlayerControl {
+        if (bridge == null || bridge?.playerControl == null) {
+            throw NullPointerException("请确保 with 方法在服务连接成功后调用")
+        }
+        return bridge?.playerControl!!
+    }
 
-        /**
-         * 上下文，配置，连接服务监听
-         */
-        @JvmStatic
-        fun init(application: Application, config: StarrySkyConfig = StarrySkyConfig(), connection: ServiceConnection? = null) {
-            if (!application.isMainProcess()) {
+    /**
+     * 直接获取实例
+     */
+    @JvmStatic
+    fun get(): StarrySky {
+        return this
+    }
+
+    /**
+     * 初始化前检查
+     */
+    private fun checkAndInitializeStarrySky() {
+        try {
+            if (isBindService) return
+            initializeStarrySky()
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            isBindService = false
+        }
+    }
+
+    /**
+     * 初始化
+     */
+    private fun initializeStarrySky() {
+        if (config.isUserService) {
+            bindService()
+        } else {
+            bridge = ServiceBridge(globalContext)
+            registerComponentsAndStart()
+            isBindService = true
+        }
+    }
+
+    /**
+     * 绑定服务
+     */
+    private fun bindService() {
+        try {
+            val contextWrapper = ContextWrapper(globalContext)
+            val intent = Intent(contextWrapper, MusicService::class.java)
+            //ContextCompat.startForegroundService(contextWrapper, intent)
+            //contextWrapper.startService(intent)
+            val result = contextWrapper.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+            if (result) {
+                connectionMap[contextWrapper] = serviceConnection
+                serviceToken = ServiceToken(contextWrapper)
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+    }
+
+    /**
+     * 解绑服务
+     */
+    @JvmStatic
+    fun unBindService() {
+        try {
+            if (serviceToken == null) {
                 return
             }
-            if (alreadyInit) {
-                return
-            }
-            alreadyInit = true
-            this.config = config
-            globalContext = application
-            this.connection = connection
-            SpUtil.init(globalContext)
-            get()
-        }
-
-        /**
-         * 获取控制播放对象
-         */
-        @JvmStatic
-        fun with(): PlayerControl {
-            if (bridge == null || bridge?.playerControl == null) {
-                throw NullPointerException("请确保 with 方法在服务连接成功后调用")
-            }
-            return bridge?.playerControl!!
-        }
-
-        /**
-         * 直接获取实例
-         */
-        @JvmStatic
-        fun get(): StarrySky {
-            if (sStarrySky == null) {
-                synchronized(StarrySky::class.java) {
-                    if (sStarrySky == null) {
-                        checkAndInitializeStarrySky()
-                    }
+            val contextWrapper = serviceToken?.wrappedContext
+            val binder = connectionMap.getOrDefault(contextWrapper, null)
+            binder?.let {
+                contextWrapper?.unbindService(binder)
+                if (connectionMap.isEmpty()) {
+                    bridge?.setServiceCallback(null)
+                    bridge = null
                 }
             }
-            return sStarrySky!!
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+    }
+
+    /**
+     * 获取状态LiveData，如果在MainActivity需要监听进度，建议用这个，因为主界面时可能服务还没连接
+     * 所以 with() 方法获取的对象可能为null
+     */
+    @JvmStatic
+    fun playbackState(): MutableLiveData<PlaybackStage> {
+        return playbackState
+    }
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            bridge = service as ServiceBridge?
+            registerComponentsAndStart()
+            isBindService = true
+            connection?.onServiceConnected(name, service)
         }
 
-        /**
-         * 初始化前检查
-         */
-        private fun checkAndInitializeStarrySky() {
-            check(!isInitializing) { "checkAndInitializeStarrySky" }
-            isInitializing = true
-            try {
-                initializeStarrySky()
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-            } finally {
-                isInitializing = false
-            }
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isBindService = false
+            connection?.onServiceDisconnected(name)
         }
+    }
 
-        /**
-         * 初始化
-         */
-        private fun initializeStarrySky() {
-            sStarrySky = StarrySky()
-            if (config.isUserService) {
-                bindService()
-            } else {
-                bridge = ServiceBridge(globalContext)
-                registerComponentsAndStart()
-            }
+    /**
+     * 注册组件并启动
+     */
+    private fun registerComponentsAndStart() {
+        config.interceptors.forEach {
+            bridge?.addInterceptor(it)
         }
-
-        /**
-         * 绑定服务
-         */
-        private fun bindService() {
-            try {
-                val contextWrapper = ContextWrapper(globalContext)
-                val intent = Intent(contextWrapper, MusicService::class.java)
-                //ContextCompat.startForegroundService(contextWrapper, intent)
-                //contextWrapper.startService(intent)
-                val result = contextWrapper.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-                if (result) {
-                    connectionMap[contextWrapper] = serviceConnection
-                    serviceToken = ServiceToken(contextWrapper)
-                }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-            }
+        bridge?.register?.playback = playback
+        if (config.isCreateRefrainPlayer) {
+            bridge?.register?.refrainPlayback = playback
         }
-
-        /**
-         * 解绑服务
-         */
-        @JvmStatic
-        fun unBindService() {
-            try {
-                if (serviceToken == null) {
-                    return
-                }
-                val contextWrapper = serviceToken?.wrappedContext
-                val binder = connectionMap.getOrDefault(contextWrapper, null)
-                binder?.let {
-                    contextWrapper?.unbindService(binder)
-                    if (connectionMap.isEmpty()) {
-                        bridge?.setServiceCallback(null)
-                        bridge = null
-                    }
-                }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-            }
-        }
-
-        /**
-         * 获取状态LiveData，如果在MainActivity需要监听进度，建议用这个，因为主界面时可能服务还没连接
-         * 所以 with() 方法获取的对象可能为null
-         */
-        @JvmStatic
-        fun playbackState(): MutableLiveData<PlaybackStage> {
-            return playbackState
-        }
-
-        private val serviceConnection = object : ServiceConnection {
-            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                bridge = service as ServiceBridge?
-                registerComponentsAndStart()
-                connection?.onServiceConnected(name, service)
+        bridge?.register?.imageLoader = imageLoader
+        val cache = if (config.cache == null) {
+            ExoCache(globalContext,
+                config.isOpenCache,
+                config.cacheDestFileDir,
+                config.cacheMaxBytes)
+        } else config.cache
+        bridge?.register?.cache = cache
+        bridge?.register?.isOpenNotification = config.isOpenNotification
+        bridge?.register?.notificationConfig = config.notificationConfig
+        bridge?.register?.notification = config.notificationFactory
+        bridge?.setServiceCallback(object : PlaybackManager.PlaybackServiceCallback {
+            override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
+                playbackState.postValue(playbackStage)
             }
 
-            override fun onServiceDisconnected(name: ComponentName?) {
-                connection?.onServiceDisconnected(name)
+            override fun onFocusStateChange(info: FocusInfo) {
+                config.focusChangeListener?.onAudioFocusChange(info)
             }
-        }
+        })
+        bridge?.start(config.isAutoManagerFocus, config.isCreateRefrainPlayer)
+    }
 
-        /**
-         * 注册组件并启动
-         */
-        private fun registerComponentsAndStart() {
-            config.interceptors.forEach {
-                bridge?.addInterceptor(it)
-            }
-            bridge?.register?.playback = playback
-            if (config.isCreateRefrainPlayer) {
-                bridge?.register?.refrainPlayback = playback
-            }
-            bridge?.register?.imageLoader = imageLoader
-            val cache = if (config.cache == null) {
-                ExoCache(globalContext,
-                    config.isOpenCache,
-                    config.cacheDestFileDir,
-                    config.cacheMaxBytes)
-            } else config.cache
-            bridge?.register?.cache = cache
-            bridge?.register?.isOpenNotification = config.isOpenNotification
-            bridge?.register?.notificationConfig = config.notificationConfig
-            bridge?.register?.notification = config.notificationFactory
-            bridge?.setServiceCallback(object : PlaybackManager.PlaybackServiceCallback {
-                override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
-                    playbackState.postValue(playbackStage)
-                }
-
-                override fun onFocusStateChange(info: FocusInfo) {
-                    config.focusChangeListener?.onAudioFocusChange(info)
-                }
-            })
-            bridge?.start(config.isAutoManagerFocus, config.isCreateRefrainPlayer)
-        }
-
-        /**
-         * 释放资源
-         */
-        @JvmStatic
-        fun release() {
-            unBindService()
-            isInitializing = false
-            alreadyInit = false
-            connection = null
-            sStarrySky = null
-        }
+    /**
+     * 释放资源
+     */
+    @JvmStatic
+    fun release() {
+        unBindService()
+        isBindService = false
+        connection = null
     }
 }
 

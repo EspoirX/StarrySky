@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Process
 import android.widget.Toast
 import com.lzx.starrysky.notification.INotification
+import java.util.Locale
 
 fun <T> Int.isIndexPlayable(queue: List<T>?): Boolean {
     return queue != null && this >= 0 && this < queue.size
@@ -67,4 +68,12 @@ fun Context.isMainProcess(): Boolean {
 
 fun String.md5(): String {
     return MD5.hexdigest(this)
+}
+
+fun String.isRTMP(): Boolean {
+    return this.toLowerCase(Locale.getDefault()).startsWith("rtmp://")
+}
+
+fun String.isFLAC(): Boolean {
+    return this.toLowerCase(Locale.getDefault()).endsWith(".flac")
 }

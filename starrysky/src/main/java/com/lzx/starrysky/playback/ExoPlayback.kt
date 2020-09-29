@@ -34,7 +34,8 @@ import com.lzx.starrysky.playback.Playback.Companion.STATE_IDLE
 import com.lzx.starrysky.playback.Playback.Companion.STATE_PAUSED
 import com.lzx.starrysky.playback.Playback.Companion.STATE_PLAYING
 import com.lzx.starrysky.utils.StarrySkyUtils
-import java.util.Locale
+import com.lzx.starrysky.utils.isFLAC
+import com.lzx.starrysky.utils.isRTMP
 
 /**
  * isAutoManagerFocus 是否让播放器自动管理焦点
@@ -185,8 +186,8 @@ class ExoPlayback(val context: Context,
     @Synchronized
     private fun createMediaSource(source: String): MediaSource {
         val uri = Uri.parse(source)
-        val isRtmpSource = source.toLowerCase(Locale.getDefault()).startsWith("rtmp://")
-        val isFlacSource = source.toLowerCase(Locale.getDefault()).endsWith(".flac")
+        val isRtmpSource = source.isRTMP()
+        val isFlacSource = source.isFLAC()
         val type = when {
             isRtmpSource -> TYPE_RTMP
             isFlacSource -> TYPE_FLAC

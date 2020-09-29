@@ -240,6 +240,7 @@ class FocusManager(val context: Context) {
 
 /**
  *  songInfo : 当前播放的音频信息
+ *
  *  audioFocusState：焦点状态，4 个值：
  *  STATE_NO_FOCUS            -> 当前没有音频焦点
  *  STATE_HAVE_FOCUS          -> 所请求的音频焦点当前处于保持状态
