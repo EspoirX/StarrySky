@@ -13,15 +13,22 @@ import android.os.Build
 import android.os.IBinder
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
+import com.lzx.starrysky.OnPlayerEventListener
+import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.utils.StarrySkyUtils
+import com.lzx.starrysky.utils.TimerTaskManager
 
 
 class MusicService : Service() {
 
     var bridge: ServiceBridge? = null
     private var noisyReceiver: BecomingNoisyReceiver? = null
+    private var timerTaskManager: TimerTaskManager? = null
+    private var timedOffDuration = -1L
+    private var timedOffFinishCurrSong = false
 
     companion object {
+        const val TAG_MUSIC_SERVICE = "STARRYSKY#TAG_MUSIC_SERVICE"
         var isRunningForeground = false
     }
 
@@ -53,6 +60,44 @@ class MusicService : Service() {
      *  bridge 里面的东西已经创建好
      */
     fun onCreateServiceBridgeSuccess() {
+        timerTaskManager = TimerTaskManager()
+        //音乐状态监听
+        bridge?.playerControl?.addPlayerEventListener(object : OnPlayerEventListener {
+            override fun onPlaybackStageChange(stage: PlaybackStage) {
+                if (stage.stage == PlaybackStage.IDEA && timedOffDuration != -1L && timedOffFinishCurrSong) {
+                    bridge?.playerControl?.stopMusic()
+                    timedOffDuration = -1
+                    timedOffFinishCurrSong = false
+                }
+            }
+        }, TAG_MUSIC_SERVICE)
+        //计时回调
+        timerTaskManager?.setUpdateProgressTask(Runnable {
+            timedOffDuration -= 1000
+            if (timedOffDuration <= 0) { //时间到了
+                timerTaskManager?.stopToUpdateProgress()
+                if (!timedOffFinishCurrSong) {
+                    bridge?.playerControl?.stopMusic()
+                    timedOffDuration = -1
+                    timedOffFinishCurrSong = false
+                }
+            }
+        })
+    }
+
+    /**
+     * 定时关闭功能实现
+     */
+    fun stopByTimedOff(time: Long, finishCurrSong: Boolean) {
+        if (time == 0L) {
+            timerTaskManager?.stopToUpdateProgress()
+            timedOffDuration = -1
+            timedOffFinishCurrSong = false
+            return
+        }
+        timedOffDuration = time
+        timedOffFinishCurrSong = finishCurrSong
+        timerTaskManager?.startToUpdateProgress()
     }
 
     /**
@@ -127,8 +172,10 @@ class MusicService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        timerTaskManager?.removeUpdateProgressTask()
         noisyReceiver?.unregister()
         bridge?.playerControl?.stopMusic()
         bridge?.notification?.stopNotification()
+        bridge?.playerControl?.removePlayerEventListener(TAG_MUSIC_SERVICE)
     }
 }

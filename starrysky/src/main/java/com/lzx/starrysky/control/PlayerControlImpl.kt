@@ -6,11 +6,13 @@ import android.provider.MediaStore
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.utils.SpUtil
 import com.lzx.starrysky.utils.StarrySkyUtils
 import com.lzx.starrysky.utils.data
 import com.lzx.starrysky.utils.duration
@@ -24,7 +26,7 @@ class PlayerControlImpl(
 
     private val focusChangeState = MutableLiveData<FocusInfo>()
     private val playbackState = MutableLiveData<PlaybackStage>()
-    private val playerEventListener = mutableListOf<OnPlayerEventListener>()
+    private val playerEventListener = hashMapOf<String, OnPlayerEventListener>()
 
     override fun playMusicById(songId: String) {
         if (provider.hasSongInfo(songId)) {
@@ -46,20 +48,13 @@ class PlayerControlImpl(
         playMusicImpl(info.songId, bundle)
     }
 
-    override fun playMusicByIndex(index: Int) {
-        val info = provider.getSongInfoByIndex(index)
-        info?.let {
-            playMusicImpl(it.songId)
-        }
-    }
-
     override fun playMusic(songInfos: MutableList<SongInfo>, index: Int) {
         updatePlayList(songInfos)
-        playMusicByIndex(index)
+        playMusicImpl(songInfos.getOrNull(index)?.songId, null)
     }
 
-    private fun playMusicImpl(mediaId: String, extras: Bundle? = null) {
-        playbackManager.onPlayFromMediaId(mediaId, extras)
+    private fun playMusicImpl(songId: String?, extras: Bundle? = null) {
+        playbackManager.onPlayFromMediaId(songId, extras)
     }
 
     override fun pauseMusic() {
@@ -167,7 +162,7 @@ class PlayerControlImpl(
     }
 
     override fun removeSongInfo(songId: String) {
-        provider.deleteSongInfoById(songId)
+        playbackManager.removeSongInfo(songId)
     }
 
     override fun clearPlayList() {
@@ -255,25 +250,32 @@ class PlayerControlImpl(
         return songInfos
     }
 
-    override fun addPlayerEventListener(listener: OnPlayerEventListener?) {
+    override fun cacheSwitch(switch: Boolean) {
+        SpUtil.instance?.putBoolean(ICache.KEY_CACHE_SWITCH, switch)
+    }
+
+    override fun stopByTimedOff(time: Long, isFinishCurrSong: Boolean) {
+        if (time < 0) {
+            return
+        }
+        playbackManager.stopByTimedOff(time, isFinishCurrSong)
+    }
+
+    override fun addPlayerEventListener(listener: OnPlayerEventListener?, tag: String) {
         listener?.let {
-            if (!playerEventListener.contains(it)) {
-                playerEventListener.add(it)
+            if (!playerEventListener.containsKey(tag)) {
+                playerEventListener[tag] = it
             }
         }
     }
 
-    override fun removePlayerEventListener(listener: OnPlayerEventListener?) {
-        listener?.let {
-            playerEventListener.remove(it)
-        }
+    override fun removePlayerEventListener(tag: String) {
+        playerEventListener.remove(tag)
     }
 
     override fun clearPlayerEventListener() {
         playerEventListener.clear()
     }
-
-    override fun getPlayerEventListeners(): MutableList<OnPlayerEventListener> = playerEventListener
 
     override fun focusStateChange(): MutableLiveData<FocusInfo> = focusChangeState
 
@@ -282,7 +284,7 @@ class PlayerControlImpl(
     override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
         playbackState.postValue(playbackStage)
         playerEventListener.forEach {
-            it.onPlaybackStageChange(playbackStage)
+            it.value.onPlaybackStageChange(playbackStage)
         }
     }
 

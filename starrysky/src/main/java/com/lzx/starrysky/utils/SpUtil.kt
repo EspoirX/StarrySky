@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 
+/**
+ * 简单写的一个sp工具类
+ * 推荐一个个人觉得封装的不错的sp库：https://github.com/chibatching/Kotpref
+ */
 class SpUtil private constructor() {
 
     fun putString(key: String?, value: String?): Boolean {

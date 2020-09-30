@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="60dp"
     android:orientation="horizontal"
@@ -9,26 +10,26 @@
         android:id="@+id/imgAnim"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
         android:src="@drawable/anim_playing" />
 
     <TextView
         android:id="@+id/songName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_toRightOf="@+id/imgAnim"
+        android:layout_weight="1"
+        android:ellipsize="end"
         android:gravity="center_vertical"
-        android:text="大佬看见的"
-        android:textColor="#000000" />
+        android:singleLine="true"
+        android:textColor="#000000"
+        tool:text="大佬看见的" />
 
-    <TextView
-        android:id="@+id/singer"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@+id/songName"
-        android:gravity="center_vertical"
-        android:text="dsad"
-        android:textColor="#b2b2b2"
-        android:textSize="12sp" />
-</RelativeLayout>
+    <ImageView
+        android:id="@+id/btnClose"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/ic_close" />
+</LinearLayout>

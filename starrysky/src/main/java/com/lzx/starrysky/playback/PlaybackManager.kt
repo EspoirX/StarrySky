@@ -1,5 +1,6 @@
 package com.lzx.starrysky.playback
 
+import android.content.Context
 import android.os.Bundle
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.control.RepeatMode
@@ -7,10 +8,13 @@ import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.InterceptorService
 import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.notification.INotification
+import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.utils.MainLooper
 import com.lzx.starrysky.utils.StarrySkyUtils
+import com.lzx.starrysky.utils.changePlaybackState
 
 class PlaybackManager(
+    private val context: Context,
     val mediaQueue: MediaQueueManager,
     val playback: Playback,
     private val interceptorService: InterceptorService) : Playback.Callback {
@@ -60,12 +64,12 @@ class PlaybackManager(
         refrainPlayback?.stop()
     }
 
-    fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
-        mediaId?.apply {
+    fun onPlayFromMediaId(songId: String?, extras: Bundle?) {
+        songId?.apply {
             if (extras != null && extras.getInt("clearSongId", 0) == 1) {
                 playback.currentMediaId = ""
             }
-            mediaQueue.updateIndexBySongId(this)
+            mediaQueue.updateIndexBySongId(songId)
             handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = true)
         }
     }
@@ -128,16 +132,25 @@ class PlaybackManager(
         }
     }
 
-    fun onSkipToNext() {
+    fun onSkipToNext(): Boolean {
         if (mediaQueue.skipQueuePosition(1)) {
             handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = true)
         }
+        return false
     }
 
     fun onSkipToPrevious() {
         if (mediaQueue.skipQueuePosition(-1)) {
             handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = true)
         }
+    }
+
+    private fun deleteAndUpdateInfo(songId: String) {
+        val repeatMode = StarrySkyUtils.repeatMode.repeatMode
+        val isActiveTrigger = repeatMode != RepeatMode.REPEAT_MODE_SHUFFLE
+        val skipSongInfo = mediaQueue.getCurrentSongInfo(isActiveTrigger)
+        mediaQueue.provider.deleteSongInfoById(songId)
+        mediaQueue.updateIndexByPlayingInfo(skipSongInfo)
     }
 
     fun onFastForward() {
@@ -163,7 +176,7 @@ class PlaybackManager(
         if (repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
             mediaQueue.provider.updateShuffleSongList()
         } else {
-            mediaQueue.updateIndexBySongId(playback.currentMediaId)
+            mediaQueue.updateIndexByPlayingInfo(playback.currPlayInfo)
         }
     }
 
@@ -185,6 +198,26 @@ class PlaybackManager(
             return if (repeatMode.isLoop) true else !mediaQueue.currSongIsFirstSong()
         }
         return true
+    }
+
+    fun removeSongInfo(songId: String) {
+        val isSameInfo = songId == playback.currPlayInfo?.songId
+        val isPlaying = playback.playbackState == Playback.STATE_PLAYING && isSameInfo
+        val isPaused = playback.playbackState == Playback.STATE_PAUSED && isSameInfo
+        if (isPlaying) {
+            if (mediaQueue.skipQueuePosition(1)) {
+                deleteAndUpdateInfo(songId)
+                handlePlayRequest(isPlayWhenReady = true, isActiveTrigger = true)
+            }
+        } else if (isPaused) {
+            onStop()
+            if (mediaQueue.skipQueuePosition(1)) {
+                deleteAndUpdateInfo(songId)
+                handlePlayRequest(isPlayWhenReady = false, isActiveTrigger = true)
+            }
+        } else {
+            deleteAndUpdateInfo(songId)
+        }
     }
 
     override fun onPlayerStateChanged(songInfo: SongInfo?, playWhenReady: Boolean, playbackState: Int) {
@@ -247,35 +280,21 @@ class PlaybackManager(
     }
 
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {
-        var newState = PlaybackStage.IDEA
-        when (state) {
-            Playback.STATE_IDLE -> {
-                newState = PlaybackStage.IDEA
-            }
-            Playback.STATE_BUFFERING -> {
-                newState = PlaybackStage.BUFFERING
-            }
-            Playback.STATE_PLAYING -> {
-                newState = PlaybackStage.PLAYING
-                if (!currPlayInfo.isRefrain()) {
-                    startNotification(currPlayInfo, newState)
-                }
-            }
-            Playback.STATE_PAUSED -> {
-                newState = PlaybackStage.PAUSE
-                if (!currPlayInfo.isRefrain()) {
-                    startNotification(currPlayInfo, newState)
-                }
-            }
-            Playback.STATE_STOPPED -> {
-                newState = PlaybackStage.STOP
-            }
-            Playback.STATE_ERROR -> {
-                newState = PlaybackStage.ERROR
-            }
-        }
+        val newState = state.changePlaybackState()
         if (!currPlayInfo.isRefrain()) {
             notification?.onPlaybackStateChanged(currPlayInfo, newState)
+        }
+        when (newState) {
+            PlaybackStage.BUFFERING -> {
+                if (!currPlayInfo.isRefrain()) {
+                    startNotification(currPlayInfo, newState)
+                }
+            }
+            PlaybackStage.PAUSE -> {
+                if (!currPlayInfo.isRefrain()) {
+                    startNotification(currPlayInfo, newState)
+                }
+            }
         }
         StarrySkyUtils.log("PlaybackStage = $newState")
         val playbackStage = PlaybackStage()
@@ -287,6 +306,12 @@ class PlaybackManager(
 
     private fun startNotification(currPlayInfo: SongInfo?, state: String) {
         notification?.startNotification(currPlayInfo, state)
+    }
+
+    fun stopByTimedOff(time: Long, finishCurrSong: Boolean) {
+        if (context is MusicService) {
+            context.stopByTimedOff(time, finishCurrSong)
+        }
     }
 
     interface PlaybackServiceCallback {

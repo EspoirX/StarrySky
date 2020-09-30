@@ -79,10 +79,12 @@ class MediaSourceProvider {
         songSources.clear()
     }
 
-    fun deleteSongInfoById(songId: String) {
+    fun deleteSongInfoById(songId: String): Boolean {
         if (hasSongInfo(songId)) {
             songSources.remove(songId)
+            return true
         }
+        return false
     }
 
     fun hasSongInfo(songId: String): Boolean {

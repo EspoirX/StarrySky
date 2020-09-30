@@ -36,11 +36,6 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     fun playSingleMusicByInfo(info: SongInfo)
 
     /**
-     * 根据要播放的歌曲在播放列表中的下标播放,调用前请确保已经设置了播放列表
-     */
-    fun playMusicByIndex(index: Int)
-
-    /**
      * 播放
      *
      * @param mediaList 播放列表
@@ -196,7 +191,8 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     fun addSongInfo(index: Int, info: SongInfo)
 
     /**
-     * 删除
+     * 删除歌曲
+     * 正在播放删除后下一首开始播，暂停删除下一首暂停，跟随播放模式，删除后触发歌曲改变回调
      */
     fun removeSongInfo(songId: String)
 
@@ -321,14 +317,28 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     fun querySongInfoInLocal(context: Context): List<SongInfo>
 
     /**
-     * 添加一个状态监听
+     * 缓存开关，可控制是否使用缓存功能
      */
-    fun addPlayerEventListener(listener: OnPlayerEventListener?)
+    fun cacheSwitch(switch: Boolean)
+
+    /**
+     * 定时停止
+     * time 时间，单位毫秒，传 0 为不开启
+     * isFinishCurrSong 时间到后是否播放完当前歌曲再停
+     */
+    fun stopByTimedOff(time: Long, isFinishCurrSong: Boolean)
+
+    /**
+     * 添加一个状态监听
+     * tag: 给每个播放器添加一个tag 可以根据 tag 来删除，用 tag 的原因是在使用的时候发现，
+     * 如果靠对象来remove，不是很方便。所以该用tag
+     */
+    fun addPlayerEventListener(listener: OnPlayerEventListener?, tag: String)
 
     /**
      * 删除一个状态监听
      */
-    fun removePlayerEventListener(listener: OnPlayerEventListener?)
+    fun removePlayerEventListener(tag: String)
 
     /**
      * 删除所有状态监听
@@ -339,8 +349,6 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
      * 焦点变化监听
      */
     fun focusStateChange(): MutableLiveData<FocusInfo>
-
-    fun getPlayerEventListeners(): MutableList<OnPlayerEventListener>
 
     fun playbackState(): MutableLiveData<PlaybackStage>
 }

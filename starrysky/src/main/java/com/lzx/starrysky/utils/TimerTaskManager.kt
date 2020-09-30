@@ -62,6 +62,9 @@ class TimerTaskManager : LifecycleObserver {
         MainLooper.instance.removeCallbacksAndMessages(null)
     }
 
+    /**
+     * 绑定生命周期，onDestroy时自动释放
+     */
     fun bindLifecycle(lifecycle: Lifecycle?) = apply {
         lifecycle?.removeObserver(this)
         lifecycle?.addObserver(this)

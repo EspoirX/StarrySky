@@ -10,9 +10,8 @@ import com.lzx.starrysky.utils.StarrySkyUtils
 import com.lzx.starrysky.utils.isIndexPlayable
 
 class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoader: ImageLoader?) {
-    var currentIndex: Int = 0
-    val currentQueueSize: Int = provider.songList.size
-
+    private var currentIndex: Int = 0
+    private val currentQueueSize: Int = provider.songList.size
 
     /**
      * isActiveTrigger 是否主动触发
@@ -75,6 +74,12 @@ class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoad
         return index >= 0
     }
 
+    fun updateIndexByPlayingInfo(currInfo: SongInfo?) {
+        currInfo?.let {
+            updateIndexBySongId(it.songId)
+        }
+    }
+
     fun updateMusicArt(songInfo: SongInfo?) {
         if (songInfo?.coverBitmap == null) {
             return
@@ -93,5 +98,4 @@ class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoad
             })
         }
     }
-
 }

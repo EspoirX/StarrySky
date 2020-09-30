@@ -9,6 +9,7 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.cache.ExoCache
+import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.playback.FocusInfo
@@ -174,9 +175,9 @@ object StarrySky {
             bridge?.register?.refrainPlayback = playback
         }
         bridge?.register?.imageLoader = imageLoader
+        SpUtil.instance?.putBoolean(ICache.KEY_CACHE_SWITCH, config.isOpenCache)
         val cache = if (config.cache == null) {
             ExoCache(globalContext,
-                config.isOpenCache,
                 config.cacheDestFileDir,
                 config.cacheMaxBytes)
         } else config.cache
@@ -208,3 +209,9 @@ object StarrySky {
 }
 
 class ServiceToken(var wrappedContext: ContextWrapper)
+
+//todo  缓存开关独立 done
+//todo  删除歌曲（正在播放删除后下一首开始播，暂停删除下一首暂停，跟随播放模式，删除后触发歌曲改变回调）done
+//todo  定时关闭（时间到后是否播放完当前歌曲再停）done
+//todo  音乐闹钟
+//todo  通知栏样式切换

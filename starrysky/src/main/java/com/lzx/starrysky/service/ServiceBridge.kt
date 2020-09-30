@@ -57,7 +57,7 @@ class ServiceBridge(private val context: Context) : Binder() {
             notification = notificationManager.getNotification(context)
         }
         //播放管理
-        val playbackManager = PlaybackManager(mediaQueueManager, player!!, interceptorService)
+        val playbackManager = PlaybackManager(context, mediaQueueManager, player!!, interceptorService)
         playbackManager.setRefrainPlayback(refrainPlayback)
         playbackManager.registerNotification(notification)
         playbackManager.setServiceCallback(object : PlaybackManager.PlaybackServiceCallback {

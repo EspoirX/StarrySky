@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -16,10 +18,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.lzx.musiclib.adapter.addItem
 import com.lzx.musiclib.adapter.itemClicked
-import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.viewmodel.MusicViewModel
+import com.lzx.musiclib.weight.Spanny
 import com.lzx.musiclib.weight.dialog.CommonBehavior
 import com.lzx.musiclib.weight.dialog.MaterialDialog
 import com.lzx.musiclib.weight.dialog.createMaterialDialog
@@ -110,7 +112,7 @@ class PlayDetailFragment : BaseFragment() {
                 val songInfo = StarrySky.with().getPlayList().getOrNull(0)
                 songInfo?.let {
                     initDetailUI(it)
-                    StarrySky.with().playMusicByIndex(0)
+                    StarrySky.with().playMusicById(it.songId)
                 }
             }
             "rtmp",
@@ -394,19 +396,33 @@ class PlayDetailFragment : BaseFragment() {
                 addItem(R.layout.item_dialog_song_list) {
                     bindViewHolder { data, position, holder ->
                         val imgAnim = holder.findViewById<ImageView>(R.id.imgAnim)
+                        val songName = holder.findViewById<TextView>(R.id.songName)
+                        val btnClose = holder.findViewById<ImageView>(R.id.btnClose)
                         val anim = imgAnim.drawable as AnimationDrawable
-                        anim.start()
-                        if (StarrySky.with().isCurrMusicIsPlaying(data?.songId!!)) {
+
+                        val spanny = Spanny()
+                        val isPlaying = StarrySky.with().isCurrMusicIsPlaying(data?.songId!!)
+                        val isPause = StarrySky.with().isCurrMusicIsPaused(data?.songId!!)
+                        if (isPlaying) {
+                            anim.start()
                             imgAnim.visibility = View.VISIBLE
+                            spanny.append(data.songName, ForegroundColorSpan(Color.RED))
+                        } else if (isPause) {
+                            anim.stop()
+                            imgAnim.visibility = View.VISIBLE
+                            spanny.append(data.songName, ForegroundColorSpan(Color.RED))
                         } else {
                             imgAnim.visibility = View.GONE
+                            spanny.append(data.songName, ForegroundColorSpan(Color.BLACK))
                         }
-                        setText(
-                            R.id.songName to data.songName,
-                            R.id.singer to "-" + data.artist
-                        )
+                        spanny.appends(" - " + data.artist, ForegroundColorSpan("#b2b2b2".parseColor()), AbsoluteSizeSpan(12.sp.toInt()))
+                        songName.text = spanny
+                        btnClose.setOnClickListener {
+                            StarrySky.with().removeSongInfo(data.songId)
+                            removedData(position)
+                        }
                         itemClicked(View.OnClickListener {
-                            StarrySky.with().playMusicByIndex(position)
+                            StarrySky.with().playMusicById(data.songId)
                         })
                     }
                 }

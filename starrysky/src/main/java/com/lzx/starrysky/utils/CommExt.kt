@@ -13,6 +13,8 @@ import android.os.Build
 import android.os.Process
 import android.widget.Toast
 import com.lzx.starrysky.notification.INotification
+import com.lzx.starrysky.playback.Playback
+import com.lzx.starrysky.playback.PlaybackStage
 import java.util.Locale
 
 fun Context.getResourceId(name: String, className: String): Int {
@@ -86,6 +88,7 @@ val contextReflex: Application?
     get() = try {
         @SuppressLint("PrivateApi")
         val activityThreadClass = Class.forName("android.app.ActivityThread")
+
         @SuppressLint("DiscouragedPrivateApi")
         val currentApplicationMethod = activityThreadClass.getDeclaredMethod("currentApplication")
         currentApplicationMethod.isAccessible = true
@@ -124,4 +127,16 @@ fun String.isRTMP(): Boolean {
 
 fun String.isFLAC(): Boolean {
     return this.toLowerCase(Locale.getDefault()).endsWith(".flac")
+}
+
+fun Int.changePlaybackState(): String {
+    return when (this) {
+        Playback.STATE_IDLE -> PlaybackStage.IDEA
+        Playback.STATE_BUFFERING -> PlaybackStage.BUFFERING
+        Playback.STATE_PLAYING -> PlaybackStage.PLAYING
+        Playback.STATE_PAUSED -> PlaybackStage.PAUSE
+        Playback.STATE_STOPPED -> PlaybackStage.STOP
+        Playback.STATE_ERROR -> PlaybackStage.ERROR
+        else -> PlaybackStage.IDEA
+    }
 }

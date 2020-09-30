@@ -7,10 +7,10 @@ import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheSpan
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
+import com.lzx.starrysky.utils.SpUtil
 import java.io.File
 
 class ExoCache(private val context: Context,
-               private val openCache: Boolean,
                private val cacheDir: String?,
                private val cacheMaxBytes: Long
 ) : ICache {
@@ -27,7 +27,7 @@ class ExoCache(private val context: Context,
     }
 
     override fun isOpenCache(): Boolean {
-        return openCache
+        return SpUtil.instance?.getBoolean(ICache.KEY_CACHE_SWITCH) ?: false
     }
 
     override fun getCacheDirectory(context: Context, destFileDir: String?): File? {
