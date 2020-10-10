@@ -7,8 +7,6 @@ import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.playback.soundpool.SoundPoolCreator
-import com.lzx.starrysky.playback.soundpool.SoundPoolPlayback
 
 data class RepeatMode(val repeatMode: Int, val isLoop: Boolean) {
     companion object {
@@ -329,14 +327,6 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
      * isFinishCurrSong 时间到后是否播放完当前歌曲再停
      */
     fun stopByTimedOff(time: Long, isFinishCurrSong: Boolean)
-
-    /**
-     * 获取 SoundPool 操作实例
-     * 适合短促且对反应速度比较高的音频，建议长度不超过7秒，大小不大于100kb，更多信息请参数 SoundPool
-     *
-     * SoundPoolCreator 创建 SoundPool 时的参数构建，可通过内部的 buildSoundPool 来构建
-     */
-    fun soundPool(context: Context?, creator: SoundPoolCreator = SoundPoolCreator()): SoundPoolPlayback
 
     /**
      * 添加一个状态监听

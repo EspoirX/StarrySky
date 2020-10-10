@@ -6,19 +6,25 @@ import android.media.SoundPool
 import com.lzx.starrysky.utils.StarrySkyUtils
 
 
-class SoundPoolPlayback(private val context: Context?, private val creator: SoundPoolCreator) {
+class SoundPoolPlayback(private val context: Context?) {
 
     private var soundPool: SoundPool? = null
     private var isLoaded: Boolean = false
     private var isAllLoadedSuccess: Boolean = false
     private var songIdList = mutableListOf<Int>()
+    private var creator: SoundPoolCreator? = null
 
-    fun loadSound(afdList: MutableList<Any>) {
+    fun setSoundPoolCreator(creator: SoundPoolCreator) {
+        this.creator = creator
         if (soundPool == null) {
-            createSoundPool()
+            createSoundPool(creator.maxStreams)
         }
-        if (afdList.size > creator.maxStreams) {
-            return
+    }
+
+    fun loadSound(afdList: MutableList<Any>) = apply {
+        if (afdList.size > creator?.maxStreams ?: 10) {
+            //如果传入的列表比配置的最大值还大，就用列表的长度重新创建 SoundPool 对象
+            createSoundPool(afdList.size)
         }
         val soundData = hashMapOf<String, Int>()
         afdList.forEachIndexed { index, data ->
@@ -102,35 +108,27 @@ class SoundPoolPlayback(private val context: Context?, private val creator: Soun
     /**
      * 暂停指定播放流的音效，streamID 通过 playSound 返回
      */
-    fun pause(streamID: Int) {
-        soundPool?.pause(streamID)
-    }
+    fun pause(streamID: Int) = apply { soundPool?.pause(streamID) }
 
     /**
      * 继续播放指定播放流的音效，streamID 通过 playSound 返回
      */
-    fun resume(streamID: Int) {
-        soundPool?.pause(streamID)
-    }
+    fun resume(streamID: Int) = apply { soundPool?.pause(streamID) }
 
     /**
      * 终止指定播放流的音效，streamID 通过 playSound 返回
      */
-    fun stop(streamID: Int) {
-        soundPool?.pause(streamID)
-    }
+    fun stop(streamID: Int) = apply { soundPool?.pause(streamID) }
 
     /**
      * 设置指定播放流的循环.
      */
-    fun setLoop(streamID: Int, loop: Int) {
-        soundPool?.setLoop(streamID, loop)
-    }
+    fun setLoop(streamID: Int, loop: Int) = apply { soundPool?.setLoop(streamID, loop) }
 
     /**
      * 设置指定播放流的音量.
      */
-    fun setVolume(streamID: Int, leftVolume: Float, rightVolume: Float) {
+    fun setVolume(streamID: Int, leftVolume: Float, rightVolume: Float) = apply {
         if (leftVolume >= 0 && rightVolume >= 0) {
             soundPool?.setVolume(streamID, leftVolume, rightVolume)
         }
@@ -139,33 +137,31 @@ class SoundPoolPlayback(private val context: Context?, private val creator: Soun
     /**
      * 设置指定播放流的优先级，playSound 中已说明 priority 的作用.
      */
-    fun setPriority(streamID: Int, priority: Int) {
-        soundPool?.setPriority(streamID, priority)
-    }
+    fun setPriority(streamID: Int, priority: Int) = apply { soundPool?.setPriority(streamID, priority) }
 
     /**
      * 卸载一个指定的音频资源.注意参数是 soundID
      */
-    fun unload(soundID: Int) {
-        soundPool?.unload(soundID)
-    }
+    fun unload(soundID: Int) = apply { soundPool?.unload(soundID) }
 
     /**
      * 释放SoundPool中的所有音频资源.
      */
-    fun release() {
+    fun release() = apply {
         soundPool?.release()
         soundPool = null
     }
 
-    private fun createSoundPool() {
-        soundPool = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && creator.audioAttributes != null) {
-            SoundPool.Builder()
-                .setMaxStreams(creator.maxStreams)
-                .setAudioAttributes(creator.audioAttributes)
-                .build()
-        } else {
-            SoundPool(creator.maxStreams, creator.streamType, 0)
+    private fun createSoundPool(maxStreams: Int) {
+        creator?.let {
+            soundPool = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && it.audioAttributes != null) {
+                SoundPool.Builder()
+                    .setMaxStreams(maxStreams)
+                    .setAudioAttributes(it.audioAttributes)
+                    .build()
+            } else {
+                SoundPool(it.maxStreams, it.streamType, 0)
+            }
         }
     }
 

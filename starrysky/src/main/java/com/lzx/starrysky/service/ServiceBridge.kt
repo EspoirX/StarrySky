@@ -18,6 +18,7 @@ import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.playback.soundpool.SoundPoolPlayback
 
 class ServiceBridge(private val context: Context) : Binder() {
 
@@ -28,6 +29,7 @@ class ServiceBridge(private val context: Context) : Binder() {
     var notification: INotification? = null
     var imageLoader: ImageLoader? = null
     var sessionManager: MediaSessionManager? = null
+    var soundPoolPlayback: SoundPoolPlayback? = null
 
     fun start(isAutoManagerFocus: Boolean = true, isCreateRefrainPlayer: Boolean = false) {
         //数据存储
@@ -49,6 +51,7 @@ class ServiceBridge(private val context: Context) : Binder() {
         if (isCreateRefrainPlayer) {
             refrainPlayback = if (register.refrainPlayback == null) ExoPlayback(context, cache, isAutoManagerFocus) else register.refrainPlayback
         }
+        soundPoolPlayback = SoundPoolPlayback(context)
         //拦截器
         val interceptorService = InterceptorService(interceptors)
         if (context is MusicService) {

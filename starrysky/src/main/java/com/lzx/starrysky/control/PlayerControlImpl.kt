@@ -12,8 +12,6 @@ import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.playback.soundpool.SoundPoolCreator
-import com.lzx.starrysky.playback.soundpool.SoundPoolPlayback
 import com.lzx.starrysky.utils.SpUtil
 import com.lzx.starrysky.utils.StarrySkyUtils
 import com.lzx.starrysky.utils.data
@@ -261,10 +259,6 @@ class PlayerControlImpl(
             return
         }
         playbackManager.stopByTimedOff(time, isFinishCurrSong)
-    }
-
-    override fun soundPool(context: Context?, creator: SoundPoolCreator): SoundPoolPlayback {
-        return SoundPoolPlayback(context, creator)
     }
 
     override fun addPlayerEventListener(listener: OnPlayerEventListener?, tag: String) {

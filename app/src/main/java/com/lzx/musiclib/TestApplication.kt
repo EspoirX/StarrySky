@@ -10,14 +10,12 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
 import com.lzx.musiclib.viewmodel.MusicViewModel
-import com.lzx.starrysky.AudioFocusChangeListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyConfig
@@ -27,8 +25,6 @@ import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
-import com.lzx.starrysky.playback.FocusInfo
-import com.lzx.starrysky.playback.FocusManager
 import com.lzx.starrysky.utils.MainLooper
 import com.lzx.starrysky.utils.SpUtil
 import com.qw.soul.permission.SoulPermission
