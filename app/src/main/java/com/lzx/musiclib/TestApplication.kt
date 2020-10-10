@@ -133,6 +133,7 @@ open class TestApplication : Application() {
                 return
             }
             SoulPermission.getInstance().checkAndRequestPermissions(Permissions.build(
+                Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE),
                 object : CheckRequestPermissionsListener {

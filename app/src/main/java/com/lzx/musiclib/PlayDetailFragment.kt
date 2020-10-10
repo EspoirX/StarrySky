@@ -32,6 +32,8 @@ import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.playback.soundpool.AssetResIdData
+import com.lzx.starrysky.playback.soundpool.SoundPoolPlayback
 import com.lzx.starrysky.utils.MD5
 import com.lzx.starrysky.utils.TimerTaskManager
 import kotlinx.android.synthetic.main.fragment_play_detail.bgImage
@@ -90,6 +92,8 @@ class PlayDetailFragment : BaseFragment() {
 
     private var isStartRefraining: Boolean = false
 
+//    private var soundPool: SoundPoolPlayback? = null
+
     @SuppressLint("SetTextI18n")
     override fun initView(view: View?) {
         songId = arguments?.getString("songId")
@@ -140,6 +144,19 @@ class PlayDetailFragment : BaseFragment() {
         refrainList.add("file:///android_asset/hglo6.ogg")
         refrainList.add("file:///android_asset/hglo7.ogg")
         refrainList.add("file:///android_asset/hglo8.ogg")
+
+//       也可以用 SoundPool 来播放伴奏
+//        soundPool = StarrySky.with().soundPool(activity)
+//        val list = mutableListOf<Any>()
+//        list.add(AssetResIdData(resId = R.raw.hglo1))
+//        list.add(AssetResIdData(resId = R.raw.hglo2))
+//        list.add(AssetResIdData(resId = R.raw.hglo3))
+//        list.add(AssetResIdData(resId = R.raw.hglo4))
+//        list.add(AssetResIdData(resId = R.raw.hglo5))
+//        list.add(AssetResIdData(resId = R.raw.hglo6))
+//        list.add(AssetResIdData(resId = R.raw.hglo7))
+//        list.add(AssetResIdData(resId = R.raw.hglo8))
+//        soundPool?.loadSound(list)
 
         imageColorList.add(Color.RED)
         imageColorList.add(Color.YELLOW)
@@ -322,21 +339,25 @@ class PlayDetailFragment : BaseFragment() {
     }
 
     private fun setUpRefrain(position: Long) {
-        val playPosition = String.format("%f", position.toDouble() / 1000.00).toDouble()
-        val next = String.format("%.0f", (playPosition - beatStartTime) / beatTime).toDouble()
-        if (next < 0) return
-        if (nextBeat == next.toInt()) return
-        nextBeat = next.toInt()
-        Log.i("当前节拍", "$nextBeat")
-        when (nextBeat % 8) {
-            0 -> showSound(0, playPosition)
-            1 -> showSound(1, playPosition)
-            2 -> showSound(2, playPosition)
-            3 -> showSound(3, playPosition)
-            4 -> showSound(4, playPosition)
-            5 -> showSound(5, playPosition)
-            6 -> showSound(6, playPosition)
-            7 -> showSound(7, playPosition)
+        try {
+            val playPosition = String.format("%f", position.toDouble() / 1000.00).toDouble()
+            val next = String.format("%.0f", (playPosition - beatStartTime) / beatTime).toDouble()
+            if (next < 0) return
+            if (nextBeat == next.toInt()) return
+            nextBeat = next.toInt()
+            Log.i("当前节拍", "$nextBeat")
+            when (nextBeat % 8) {
+                0 -> showSound(0, playPosition)
+                1 -> showSound(1, playPosition)
+                2 -> showSound(2, playPosition)
+                3 -> showSound(3, playPosition)
+                4 -> showSound(4, playPosition)
+                5 -> showSound(5, playPosition)
+                6 -> showSound(6, playPosition)
+                7 -> showSound(7, playPosition)
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
     }
 
@@ -347,6 +368,7 @@ class PlayDetailFragment : BaseFragment() {
         if (!isStartRefraining) return
         val url = refrainList[i]
         StarrySky.with().playRefrain(SongInfo(MD5.hexdigest(url), url))
+//        soundPool?.playSound(i)
     }
 
     private fun initDetailUI(it: SongInfo) {

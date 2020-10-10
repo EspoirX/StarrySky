@@ -209,9 +209,3 @@ object StarrySky {
 }
 
 class ServiceToken(var wrappedContext: ContextWrapper)
-
-//todo  缓存开关独立 done
-//todo  删除歌曲（正在播放删除后下一首开始播，暂停删除下一首暂停，跟随播放模式，删除后触发歌曲改变回调）done
-//todo  定时关闭（时间到后是否播放完当前歌曲再停）done
-//todo  音乐闹钟
-//todo  通知栏样式切换
