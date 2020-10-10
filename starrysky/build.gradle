@@ -50,7 +50,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     api "com.google.android.exoplayer:exoplayer-core:2.12.0"
     api "com.google.android.exoplayer:extension-mediasession:2.12.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 repositories {
     mavenCentral()

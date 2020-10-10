@@ -1,2 +1,2 @@
-//include ':extension-flac2120'
+include ':record'//include ':extension-flac2120'
 include ':app', ':starrysky'
