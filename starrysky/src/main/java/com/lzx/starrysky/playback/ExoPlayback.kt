@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.Paramet
 import com.google.android.exoplayer2.trackselection.TrackSelection
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
@@ -290,11 +291,15 @@ class ExoPlayback(val context: Context,
     @Synchronized
     private fun buildDataSourceFactory(type: Int): DataSource.Factory? {
         val userAgent = Util.getUserAgent(context, "StarrySky")
+        val httpDataSourceFactory = DefaultHttpDataSourceFactory(userAgent,
+            DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+            DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+            true)
         return if (cache?.isOpenCache() == true && cache is ExoCache && !type.isStreamingType()) {
-            val upstreamFactory = DefaultDataSourceFactory(context, DefaultHttpDataSourceFactory(userAgent))
+            val upstreamFactory = DefaultDataSourceFactory(context, httpDataSourceFactory)
             buildCacheDataSource(upstreamFactory, cache.getDownloadCache())
         } else {
-            DefaultDataSourceFactory(context, DefaultHttpDataSourceFactory(userAgent))
+            DefaultDataSourceFactory(context, httpDataSourceFactory)
         }
     }
 
