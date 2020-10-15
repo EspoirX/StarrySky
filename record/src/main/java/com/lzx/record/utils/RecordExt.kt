@@ -1,10 +1,17 @@
-package com.lzx.record
+package com.lzx.record.utils
 
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Point
 import android.media.MediaExtractor
 import android.media.MediaFormat
+import android.os.Build
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
+import com.lzx.record.RecordConst
+import com.lzx.record.RecordInfo
+import com.lzx.record.StarrySkyRecord
 import java.io.File
 import java.util.Locale
 import kotlin.math.ceil
@@ -12,23 +19,23 @@ import kotlin.math.floor
 
 fun String.keyToSampleRate(): Int {
     return when (this) {
-        RecordConst.SAMPLE_RATE_8000 -> 8000
-        RecordConst.SAMPLE_RATE_16000 -> 16000
-        RecordConst.SAMPLE_RATE_22050 -> 22050
-        RecordConst.SAMPLE_RATE_32000 -> 32000
-        RecordConst.SAMPLE_RATE_44100 -> 44100
-        RecordConst.SAMPLE_RATE_48000 -> 48000
+        RecordConst.HZ_8000 -> 8000
+        RecordConst.HZ_16000 -> 16000
+        RecordConst.HZ_22050 -> 22050
+        RecordConst.HZ_32000 -> 32000
+        RecordConst.HZ_44100 -> 44100
+        RecordConst.HZ_48000 -> 48000
         else -> 44100
     }
 }
 
 fun String.keyToBitrate(): Int {
     return when (this) {
-        RecordConst.BITRATE_48000 -> 48000
-        RecordConst.BITRATE_96000 -> 96000
-        RecordConst.BITRATE_128000 -> 128000
-        RecordConst.BITRATE_192000 -> 192000
-        RecordConst.BITRATE_256000 -> 256000
+        RecordConst.KBPS_48000 -> 48000
+        RecordConst.KBPS_96000 -> 96000
+        RecordConst.KBPS_128000 -> 128000
+        RecordConst.KBPS_192000 -> 192000
+        RecordConst.KBPS_256000 -> 256000
         else -> 128000
     }
 }
@@ -213,4 +220,15 @@ fun ByteArray.byte2int(): IntArray? {
         ints[i] = this[i] + 128
     }
     return ints
+}
+
+fun Activity.hasPermission(permission: String): Boolean {
+    return !isMarshmallow() || isGranted(permission)
+}
+
+fun isMarshmallow(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+
+@RequiresApi(Build.VERSION_CODES.M)
+fun Activity.isGranted(permission: String): Boolean {
+    return this.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
 }

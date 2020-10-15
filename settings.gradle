@@ -1,3 +1,4 @@
 include ':record'
 //include ':extension-flac2120'
-include ':app', ':starrysky'
+include ':starrysky'
+include ':app'

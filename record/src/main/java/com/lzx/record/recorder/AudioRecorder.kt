@@ -1,14 +1,14 @@
-package com.lzx.record.impl
+package com.lzx.record.recorder
 
 import android.media.MediaRecorder
 import android.os.Build
-import com.lzx.record.IRecorder
-import com.lzx.record.RecorderCallback
 import java.io.File
 import java.util.Timer
 import java.util.TimerTask
 
-
+/**
+ * 录音实现
+ */
 class AudioRecorder : IRecorder {
 
     private var recorder: MediaRecorder? = null
@@ -22,13 +22,15 @@ class AudioRecorder : IRecorder {
 
     private var recorderCallback: RecorderCallback? = null
 
-
     override fun setRecorderCallback(callback: RecorderCallback?) {
         recorderCallback = callback
     }
 
     override fun prepare(outputFile: String?, channelCount: Int, sampleRate: Int, bitrate: Int) {
         recordFile = File(outputFile)
+        if (recordFile?.exists()==false){
+            recordFile?.mkdir()
+        }
         if (recordFile?.exists() == true && recordFile?.isFile == true) {
             recorder = MediaRecorder()
             recorder?.setAudioSource(MediaRecorder.AudioSource.MIC)

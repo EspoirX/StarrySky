@@ -1,13 +1,13 @@
-package com.lzx.record.impl
+package com.lzx.record.recorder
 
 import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.lzx.record.IntArrayList
+import com.lzx.record.utils.IntArrayList
 import com.lzx.record.StarrySkyRecord
-import com.lzx.record.getScreenWidth
+import com.lzx.record.utils.getScreenWidth
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder

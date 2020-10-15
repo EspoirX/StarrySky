@@ -50,6 +50,7 @@ android {
         implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-alpha07"
 
         implementation project(':starrysky')
+        implementation project(':record')
         implementation 'com.lzx:StarrySkyFlacExt:1.0.0'
         implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.0'
         implementation 'com.google.android.exoplayer:extension-rtmp:2.12.0'

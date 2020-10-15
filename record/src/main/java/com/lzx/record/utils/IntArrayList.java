@@ -1,4 +1,4 @@
-package com.lzx.record;
+package com.lzx.record.utils;
 
 public class IntArrayList {
 

@@ -22,6 +22,7 @@ import com.lzx.musiclib.tab.FlacFragment
 import com.lzx.musiclib.tab.HotFragment
 import com.lzx.musiclib.tab.M3u8Fragment
 import com.lzx.musiclib.tab.RecommendFragment
+import com.lzx.musiclib.tab.RecordFragment
 import com.lzx.musiclib.tab.RtmpFragment
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.SongInfo
@@ -73,6 +74,7 @@ class MainActivity : AppCompatActivity() {
         list.add("FLAC无损")
         list.add("电台(m3u8 HLS)")
         list.add("RTMP 流")
+        list.add("录音")
         val adapter = ViewPagerAdapter(supportFragmentManager, list)
         viewPager?.adapter = adapter
         tabLayout?.setViewPager(viewPager)
@@ -156,6 +158,7 @@ class ViewPagerAdapter(fm: FragmentManager, private val list: MutableList<String
             2 -> FlacFragment.newInstance()
             3 -> M3u8Fragment.newInstance()
             4 -> RtmpFragment.newInstance()
+            5 -> RecordFragment.newInstance()
             else -> throw IllegalArgumentException()
         }
         fragmentMap[value!!] = fragment
