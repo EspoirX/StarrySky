@@ -7,7 +7,6 @@ import com.lzx.record.recorder.RecordState
 import com.lzx.record.recorder.RecorderManager
 import com.lzx.record.utils.keyToBitrate
 import com.lzx.record.utils.keyToSampleRate
-import java.io.File
 
 class RecordControlImpl(private val manager: RecorderManager) : RecordControl {
 
@@ -15,34 +14,18 @@ class RecordControlImpl(private val manager: RecorderManager) : RecordControl {
     private val recordEventListener = hashMapOf<String, OnRecordEventListener>()
 
     override fun startRecord(filePath: String, fileName: String, format: String) {
-        val fileDir = File(filePath)
-        if (!fileDir.exists()) {
-            fileDir.mkdirs()
-        }
-        val file = File(filePath, fileName)
-        if (!file.exists()) {
-            file.createNewFile()
-        }
         val channels = 2
         val rate = RecordConst.HZ_44100.keyToSampleRate()
         val bitrate = RecordConst.KBPS_128000.keyToBitrate()
-        manager.startRecord(file.absolutePath, channels, rate, bitrate)
+        manager.startRecord(filePath, fileName, format, channels, rate, bitrate)
     }
 
     override fun startRecording(filePath: String, fileName: String, format: String,
                                 channelCount: String, sampleRate: String, bitrate: String) {
-        val fileDir = File(filePath)
-        if (!fileDir.exists()) {
-            fileDir.mkdirs()
-        }
-        val file = File(filePath, fileName)
-        if (!file.exists()) {
-            file.createNewFile()
-        }
         val channels = if (channelCount == RecordConst.MONO) 1 else 2
         val rate = sampleRate.keyToSampleRate()
         val bit = bitrate.keyToBitrate()
-        manager.startRecord(file.absolutePath, channels, rate, bit)
+        manager.startRecord(filePath, fileName, format, channels, rate, bit)
     }
 
     override fun pauseRecording() {

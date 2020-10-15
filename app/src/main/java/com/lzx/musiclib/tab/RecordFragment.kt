@@ -9,6 +9,7 @@ import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.toSdcardPath
 import com.lzx.record.RecordConst
 import com.lzx.record.StarrySkyRecord
+import com.lzx.record.recorder.RecordState
 import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
@@ -48,7 +49,32 @@ class RecordFragment : BaseFragment() {
         }
 
         StarrySkyRecord.with().recordState().observe(this, Observer {
-            Log.i("XIAN", "state = " + it.state)
+            when (it.state) {
+                RecordState.STATE_START -> {
+                    Log.i("XIAN", "state = STATE_START")
+                }
+                RecordState.STATE_ERROR -> {
+                    Log.i("XIAN", "state = STATE_ERROR msg = " + it.error?.message)
+                }
+                RecordState.STATE_IDEA -> {
+                    Log.i("XIAN", "state = STATE_IDEA")
+                }
+                RecordState.STATE_PAUSE -> {
+                    Log.i("XIAN", "state = STATE_PAUSE")
+                }
+                RecordState.STATE_PROGRESS -> {
+//                    Log.i("XIAN", "state = STATE_PROGRESS pro = " + it.recordMills + " amplitude = " + it.amplitude)
+                }
+                RecordState.STATE_PROCESSING -> {
+                    Log.i("XIAN", "state = STATE_PROCESSING")
+                }
+                RecordState.STATE_PROCESSING_FINISH -> {
+                    Log.i("XIAN", "state = STATE_PROCESSING_FINISH")
+                }
+                RecordState.STATE_STOP -> {
+                    Log.i("XIAN", "state = STATE_STOP info = " + it.recordInfo)
+                }
+            }
         })
     }
 

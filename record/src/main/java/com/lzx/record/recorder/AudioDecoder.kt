@@ -5,8 +5,9 @@ import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.lzx.record.utils.IntArrayList
+import com.lzx.record.RecordInfo
 import com.lzx.record.StarrySkyRecord
+import com.lzx.record.utils.IntArrayList
 import com.lzx.record.utils.getScreenWidth
 import java.io.File
 import java.nio.ByteBuffer
@@ -41,12 +42,17 @@ class AudioDecoder {
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun decodeFile(file: File,
+                   recordInfo: RecordInfo,
                    extractor: MediaExtractor,
                    format: MediaFormat,
                    mimeType: String,
                    queueType: Int = QUEUE_INPUT_BUFFER_EFFECTIVE,
                    decodeListener: DecodeListener) {
         gains = IntArrayList()
+        channelCount = recordInfo.channelCount
+        sampleRate = recordInfo.sampleRate
+        duration = recordInfo.duration
+        oneFrameAmps = IntArray(calculateSamplesPerFrame() * channelCount)
         val decoder = MediaCodec.createDecoderByType(mimeType)
         decodeListener.onStartDecode(duration, channelCount, sampleRate)
         decoder.setCallback(object : MediaCodec.Callback() {
@@ -144,7 +150,7 @@ class AudioDecoder {
                 if (queueType == QUEUE_INPUT_BUFFER_EFFECTIVE) {
                     try {
                         val decoder = AudioDecoder()
-                        decoder.decodeFile(file, extractor, format, mimeType, QUEUE_INPUT_BUFFER_SIMPLE, decodeListener)
+                        decoder.decodeFile(file, recordInfo, extractor, format, mimeType, QUEUE_INPUT_BUFFER_SIMPLE, decodeListener)
                     } catch (e: Exception) {
                         decodeListener.onError(exception)
                     }

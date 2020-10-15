@@ -28,12 +28,22 @@ class RecorderManager(private val recorder: IRecorder?) : RecorderCallback {
         recorder?.setRecorderCallback(this)
     }
 
-    fun startRecord(filePath: String, channels: Int, rate: Int, bitrate: Int) {
+    fun startRecord(filePath: String, fileName: String, format: String, channels: Int, rate: Int, bitrate: Int) {
         if (recorder == null) return
+
+        val fileDir = File(filePath)
+        if (!fileDir.exists()) {
+            fileDir.mkdirs()
+        }
+        val file = File(filePath, "$fileName.$format")
+        if (!file.exists()) {
+            file.createNewFile()
+        }
+
         if (recorder.isPaused()) {
             recorder.startRecording()
         } else if (!recorder.isRecording()) {
-            recorder.prepare(filePath, channels, rate, bitrate)
+            recorder.prepare(file.absolutePath, channels, rate, bitrate)
         } else {
             recorder.pauseRecording()
         }
@@ -96,9 +106,9 @@ class RecorderManager(private val recorder: IRecorder?) : RecorderCallback {
                 return@execute
             }
             val name = output.name?.toLowerCase(Locale.getDefault()) ?: ""
-            val components = name.split("\\.").toTypedArray()
+            val components = name.split(".").toTypedArray()
             if (components.size < 2) {
-                onRecordStateChange(RecordState.STATE_ERROR, throwable = IllegalAccessException("file name error format"))
+                onRecordStateChange(RecordState.STATE_ERROR, throwable = IllegalAccessException("file name error format,file name = " + output.name))
                 return@execute
             }
             val ext = components[components.lastIndex] //获取后缀
@@ -146,7 +156,7 @@ class RecorderManager(private val recorder: IRecorder?) : RecorderCallback {
             val path: String = output.path
             if (path.isNotEmpty() && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                 isProcessing = true
-                audioDecoder?.decodeFile(output, extractor, format, mimeType, decodeListener = object : AudioDecoder.DecodeListener {
+                audioDecoder?.decodeFile(output, info, extractor, format, mimeType, decodeListener = object : AudioDecoder.DecodeListener {
                     override fun onStartDecode(duration: Long, channelsCount: Int, sampleRate: Int) {
                         onRecordStateChange(RecordState.STATE_PROCESSING)
                     }
