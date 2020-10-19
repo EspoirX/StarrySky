@@ -190,13 +190,13 @@ class PlayerControlImpl(
 
     override fun getPlaybackSpeed(): Float = playbackManager.playback.getPlaybackSpeed()
 
-    override fun isPlaying(): Boolean = playbackManager.playback.playbackState == Playback.STATE_PLAYING
+    override fun isPlaying(): Boolean = playbackState.value?.stage == PlaybackStage.PLAYING
 
-    override fun isPaused(): Boolean = playbackManager.playback.playbackState == Playback.STATE_PAUSED
+    override fun isPaused(): Boolean = playbackState.value?.stage == PlaybackStage.PAUSE
 
-    override fun isIdea(): Boolean = playbackManager.playback.playbackState == Playback.STATE_IDLE
+    override fun isIdea(): Boolean = playbackState.value?.stage == PlaybackStage.IDEA
 
-    override fun isBuffering(): Boolean = playbackManager.playback.playbackState == Playback.STATE_BUFFERING
+    override fun isBuffering(): Boolean = playbackState.value?.stage == PlaybackStage.BUFFERING
 
     override fun isCurrMusicIsPlayingMusic(songId: String): Boolean {
         return if (songId.isEmpty()) {
