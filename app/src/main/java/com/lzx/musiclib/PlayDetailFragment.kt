@@ -90,7 +90,6 @@ class PlayDetailFragment : BaseFragment() {
             StarrySky.with().playMusic(it, 0)
         })
 
-
         refrainList.add("file:///android_asset/hglo1.ogg")
         refrainList.add("file:///android_asset/hglo2.ogg")
         refrainList.add("file:///android_asset/hglo3.ogg")
@@ -323,77 +322,6 @@ class PlayDetailFragment : BaseFragment() {
             lifecycleOwner(this@PlayDetailFragment)
         }
     }
-
-//    private fun showSongListDialog() {
-//        dialog = activity?.createMaterialDialog(CommonBehavior(R.style.dialog_base_style,
-//            "gravity" to Gravity.BOTTOM,
-//            "windowAnimations" to R.style.select_popup_bottom,
-//            "realHeight" to 453.dp.toInt()))?.show {
-//            cancelOnTouchOutside(true)
-//            customView(R.layout.dialog_song_list) {
-//                val customView = it.getCustomView() as ViewGroup
-//                val playModel = customView.findViewById<TextView>(R.id.playModel)
-//                val recycleView = customView.findViewById<RecyclerView>(R.id.recycleView)
-//                setUpRepeatMode(playModel)
-//                setUpSongList(recycleView)
-//            }
-//            lifecycleOwner(this@PlayDetailFragment)
-//        }
-//    }
-
-//    @SuppressLint("SetTextI18n")
-//    private fun setUpRepeatMode(playMode: TextView?) {
-//        val repeatMode = StarrySky.with().getRepeatMode()
-//        var playModeText = "顺序播放"
-//        when (repeatMode.repeatMode) {
-//            RepeatMode.REPEAT_MODE_NONE -> playModeText = if (repeatMode.isLoop) "列表循环" else "顺序播放"
-//            RepeatMode.REPEAT_MODE_ONE -> playModeText = if (repeatMode.isLoop) "单曲循环" else "单曲播放"
-//            RepeatMode.REPEAT_MODE_SHUFFLE -> playModeText = "随机播放"
-//            RepeatMode.REPEAT_MODE_REVERSE -> playModeText = if (repeatMode.isLoop) "倒序列表循环" else "倒序播放"
-//        }
-//        playMode?.text = playModeText + "（" + StarrySky.with().getPlayList().size + "）"
-//    }
-//
-//    private fun setUpSongList(recycleView: RecyclerView?) {
-//        recycleView?.setup<SongInfo> {
-//            dataSource(StarrySky.with().getPlayList() ?: mutableListOf())
-//            adapter {
-//                addItem(R.layout.item_dialog_song_list) {
-//                    bindViewHolder { data, position, holder ->
-//                        val imgAnim = holder.findViewById<ImageView>(R.id.imgAnim)
-//                        val songName = holder.findViewById<TextView>(R.id.songName)
-//                        val btnClose = holder.findViewById<ImageView>(R.id.btnClose)
-//                        val anim = imgAnim.drawable as AnimationDrawable
-//
-//                        val spanny = Spanny()
-//                        val isPlaying = StarrySky.with().isCurrMusicIsPlaying(data?.songId!!)
-//                        val isPause = StarrySky.with().isCurrMusicIsPaused(data?.songId!!)
-//                        if (isPlaying) {
-//                            anim.start()
-//                            imgAnim.visibility = View.VISIBLE
-//                            spanny.append(data.songName, ForegroundColorSpan(Color.RED))
-//                        } else if (isPause) {
-//                            anim.stop()
-//                            imgAnim.visibility = View.VISIBLE
-//                            spanny.append(data.songName, ForegroundColorSpan(Color.RED))
-//                        } else {
-//                            imgAnim.visibility = View.GONE
-//                            spanny.append(data.songName, ForegroundColorSpan(Color.BLACK))
-//                        }
-//                        spanny.appends(" - " + data.artist, ForegroundColorSpan("#b2b2b2".parseColor()), AbsoluteSizeSpan(12.sp.toInt()))
-//                        songName.text = spanny
-//                        btnClose.setOnClickListener {
-//                            StarrySky.with().removeSongInfo(data.songId)
-//                            removedData(position)
-//                        }
-//                        itemClicked(View.OnClickListener {
-//                            StarrySky.with().playMusicById(data.songId)
-//                        })
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     override fun unInitView() {
     }

@@ -198,8 +198,8 @@ class PlayerControlImpl(
 
     override fun isBuffering(): Boolean = playbackState.value?.stage == PlaybackStage.BUFFERING
 
-    override fun isCurrMusicIsPlayingMusic(songId: String): Boolean {
-        return if (songId.isEmpty()) {
+    override fun isCurrMusicIsPlayingMusic(songId: String?): Boolean {
+        return if (songId.isNullOrEmpty()) {
             false
         } else {
             val playingMusic = getNowPlayingSongInfo()
@@ -207,13 +207,13 @@ class PlayerControlImpl(
         }
     }
 
-    override fun isCurrMusicIsPlaying(songId: String): Boolean = isCurrMusicIsPlayingMusic(songId) && isPlaying()
+    override fun isCurrMusicIsPlaying(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isPlaying()
 
-    override fun isCurrMusicIsPaused(songId: String): Boolean = isCurrMusicIsPlayingMusic(songId) && isPaused()
+    override fun isCurrMusicIsPaused(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isPaused()
 
-    override fun isCurrMusicIsIdea(songId: String): Boolean = isCurrMusicIsPlayingMusic(songId) && isIdea()
+    override fun isCurrMusicIsIdea(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isIdea()
 
-    override fun isCurrMusicIsBuffering(songId: String): Boolean = isCurrMusicIsPlayingMusic(songId) && isBuffering()
+    override fun isCurrMusicIsBuffering(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isBuffering()
 
     override fun setVolume(audioVolume: Float) {
         var volume = audioVolume

@@ -24,26 +24,7 @@ import com.lzx.musiclib.parseColor
 import com.lzx.musiclib.sp
 import java.util.*
 
-/**
- *
- */
-/**
- *
- * Project: BuDaoShortVideo
- *
- * Description: SlidingTabLayout 滑动TabLayout,对于ViewPager的依赖性强, https://github.com/H07000223/FlycoTabLayout，
- * commit 749ef0632daa3fbcfd9dab1c77e8082167554685，在此基础上修改，不局限于添加红点，还可添加其他的msg View
- *
- * Copyright (c) 2017 www.duowan.com Inc. All rights reserved.
- *
- * Company: YY Inc.
- *
- * @author: Aragon.Wu
- * @date: 2017-06-06
- * @vserion: 1.0
- * 注：根据SlidingTabLayout 和 CommonTabLayout 改造，可配置简单icon
- */
-class SlidingTabLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : HorizontalScrollView(context, attrs, defStyleAttr), OnPageChangeListener {
+class CustomTabLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : HorizontalScrollView(context, attrs, defStyleAttr), OnPageChangeListener {
     private val mContext: Context
     private var mViewPager: ViewPager? = null
     private val mTabEntitys = mutableListOf<CustomTabEntity>()

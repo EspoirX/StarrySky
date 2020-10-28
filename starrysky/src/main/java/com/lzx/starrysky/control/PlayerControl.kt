@@ -269,27 +269,27 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     /**
      * 判断传入的音乐是不是正在播放的音乐
      */
-    fun isCurrMusicIsPlayingMusic(songId: String): Boolean
+    fun isCurrMusicIsPlayingMusic(songId: String?): Boolean
 
     /**
      * 判断传入的音乐是否正在播放
      */
-    fun isCurrMusicIsPlaying(songId: String): Boolean
+    fun isCurrMusicIsPlaying(songId: String?): Boolean
 
     /**
      * 判断传入的音乐是否正在暂停
      */
-    fun isCurrMusicIsPaused(songId: String): Boolean
+    fun isCurrMusicIsPaused(songId: String?): Boolean
 
     /**
      * 判断传入的音乐是否空闲
      */
-    fun isCurrMusicIsIdea(songId: String): Boolean
+    fun isCurrMusicIsIdea(songId: String?): Boolean
 
     /**
      * 判断传入的音乐是否缓冲
      */
-    fun isCurrMusicIsBuffering(songId: String): Boolean
+    fun isCurrMusicIsBuffering(songId: String?): Boolean
 
     /**
      * 设置音量, 范围 0到1

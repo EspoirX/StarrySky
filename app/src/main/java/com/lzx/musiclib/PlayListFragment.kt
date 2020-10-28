@@ -14,7 +14,6 @@ import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.playback.PlaybackStage
-import kotlinx.android.synthetic.main.activity_play_detail.songCover
 import kotlinx.android.synthetic.main.fragment_recomment.recycleView
 
 class PlayListFragment : BaseFragment() {
@@ -36,11 +35,6 @@ class PlayListFragment : BaseFragment() {
     override fun initView(view: View?) {
         channelId = arguments?.getInt("channelId") ?: 10
         viewModel = ViewModelProvider(this)[MusicViewModel::class.java]
-//        viewModel?.getSongList(channelId)
-//        viewModel?.songInfos?.observe(this, Observer {
-//            initRecycleView(it)
-//        })
-
         StarrySky.with().playbackState().observe(this, Observer {
             if (it.songInfo.isRefrain()) {
                 return@Observer
@@ -60,9 +54,10 @@ class PlayListFragment : BaseFragment() {
                 addItem(R.layout.item_hot_type_one) {
                     bindViewHolder { info, position, holder ->
                         val spectrumDrawView = holder.findViewById<SpectrumDrawView>(R.id.imgAnim)
+                        val itemMore = holder.findViewById<SpectrumDrawView>(R.id.itemMore)
                         setText(R.id.songName to info?.songName, R.id.songDesc to info?.artist)
-                        val isPlaying = StarrySky.with().isCurrMusicIsPlaying(info?.songId!!)
-                        val isPause = StarrySky.with().isCurrMusicIsPaused(info.songId)
+                        val isPlaying = StarrySky.with().isCurrMusicIsPlaying(info?.songId)
+                        val isPause = StarrySky.with().isCurrMusicIsPaused(info?.songId)
                         when {
                             isPlaying -> {
                                 spectrumDrawView.startAnim()
@@ -76,11 +71,19 @@ class PlayListFragment : BaseFragment() {
                                 spectrumDrawView.visibility = View.INVISIBLE
                             }
                         }
+                        itemMore.setOnClickListener {
+                            showItemMoreDialog()
+                        }
                     }
                 }
             }
         }
     }
+
+    private fun showItemMoreDialog() {
+
+    }
+
 
     override fun unInitView() {
     }
