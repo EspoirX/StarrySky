@@ -4,236 +4,219 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:background="#86000000"
     tools:ignore="MissingPrefix">
 
-
-    <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/bgImage"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="20dp"
-        app:civ_border_color="#3f51b5"
-        app:civ_border_width="4dp"
-        app:civ_shadow="true"
-        app:civ_shadow_color="#3f51b5"
-        app:civ_shadow_radius="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+    <com.lzx.musiclib.weight.SquareView
+        android:id="@+id/squareView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         tools:ignore="MissingConstraints" />
 
-    <com.lzx.musiclib.weight.SimpleMarqueeView
+    <TextView
         android:id="@+id/songName"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#000"
-        android:textSize="25sp"
-        app:isScrollAllTextWidth="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bgImage"
-        app:margin_txt="20dp"
-        app:textSize="25sp" />
-
-    <Button
-        android:id="@+id/btnRefrain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="伴奏关"
-        app:layout_constraintBottom_toTopOf="@+id/btnRewind"
-        app:layout_constraintEnd_toStartOf="@+id/btnRefrainJia"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btnRefrainJia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="伴奏音量+"
-        app:layout_constraintEnd_toStartOf="@+id/btnRefrain"
-        app:layout_constraintStart_toEndOf="@+id/btnRefrainJian"
-        app:layout_constraintTop_toTopOf="@+id/btnRefrain" />
-
-    <Button
-        android:id="@+id/btnRefrainJian"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="伴奏音量-"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnRefrainJia"
-        app:layout_constraintTop_toTopOf="@+id/btnRefrain" />
-
-    <ImageView
-        android:id="@+id/btnRewind"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginBottom="50dp"
-        android:src="@drawable/ic_rewind"
-        app:layout_constraintBottom_toTopOf="@+id/progressText"
-        app:layout_constraintEnd_toStartOf="@+id/btnSpeedFast"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="139dp"
+        android:layout_marginRight="40dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textSize="40sp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="dasdasdasasds" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/songDesc"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="快退"
-        app:layout_constraintEnd_toEndOf="@+id/btnRewind"
-        app:layout_constraintStart_toStartOf="@+id/btnRewind"
-        app:layout_constraintTop_toBottomOf="@+id/btnRewind" />
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="40dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@+id/songName" />
 
-    <ImageView
-        android:id="@+id/btnSpeedSlow"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="50dp"
-        android:src="@drawable/ic_speed_slow"
-        app:layout_constraintBottom_toTopOf="@+id/progressText"
-        app:layout_constraintEnd_toStartOf="@+id/btnSpeedFast"
-        app:layout_constraintStart_toEndOf="@+id/btnRewind" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="变速慢"
-        app:layout_constraintEnd_toEndOf="@+id/btnSpeedSlow"
-        app:layout_constraintStart_toStartOf="@+id/btnSpeedSlow"
-        app:layout_constraintTop_toBottomOf="@+id/btnSpeedSlow" />
-
-    <ImageView
-        android:id="@+id/btnSpeedFast"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="50dp"
-        android:src="@drawable/ic_speed_fast"
-        app:layout_constraintBottom_toTopOf="@+id/progressText"
-        app:layout_constraintEnd_toStartOf="@+id/btnFastForward"
-        app:layout_constraintStart_toEndOf="@+id/btnSpeedSlow" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="变速快"
-        app:layout_constraintEnd_toEndOf="@+id/btnSpeedFast"
-        app:layout_constraintStart_toStartOf="@+id/btnSpeedFast"
-        app:layout_constraintTop_toBottomOf="@+id/btnSpeedFast" />
-
-    <ImageView
-        android:id="@+id/btnFastForward"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="50dp"
-        android:src="@drawable/ic_fast_forward"
-        app:layout_constraintBottom_toTopOf="@+id/progressText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnSpeedSlow" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="快进"
-        app:layout_constraintEnd_toEndOf="@+id/btnFastForward"
-        app:layout_constraintStart_toStartOf="@+id/btnFastForward"
-        app:layout_constraintTop_toBottomOf="@+id/btnFastForward" />
+        android:layout_marginRight="10dp"
+        android:maxHeight="3.4dp"
+        android:minHeight="3.4dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:progressDrawable="@drawable/seek_bar_pro"
+        android:splitTrack="false"
+        android:thumb="@drawable/seek_bar_thumb"
+        app:layout_constraintTop_toBottomOf="@+id/squareView" />
 
     <TextView
         android:id="@+id/progressText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/seekBar"
-        android:layout_marginLeft="20dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="10dp"
         android:text="00:00"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/seekBar"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/seekBar" />
 
     <TextView
         android:id="@+id/timeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="15dp"
-        android:text="00:00"
+        android:text=" / 00:00"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/seekBar"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/progressText" />
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="match_parent"
+
+    <ImageView
+        android:id="@+id/btnPlayState"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/relativeLayout" />
-
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
-        android:layout_width="80dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="20dp"
-        app:bl_corners_radius="25dp"
-        app:bl_solid_color="#d35650"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/gdt_ic_pause"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:background="#d35650">
-
-        <ImageView
-            android:id="@+id/btnPlayState"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/gdt_ic_pause" />
-    </RelativeLayout>
+        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
     <ImageView
         android:id="@+id/btnPreSong"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginRight="20dp"
-        android:padding="5dp"
         android:src="@drawable/ic_pre_song"
-        app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintEnd_toStartOf="@+id/relativeLayout"
-        app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
+        app:layout_constraintBottom_toBottomOf="@+id/btnPlayState"
+        app:layout_constraintEnd_toStartOf="@+id/btnPlayState"
+        app:layout_constraintTop_toTopOf="@+id/btnPlayState" />
 
     <ImageView
         android:id="@+id/btnNextSong"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:padding="5dp"
         android:src="@drawable/ic_next_song"
-        app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintStart_toEndOf="@+id/relativeLayout"
-        app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
+        app:layout_constraintBottom_toBottomOf="@+id/btnPlayState"
+        app:layout_constraintStart_toEndOf="@+id/btnPlayState"
+        app:layout_constraintTop_toTopOf="@+id/btnPlayState" />
 
     <ImageView
-        android:id="@+id/btnSongList"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:padding="5dp"
-        android:src="@drawable/ic_songlist"
-        app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
+        android:id="@+id/btnTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/bt_playpage_button_clock_normal_new"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPlayState"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnNextSong"
-        app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
+        app:layout_constraintTop_toTopOf="@+id/btnPlayState" />
 
     <ImageView
         android:id="@+id/btnPlayMode"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:padding="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:src="@drawable/ic_shunxu"
-        app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPlayState"
         app:layout_constraintEnd_toStartOf="@+id/btnPreSong"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
+        app:layout_constraintTop_toTopOf="@+id/btnPlayState" />
+
+
+    <ImageView
+        android:id="@+id/btnAccompaniment"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/ic_accompaniment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnPlayState" />
+
+    <TextView
+        android:id="@+id/txtAccompaniment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="伴奏关"
+        android:textColor="#fff"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnAccompaniment"
+        app:layout_constraintStart_toStartOf="@+id/btnAccompaniment"
+        app:layout_constraintTop_toBottomOf="@+id/btnAccompaniment" />
+
+    <ImageView
+        android:id="@+id/btnSpeed"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/ic_speed"
+        app:layout_constraintBottom_toBottomOf="@+id/btnAccompaniment"
+        app:layout_constraintEnd_toStartOf="@+id/btnAccompaniment"
+        app:layout_constraintTop_toTopOf="@+id/btnAccompaniment" />
+
+    <TextView
+        android:id="@+id/txtSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="调速"
+        android:textColor="#fff"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnSpeed"
+        app:layout_constraintStart_toStartOf="@+id/btnSpeed"
+        app:layout_constraintTop_toBottomOf="@+id/btnSpeed" />
+
+   <!-- <ImageView
+        android:id="@+id/btnVariableSpeed"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="15dp"
+        android:src="@drawable/ic_variable_speed"
+        app:layout_constraintBottom_toBottomOf="@+id/btnAccompaniment"
+        app:layout_constraintStart_toEndOf="@+id/btnAccompaniment"
+        app:layout_constraintTop_toTopOf="@+id/btnAccompaniment" />
+
+    <TextView
+        android:id="@+id/txtVariableSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="变速"
+        android:textColor="#fff"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnVariableSpeed"
+        app:layout_constraintStart_toStartOf="@+id/btnVariableSpeed"
+        app:layout_constraintTop_toBottomOf="@+id/btnVariableSpeed" />-->
+
+
+    <ImageView
+        android:id="@+id/btnVolume"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="15dp"
+        android:src="@drawable/ic_volume"
+        app:layout_constraintBottom_toBottomOf="@+id/btnAccompaniment"
+        app:layout_constraintStart_toEndOf="@+id/btnAccompaniment"
+        app:layout_constraintTop_toTopOf="@+id/btnAccompaniment" />
+
+    <TextView
+        android:id="@+id/txtVolume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="音量"
+        android:textColor="#fff"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnVolume"
+        app:layout_constraintStart_toStartOf="@+id/btnVolume"
+        app:layout_constraintTop_toBottomOf="@+id/btnVolume" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

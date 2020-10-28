@@ -122,12 +122,12 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     fun skipToPrevious()
 
     /**
-     * 快进
+     * 快进 每调一次加 0.5 倍
      */
     fun fastForward()
 
     /**
-     * 开始倒带 每调一次减 0.5 倍，最小为 0
+     * 快退 每调一次减 0.5 倍，最小为 0
      */
     fun rewind()
 
@@ -292,7 +292,7 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     fun isCurrMusicIsBuffering(songId: String): Boolean
 
     /**
-     * 设置音量
+     * 设置音量, 范围 0到1
      */
     fun setVolume(audioVolume: Float)
 

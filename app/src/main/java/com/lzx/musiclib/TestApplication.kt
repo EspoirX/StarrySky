@@ -62,12 +62,12 @@ open class TestApplication : Application() {
         }
         val config = StarrySkyConfig().newBuilder()
             .isOpenCache(true)
-            .setCacheDestFileDir("StarrySkyCache/".toSdcardPath())
+            .setCacheDestFileDir("000StarrySkyCache/".toSdcardPath())
 //            .setCacheMaxBytes(1024 * 1024 * 1024)  //设置缓存上限，默认 512 * 1024 * 1024
 //            .setCache(AndroidVideoCache(this))
             .addInterceptor(PermissionInterceptor(this))
-            .addInterceptor(RequestSongInfoInterceptor())
-            .addInterceptor(RequestSongCoverInterceptor())
+//            .addInterceptor(RequestSongInfoInterceptor())
+//            .addInterceptor(RequestSongCoverInterceptor())
             .setImageLoader(object : ImageLoaderStrategy {
                 //使用自定义图片加载器
                 override fun loadImage(context: Context, url: String?, callBack: ImageLoaderCallBack) {
@@ -155,55 +155,55 @@ open class TestApplication : Application() {
     /**
      * 请求播放url拦截器
      */
-    class RequestSongInfoInterceptor : StarrySkyInterceptor {
-        private val viewModel = MusicViewModel()
-        override fun process(
-            songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback
-        ) {
-            if (songInfo == null) {
-                callback.onInterrupt(RuntimeException("SongInfo is null"))
-                return
-            }
-            if (songInfo.songUrl.isEmpty() && songInfo.headData?.get("source") == "qqMusic") {
-                viewModel.getQQMusicUrl(songInfo.songId) {
-                    songInfo.songUrl = it
-                    callback.onContinue(songInfo)
-                }
-            } else if (songInfo.songUrl.isEmpty() && songInfo.headData?.get("source") == "baiduMusic") {
-                viewModel.getBaiduMusicUrl(songInfo.songId) {
-                    songInfo.songCover = it.songCover
-                    songInfo.songUrl = it.songUrl
-                    songInfo.duration = it.duration
-                    callback.onContinue(songInfo)
-                }
-            } else {
-                callback.onContinue(songInfo)
-            }
-        }
-    }
+//    class RequestSongInfoInterceptor : StarrySkyInterceptor {
+//        private val viewModel = MusicViewModel()
+//        override fun process(
+//            songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback
+//        ) {
+//            if (songInfo == null) {
+//                callback.onInterrupt(RuntimeException("SongInfo is null"))
+//                return
+//            }
+//            if (songInfo.songUrl.isEmpty() && songInfo.headData?.get("source") == "qqMusic") {
+//                viewModel.getQQMusicUrl(songInfo.songId) {
+//                    songInfo.songUrl = it
+//                    callback.onContinue(songInfo)
+//                }
+//            } else if (songInfo.songUrl.isEmpty() && songInfo.headData?.get("source") == "baiduMusic") {
+//                viewModel.getBaiduMusicUrl(songInfo.songId) {
+//                    songInfo.songCover = it.songCover
+//                    songInfo.songUrl = it.songUrl
+//                    songInfo.duration = it.duration
+//                    callback.onContinue(songInfo)
+//                }
+//            } else {
+//                callback.onContinue(songInfo)
+//            }
+//        }
+//    }
 
     /**
      * 请求封面url拦截器
      */
-    class RequestSongCoverInterceptor : StarrySkyInterceptor {
-        private val viewModel = MusicViewModel()
-        override fun process(
-            songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback
-        ) {
-            if (songInfo == null) {
-                callback.onInterrupt(RuntimeException("SongInfo is null"))
-                return
-            }
-            if (songInfo.songCover.isEmpty() && songInfo.headData?.get("source") == "qqMusic") {
-                viewModel.getQQMusicSongCover(songInfo.songId) {
-                    songInfo.songCover = it
-                    callback.onContinue(songInfo)
-                }
-            } else {
-                callback.onContinue(songInfo)
-            }
-        }
-    }
+//    class RequestSongCoverInterceptor : StarrySkyInterceptor {
+//        private val viewModel = MusicViewModel()
+//        override fun process(
+//            songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback
+//        ) {
+//            if (songInfo == null) {
+//                callback.onInterrupt(RuntimeException("SongInfo is null"))
+//                return
+//            }
+//            if (songInfo.songCover.isEmpty() && songInfo.headData?.get("source") == "qqMusic") {
+//                viewModel.getQQMusicSongCover(songInfo.songId) {
+//                    songInfo.songCover = it
+//                    callback.onContinue(songInfo)
+//                }
+//            } else {
+//                callback.onContinue(songInfo)
+//            }
+//        }
+//    }
 
     /**
      * 使用 AndroidVideoCache 这个第三方库做缓存的例子

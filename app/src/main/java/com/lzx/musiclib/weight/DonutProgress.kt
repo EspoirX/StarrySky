@@ -68,7 +68,7 @@ open class DonutProgress @JvmOverloads constructor(context: Context, attrs: Attr
     private var innerBottomTextSize = 0f
     private var innerBottomText: String? = null
     private var innerBottomTextHeight = 0f
-    private val defaultStrokeWidth: Float = 10.dp
+    private val defaultStrokeWidth: Float = 10f.dp
     private val defaultFinishedColor = Color.rgb(66, 145, 241)
     private val defaultUnfinishedColor = Color.rgb(204, 204, 204)
     private val defaultTextColor = Color.rgb(66, 145, 241)
@@ -76,8 +76,8 @@ open class DonutProgress @JvmOverloads constructor(context: Context, attrs: Attr
     private val defaultInnerBackgroundColor = Color.TRANSPARENT
     private val defaultMax = 100
     private val defaultStartingDegree = 0
-    private val defaultTextSize: Float = 18.dp
-    private val defaultInnerBottomTextSize: Float = 18.dp
+    private val defaultTextSize: Float = 18f.dp
+    private val defaultInnerBottomTextSize: Float = 18f.dp
     private val minSize: Int = 100.dp.toInt()
 
     init {

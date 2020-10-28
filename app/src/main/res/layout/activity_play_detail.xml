@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/container"
+    <com.lzx.musiclib.weight.SquareImageView
+        android:id="@+id/songCover"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bg_play_detail" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-</LinearLayout>
+</RelativeLayout>

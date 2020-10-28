@@ -1,13 +1,17 @@
 package com.lzx.musiclib.bean
 
-import com.lzx.starrysky.SongInfo
+class MusicGroup {
+    var groupId: Int = 0
+    var groupName: String? = null
+    var chls: MutableList<MusicChannel> = mutableListOf()
+}
 
 class MusicChannel {
-    var contentId: String? = null
+    var bgColor: String? = null
+    var intro: String? = null
+    var name: String? = null
     var cover: String? = null
-    var id: String? = null
-    var rcmdtemplate: String? = null
-    var title: String? = null
-    var username: String? = null
-    var songList = mutableListOf<SongInfo>()
+    var songNum: Int = 0
+    var id: Int = 0
 }
+

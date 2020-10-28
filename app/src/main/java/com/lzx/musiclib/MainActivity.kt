@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.tab.FlacFragment
-import com.lzx.musiclib.tab.HotFragment
 import com.lzx.musiclib.tab.M3u8Fragment
 import com.lzx.musiclib.tab.RecommendFragment
 import com.lzx.musiclib.tab.RecordFragment
@@ -70,7 +69,7 @@ class MainActivity : AppCompatActivity() {
 
         val list = mutableListOf<String>()
         list.add("精品推荐")
-        list.add("热门")
+//        list.add("热门")
         list.add("FLAC无损")
         list.add("电台(m3u8 HLS)")
         list.add("RTMP 流")
@@ -138,7 +137,7 @@ class MainActivity : AppCompatActivity() {
     inner class ServiceConnectedReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == "onServiceConnectedSuccessAction") {
-                viewModel?.playWhenStartApp()
+//                viewModel?.playWhenStartApp()
             }
         }
     }
@@ -154,11 +153,11 @@ class ViewPagerAdapter(fm: FragmentManager, private val list: MutableList<String
         }
         val fragment = when (position) {
             0 -> RecommendFragment.newInstance()
-            1 -> HotFragment.newInstance()
-            2 -> FlacFragment.newInstance()
-            3 -> M3u8Fragment.newInstance()
-            4 -> RtmpFragment.newInstance()
-            5 -> RecordFragment.newInstance()
+//            1 -> HotFragment.newInstance()
+            1 -> FlacFragment.newInstance()
+            2 -> M3u8Fragment.newInstance()
+            3 -> RtmpFragment.newInstance()
+            4 -> RecordFragment.newInstance()
             else -> throw IllegalArgumentException()
         }
         fragmentMap[value!!] = fragment

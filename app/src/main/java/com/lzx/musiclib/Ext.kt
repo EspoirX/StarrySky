@@ -48,7 +48,7 @@ val Int.dp
         TypedValue.COMPLEX_UNIT_DIP,
         this.toFloat(),
         Resources.getSystem().displayMetrics
-    )
+    ).toInt()
 
 val Float.sp
     get() = TypedValue.applyDimension(
@@ -337,4 +337,12 @@ fun Fragment.addFragmentToActivity(fragmentManager: FragmentManager, frameId: In
 
 fun String.toSdcardPath(): String {
     return Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + this
+}
+
+fun Context.getPhoneWidth(): Int {
+    return this.resources.displayMetrics.widthPixels
+}
+
+fun Context.getPhoneHeight(): Int {
+    return this.resources.displayMetrics.heightPixels
 }
