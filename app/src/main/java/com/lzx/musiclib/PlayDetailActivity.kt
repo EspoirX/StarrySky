@@ -1,5 +1,7 @@
 package com.lzx.musiclib
 
+import android.R.attr.path
+import android.content.res.AssetFileDescriptor
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -11,6 +13,9 @@ import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.playback.PlaybackStage
 import kotlinx.android.synthetic.main.activity_play_detail.songCover
 import kotlinx.android.synthetic.main.activity_play_detail.viewPager
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+
 
 class PlayDetailActivity : AppCompatActivity() {
 
@@ -33,6 +38,28 @@ class PlayDetailActivity : AppCompatActivity() {
                 }
             }
         })
+
+        val assetFileDescriptor: AssetFileDescriptor = getAssets().openFd("hglo1.ogg")
+        assets?.open("hglo1.ogg")?.let {
+            readAsBytes(it)?.let {
+
+            }
+        }
+    }
+
+    private fun readAsBytes(inputStream: InputStream): ByteArray? {
+        ByteArrayOutputStream().use { byteArrayOutputStream ->
+            val byteArray = ByteArray(2048)
+            while (true) {
+                val count = inputStream.read(byteArray, 0, 2048)
+                if (count <= 0) {
+                    break
+                } else {
+                    byteArrayOutputStream.write(byteArray, 0, count)
+                }
+            }
+            return byteArrayOutputStream.toByteArray()
+        }
     }
 
     class PlayDetailAdapter(fm: FragmentManager, channelId: Int) : FragmentPagerAdapter(fm) {

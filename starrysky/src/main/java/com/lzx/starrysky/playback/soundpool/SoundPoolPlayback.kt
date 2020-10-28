@@ -1,73 +1,249 @@
 package com.lzx.starrysky.playback.soundpool
 
 import android.content.Context
+import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.SoundPool
-import com.lzx.starrysky.utils.StarrySkyUtils
+import android.os.AsyncTask
+import android.os.Build
+import com.lzx.starrysky.utils.MainLooper
+import com.lzx.starrysky.utils.md5
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 class SoundPoolPlayback(private val context: Context?) {
 
     private var soundPool: SoundPool? = null
     private var isLoaded: Boolean = false
-    private var isAllLoadedSuccess: Boolean = false
     private var songIdList = mutableListOf<Int>()
-    private var creator: SoundPoolCreator? = null
+    private var maxSongSize = 12
+    private var hasLoaded = false
 
-    fun setSoundPoolCreator(creator: SoundPoolCreator) {
-        this.creator = creator
+    /**
+     * 从 assets 加载
+     */
+    fun prepareForAssets(list: MutableList<String>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
+        if (list.isNullOrEmpty()) {
+            run(completionBlock)
+            return
+        }
+        setupSoundPool(list.toMutableList(), completionBlock)
+        loadForAssets(list)
+    }
+
+    /**
+     * 从 raw 加载
+     */
+    fun prepareForRaw(list: MutableList<Int>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
+        if (list.isNullOrEmpty()) {
+            run(completionBlock)
+            return
+        }
+        setupSoundPool(list.toMutableList(), completionBlock)
+        loadForRaw(list)
+    }
+
+    /**
+     * 从 File 加载
+     */
+    fun prepareForFile(list: MutableList<File>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
+        if (list.isNullOrEmpty()) {
+            run(completionBlock)
+            return
+        }
+        setupSoundPool(list.toMutableList(), completionBlock)
+        loadForFile(list)
+    }
+
+    /**
+     * 从 本地sd卡路径 加载
+     */
+    fun prepareForPath(list: MutableList<String>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
+        if (list.isNullOrEmpty()) {
+            run(completionBlock)
+            return
+        }
+        setupSoundPool(list.toMutableList(), completionBlock)
+        loadForPath(list)
+    }
+
+    /**
+     * 从网络加载
+     */
+    fun prepareForHttp(list: MutableList<String>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
+        if (list.isNullOrEmpty()) {
+            run(completionBlock)
+            return
+        }
+        setupSoundPool(list.toMutableList(), completionBlock)
+        loadForHttp(list)
+    }
+
+    /**
+     * 创建并加载SoundPool
+     */
+    private fun setupSoundPool(list: MutableList<Any>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
+        var soundLoaded = 0
+        isLoaded = false
+        songIdList.clear()
+
         if (soundPool == null) {
-            createSoundPool(creator.maxStreams)
+            soundPool = generateSoundPool(list)
         }
-    }
-
-    fun loadSound(afdList: MutableList<Any>) = apply {
-        if (afdList.size > creator?.maxStreams ?: 10) {
-            //如果传入的列表比配置的最大值还大，就用列表的长度重新创建 SoundPool 对象
-            createSoundPool(afdList.size)
-        }
-        val soundData = hashMapOf<String, Int>()
-        afdList.forEachIndexed { index, data ->
-            when (data) {
-                is AssetData -> {
-                    val key = if (data.songId.isNullOrEmpty()) index.toString() else data.songId!!
-                    val songId = soundPool?.load(data.assetFile, 1) ?: -1
-                    soundData[key] = songId
-                }
-                is AssetResIdData -> {
-                    val key = if (data.songId.isNullOrEmpty()) index.toString() else data.songId!!
-                    val songId = soundPool?.load(context, data.resId, 1) ?: -1
-                    soundData[key] = songId
-                }
-                is PathData -> {
-                    val key = if (data.songId.isNullOrEmpty()) index.toString() else data.songId!!
-                    val songId = soundPool?.load(data.path, 1) ?: -1
-                    soundData[key] = songId
-
-                }
-                is FileData -> {
-                    val key = if (data.songId.isNullOrEmpty()) index.toString() else data.songId!!
-                    val songId = soundPool?.load(data.fd, data.offset, data.length, 1) ?: -1
-                    soundData[key] = songId
-                }
-            }
-        }
-        var index = 0
-        soundPool?.setOnLoadCompleteListener { soundPool, sampleId, status ->
+        soundPool?.setOnLoadCompleteListener { _, sampleId, _ ->
             isLoaded = true
-            index++
-            if (status != 0) {
-                StarrySkyUtils.log("id $sampleId 加载失败")
-            } else {
-                songIdList.add(sampleId)
-            }
-            if (index == afdList.size) {
-                StarrySkyUtils.log("全部加载完成")
-                isAllLoadedSuccess = true
-                index = 0
+            soundLoaded++
+            songIdList.add(sampleId)
+            if (soundLoaded >= list.count()) {
+                completionBlock(this)
             }
         }
     }
+
+    /**
+     * 创建SoundPool
+     */
+    private fun generateSoundPool(entity: MutableList<Any>) = if (Build.VERSION.SDK_INT >= 21) {
+        val attributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .build()
+        SoundPool.Builder().setAudioAttributes(attributes)
+            .setMaxStreams(maxSongSize.coerceAtMost(entity.count()))
+            .build()
+    } else {
+        SoundPool(maxSongSize.coerceAtMost(entity.count()), AudioManager.STREAM_MUSIC, 0)
+    }
+
+    private fun loadForAssets(list: MutableList<String>) {
+        if (hasLoaded) return
+        val temp = mutableListOf<Int>()
+        list.forEach { it ->
+            context?.assets?.openFd(it)?.let {
+                val id = soundPool?.load(it.fileDescriptor, it.startOffset, it.length, 1) ?: -1
+                if (id > 0) {
+                    temp.add(id)
+                }
+            }
+        }
+        if (temp.count() == list.count()) {
+            hasLoaded = true
+        }
+    }
+
+    private fun loadForRaw(list: MutableList<Int>) {
+        if (hasLoaded) return
+        val temp = mutableListOf<Int>()
+        list.forEach { it ->
+            context?.resources?.openRawResourceFd(it)?.let {
+                val id = soundPool?.load(it.fileDescriptor, it.startOffset, it.length, 1) ?: -1
+                if (id > 0) {
+                    temp.add(id)
+                }
+            }
+        }
+        if (temp.count() == list.count()) {
+            hasLoaded = true
+        }
+    }
+
+    private fun loadForFile(list: MutableList<File>) {
+        if (hasLoaded) return
+        val temp = mutableListOf<Int>()
+        list.filter { it.exists() && it.isFile }.forEach { file ->
+            FileInputStream(file).use {
+                val id = soundPool?.load(it.fd, 0, file.length(), 1) ?: -1
+                if (id > 0) {
+                    temp.add(id)
+                }
+            }
+        }
+        if (temp.count() == list.count()) {
+            hasLoaded = true
+        }
+    }
+
+    private fun loadForPath(list: MutableList<String>) {
+        if (hasLoaded) return
+        val temp = mutableListOf<Int>()
+        list.filter { it.isNotEmpty() }.forEach {
+            val id = soundPool?.load(it, 1) ?: -1
+            if (id > 0) {
+                temp.add(id)
+            }
+        }
+        if (temp.count() == list.count()) {
+            hasLoaded = true
+        }
+    }
+
+    private fun loadForHttp(list: MutableList<String>) {
+        if (hasLoaded) return
+        AsyncTask.THREAD_POOL_EXECUTOR.execute {
+            try {
+                val temp = mutableListOf<Int>()
+                list.forEach {
+                    loadForHttpImpl(it, list, temp)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
+    }
+
+    private fun loadForHttpImpl(voiceUrl: String, list: MutableList<String>, temp: MutableList<Int>) {
+        val cachePath = context?.cacheDir?.absolutePath + "/StarrySky/soundPool/"
+        val url = URL(voiceUrl)
+        (url.openConnection() as? HttpURLConnection)?.let { it ->
+            it.connectTimeout = 20 * 1000
+            it.requestMethod = "GET"
+            it.connect()
+            it.inputStream.use { inputStream ->
+                readAsBytes(inputStream)?.let { bytes ->
+                    val fileDir = File(cachePath).apply {
+                        this.takeIf { !it.exists() }?.mkdirs()
+                    }
+                    val file = File(fileDir.absolutePath + voiceUrl.md5() + ".mp3").apply {
+                        this.takeIf { !it.exists() }?.createNewFile()
+                    }
+                    FileOutputStream(file).use {
+                        it.write(bytes).also {
+                            MainLooper.instance.runOnUiThread(Runnable {
+                                val id = soundPool?.load(file.absolutePath, 1) ?: -1
+                                if (id > 0) {
+                                    temp.add(id)
+                                }
+                                if (temp.count() == list.count()) {
+                                    hasLoaded = true
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun readAsBytes(inputStream: InputStream): ByteArray? {
+        ByteArrayOutputStream().use { byteArrayOutputStream ->
+            val byteArray = ByteArray(2048)
+            while (true) {
+                val count = inputStream.read(byteArray, 0, 2048)
+                if (count <= 0) {
+                    break
+                } else {
+                    byteArrayOutputStream.write(byteArray, 0, count)
+                }
+            }
+            return byteArrayOutputStream.toByteArray()
+        }
+    }
+
 
     /**
      * 播放，播放前请先调用 loadSound 加载音频，
@@ -88,7 +264,7 @@ class SoundPoolPlayback(private val context: Context?) {
                   leftVolume: Float = -1f,
                   rightVolume: Float = -1f,
                   priority: Int = 1,
-                  loop: Int = 1,
+                  loop: Int = 0,
                   rate: Float = 1f): Int {
 
         if (!isLoaded) return 0
@@ -148,22 +324,8 @@ class SoundPoolPlayback(private val context: Context?) {
      * 释放SoundPool中的所有音频资源.
      */
     fun release() = apply {
+        hasLoaded = false
         soundPool?.release()
         soundPool = null
     }
-
-    private fun createSoundPool(maxStreams: Int) {
-        creator?.let {
-            soundPool = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP && it.audioAttributes != null) {
-                SoundPool.Builder()
-                    .setMaxStreams(maxStreams)
-                    .setAudioAttributes(it.audioAttributes)
-                    .build()
-            } else {
-                SoundPool(it.maxStreams, it.streamType, 0)
-            }
-        }
-    }
-
-
 }

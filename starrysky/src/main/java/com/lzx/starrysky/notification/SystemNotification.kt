@@ -237,7 +237,7 @@ class SystemNotification constructor(
         val icon: Int
         val intent: PendingIntent?
 
-        if (playbackState == PlaybackStage.PLAYING) {
+        if (playbackState == PlaybackStage.PLAYING || playbackState == PlaybackStage.BUFFERING) {
             label = if (config.labelPlay.isNotEmpty()) config.labelPlay else context.getString(R.string.label_pause)
             icon = if (config.pauseDrawableRes != -1) config.pauseDrawableRes else R.drawable.ic_pause_white_24dp
             intent = mPauseIntent

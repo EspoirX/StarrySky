@@ -2,6 +2,7 @@ package com.lzx.musiclib
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.lzx.musiclib.adapter.addItem
@@ -54,7 +55,7 @@ class PlayListFragment : BaseFragment() {
                 addItem(R.layout.item_hot_type_one) {
                     bindViewHolder { info, position, holder ->
                         val spectrumDrawView = holder.findViewById<SpectrumDrawView>(R.id.imgAnim)
-                        val itemMore = holder.findViewById<SpectrumDrawView>(R.id.itemMore)
+                        val itemMore = holder.findViewById<ImageView>(R.id.itemMore)
                         setText(R.id.songName to info?.songName, R.id.songDesc to info?.artist)
                         val isPlaying = StarrySky.with().isCurrMusicIsPlaying(info?.songId)
                         val isPause = StarrySky.with().isCurrMusicIsPaused(info?.songId)

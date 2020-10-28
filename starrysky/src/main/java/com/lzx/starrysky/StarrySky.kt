@@ -16,7 +16,6 @@ import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.playback.soundpool.SoundPoolCreator
 import com.lzx.starrysky.playback.soundpool.SoundPoolPlayback
 import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.service.ServiceBridge
@@ -152,13 +151,6 @@ object StarrySky {
     }
 
     /**
-     * SoundPool 构建者
-     */
-    fun soundPoolBuilder(): SoundPoolCreator.Builder {
-        return SoundPoolCreator().newBuilder().setContext(globalContext)
-    }
-
-    /**
      * 获取 SoundPool 操作实例
      * 适合短促且对反应速度比较高的音频，建议长度不超过7秒，大小不大于100kb，更多信息请参数 SoundPool
      *
@@ -168,10 +160,6 @@ object StarrySky {
         if (bridge?.soundPoolPlayback == null) {
             throw NullPointerException("bridge or soundPoolPlayback is Null")
         }
-        val creator = SoundPoolCreator().newBuilder()
-            .setContext(globalContext)
-            .build()
-        bridge?.soundPoolPlayback?.setSoundPoolCreator(creator)
         return bridge!!.soundPoolPlayback!!
     }
 

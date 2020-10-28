@@ -268,7 +268,7 @@ class CustomNotification constructor(
         bigRemoteView?.setTextViewText(ID_TXT_NOTIFY_SONGNAME.getResId(), songName)
         bigRemoteView?.setTextViewText(ID_TXT_NOTIFY_ARTISTNAME.getResId(), artistName)
         //设置播放暂停按钮
-        if (playbackState == PlaybackStage.PLAYING) {
+        if (playbackState == PlaybackStage.PLAYING || playbackState == PlaybackStage.BUFFERING) {
             val name =
                 if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR
             bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_PLAY_OR_PAUSE.getResId(), name.getResDrawable())
