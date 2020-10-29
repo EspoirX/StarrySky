@@ -24,6 +24,9 @@ class SoundPoolPlayback(private val context: Context?) {
     private var songIdList = mutableListOf<Int>()
     private var maxSongSize = 12
     private var hasLoaded = false
+    private val am = context?.getSystemService(Context.AUDIO_SERVICE) as AudioManager?
+    private val maxVolume = am?.getStreamMaxVolume(AudioManager.STREAM_MUSIC)?.toFloat() ?: 0F
+    private val currentVolume = am?.getStreamVolume(AudioManager.STREAM_MUSIC)?.toFloat() ?: 0F
 
     /**
      * 从 assets 加载
@@ -33,8 +36,14 @@ class SoundPoolPlayback(private val context: Context?) {
             run(completionBlock)
             return
         }
-        setupSoundPool(list.toMutableList(), completionBlock)
-        loadForAssets(list)
+        setupSoundPool(list.toMutableList()) {
+            if (hasLoaded) {
+                run(completionBlock)
+            }
+        }
+        if (!hasLoaded) {
+            loadForAssets(list)
+        }
     }
 
     /**
@@ -45,8 +54,14 @@ class SoundPoolPlayback(private val context: Context?) {
             run(completionBlock)
             return
         }
-        setupSoundPool(list.toMutableList(), completionBlock)
-        loadForRaw(list)
+        setupSoundPool(list.toMutableList()) {
+            if (hasLoaded) {
+                run(completionBlock)
+            }
+        }
+        if (!hasLoaded) {
+            loadForRaw(list)
+        }
     }
 
     /**
@@ -57,8 +72,14 @@ class SoundPoolPlayback(private val context: Context?) {
             run(completionBlock)
             return
         }
-        setupSoundPool(list.toMutableList(), completionBlock)
-        loadForFile(list)
+        setupSoundPool(list.toMutableList()) {
+            if (hasLoaded) {
+                run(completionBlock)
+            }
+        }
+        if (!hasLoaded) {
+            loadForFile(list)
+        }
     }
 
     /**
@@ -69,8 +90,14 @@ class SoundPoolPlayback(private val context: Context?) {
             run(completionBlock)
             return
         }
-        setupSoundPool(list.toMutableList(), completionBlock)
-        loadForPath(list)
+        setupSoundPool(list.toMutableList()) {
+            if (hasLoaded) {
+                run(completionBlock)
+            }
+        }
+        if (!hasLoaded) {
+            loadForPath(list)
+        }
     }
 
     /**
@@ -81,26 +108,35 @@ class SoundPoolPlayback(private val context: Context?) {
             run(completionBlock)
             return
         }
-        setupSoundPool(list.toMutableList(), completionBlock)
-        loadForHttp(list)
+        setupSoundPool(list.toMutableList()) {
+            if (hasLoaded) {
+                run(completionBlock)
+            }
+        }
+        if (!hasLoaded) {
+            loadForHttp(list)
+        }
     }
 
     /**
      * 创建并加载SoundPool
      */
     private fun setupSoundPool(list: MutableList<Any>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
-        var soundLoaded = 0
-        isLoaded = false
-        songIdList.clear()
-
         if (soundPool == null) {
+            var soundLoaded = 0
+            isLoaded = false
+            songIdList.clear()
             soundPool = generateSoundPool(list)
-        }
-        soundPool?.setOnLoadCompleteListener { _, sampleId, _ ->
-            isLoaded = true
-            soundLoaded++
-            songIdList.add(sampleId)
-            if (soundLoaded >= list.count()) {
+            soundPool?.setOnLoadCompleteListener { _, sampleId, _ ->
+                isLoaded = true
+                soundLoaded++
+                songIdList.add(sampleId)
+                if (soundLoaded >= list.count()) {
+                    completionBlock(this)
+                }
+            }
+        } else {
+            if (isLoaded) {
                 completionBlock(this)
             }
         }
@@ -121,7 +157,6 @@ class SoundPoolPlayback(private val context: Context?) {
     }
 
     private fun loadForAssets(list: MutableList<String>) {
-        if (hasLoaded) return
         val temp = mutableListOf<Int>()
         list.forEach { it ->
             context?.assets?.openFd(it)?.let {
@@ -137,7 +172,6 @@ class SoundPoolPlayback(private val context: Context?) {
     }
 
     private fun loadForRaw(list: MutableList<Int>) {
-        if (hasLoaded) return
         val temp = mutableListOf<Int>()
         list.forEach { it ->
             context?.resources?.openRawResourceFd(it)?.let {
@@ -153,7 +187,6 @@ class SoundPoolPlayback(private val context: Context?) {
     }
 
     private fun loadForFile(list: MutableList<File>) {
-        if (hasLoaded) return
         val temp = mutableListOf<Int>()
         list.filter { it.exists() && it.isFile }.forEach { file ->
             FileInputStream(file).use {
@@ -169,7 +202,6 @@ class SoundPoolPlayback(private val context: Context?) {
     }
 
     private fun loadForPath(list: MutableList<String>) {
-        if (hasLoaded) return
         val temp = mutableListOf<Int>()
         list.filter { it.isNotEmpty() }.forEach {
             val id = soundPool?.load(it, 1) ?: -1
@@ -183,7 +215,6 @@ class SoundPoolPlayback(private val context: Context?) {
     }
 
     private fun loadForHttp(list: MutableList<String>) {
-        if (hasLoaded) return
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
             try {
                 val temp = mutableListOf<Int>()
@@ -271,9 +302,6 @@ class SoundPoolPlayback(private val context: Context?) {
 
         var volumeRatio = 0f
         if (leftVolume == -1f || rightVolume == -1f) {
-            val am = context?.getSystemService(Context.AUDIO_SERVICE) as AudioManager?
-            val maxVolume = am?.getStreamMaxVolume(AudioManager.STREAM_MUSIC)?.toFloat() ?: 0F
-            val currentVolume = am?.getStreamVolume(AudioManager.STREAM_MUSIC)?.toFloat() ?: 0F
             volumeRatio = currentVolume / maxVolume
         }
         val left = if (leftVolume == -1f) volumeRatio else leftVolume

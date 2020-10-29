@@ -1,7 +1,6 @@
 package com.lzx.musiclib
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -60,7 +59,7 @@ class PlayDetailFragment : BaseFragment() {
     private var timerTaskManager = TimerTaskManager()
     private var dialog: MaterialDialog? = null
     private var refrainList = mutableListOf<String>()
-    private var imageColorList = mutableListOf<Int>()
+    private val soundPoolList = mutableListOf<String>()
 
     //节拍坐标
     private var nextBeat = -1
@@ -100,25 +99,14 @@ class PlayDetailFragment : BaseFragment() {
         refrainList.add("file:///android_asset/hglo8.ogg")
 
 //       也可以用 SoundPool 来播放伴奏
-//        val list = mutableListOf<Any>()
-//        list.add(AssetResIdData(resId = R.raw.hglo1))
-//        list.add(AssetResIdData(resId = R.raw.hglo2))
-//        list.add(AssetResIdData(resId = R.raw.hglo3))
-//        list.add(AssetResIdData(resId = R.raw.hglo4))
-//        list.add(AssetResIdData(resId = R.raw.hglo5))
-//        list.add(AssetResIdData(resId = R.raw.hglo6))
-//        list.add(AssetResIdData(resId = R.raw.hglo7))
-//        list.add(AssetResIdData(resId = R.raw.hglo8))
-//        StarrySky.soundPool().loadSound(list)
-
-        imageColorList.add(Color.RED)
-        imageColorList.add(Color.YELLOW)
-        imageColorList.add(Color.GREEN)
-        imageColorList.add(Color.BLUE)
-        imageColorList.add(Color.CYAN)
-        imageColorList.add(Color.MAGENTA)
-        imageColorList.add(Color.DKGRAY)
-        imageColorList.add(Color.GRAY)
+        soundPoolList.add("hglo1.ogg")
+        soundPoolList.add("hglo2.ogg")
+        soundPoolList.add("hglo3.ogg")
+        soundPoolList.add("hglo4.ogg")
+        soundPoolList.add("hglo5.ogg")
+        soundPoolList.add("hglo6.ogg")
+        soundPoolList.add("hglo7.ogg")
+        soundPoolList.add("hglo8.ogg")
 
         StarrySky.with().playbackState().observe(this, Observer {
             if (it.songInfo.isRefrain()) {
@@ -272,11 +260,15 @@ class PlayDetailFragment : BaseFragment() {
 
     private fun showSound(i: Int, position: Double) {
         Log.i("当前节拍88", "节拍 $i   ->beatStartTime:$beatStartTime   ->position:$position")
-
         if (!isStartRefraining) return
-        val url = refrainList[i]
-        StarrySky.with().playRefrain(SongInfo(url.md5(), url))
-        StarrySky.soundPool().playSound(i)
+         //使用 ExoPlayer 播放伴奏
+//        val url = refrainList[i]
+//        StarrySky.with().playRefrain(SongInfo(url.md5(), url))
+
+        //使用 SongPool播放伴奏
+        StarrySky.soundPool().prepareForAssets(soundPoolList) {
+            it.playSound(i)
+        }
     }
 
     @SuppressLint("SetTextI18n")
