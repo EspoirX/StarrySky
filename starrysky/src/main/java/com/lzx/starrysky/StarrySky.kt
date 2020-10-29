@@ -175,6 +175,7 @@ object StarrySky {
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
+            bindService() // 断开后自动再 bindService
             isBindService = false
             connection?.onServiceDisconnected(name)
         }
