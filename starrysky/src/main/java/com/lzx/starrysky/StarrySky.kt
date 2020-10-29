@@ -19,7 +19,8 @@ import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.playback.soundpool.SoundPoolPlayback
 import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.service.ServiceBridge
-import com.lzx.starrysky.utils.SpUtil
+import com.lzx.starrysky.utils.KtPreferences
+import com.lzx.starrysky.utils.StarrySkyConstant
 import com.lzx.starrysky.utils.isMainProcess
 import java.util.WeakHashMap
 
@@ -50,7 +51,7 @@ object StarrySky {
         this.config = config
         globalContext = application
         this.connection = connection
-        SpUtil.init(globalContext)
+        KtPreferences.init(globalContext)
         checkAndInitializeStarrySky()
     }
 
@@ -191,7 +192,7 @@ object StarrySky {
             bridge?.register?.refrainPlayback = playback
         }
         bridge?.register?.imageLoader = imageLoader
-        SpUtil.instance?.putBoolean(ICache.KEY_CACHE_SWITCH, config.isOpenCache)
+        StarrySkyConstant.KEY_CACHE_SWITCH = config.isOpenCache
         val cache = if (config.cache == null) {
             ExoCache(globalContext,
                 config.cacheDestFileDir,

@@ -5,10 +5,6 @@ import java.io.File
 
 interface ICache {
 
-    companion object {
-        const val KEY_CACHE_SWITCH = "ICache#KEY_CACHE_SWITCH"
-    }
-
     /**
      * 代理url，如果已经有缓存了，你可以用它来返回缓存地址，如果为空则用正常的 url
      */

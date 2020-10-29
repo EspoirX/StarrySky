@@ -7,7 +7,7 @@ import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheSpan
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
-import com.lzx.starrysky.utils.SpUtil
+import com.lzx.starrysky.utils.StarrySkyConstant
 import java.io.File
 
 class ExoCache(private val context: Context,
@@ -27,7 +27,7 @@ class ExoCache(private val context: Context,
     }
 
     override fun isOpenCache(): Boolean {
-        return SpUtil.instance?.getBoolean(ICache.KEY_CACHE_SWITCH) ?: false
+        return StarrySkyConstant.KEY_CACHE_SWITCH
     }
 
     override fun getCacheDirectory(context: Context, destFileDir: String?): File? {
@@ -35,10 +35,7 @@ class ExoCache(private val context: Context,
             cacheFile = File(destFileDir).apply { this.takeIf { cacheFile?.exists() == false }?.mkdirs() }
         }
         if (cacheFile == null) {
-            cacheFile = context.getExternalFilesDir(null)
-            if (cacheFile == null) {
-                cacheFile = context.filesDir
-            }
+            cacheFile = context.getExternalFilesDir(null).takeIf { it == null } ?: context.filesDir
         }
         return cacheFile
     }

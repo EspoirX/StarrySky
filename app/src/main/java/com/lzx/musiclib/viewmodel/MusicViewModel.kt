@@ -3,6 +3,7 @@ package com.lzx.musiclib.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lzx.musiclib.SpConstant
 import com.lzx.musiclib.bean.MusicChannel
 import com.lzx.musiclib.forEach
 import com.lzx.musiclib.getArray
@@ -10,7 +11,6 @@ import com.lzx.musiclib.getObj
 import com.lzx.musiclib.http.DoubanApi
 import com.lzx.musiclib.http.RetrofitClient
 import com.lzx.starrysky.SongInfo
-import com.lzx.starrysky.utils.SpUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -21,11 +21,6 @@ import org.json.JSONObject
  * http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.billboard.billList&type=11&format=json
  */
 class MusicViewModel : ViewModel() {
-
-    companion object {
-        const val KEY_TOKEN = "key_access_token"
-        const val KEY_EXPIRES = "key_expires_in"
-    }
 
     fun login() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -44,8 +39,8 @@ class MusicViewModel : ViewModel() {
             val json = result.string()
             try {
                 val obj = JSONObject(json)
-                SpUtil.instance?.putString(KEY_TOKEN, obj.getString("access_token"))
-                SpUtil.instance?.putString(KEY_EXPIRES, obj.getString("expires_in"))
+                SpConstant.KEY_TOKEN = obj.getString("access_token")
+                SpConstant.KEY_EXPIRES = obj.getString("expires_in")
                 getChannelList()
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -92,7 +87,7 @@ class MusicViewModel : ViewModel() {
     fun getSongList(channel: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = RetrofitClient.getDoubanMusic().getSongList(
-                "Bearer " + SpUtil.instance?.getString(KEY_TOKEN),
+                "Bearer " + SpConstant.KEY_TOKEN,
                 channel.toString(),
                 "mainsite",
                 "n",

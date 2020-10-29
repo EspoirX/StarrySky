@@ -13,7 +13,7 @@ import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.utils.SpUtil
+import com.lzx.starrysky.utils.StarrySkyConstant
 import com.lzx.starrysky.utils.StarrySkyUtils
 import com.lzx.starrysky.utils.data
 import com.lzx.starrysky.utils.duration
@@ -255,7 +255,7 @@ class PlayerControlImpl(
     }
 
     override fun cacheSwitch(switch: Boolean) {
-        SpUtil.instance?.putBoolean(ICache.KEY_CACHE_SWITCH, switch)
+        StarrySkyConstant.KEY_CACHE_SWITCH = switch
     }
 
     override fun stopByTimedOff(time: Long, isFinishCurrSong: Boolean) {

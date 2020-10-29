@@ -15,7 +15,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
-import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.record.StarrySkyRecord
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
@@ -27,7 +26,6 @@ import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.utils.MainLooper
-import com.lzx.starrysky.utils.SpUtil
 import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
@@ -126,8 +124,8 @@ open class TestApplication : Application() {
                 callback.onInterrupt(RuntimeException("SongInfo is null"))
                 return
             }
-            val hasPermission = SpUtil.instance?.getBoolean("HAS_PERMISSION", false)
-            if (hasPermission == true) {
+            val hasPermission = SpConstant.HAS_PERMISSION
+            if (hasPermission) {
                 callback.onContinue(songInfo)
                 return
             }
@@ -137,12 +135,12 @@ open class TestApplication : Application() {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE),
                 object : CheckRequestPermissionsListener {
                     override fun onAllPermissionOk(allPermissions: Array<Permission>) {
-                        SpUtil.instance?.putBoolean("HAS_PERMISSION", true)
+                        SpConstant.HAS_PERMISSION = true
                         callback.onContinue(songInfo)
                     }
 
                     override fun onPermissionDenied(refusedPermissions: Array<Permission>) {
-                        SpUtil.instance?.putBoolean("HAS_PERMISSION", false)
+                        SpConstant.HAS_PERMISSION = false
                         callback.onInterrupt(RuntimeException("没有权限，播放失败"))
                         mainLooper.runOnUiThread(Runnable {
                             mContext.showToast("没有权限，播放失败")
