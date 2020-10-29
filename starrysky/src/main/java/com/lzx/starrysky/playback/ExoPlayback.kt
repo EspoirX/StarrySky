@@ -74,7 +74,7 @@ class ExoPlayback(val context: Context,
                 if (exoPlayerNullIsStopped) STATE_PAUSED else STATE_IDLE
             } else {
                 when (player?.playbackState) {
-                    Player.STATE_IDLE -> STATE_PAUSED
+                    Player.STATE_IDLE -> STATE_IDLE
                     Player.STATE_BUFFERING -> STATE_BUFFERING
                     Player.STATE_READY -> {
                         if (player?.playWhenReady == true) STATE_PLAYING else STATE_PAUSED

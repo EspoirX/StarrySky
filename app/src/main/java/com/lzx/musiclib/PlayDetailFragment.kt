@@ -17,13 +17,11 @@ import com.lzx.musiclib.weight.dialog.MaterialDialog
 import com.lzx.musiclib.weight.dialog.createMaterialDialog
 import com.lzx.musiclib.weight.dialog.getCustomView
 import com.lzx.musiclib.weight.dialog.lifecycleOwner
-import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.utils.TimerTaskManager
-import com.lzx.starrysky.utils.md5
 import kotlinx.android.synthetic.main.fragment_play_detail.btnAccompaniment
 import kotlinx.android.synthetic.main.fragment_play_detail.btnNextSong
 import kotlinx.android.synthetic.main.fragment_play_detail.btnPlayMode
@@ -261,7 +259,7 @@ class PlayDetailFragment : BaseFragment() {
     private fun showSound(i: Int, position: Double) {
         Log.i("当前节拍88", "节拍 $i   ->beatStartTime:$beatStartTime   ->position:$position")
         if (!isStartRefraining) return
-         //使用 ExoPlayer 播放伴奏
+        //使用 ExoPlayer 播放伴奏
 //        val url = refrainList[i]
 //        StarrySky.with().playRefrain(SongInfo(url.md5(), url))
 
@@ -316,5 +314,6 @@ class PlayDetailFragment : BaseFragment() {
     }
 
     override fun unInitView() {
+        StarrySky.soundPool().release()
     }
 }

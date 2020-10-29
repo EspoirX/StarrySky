@@ -306,7 +306,9 @@ class SoundPoolPlayback(private val context: Context?) {
         }
         val left = if (leftVolume == -1f) volumeRatio else leftVolume
         val right = if (rightVolume == -1f) volumeRatio else rightVolume
-        return soundPool?.play(songIdList[index], left, right, priority, loop, rate) ?: 0
+        return songIdList.getOrNull(index)?.let {
+            soundPool?.play(it, left, right, priority, loop, rate) ?: 0
+        } ?: 0
     }
 
     /**

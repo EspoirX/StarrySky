@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.cache.ICache
+import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.playback.Playback
@@ -169,7 +170,10 @@ class PlayerControlImpl(
         provider.clearSongInfos()
     }
 
-    override fun getNowPlayingSongInfo(): SongInfo? = playbackManager.playback.currPlayInfo
+    override fun getNowPlayingSongInfo(): SongInfo? {
+        val info = playbackManager.playback.currPlayInfo
+        return if (info.isRefrain()) null else info
+    }
 
     override fun getNowPlayingSongId(): String = getNowPlayingSongInfo()?.songId ?: ""
 

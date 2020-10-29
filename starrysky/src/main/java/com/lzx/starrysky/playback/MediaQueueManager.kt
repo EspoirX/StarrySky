@@ -11,7 +11,6 @@ import com.lzx.starrysky.utils.isIndexPlayable
 
 class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoader: ImageLoader?) {
     private var currentIndex: Int = 0
-    private val currentQueueSize: Int = provider.songList.size
 
     /**
      * isActiveTrigger 是否主动触发
@@ -39,7 +38,7 @@ class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoad
             } else {
                 if (repeatMode.repeatMode == RepeatMode.REPEAT_MODE_ONE ||
                     repeatMode.repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
-                    playingQueue.size - 1
+                    playingQueue.lastIndex
                 } else {
                     0
                 }
@@ -61,7 +60,7 @@ class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoad
     }
 
     fun currSongIsLastSong(): Boolean {
-        val lastSong = provider.getSongInfoByIndex(currentQueueSize - 1)
+        val lastSong = provider.getSongInfoByIndex(provider.songList.lastIndex)
         return getCurrentSongInfo(true)?.songId == lastSong?.songId
     }
 

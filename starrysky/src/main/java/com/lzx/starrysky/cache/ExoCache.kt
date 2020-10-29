@@ -32,10 +32,7 @@ class ExoCache(private val context: Context,
 
     override fun getCacheDirectory(context: Context, destFileDir: String?): File? {
         if (cacheFile == null && !destFileDir.isNullOrEmpty()) {
-            cacheFile = File(destFileDir)
-            if (cacheFile?.exists() == false) {
-                cacheFile?.mkdirs()
-            }
+            cacheFile = File(destFileDir).apply { this.takeIf { cacheFile?.exists() == false }?.mkdirs() }
         }
         if (cacheFile == null) {
             cacheFile = context.getExternalFilesDir(null)
