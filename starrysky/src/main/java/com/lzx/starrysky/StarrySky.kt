@@ -9,14 +9,13 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.cache.ExoCache
-import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.playback.soundpool.SoundPoolPlayback
+import com.lzx.starrysky.playback.SoundPoolPlayback
 import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.service.ServiceBridge
 import com.lzx.starrysky.utils.KtPreferences
@@ -56,7 +55,7 @@ object StarrySky {
     }
 
     /**
-     * 获取控制播放对象
+     * 获取控制播放对象(如果是在主界面调用，可能要等连接成功后再调，不要一打开主界面就马上调用)
      */
     @JvmStatic
     fun with(): PlayerControl {

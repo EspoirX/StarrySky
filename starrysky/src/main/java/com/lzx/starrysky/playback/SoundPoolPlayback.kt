@@ -1,4 +1,4 @@
-package com.lzx.starrysky.playback.soundpool
+package com.lzx.starrysky.playback
 
 import android.content.Context
 import android.media.AudioAttributes

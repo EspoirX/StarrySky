@@ -8,7 +8,7 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /**
- * 基于委托实现的sp封装
+ * 基于委托实现的sp简单封装
  */
 abstract class KtPreferences {
 

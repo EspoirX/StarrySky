@@ -18,7 +18,7 @@ import com.lzx.starrysky.playback.MediaSourceProvider
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.playback.soundpool.SoundPoolPlayback
+import com.lzx.starrysky.playback.SoundPoolPlayback
 
 class ServiceBridge(private val context: Context) : Binder() {
 
