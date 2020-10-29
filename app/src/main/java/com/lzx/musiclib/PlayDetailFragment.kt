@@ -259,7 +259,7 @@ class PlayDetailFragment : BaseFragment() {
     private fun showSound(i: Int, position: Double) {
         Log.i("当前节拍88", "节拍 $i   ->beatStartTime:$beatStartTime   ->position:$position")
         if (!isStartRefraining) return
-        //使用 ExoPlayer 播放伴奏
+        //使用 ExoPlayer 播放伴奏(短暂密集的音频播放不建议用这个)
 //        val url = refrainList[i]
 //        StarrySky.with().playRefrain(SongInfo(url.md5(), url))
 

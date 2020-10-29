@@ -17,6 +17,9 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 
+/**
+ * SoundPool 播放器，调用 prepareForXXX 方法加载音频，只会加载一次，如果要重新加载，请调用 release 方法
+ */
 class SoundPoolPlayback(private val context: Context?) {
 
     private var soundPool: SoundPool? = null
@@ -29,7 +32,7 @@ class SoundPoolPlayback(private val context: Context?) {
     private val currentVolume = am?.getStreamVolume(AudioManager.STREAM_MUSIC)?.toFloat() ?: 0F
 
     /**
-     * 从 assets 加载
+     * 从 assets 加载，list 里面传文件名即可，不需要传整个路径
      */
     fun prepareForAssets(list: MutableList<String>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
         if (list.isNullOrEmpty()) {
@@ -47,7 +50,7 @@ class SoundPoolPlayback(private val context: Context?) {
     }
 
     /**
-     * 从 raw 加载
+     * 从 raw 加载，list 里面传 R.raw.xxx
      */
     fun prepareForRaw(list: MutableList<Int>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
         if (list.isNullOrEmpty()) {
@@ -83,7 +86,7 @@ class SoundPoolPlayback(private val context: Context?) {
     }
 
     /**
-     * 从 本地sd卡路径 加载
+     * 从 本地sd卡路径 加载,list 里面传完整路径
      */
     fun prepareForPath(list: MutableList<String>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
         if (list.isNullOrEmpty()) {
@@ -101,7 +104,7 @@ class SoundPoolPlayback(private val context: Context?) {
     }
 
     /**
-     * 从网络加载
+     * 从网络加载，list 里面传 url地址
      */
     fun prepareForHttp(list: MutableList<String>, completionBlock: (player: SoundPoolPlayback) -> Unit) {
         if (list.isNullOrEmpty()) {
