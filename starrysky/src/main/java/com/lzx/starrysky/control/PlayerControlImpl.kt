@@ -6,7 +6,6 @@ import android.provider.MediaStore
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
-import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.MediaSourceProvider
@@ -15,10 +14,10 @@ import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.utils.StarrySkyConstant
 import com.lzx.starrysky.utils.StarrySkyUtils
-import com.lzx.starrysky.utils.data
-import com.lzx.starrysky.utils.duration
-import com.lzx.starrysky.utils.md5
-import com.lzx.starrysky.utils.title
+import com.lzx.basecode.data
+import com.lzx.basecode.duration
+import com.lzx.basecode.md5
+import com.lzx.basecode.title
 
 class PlayerControlImpl(
     private val provider: MediaSourceProvider,

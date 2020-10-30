@@ -15,6 +15,9 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import com.lzx.basecode.getPendingIntent
+import com.lzx.basecode.getResourceId
+import com.lzx.basecode.getTargetClass
 import com.lzx.starrysky.R
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack
@@ -70,9 +73,6 @@ import com.lzx.starrysky.notification.utils.NotificationColorUtils
 import com.lzx.starrysky.notification.utils.NotificationUtils
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.service.MusicService
-import com.lzx.starrysky.utils.getPendingIntent
-import com.lzx.starrysky.utils.getResourceId
-import com.lzx.starrysky.utils.getTargetClass
 
 class CustomNotification constructor(
     val context: Context,
@@ -450,7 +450,7 @@ class CustomNotification constructor(
     }
 
     private fun String.getPendingIntent(): PendingIntent {
-        return context.getPendingIntent(this)
+        return context.getPendingIntent(INotification.REQUEST_CODE, this)
     }
 
     private fun String.getResId(): Int {

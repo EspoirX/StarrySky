@@ -1,4 +1,4 @@
-package com.lzx.starrysky.utils
+package com.lzx.basecode
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -12,9 +12,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Process
 import android.widget.Toast
-import com.lzx.starrysky.notification.INotification
-import com.lzx.starrysky.playback.Playback
-import com.lzx.starrysky.playback.PlaybackStage
 import java.util.Locale
 
 fun Context.getResourceId(name: String, className: String): Int {
@@ -23,11 +20,11 @@ fun Context.getResourceId(name: String, className: String): Int {
     return res.getIdentifier(name, className, packageName)
 }
 
-fun Context.getPendingIntent(action: String): PendingIntent {
+fun Context.getPendingIntent(requestCode: Int, action: String): PendingIntent {
     val packageName = applicationContext.packageName
     val intent = Intent(action)
     intent.setPackage(packageName)
-    return PendingIntent.getBroadcast(this, INotification.REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+    return PendingIntent.getBroadcast(this, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT)
 }
 
 fun Context.showToast(msg: String?) {
@@ -127,16 +124,4 @@ fun String.isRTMP(): Boolean {
 
 fun String.isFLAC(): Boolean {
     return this.toLowerCase(Locale.getDefault()).endsWith(".flac")
-}
-
-fun Int.changePlaybackState(): String {
-    return when (this) {
-        Playback.STATE_IDLE -> PlaybackStage.IDEA
-        Playback.STATE_BUFFERING -> PlaybackStage.BUFFERING
-        Playback.STATE_PLAYING -> PlaybackStage.PLAYING
-        Playback.STATE_PAUSED -> PlaybackStage.PAUSE
-        Playback.STATE_STOPPED -> PlaybackStage.STOP
-        Playback.STATE_ERROR -> PlaybackStage.ERROR
-        else -> PlaybackStage.IDEA
-    }
 }

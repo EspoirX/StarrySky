@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import android.widget.RemoteViews
 import android.widget.TextView
 import androidx.core.graphics.ColorUtils
-import com.lzx.starrysky.utils.MainLooper
+import com.lzx.basecode.MainLooper
 import java.util.concurrent.CountDownLatch
 
 /**

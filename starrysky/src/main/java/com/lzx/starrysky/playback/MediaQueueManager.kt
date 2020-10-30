@@ -7,7 +7,7 @@ import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.imageloader.ImageLoader
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.utils.StarrySkyUtils
-import com.lzx.starrysky.utils.isIndexPlayable
+import com.lzx.basecode.isIndexPlayable
 
 class MediaQueueManager(val provider: MediaSourceProvider, private val imageLoader: ImageLoader?) {
     private var currentIndex: Int = 0

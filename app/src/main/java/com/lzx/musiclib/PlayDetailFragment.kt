@@ -21,7 +21,7 @@ import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.utils.TimerTaskManager
+import com.lzx.basecode.TimerTaskManager
 import kotlinx.android.synthetic.main.fragment_play_detail.btnAccompaniment
 import kotlinx.android.synthetic.main.fragment_play_detail.btnNextSong
 import kotlinx.android.synthetic.main.fragment_play_detail.btnPlayMode
@@ -54,7 +54,7 @@ class PlayDetailFragment : BaseFragment() {
     private var channelId: Int = 10
 
     private var viewModel: MusicViewModel? = null
-    private var timerTaskManager = TimerTaskManager()
+    private var timerTaskManager = com.lzx.basecode.TimerTaskManager()
     private var dialog: MaterialDialog? = null
     private var refrainList = mutableListOf<String>()
     private val soundPoolList = mutableListOf<String>()

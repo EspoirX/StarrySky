@@ -1,4 +1,4 @@
-package com.lzx.starrysky.utils
+package com.lzx.basecode
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver

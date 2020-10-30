@@ -1,7 +1,7 @@
 package com.lzx.starrysky.playback
 
 import com.lzx.starrysky.SongInfo
-import com.lzx.starrysky.utils.isIndexPlayable
+import com.lzx.basecode.isIndexPlayable
 
 /**
  * 存储播放数据源

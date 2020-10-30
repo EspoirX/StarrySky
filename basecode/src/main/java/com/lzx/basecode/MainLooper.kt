@@ -1,4 +1,4 @@
-package com.lzx.starrysky.utils
+package com.lzx.basecode
 
 import android.os.Handler
 import android.os.Looper

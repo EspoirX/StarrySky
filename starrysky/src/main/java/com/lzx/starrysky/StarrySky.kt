@@ -18,9 +18,9 @@ import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.playback.SoundPoolPlayback
 import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.service.ServiceBridge
-import com.lzx.starrysky.utils.KtPreferences
+import com.lzx.basecode.KtPreferences
 import com.lzx.starrysky.utils.StarrySkyConstant
-import com.lzx.starrysky.utils.isMainProcess
+import com.lzx.basecode.isMainProcess
 import java.util.WeakHashMap
 
 

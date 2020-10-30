@@ -9,9 +9,8 @@ import com.lzx.starrysky.intercept.InterceptorService
 import com.lzx.starrysky.isRefrain
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.service.MusicService
-import com.lzx.starrysky.utils.MainLooper
+import com.lzx.basecode.MainLooper
 import com.lzx.starrysky.utils.StarrySkyUtils
-import com.lzx.starrysky.utils.changePlaybackState
 
 class PlaybackManager(
     private val context: Context,
@@ -317,5 +316,17 @@ class PlaybackManager(
     interface PlaybackServiceCallback {
         fun onPlaybackStateUpdated(playbackStage: PlaybackStage)
         fun onFocusStateChange(info: FocusInfo)
+    }
+
+    private fun Int.changePlaybackState(): String {
+        return when (this) {
+            Playback.STATE_IDLE -> PlaybackStage.IDEA
+            Playback.STATE_BUFFERING -> PlaybackStage.BUFFERING
+            Playback.STATE_PLAYING -> PlaybackStage.PLAYING
+            Playback.STATE_PAUSED -> PlaybackStage.PAUSE
+            Playback.STATE_STOPPED -> PlaybackStage.STOP
+            Playback.STATE_ERROR -> PlaybackStage.ERROR
+            else -> PlaybackStage.IDEA
+        }
     }
 }

@@ -27,7 +27,7 @@ import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.utils.TimerTaskManager
+import com.lzx.basecode.TimerTaskManager
 import kotlinx.android.synthetic.main.activity_main.donutProgress
 import kotlinx.android.synthetic.main.activity_main.songCover
 import kotlinx.android.synthetic.main.activity_main.tabLayout
@@ -36,7 +36,7 @@ import kotlinx.android.synthetic.main.activity_main.viewPager
 
 class MainActivity : AppCompatActivity() {
 
-    private var timerTaskManager = TimerTaskManager()
+    private var timerTaskManager = com.lzx.basecode.TimerTaskManager()
     private var viewModel: MusicViewModel? = null
     private var rotationAnim: ObjectAnimator? = null
     private var localBroadcastManager: LocalBroadcastManager? = null

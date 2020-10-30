@@ -35,8 +35,8 @@ import com.lzx.starrysky.playback.Playback.Companion.STATE_IDLE
 import com.lzx.starrysky.playback.Playback.Companion.STATE_PAUSED
 import com.lzx.starrysky.playback.Playback.Companion.STATE_PLAYING
 import com.lzx.starrysky.utils.StarrySkyUtils
-import com.lzx.starrysky.utils.isFLAC
-import com.lzx.starrysky.utils.isRTMP
+import com.lzx.basecode.isFLAC
+import com.lzx.basecode.isRTMP
 
 /**
  * isAutoManagerFocus 是否让播放器自动管理焦点

@@ -1,7 +1,7 @@
 package com.lzx.starrysky.intercept
 
 import com.lzx.starrysky.SongInfo
-import com.lzx.starrysky.utils.MainLooper
+import com.lzx.basecode.MainLooper
 
 /**
  * 拦截器

@@ -3,9 +3,9 @@ package com.lzx.record.recorder
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.os.AsyncTask
+import com.lzx.basecode.MainLooper
 import com.lzx.record.RecordInfo
 import com.lzx.record.utils.IntArrayList
-import com.lzx.record.utils.MainLooper
 import com.lzx.record.utils.convertRecordingData
 import com.lzx.record.utils.int2byte
 import com.lzx.record.utils.isSupportedExtension

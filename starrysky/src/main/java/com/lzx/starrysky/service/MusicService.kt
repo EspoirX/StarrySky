@@ -16,7 +16,7 @@ import android.telephony.TelephonyManager
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.utils.StarrySkyUtils
-import com.lzx.starrysky.utils.TimerTaskManager
+import com.lzx.basecode.TimerTaskManager
 
 
 class MusicService : Service() {
