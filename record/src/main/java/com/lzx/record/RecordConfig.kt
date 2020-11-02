@@ -2,7 +2,7 @@ package com.lzx.record
 
 import android.media.AudioFormat
 import android.media.MediaRecorder
-import com.lzx.record.recorder.AudioRecorder
+import com.lzx.record.recorder.AudioMp3Recorder
 import com.lzx.record.recorder.RecorderCallback
 import java.io.File
 
@@ -174,7 +174,7 @@ open class RecordConfig internal constructor(builder: Builder) {
 
         fun startRecord() {
             val config = RecordConfig(this)
-            val recorder = AudioRecorder(config)
+            val recorder = AudioMp3Recorder(config)
             StarrySkyRecord.recorder = recorder
             recorder.startRecording()
         }

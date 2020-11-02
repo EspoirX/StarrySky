@@ -3,7 +3,6 @@ package com.lzx.record.recorder
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.os.AsyncTask
-import android.os.Handler
 import com.lzx.basecode.MainLooper
 import com.lzx.record.RecordConfig
 import com.lzx.record.RecordState
@@ -13,9 +12,9 @@ import java.io.FileOutputStream
 import kotlin.math.sqrt
 
 /**
- * AudioRecord 录音
+ * AudioRecord + lame 录制 mp3
  */
-class AudioRecorder(private val config: RecordConfig) : IRecorder, AudioRecord.OnRecordPositionUpdateListener {
+class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
     val mp3 = "mp3"
     val aac = "aac"
     val wav = "wav"
@@ -37,9 +36,6 @@ class AudioRecorder(private val config: RecordConfig) : IRecorder, AudioRecord.O
     private var recordVolume: Int = 0 //录制音量
     private var duration = 0L //录制时间
 
-    private var handler: RecordHandler = RecordHandler(this)
-
-
     override fun startRecording() {
         if (!checkRecordParameter()) {
             config.recordCallback?.onError("录音参数有错误，请检查")
@@ -52,74 +48,77 @@ class AudioRecorder(private val config: RecordConfig) : IRecorder, AudioRecord.O
         isRecording = true
 
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
+            try {
+                //获取最小缓存区大小
+                bufferSizeInBytes = AudioRecord.getMinBufferSize(config.sampleRate, config.channelConfig, config.audioFormat)
 
-            //获取最小缓存区大小
-            bufferSizeInBytes = AudioRecord.getMinBufferSize(config.sampleRate, config.channelConfig, config.audioFormat)
+                val bytesPerFrame = if (config.audioFormat == AudioFormat.ENCODING_PCM_8BIT) 1 else 2
 
-            val bytesPerFrame = if (config.audioFormat == AudioFormat.ENCODING_PCM_8BIT) 1 else 2
+                //使能被整除，方便下面的周期性通知
+                var frameSize = bufferSizeInBytes / bytesPerFrame
+                if (frameSize % FRAME_COUNT != 0) {
+                    frameSize += FRAME_COUNT - frameSize % FRAME_COUNT
+                    bufferSizeInBytes = frameSize * bytesPerFrame
+                }
 
-            //使能被整除，方便下面的周期性通知
-            var frameSize = bufferSizeInBytes / bytesPerFrame
-            if (frameSize % FRAME_COUNT != 0) {
-                frameSize += FRAME_COUNT - frameSize % FRAME_COUNT
-                bufferSizeInBytes = frameSize * bytesPerFrame
-            }
+                //创建 AudioRecord
+                audioRecord = AudioRecord(config.audioSource, config.sampleRate, config.channelConfig, config.audioFormat, bufferSizeInBytes)
 
-            //创建 AudioRecord
-            audioRecord = AudioRecord(config.audioSource, config.sampleRate, config.channelConfig, config.audioFormat, bufferSizeInBytes)
+                val pcmBuffer = ShortArray(bufferSizeInBytes)
 
-            val pcmBuffer = ShortArray(bufferSizeInBytes)
+                //初始化lame
+                LameManager.init(config.sampleRate, config.channelConfig, config.sampleRate, config.bitRate, config.quality)
 
-            //初始化lame
-            LameManager.init(config.sampleRate, config.channelConfig, config.sampleRate, config.bitRate, config.quality)
+                audioRecord?.positionNotificationPeriod = FRAME_COUNT
 
-//            audioRecord?.setRecordPositionUpdateListener(this, null)
-            audioRecord?.positionNotificationPeriod = FRAME_COUNT
+                val fos = FileOutputStream(recordFile, config.isContinue)
+                val mp3buffer = ByteArray((7200 + pcmBuffer.size * 2.0 * 1.25).toInt())
 
-            val fos = FileOutputStream(recordFile, config.isContinue)
-            val mp3buffer = ByteArray((7200 + pcmBuffer.size * 2.0 * 1.25).toInt())
+                audioRecord?.startRecording()
 
-            audioRecord?.startRecording()
+                //PCM文件大小 = 采样率采样时间采样位深 / 8*通道数（Bytes）
+                val bytesPerSecond = audioRecord!!.sampleRate * audioRecord!!.audioFormat.format() / 8 * audioRecord!!.channelCount
 
-            //PCM文件大小 = 采样率采样时间采样位深 / 8*通道数（Bytes）
-            val bytesPerSecond = audioRecord!!.sampleRate * mapFormat(audioRecord!!.audioFormat) / 8 * audioRecord!!.channelCount
+                onStart()
 
-            onStart()
+                while (isRecording) {
+                    val readSize: Int = audioRecord?.read(pcmBuffer, 0, bufferSizeInBytes) ?: 0
+                    if (readSize == AudioRecord.ERROR_INVALID_OPERATION || readSize == AudioRecord.ERROR_BAD_VALUE) {
+                        //错误
+                        onError("需要录音权限")
+                    } else if (readSize > 0) {
+                        if (isPause) continue
 
-            while (isRecording) {
-                val readSize: Int = audioRecord?.read(pcmBuffer, 0, bufferSizeInBytes) ?: 0
-                if (readSize == AudioRecord.ERROR_INVALID_OPERATION || readSize == AudioRecord.ERROR_BAD_VALUE) {
-                    //错误
-                    onError("需要录音权限")
-                } else if (readSize > 0) {
-                    if (isPause) continue
+                        val readTime = 1000.0 * readSize.toDouble() * 2 / bytesPerSecond
 
-                    val readTime = 1000.0 * readSize.toDouble() * 2 / bytesPerSecond
-
-                    val encodeSize: Int = LameManager.encode(pcmBuffer, pcmBuffer, readSize, mp3buffer)
-                    if (encodeSize > 0) {
-                        fos.write(mp3buffer, 0, encodeSize)
+                        val encodeSize: Int = LameManager.encode(pcmBuffer, pcmBuffer, readSize, mp3buffer)
+                        if (encodeSize > 0) {
+                            fos.write(mp3buffer, 0, encodeSize)
+                        }
+                        calculateRealVolume(pcmBuffer, readSize)
+                        //short 是2个字节 byte 是1个字节8位
+                        onRecording(readTime)
+                    } else {
+                        //错误
+                        onError("需要录音权限")
                     }
-                    calculateRealVolume(pcmBuffer, readSize)
-                    //short 是2个字节 byte 是1个字节8位
-                    onRecording(readTime)
-                } else {
-                    //错误
-                    onError("需要录音权限")
                 }
-            }
 
-            //录音结束 将MP3结尾信息写入buffer中
-            val flushResult = LameManager.flush(mp3buffer)
-            if (flushResult > 0) {
-                fos.use {
-                    it.write(mp3buffer, 0, flushResult)
+                //录音结束 将MP3结尾信息写入buffer中
+                val flushResult = LameManager.flush(mp3buffer)
+                if (flushResult > 0) {
+                    fos.use {
+                        it.write(mp3buffer, 0, flushResult)
+                    }
                 }
+                //关闭资源
+                audioRecord?.stop()
+                audioRecord?.release()
+                LameManager.close()
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                onError(ex.message.toString())
             }
-
-            audioRecord?.stop()
-            audioRecord?.release()
-            LameManager.close()
         }
     }
 
@@ -165,7 +164,6 @@ class AudioRecorder(private val config: RecordConfig) : IRecorder, AudioRecord.O
         }
     }
 
-
     private fun onStart() {
         if (state != RecordState.RECORDING) {
             MainLooper.instance.runOnUiThread { config.recordCallback?.onStart() }
@@ -179,16 +177,6 @@ class AudioRecorder(private val config: RecordConfig) : IRecorder, AudioRecord.O
         isRecording = false
         MainLooper.instance.runOnUiThread { config.recordCallback?.onError(msg) }
         state = RecordState.STOPPED
-    }
-
-    override fun onMarkerReached(recorder: AudioRecord?) {
-    }
-
-    override fun onPeriodicNotification(recorder: AudioRecord?) {
-    }
-
-    class RecordHandler(recorder: AudioRecorder) : Handler() {
-
     }
 
     private fun checkRecordParameter(): Boolean {
@@ -234,8 +222,8 @@ class AudioRecorder(private val config: RecordConfig) : IRecorder, AudioRecord.O
 
     override fun isPaused(): Boolean = isPause
 
-    fun mapFormat(format: Int): Int {
-        return when (format) {
+    fun Int.format(): Int {
+        return when (this) {
             AudioFormat.ENCODING_PCM_8BIT -> 8
             AudioFormat.ENCODING_PCM_16BIT -> 16
             else -> 0
