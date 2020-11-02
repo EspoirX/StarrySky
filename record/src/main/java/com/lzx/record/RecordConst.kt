@@ -36,3 +36,9 @@ object RecordConst {
     const val SHORT_RECORD_DP_PER_SECOND = 25
     const val LONG_RECORD_THRESHOLD_SECONDS = 20
 }
+
+object RecordState {
+    const val RECORDING = 0
+    const val PAUSED = 1
+    const val STOPPED = 2
+}

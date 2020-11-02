@@ -24,10 +24,11 @@ import com.lzx.musiclib.tab.RecommendFragment
 import com.lzx.musiclib.tab.RecordFragment
 import com.lzx.musiclib.tab.RtmpFragment
 import com.lzx.musiclib.viewmodel.MusicViewModel
+import com.lzx.record.recorder.AudioRecorder
+import com.lzx.record.test.LameManager
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.basecode.TimerTaskManager
 import kotlinx.android.synthetic.main.activity_main.donutProgress
 import kotlinx.android.synthetic.main.activity_main.songCover
 import kotlinx.android.synthetic.main.activity_main.tabLayout

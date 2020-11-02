@@ -9,9 +9,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Process
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import java.util.Locale
 
 fun Context.getResourceId(name: String, className: String): Int {
@@ -124,4 +126,15 @@ fun String.isRTMP(): Boolean {
 
 fun String.isFLAC(): Boolean {
     return this.toLowerCase(Locale.getDefault()).endsWith(".flac")
+}
+
+fun Activity.hasPermission(permission: String): Boolean {
+    return !isMarshmallow() || isGranted(permission)
+}
+
+fun isMarshmallow(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+
+@RequiresApi(Build.VERSION_CODES.M)
+fun Activity.isGranted(permission: String): Boolean {
+    return this.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
 }

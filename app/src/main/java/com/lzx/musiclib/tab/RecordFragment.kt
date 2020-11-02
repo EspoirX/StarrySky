@@ -3,19 +3,19 @@ package com.lzx.musiclib.tab
 import android.Manifest
 import android.util.Log
 import android.view.View
-import androidx.lifecycle.Observer
 import com.lzx.musiclib.R
 import com.lzx.musiclib.base.BaseFragment
+import com.lzx.musiclib.showToast
 import com.lzx.musiclib.toSdcardPath
-import com.lzx.record.RecordConst
 import com.lzx.record.StarrySkyRecord
-import com.lzx.record.recorder.RecordState
+import com.lzx.record.recorder.RecorderCallback
 import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import kotlinx.android.synthetic.main.fragment_recorder.btnStart
 import kotlinx.android.synthetic.main.fragment_recorder.btnStop
+import java.io.File
 
 class RecordFragment : BaseFragment() {
 
@@ -36,7 +36,47 @@ class RecordFragment : BaseFragment() {
                 object : CheckRequestPermissionsListener {
                     override fun onAllPermissionOk(allPermissions: Array<Permission>) {
                         val path = "StarrySkyRecord".toSdcardPath()
-                        StarrySkyRecord.with().startRecord(path, "lzx", RecordConst.FORMAT_M4A)
+                        StarrySkyRecord.with()
+                            .setOutputFile(path)
+                            .setRecordCallback(object : RecorderCallback {
+                                override fun onStart() {
+                                    activity?.showToast("onStart")
+                                }
+
+                                override fun onResume() {
+                                    activity?.showToast("onResume")
+                                }
+
+                                override fun onReset() {
+                                    activity?.showToast("onReset")
+                                }
+
+                                override fun onRecording(time: Long, volume: Int) {
+                                    Log.i("XIAN", "onRecording time = $time volume = $volume")
+                                }
+
+                                override fun onPause() {
+                                    activity?.showToast("onPause")
+                                }
+
+                                override fun onRemind(duration: Long) {
+                                    activity?.showToast("onRemind")
+                                }
+
+                                override fun onSuccess(file: File?, time: Long) {
+                                    activity?.showToast("onSuccess")
+                                }
+
+                                override fun onError(msg: String) {
+                                    activity?.showToast(msg)
+                                }
+
+                                override fun onAutoComplete(file: String, time: Long) {
+                                    activity?.showToast("onAutoComplete")
+                                }
+                            })
+                            .setOutputFileName("12323.mp3")
+                            .startRecord()
                     }
 
                     override fun onPermissionDenied(refusedPermissions: Array<Permission>) {
@@ -45,37 +85,10 @@ class RecordFragment : BaseFragment() {
         }
 
         btnStop?.setOnClickListener {
-            StarrySkyRecord.with().stopRecording(false)
+            StarrySkyRecord.recorder?.stopRecording()
         }
 
-        StarrySkyRecord.with().recordState().observe(this, Observer {
-            when (it.state) {
-                RecordState.STATE_START -> {
-                    Log.i("XIAN", "state = STATE_START")
-                }
-                RecordState.STATE_ERROR -> {
-                    Log.i("XIAN", "state = STATE_ERROR msg = " + it.error?.message)
-                }
-                RecordState.STATE_IDEA -> {
-                    Log.i("XIAN", "state = STATE_IDEA")
-                }
-                RecordState.STATE_PAUSE -> {
-                    Log.i("XIAN", "state = STATE_PAUSE")
-                }
-                RecordState.STATE_PROGRESS -> {
-//                    Log.i("XIAN", "state = STATE_PROGRESS pro = " + it.recordMills + " amplitude = " + it.amplitude)
-                }
-                RecordState.STATE_PROCESSING -> {
-                    Log.i("XIAN", "state = STATE_PROCESSING")
-                }
-                RecordState.STATE_PROCESSING_FINISH -> {
-                    Log.i("XIAN", "state = STATE_PROCESSING_FINISH")
-                }
-                RecordState.STATE_STOP -> {
-                    Log.i("XIAN", "state = STATE_STOP info = " + it.recordInfo)
-                }
-            }
-        })
+
     }
 
     override fun unInitView() {

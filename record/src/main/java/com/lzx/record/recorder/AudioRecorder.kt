@@ -1,149 +1,246 @@
 package com.lzx.record.recorder
 
-import android.media.MediaRecorder
-import android.os.Build
+import android.media.AudioFormat
+import android.media.AudioRecord
+import android.os.AsyncTask
+import android.os.Handler
+import com.lzx.basecode.MainLooper
+import com.lzx.record.RecordConfig
+import com.lzx.record.RecordState
+import com.lzx.record.test.LameManager
 import java.io.File
-import java.util.Timer
-import java.util.TimerTask
+import java.io.FileOutputStream
+import kotlin.math.sqrt
 
 /**
- * 录音实现
+ * AudioRecord 录音
  */
-class AudioRecorder : IRecorder {
+class AudioRecorder(private val config: RecordConfig) : IRecorder, AudioRecord.OnRecordPositionUpdateListener {
+    val mp3 = "mp3"
+    val aac = "aac"
+    val wav = "wav"
+    val amr = "amr"
 
-    private var recorder: MediaRecorder? = null
+    companion object {
+        private const val FRAME_COUNT = 160
+    }
+
+    // 获取最小缓存区大小
+    var bufferSizeInBytes: Int = 0
+
+    private var audioRecord: AudioRecord? = null
     private var recordFile: File? = null
-
-    private var isPrepared = false
     private var isRecording = false
-    private var isPaused = false
-    private var progress: Long = 0
-    private var timerProgress: Timer? = null
+    private var isPause: Boolean = false
 
-    private var recorderCallback: RecorderCallback? = null
+    private var state = RecordState.STOPPED   //当前状态
+    private var recordVolume: Int = 0 //录制音量
+    private var duration = 0L //录制时间
 
-    override fun setRecorderCallback(callback: RecorderCallback?) {
-        recorderCallback = callback
-    }
+    private var handler: RecordHandler = RecordHandler(this)
 
-    override fun prepare(outputFile: String?, channelCount: Int, sampleRate: Int, bitrate: Int) {
-        recordFile = File(outputFile)
-        if (recordFile?.exists()==false){
-            recordFile?.mkdir()
-        }
-        if (recordFile?.exists() == true && recordFile?.isFile == true) {
-            recorder = MediaRecorder()
-            recorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
-            recorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            recorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            recorder?.setAudioChannels(channelCount)
-            recorder?.setAudioSamplingRate(sampleRate)
-            recorder?.setAudioEncodingBitRate(bitrate)
-            recorder?.setMaxDuration(-1) //持续时间不受限制，或使用RECORD_MAX_DURATION
-            recorder?.setOutputFile(recordFile?.absolutePath)
-            try {
-                recorder?.prepare()
-                isPrepared = true
-                recorderCallback?.onPrepareRecord()
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                recorderCallback?.onError(ex)
-            }
-        } else {
-            recorderCallback?.onError(IllegalArgumentException("invalid output file"))
-        }
-    }
 
     override fun startRecording() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isPaused) {
-            try {
-                recorder?.resume()
-                startRecordingTimer()
-                recorderCallback?.onStartRecord(recordFile)
-                isPaused = false
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                recorderCallback?.onError(ex)
+        if (!checkRecordParameter()) {
+            config.recordCallback?.onError("录音参数有错误，请检查")
+            return
+        }
+        if (isRecording) {
+            config.recordCallback?.onError("正在录音中")
+            return
+        }
+        isRecording = true
+
+        AsyncTask.THREAD_POOL_EXECUTOR.execute {
+
+            //获取最小缓存区大小
+            bufferSizeInBytes = AudioRecord.getMinBufferSize(config.sampleRate, config.channelConfig, config.audioFormat)
+
+            val bytesPerFrame = if (config.audioFormat == AudioFormat.ENCODING_PCM_8BIT) 1 else 2
+
+            //使能被整除，方便下面的周期性通知
+            var frameSize = bufferSizeInBytes / bytesPerFrame
+            if (frameSize % FRAME_COUNT != 0) {
+                frameSize += FRAME_COUNT - frameSize % FRAME_COUNT
+                bufferSizeInBytes = frameSize * bytesPerFrame
             }
-        } else {
-            if (isPrepared) {
-                try {
-                    recorder?.start()
-                    isRecording = true
-                    startRecordingTimer()
-                    recorderCallback?.onStartRecord(recordFile)
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
-                    recorderCallback?.onError(ex)
+
+            //创建 AudioRecord
+            audioRecord = AudioRecord(config.audioSource, config.sampleRate, config.channelConfig, config.audioFormat, bufferSizeInBytes)
+
+            val pcmBuffer = ShortArray(bufferSizeInBytes)
+
+            //初始化lame
+            LameManager.init(config.sampleRate, config.channelConfig, config.sampleRate, config.bitRate, config.quality)
+
+//            audioRecord?.setRecordPositionUpdateListener(this, null)
+            audioRecord?.positionNotificationPeriod = FRAME_COUNT
+
+            val fos = FileOutputStream(recordFile, config.isContinue)
+            val mp3buffer = ByteArray((7200 + pcmBuffer.size * 2.0 * 1.25).toInt())
+
+            audioRecord?.startRecording()
+
+            //PCM文件大小 = 采样率采样时间采样位深 / 8*通道数（Bytes）
+            val bytesPerSecond = audioRecord!!.sampleRate * mapFormat(audioRecord!!.audioFormat) / 8 * audioRecord!!.channelCount
+
+            onStart()
+
+            while (isRecording) {
+                val readSize: Int = audioRecord?.read(pcmBuffer, 0, bufferSizeInBytes) ?: 0
+                if (readSize == AudioRecord.ERROR_INVALID_OPERATION || readSize == AudioRecord.ERROR_BAD_VALUE) {
+                    //错误
+                    onError("需要录音权限")
+                } else if (readSize > 0) {
+                    if (isPause) continue
+
+                    val readTime = 1000.0 * readSize.toDouble() * 2 / bytesPerSecond
+
+                    val encodeSize: Int = LameManager.encode(pcmBuffer, pcmBuffer, readSize, mp3buffer)
+                    if (encodeSize > 0) {
+                        fos.write(mp3buffer, 0, encodeSize)
+                    }
+                    calculateRealVolume(pcmBuffer, readSize)
+                    //short 是2个字节 byte 是1个字节8位
+                    onRecording(readTime)
+                } else {
+                    //错误
+                    onError("需要录音权限")
                 }
             }
-            isPaused = false
+
+            //录音结束 将MP3结尾信息写入buffer中
+            val flushResult = LameManager.flush(mp3buffer)
+            if (flushResult > 0) {
+                fos.use {
+                    it.write(mp3buffer, 0, flushResult)
+                }
+            }
+
+            audioRecord?.stop()
+            audioRecord?.release()
+            LameManager.close()
         }
+    }
+
+    private fun onRecording(readTime: Double) {
+        duration += readTime.toLong()
+        MainLooper.instance.runOnUiThread {
+            //录制回调
+            config.recordCallback?.onRecording(duration, recordVolume)
+            //提示快到录音时间了
+            if (config.recordMaxTime > 15000 && duration > config.recordMaxTime - 10000) {
+                config.recordCallback?.onRemind(duration)
+            }
+            config.recordCallback?.onRecording(duration, recordVolume)
+        }
+        if (duration > config.recordMaxTime) {
+            autoStop()
+        }
+    }
+
+    private fun autoStop() {
+        if (state != RecordState.STOPPED) {
+            isPause = false
+            isRecording = false
+            MainLooper.instance.runOnUiThread { config.recordCallback?.onSuccess(recordFile, duration) }
+            state = RecordState.STOPPED
+        }
+    }
+
+    private fun calculateRealVolume(buffer: ShortArray, readSize: Int) {
+        var sum = 0.0
+        for (i in 0 until readSize) {
+            // 这里没有做运算的优化，为了更加清晰的展示代码
+            sum += (buffer[i] * buffer[i]).toDouble()
+        }
+        if (readSize > 0) {
+            val amplitude = sum / readSize
+            recordVolume = sqrt(amplitude).toInt()
+            if (recordVolume < 5) {
+                for (i in 0 until readSize) {
+                    buffer[i] = 0
+                }
+            }
+        }
+    }
+
+
+    private fun onStart() {
+        if (state != RecordState.RECORDING) {
+            MainLooper.instance.runOnUiThread { config.recordCallback?.onStart() }
+            state = RecordState.RECORDING
+            duration = 0
+        }
+    }
+
+    private fun onError(msg: String) {
+        isPause = false
+        isRecording = false
+        MainLooper.instance.runOnUiThread { config.recordCallback?.onError(msg) }
+        state = RecordState.STOPPED
+    }
+
+    override fun onMarkerReached(recorder: AudioRecord?) {
+    }
+
+    override fun onPeriodicNotification(recorder: AudioRecord?) {
+    }
+
+    class RecordHandler(recorder: AudioRecorder) : Handler() {
+
+    }
+
+    private fun checkRecordParameter(): Boolean {
+        var isOk = true
+        if (config.outPutFile != null) {
+            recordFile = config.outPutFile.apply { takeIf { it?.exists() == false }?.mkdirs() }
+        } else if (!config.outPutFilePath.isNullOrEmpty()) {
+            val fileName = config.outPutFileName ?: System.currentTimeMillis().toString()
+            val dir = File(config.outPutFilePath).apply { takeIf { !it.exists() }?.mkdirs() }
+            recordFile = File(dir, fileName).apply { takeIf { !it.exists() }?.createNewFile() }
+        } else {
+            isOk = false
+        }
+        return isOk
     }
 
     override fun pauseRecording() {
-        if (isRecording) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                try {
-                    recorder?.pause()
-                    pauseRecordingTimer()
-                    recorderCallback?.onPauseRecord()
-                    isPaused = true
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
-                    recorderCallback?.onError(ex)
-                }
-            } else {
-                stopRecording()
-            }
+        if (state == RecordState.RECORDING) {
+            isPause = true
+            state = RecordState.PAUSED
+            MainLooper.instance.runOnUiThread { config.recordCallback?.onPause() }
         }
     }
 
     override fun stopRecording() {
-        if (isRecording) {
-            stopRecordingTimer()
-            try {
-                recorder?.stop()
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                recorderCallback?.onError(ex)
-            }
-            recorder?.release()
-            recorderCallback?.onStopRecord(recordFile)
-            recordFile = null
-            isPrepared = false
+        if (state != RecordState.STOPPED) {
+            isPause = false
             isRecording = false
-            isPaused = false
-            recorder = null
+            MainLooper.instance.runOnUiThread { config.recordCallback?.onSuccess(recordFile, duration) }
+            state = RecordState.STOPPED
+        }
+    }
+
+    override fun resumeRecording() {
+        if (state == RecordState.PAUSED) {
+            isPause = false
+            state = RecordState.RECORDING
+            MainLooper.instance.runOnUiThread { config.recordCallback?.onResume() }
         }
     }
 
     override fun isRecording(): Boolean = isRecording
 
-    override fun isPaused(): Boolean = isPaused
+    override fun isPaused(): Boolean = isPause
 
-    private fun startRecordingTimer() {
-        timerProgress = Timer()
-        timerProgress?.schedule(object : TimerTask() {
-            override fun run() {
-                try {
-                    recorderCallback?.onRecordProgress(progress, recorder?.maxAmplitude ?: 0)
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
-                }
-                progress += 1000 / 25
-            }
-        }, 0, 1000 / 25)
+    fun mapFormat(format: Int): Int {
+        return when (format) {
+            AudioFormat.ENCODING_PCM_8BIT -> 8
+            AudioFormat.ENCODING_PCM_16BIT -> 16
+            else -> 0
+        }
     }
 
-    private fun stopRecordingTimer() {
-        timerProgress?.cancel()
-        timerProgress?.purge()
-        progress = 0
-    }
 
-    private fun pauseRecordingTimer() {
-        timerProgress?.cancel()
-        timerProgress?.purge()
-    }
 }
