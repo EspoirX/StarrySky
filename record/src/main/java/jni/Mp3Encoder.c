@@ -74,7 +74,7 @@ JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_encodeInterleaved(
 
     int result =  lame_encode_buffer_interleaved(lame,j_pcm_buffer,samples,j_mp3buff,mp3buf_size);
 
-            //释放参数
+    //释放参数
     (*env)->ReleaseShortArrayElements(env,pcm_buffer,j_pcm_buffer,0);
     (*env)->ReleaseByteArrayElements(env,mp3buf,j_mp3buff,0);
     return result;

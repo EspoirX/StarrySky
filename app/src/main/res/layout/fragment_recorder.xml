@@ -15,4 +15,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnStart"
         android:text="停止录音" />
+
+    <Button
+        android:id="@+id/btnPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnStop"
+        android:text="播放音乐" />
 </RelativeLayout>

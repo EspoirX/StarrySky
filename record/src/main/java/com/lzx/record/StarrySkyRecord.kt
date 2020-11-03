@@ -1,6 +1,7 @@
 package com.lzx.record
 
 import android.content.Context
+import android.media.MediaPlayer
 import com.lzx.record.recorder.IRecorder
 
 object StarrySkyRecord {

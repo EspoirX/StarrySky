@@ -2,6 +2,9 @@ package com.lzx.record.recorder
 
 import java.io.File
 
+/**
+ * 录音回调
+ */
 interface RecorderCallback {
 
     /**
@@ -57,13 +60,59 @@ interface RecorderCallback {
     fun onAutoComplete(file: String, time: Long)
 }
 
+/**
+ * 录音播放器回调
+ */
+interface PlayerListener {
+
+    /**
+     * 开始播放
+     */
+    fun onStart()
+
+    /**
+     * 暂停
+     */
+    fun onPause()
+
+    /**
+     * 继续播放
+     */
+    fun onResume()
+
+    /**
+     * 停止释放
+     */
+    fun onStop()
+
+    /**
+     * 播放结束
+     */
+    fun onCompletion()
+
+    /**
+     * 错误
+     */
+    fun onError(msg: String)
+
+    /**
+     * 进度条
+     * @param current 当前位置
+     * @param duration 总长度
+     */
+    fun onProgress(current: Int, duration: Int)
+}
+
+/**
+ * 录音实现接口
+ */
 interface IRecorder {
     fun startRecording()
     fun pauseRecording()
     fun stopRecording()
     fun resumeRecording()
+    fun onReset()
     fun isRecording(): Boolean
     fun isPaused(): Boolean
-
-
+    fun getRecordState(): Int
 }

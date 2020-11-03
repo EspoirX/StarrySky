@@ -13,6 +13,7 @@ import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
+import kotlinx.android.synthetic.main.fragment_recorder.btnPlay
 import kotlinx.android.synthetic.main.fragment_recorder.btnStart
 import kotlinx.android.synthetic.main.fragment_recorder.btnStop
 import java.io.File
@@ -86,6 +87,11 @@ class RecordFragment : BaseFragment() {
 
         btnStop?.setOnClickListener {
             StarrySkyRecord.recorder?.stopRecording()
+        }
+
+        btnPlay?.setOnClickListener {
+            val file = "000remix.mp3".toSdcardPath()
+            StarrySkyRecord.with().setBgMusicPath(file).player().playMusic()
         }
 
 

@@ -2,7 +2,10 @@ package com.lzx.record
 
 import android.media.AudioFormat
 import android.media.MediaRecorder
+import com.lzx.record.player.AudioTrackPlayer
 import com.lzx.record.recorder.AudioMp3Recorder
+import com.lzx.record.recorder.IRecorder
+import com.lzx.record.recorder.PlayerListener
 import com.lzx.record.recorder.RecorderCallback
 import java.io.File
 
@@ -43,6 +46,10 @@ open class RecordConfig internal constructor(builder: Builder) {
     @get:JvmName("bgMusicUrl")
     internal var bgMusicUrl: String? = builder.bgMusicUrl
 
+    //如果是网络音乐，可以指定 headers
+    @get:JvmName("headers")
+    internal var headers: HashMap<String, String>? = builder.headers
+
     //初始Lame录音输出质量
     @get:JvmName("quality")
     internal var quality: Int = builder.quality
@@ -59,6 +66,10 @@ open class RecordConfig internal constructor(builder: Builder) {
     @get:JvmName("wax")
     internal var wax: Float = builder.wax
 
+    //波形速度
+    @get:JvmName("waveSpeed")
+    internal var waveSpeed: Int = builder.waveSpeed
+
     //背景音乐音量
     @get:JvmName("bgMusicVolume")
     internal var bgMusicVolume: Float = builder.bgMusicVolume
@@ -66,6 +77,10 @@ open class RecordConfig internal constructor(builder: Builder) {
     //录音回调
     @get:JvmName("recordCallback")
     internal var recordCallback: RecorderCallback? = builder.recordCallback
+
+    //播放器回调
+    @get:JvmName("playerListener")
+    internal var playerListener: PlayerListener? =  builder.playerListener
 
     constructor() : this(Builder())
 
@@ -99,6 +114,9 @@ open class RecordConfig internal constructor(builder: Builder) {
         //背景音乐url
         internal var bgMusicUrl: String? = null
 
+        //如果是网络音乐，可以指定 headers
+        internal var headers: HashMap<String, String>? = null
+
         //初始Lame录音输出质量
         internal var quality: Int = 3
 
@@ -111,18 +129,22 @@ open class RecordConfig internal constructor(builder: Builder) {
         //设置增强系数
         internal var wax: Float = 0F
 
+        //波形速度
+        internal var waveSpeed: Int = 300
+
         //背景音乐音量
         internal var bgMusicVolume: Float = 0F
 
         //录音回调
         internal var recordCallback: RecorderCallback? = null
 
+        //播放器回调
+        internal var playerListener: PlayerListener? = null
+
         fun setAudioSource(source: Int) = apply { this.audioSource = source }
 
-        //设置采样率
         fun setSamplingRate(rate: Int) = apply { this.sampleRate = rate }
 
-        //声道数
         fun setChannelConfig(channel: Int) = apply { this.channelConfig = channel }
 
         fun setOutputFile(path: String) = apply { outPutFilePath = path }
@@ -133,25 +155,24 @@ open class RecordConfig internal constructor(builder: Builder) {
 
         fun setIsContinue(isContinue: Boolean) = apply { this.isContinue = isContinue }
 
-        //设置录音监听
         fun setRecordCallback(callback: RecorderCallback?) = apply { this.recordCallback = callback }
 
-        //设计背景音乐的url
+        fun setPlayerListener(listener: PlayerListener?) = apply { this.playerListener = listener }
+
         fun setBgMusicPath(url: String) = apply { bgMusicUrl = url }
 
-        //初始Lame录音输出质量
+        fun setHeaders(headers: HashMap<String, String>?) = apply { this.headers = headers }
+
         fun setQuality(quality: Int) = apply { this.quality = quality }
 
-        //设置比特率，关系声音的质量
         fun setBitRate(bitRate: Int) = apply { this.bitRate = bitRate }
 
-        //初始最大录制时间
         fun setRecordMaxTime(maxTime: Long) = apply { this.recordMaxTime = maxTime }
 
-        //设置增强系数
         fun setWax(wax: Float) = apply { this.wax = wax }
 
-        //设置背景声音大小
+        fun setWaveSpeed(waveSpeed: Int) = apply { this.waveSpeed = waveSpeed }
+
         fun setBgMusicVolume(volume: Float) = apply { this.bgMusicVolume = volume }
 
         internal constructor(config: RecordConfig) : this() {
@@ -164,12 +185,15 @@ open class RecordConfig internal constructor(builder: Builder) {
             this.outPutFile = config.outPutFile
             this.isContinue = config.isContinue
             this.bgMusicUrl = config.bgMusicUrl
+            this.headers = config.headers
             this.quality = config.quality
             this.bitRate = config.bitRate
             this.recordMaxTime = config.recordMaxTime
             this.wax = config.wax
+            this.waveSpeed = config.waveSpeed
             this.bgMusicVolume = config.bgMusicVolume
             this.recordCallback = config.recordCallback
+            this.playerListener = config.playerListener
         }
 
         fun startRecord() {
@@ -177,6 +201,18 @@ open class RecordConfig internal constructor(builder: Builder) {
             val recorder = AudioMp3Recorder(config)
             StarrySkyRecord.recorder = recorder
             recorder.startRecording()
+        }
+
+        fun prepare(): IRecorder {
+            val config = RecordConfig(this)
+            val recorder = AudioMp3Recorder(config)
+            StarrySkyRecord.recorder = recorder
+            return recorder
+        }
+
+        fun player(): AudioTrackPlayer {
+            val config = RecordConfig(this)
+            return AudioTrackPlayer(config)
         }
     }
 }
