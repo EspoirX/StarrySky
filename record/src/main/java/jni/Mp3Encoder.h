@@ -7,25 +7,25 @@
 extern "C" {
 #endif
 
-JNIEXPORT jstring JNICALL Java_com_lzx_record_test_LameManager_version
+JNIEXPORT jstring JNICALL com_lzx_record_LameManager_version
   (JNIEnv *, jclass);
 
-JNIEXPORT void JNICALL Java_com_lzx_record_test_LameManager_init
+JNIEXPORT void JNICALL com_lzx_record_LameManager_init
   (JNIEnv *, jclass, jint, jint, jint, jint, jint);
 
-JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_encode
+JNIEXPORT jint JNICALL com_lzx_record_LameManager_encode
   (JNIEnv *, jclass, jshortArray, jshortArray, jint, jbyteArray);
 
-JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_encodeInterleaved
+JNIEXPORT jint JNICALL com_lzx_record_LameManager_encodeInterleaved
       (JNIEnv *, jclass, jshortArray, jint, jbyteArray);
 
-JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_encodeByByte
+JNIEXPORT jint JNICALL com_lzx_record_LameManager_encodeByByte
       (JNIEnv *, jclass, jbyteArray, jbyteArray, jint, jbyteArray);
 
-JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_flush
+JNIEXPORT jint JNICALL com_lzx_record_LameManager_flush
   (JNIEnv *, jclass, jbyteArray);
 
-JNIEXPORT void JNICALL Java_com_lzx_record_test_LameManager_close
+JNIEXPORT void JNICALL com_lzx_record_LameManager_close
   (JNIEnv *, jclass);
 
 #ifdef __cplusplus

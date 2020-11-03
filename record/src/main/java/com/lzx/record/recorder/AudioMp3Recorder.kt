@@ -6,7 +6,7 @@ import android.os.AsyncTask
 import com.lzx.basecode.MainLooper
 import com.lzx.record.RecordConfig
 import com.lzx.record.RecordState
-import com.lzx.record.test.LameManager
+import com.lzx.record.LameManager
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.sqrt

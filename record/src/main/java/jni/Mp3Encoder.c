@@ -4,12 +4,12 @@
 
 static lame_global_flags *lame = NULL;
 
-JNIEXPORT jstring JNICALL Java_com_lzx_record_test_LameManager_version(
+JNIEXPORT jstring JNICALL Java_com_lzx_record_LameManager_version(
   JNIEnv  *env, jclass cls){
    return "StarrySkyRecord.Version 1.0";
 }
 
-JNIEXPORT void JNICALL Java_com_lzx_record_test_LameManager_init(
+JNIEXPORT void JNICALL Java_com_lzx_record_LameManager_init(
         JNIEnv *env,
         jclass cls,
         jint inSamplerate,
@@ -32,7 +32,7 @@ JNIEXPORT void JNICALL Java_com_lzx_record_test_LameManager_init(
     lame_init_params(lame);
 }
 
-JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_encode(
+JNIEXPORT jint JNICALL Java_com_lzx_record_LameManager_encode(
         JNIEnv  *env,
         jclass cls,
         jshortArray buffer_left,
@@ -59,7 +59,7 @@ JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_encode(
 
 }
 
-JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_encodeInterleaved(
+JNIEXPORT jint JNICALL Java_com_lzx_record_LameManager_encodeInterleaved(
         JNIEnv  *env,
         jclass cls,
         jshortArray pcm_buffer,
@@ -81,7 +81,7 @@ JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_encodeInterleaved(
 
 }
 
-JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_encodeByByte(
+JNIEXPORT jint JNICALL Java_com_lzx_record_LameManager_encodeByByte(
         JNIEnv  *env,
         jclass cls,
         jbyteArray buffer_left,
@@ -106,7 +106,7 @@ JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_encodeByByte(
 
 }
 
-JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_flush(
+JNIEXPORT jint JNICALL Java_com_lzx_record_LameManager_flush(
         JNIEnv *env,
         jclass cls,
         jbyteArray mp3buf){
@@ -121,7 +121,7 @@ JNIEXPORT jint JNICALL Java_com_lzx_record_test_LameManager_flush(
     return result;
 }
 
-JNIEXPORT void JNICALL Java_com_lzx_record_test_LameManager_close(
+JNIEXPORT void JNICALL Java_com_lzx_record_LameManager_close(
         JNIEnv *env,
         jclass cls){
     lame_close(lame);

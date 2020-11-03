@@ -1,4 +1,4 @@
-package com.lzx.record.test
+package com.lzx.record
 
 /**
  * lame 库
