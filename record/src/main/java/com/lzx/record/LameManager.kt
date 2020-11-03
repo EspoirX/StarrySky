@@ -10,11 +10,6 @@ object LameManager {
     }
 
     /**
-     * 自定义的方法，没啥用
-     */
-    external fun version(): Int
-
-    /**
      * 初始化 lame 编码器
      * inSampleRate    输入采样率
      * outChannel      声道数

@@ -1,13 +1,7 @@
 #include "lame-3.100_libmp3lame/lame.h"
 #include "Mp3Encoder.h"
 
-
 static lame_global_flags *lame = NULL;
-
-JNIEXPORT jstring JNICALL Java_com_lzx_record_LameManager_version(
-  JNIEnv  *env, jclass cls){
-   return "StarrySkyRecord.Version 1.0";
-}
 
 JNIEXPORT void JNICALL Java_com_lzx_record_LameManager_init(
         JNIEnv *env,
