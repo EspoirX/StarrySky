@@ -3,7 +3,6 @@ package com.lzx.record
 import android.media.AudioFormat
 import android.media.MediaRecorder
 import com.lzx.record.player.AudioTrackPlayer
-import com.lzx.record.recorder.AudioMp3Recorder
 import com.lzx.record.recorder.IRecorder
 import com.lzx.record.recorder.PlayerListener
 import com.lzx.record.recorder.RecorderCallback
@@ -80,11 +79,12 @@ open class RecordConfig internal constructor(builder: Builder) {
 
     //播放器回调
     @get:JvmName("playerListener")
-    internal var playerListener: PlayerListener? =  builder.playerListener
+    internal var playerListener: PlayerListener? = builder.playerListener
 
     constructor() : this(Builder())
 
     open fun newBuilder(): Builder = Builder(this)
+
 
     class Builder constructor() {
         // 音源
@@ -127,7 +127,7 @@ open class RecordConfig internal constructor(builder: Builder) {
         internal var recordMaxTime: Long = 60000
 
         //设置增强系数
-        internal var wax: Float = 0F
+        internal var wax: Float = 1F
 
         //波形速度
         internal var waveSpeed: Int = 300
@@ -159,7 +159,7 @@ open class RecordConfig internal constructor(builder: Builder) {
 
         fun setPlayerListener(listener: PlayerListener?) = apply { this.playerListener = listener }
 
-        fun setBgMusicPath(url: String) = apply { bgMusicUrl = url }
+        fun setBgMusicUrl(url: String) = apply { bgMusicUrl = url }
 
         fun setHeaders(headers: HashMap<String, String>?) = apply { this.headers = headers }
 
@@ -198,21 +198,20 @@ open class RecordConfig internal constructor(builder: Builder) {
 
         fun startRecord() {
             val config = RecordConfig(this)
-            val recorder = AudioMp3Recorder(config)
-            StarrySkyRecord.recorder = recorder
-            recorder.startRecording()
+            StarrySkyRecord.recorder?.setUpRecordConfig(config)
+            StarrySkyRecord.recorder?.startRecording()
         }
 
-        fun prepare(): IRecorder {
+        fun prepare(): IRecorder? {
             val config = RecordConfig(this)
-            val recorder = AudioMp3Recorder(config)
-            StarrySkyRecord.recorder = recorder
-            return recorder
+            StarrySkyRecord.recorder?.setUpRecordConfig(config)
+            return StarrySkyRecord.recorder
         }
 
-        fun player(): AudioTrackPlayer {
+        fun player(): AudioTrackPlayer? {
             val config = RecordConfig(this)
-            return AudioTrackPlayer(config)
+            StarrySkyRecord.recorder?.setUpRecordConfig(config)
+            return StarrySkyRecord.recorder?.getAudioTrackPlayer()
         }
     }
 }

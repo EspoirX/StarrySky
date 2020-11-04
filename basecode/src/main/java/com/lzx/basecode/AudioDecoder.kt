@@ -7,6 +7,10 @@ import java.nio.ByteBuffer
 
 class AudioDecoder(private val url: String, private val headers: HashMap<String, String>?) {
 
+    companion object {
+        const val BUFFER_SIZE = 2048
+    }
+
     //音轨提取器
     private var mediaExtractor: MediaExtractor? = null
 

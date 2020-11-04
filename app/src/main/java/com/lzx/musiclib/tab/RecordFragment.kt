@@ -37,7 +37,9 @@ class RecordFragment : BaseFragment() {
                 object : CheckRequestPermissionsListener {
                     override fun onAllPermissionOk(allPermissions: Array<Permission>) {
                         val path = "StarrySkyRecord".toSdcardPath()
+                        val file = "000remix.mp3".toSdcardPath()
                         StarrySkyRecord.with()
+                            .setBgMusicUrl(file)
                             .setOutputFile(path)
                             .setRecordCallback(object : RecorderCallback {
                                 override fun onStart() {
@@ -90,8 +92,9 @@ class RecordFragment : BaseFragment() {
         }
 
         btnPlay?.setOnClickListener {
-            val file = "000remix.mp3".toSdcardPath()
-            StarrySkyRecord.with().setBgMusicPath(file).player().playMusic()
+            val file = "222.mp4".toSdcardPath()
+            Log.i("XIAN", "file = " + file)
+            StarrySkyRecord.with().setBgMusicUrl(file).player()?.playMusic()
         }
 
 

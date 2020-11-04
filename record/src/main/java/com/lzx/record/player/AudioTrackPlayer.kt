@@ -10,6 +10,7 @@ import android.os.Build
 import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.MainLooper
 import com.lzx.record.RecordConfig
+import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -21,9 +22,13 @@ class AudioTrackPlayer(private val config: RecordConfig) {
     private var volume = 0.3f
 
     private var isPlayingMusic = false
+    var isRecording = false
     private var isPause = false
     private var need = AtomicBoolean(false)
     private var audioDecoder: AudioDecoder? = null
+    var bufferSize: Int = 0
+    var pcmBufferBytes: ByteArray? = null
+//    private val pcmBuffers = LinkedBlockingDeque<ByteArray>()
 
     init {
         if (!config.bgMusicUrl.isNullOrEmpty()) {
@@ -64,7 +69,7 @@ class AudioTrackPlayer(private val config: RecordConfig) {
                     val duration = audioDecoder?.mediaFormat?.getLong(MediaFormat.KEY_DURATION) ?: 0
                     onProgress((pcm.time / 1000).toInt(), (duration / 1000).toInt())
 
-                    onFrameArrive(pcm.bufferBytes)
+                    onFrameArrive(pcm.bufferBytes, pcm.bufferSize)
                 }
                 //播放完成
                 onStop()
@@ -141,19 +146,32 @@ class AudioTrackPlayer(private val config: RecordConfig) {
         if (config.channelConfig == AudioFormat.CHANNEL_OUT_MONO) {
             //音乐实际开始会慢一点
             repeat(10) {
-                onFrameArrive(ByteArray(1))
+                onFrameArrive(ByteArray(1), 0)
             }
         } else {
             //30 的时候 外放 快于 合成
             repeat(8) {
-                onFrameArrive(ByteArray(1))
+                onFrameArrive(ByteArray(1), 0)
             }
         }
     }
 
-    private fun onFrameArrive(bytes: ByteArray) {
-
+    private fun onFrameArrive(bytes: ByteArray, bufferSize: Int) {
+//        MainLooper.instance.runOnUiThread {
+            pcmBufferBytes = bytes
+            this.bufferSize = bufferSize
+//        }
+//        if (isPlayingMusic && isRecording) {
+//            pcmBuffers.add(bytes)
+//        }
     }
+
+//    fun getPcmBuffer(): ByteArray? {
+//        if (pcmBuffers.isEmpty()) {
+//            return null
+//        }
+//        return pcmBuffers.poll()
+//    }
 
     private fun initAudioTrack() {
         val bufferSize = AudioTrack.getMinBufferSize(config.sampleRate, config.channelConfig, config.audioFormat)

@@ -1,5 +1,7 @@
 package com.lzx.record.recorder
 
+import com.lzx.record.RecordConfig
+import com.lzx.record.player.AudioTrackPlayer
 import java.io.File
 
 /**
@@ -107,11 +109,14 @@ interface PlayerListener {
  * 录音实现接口
  */
 interface IRecorder {
+    fun setUpRecordConfig(config: RecordConfig)
+    fun getAudioTrackPlayer(): AudioTrackPlayer?
     fun startRecording()
     fun pauseRecording()
     fun stopRecording()
     fun resumeRecording()
     fun onReset()
+    fun setVolume(volume: Float)
     fun isRecording(): Boolean
     fun isPaused(): Boolean
     fun getRecordState(): Int

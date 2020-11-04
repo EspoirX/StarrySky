@@ -111,6 +111,8 @@ open class TestApplication : Application() {
                 this@TestApplication.showToast("连接失败")
             }
         })
+
+        StarrySkyRecord.initStarrySkyRecord(this)
     }
 
     /**

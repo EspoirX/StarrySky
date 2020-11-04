@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Point
+import android.media.AudioFormat
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.os.Build
@@ -232,3 +233,22 @@ fun isMarshmallow(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 fun Activity.isGranted(permission: String): Boolean {
     return this.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
 }
+
+fun Int.format(): Int {
+    return when (this) {
+        AudioFormat.ENCODING_PCM_8BIT -> 8
+        AudioFormat.ENCODING_PCM_16BIT -> 16
+        else -> 0
+    }
+}
+
+fun Int?.safeQuality(): Int = when {
+    this.orDefault() < 0 -> 0
+    this.orDefault() > 9 -> 9
+    else -> this.orDefault()
+}
+
+fun Int?.orDefault(default: Int = 0) = this ?: default
+fun Boolean?.orDefault(default: Boolean = false) = this ?: default
+fun Float?.orDefault(default: Float = 0f) = this ?: default
+fun Long?.orDefault(default: Long = 0) = this ?: default

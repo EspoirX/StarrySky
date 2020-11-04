@@ -2,11 +2,21 @@ package com.lzx.record.recorder
 
 import android.media.AudioFormat
 import android.media.AudioRecord
+import android.media.audiofx.AcousticEchoCanceler
+import android.media.audiofx.AutomaticGainControl
+import android.media.audiofx.NoiseSuppressor
 import android.os.AsyncTask
+import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.MainLooper
+import com.lzx.record.LameManager
 import com.lzx.record.RecordConfig
 import com.lzx.record.RecordState
-import com.lzx.record.LameManager
+import com.lzx.record.StarrySkyRecord
+import com.lzx.record.player.AudioTrackPlayer
+import com.lzx.record.utils.BytesTransUtil
+import com.lzx.record.utils.format
+import com.lzx.record.utils.orDefault
+import com.lzx.record.utils.safeQuality
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.sqrt
@@ -14,7 +24,7 @@ import kotlin.math.sqrt
 /**
  * AudioRecord + lame 录制 mp3
  */
-class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
+class AudioMp3Recorder() : IRecorder {
     val mp3 = "mp3"
     val aac = "aac"
     val wav = "wav"
@@ -23,6 +33,13 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
     companion object {
         private const val FRAME_COUNT = 160
     }
+
+    // 系统自带的去噪音，增强以及回音问题
+    private var noiseSuppressor: NoiseSuppressor? = null
+    private var acousticEchoCanceler: AcousticEchoCanceler? = null
+    private var automaticGainControl: AutomaticGainControl? = null
+
+    private var config: RecordConfig? = null
 
     // 获取最小缓存区大小
     var bufferSizeInBytes: Int = 0
@@ -35,25 +52,35 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
     private var state = RecordState.STOPPED   //当前状态
     private var recordVolume: Int = 0 //录制音量
     private var duration = 0L //录制时间
-    private var isParameterOk = false //参数是否ok
+    private var player: AudioTrackPlayer? = null //播放器
+    private var hasBgMusic = false
+    private var bgLevel: Float = 0.30f //背景音乐
 
-    init {
-        //如果设置了背景音乐，则初始化解码器，播放器等相关东西
-        if (!config.bgMusicUrl.isNullOrEmpty()) {
-
-        }
+    override fun setUpRecordConfig(config: RecordConfig) {
+        this.config = config
+        initAudioTrackPlayer()
     }
+
+    private fun initAudioTrackPlayer() {
+        //如果设置了背景音乐，则初始化解码器，播放器等相关东西
+        if (player == null) {
+            player = AudioTrackPlayer(config!!)
+        }
+        hasBgMusic = !config?.bgMusicUrl.isNullOrEmpty()
+    }
+
+    override fun getAudioTrackPlayer(): AudioTrackPlayer? = player
 
     /**
      * 开始录音
      */
     override fun startRecording() {
         if (!checkRecordParameter()) {
-            config.recordCallback?.onError("录音参数有错误，请检查")
+            config?.recordCallback?.onError("录音参数有错误，请检查")
             return
         }
         if (isRecording) {
-            config.recordCallback?.onError("正在录音中")
+            config?.recordCallback?.onError("正在录音中")
             return
         }
         isRecording = true
@@ -61,9 +88,10 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
             try {
                 //获取最小缓存区大小
-                bufferSizeInBytes = AudioRecord.getMinBufferSize(config.sampleRate, config.channelConfig, config.audioFormat)
+                bufferSizeInBytes = AudioRecord.getMinBufferSize(
+                    config?.sampleRate.orDefault(), config?.channelConfig.orDefault(), config?.audioFormat.orDefault())
 
-                val bytesPerFrame = if (config.audioFormat == AudioFormat.ENCODING_PCM_8BIT) 1 else 2
+                val bytesPerFrame = if (config?.audioFormat == AudioFormat.ENCODING_PCM_8BIT) 1 else 2
 
                 //使能被整除，方便下面的周期性通知
                 var frameSize = bufferSizeInBytes / bytesPerFrame
@@ -73,16 +101,25 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
                 }
 
                 //创建 AudioRecord
-                audioRecord = AudioRecord(config.audioSource, config.sampleRate, config.channelConfig, config.audioFormat, bufferSizeInBytes)
+                audioRecord = AudioRecord(config?.audioSource.orDefault(),
+                    config?.sampleRate.orDefault(),
+                    config?.channelConfig.orDefault(),
+                    config?.audioFormat.orDefault(), bufferSizeInBytes)
+
+                initAEC(audioRecord?.audioSessionId.orDefault())
 
                 val pcmBuffer = ShortArray(bufferSizeInBytes)
 
                 //初始化lame
-                LameManager.init(config.sampleRate, config.channelConfig, config.sampleRate, config.bitRate, config.quality.safeQuality())
+                LameManager.init(config?.sampleRate.orDefault(),
+                    config?.channelConfig.orDefault(),
+                    config?.sampleRate.orDefault(),
+                    config?.bitRate.orDefault(),
+                    config?.quality?.safeQuality().orDefault())
 
                 audioRecord?.positionNotificationPeriod = FRAME_COUNT
 
-                val fos = FileOutputStream(recordFile, config.isContinue)
+                val fos = FileOutputStream(recordFile, config?.isContinue.orDefault())
                 val mp3buffer = ByteArray((7200 + pcmBuffer.size * 2.0 * 1.25).toInt())
 
                 audioRecord?.startRecording()
@@ -94,7 +131,14 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
 
                 //开始录音
                 while (isRecording) {
-                    val readSize: Int = audioRecord?.read(pcmBuffer, 0, bufferSizeInBytes) ?: 0
+                    var buffer: ByteArray? = null
+                    val readSize = if (hasBgMusic) {
+                        val samplesPerFrame = player?.bufferSize ?: AudioDecoder.BUFFER_SIZE
+                        buffer = ByteArray(samplesPerFrame)
+                        audioRecord?.read(buffer, 0, samplesPerFrame) ?: 0
+                    } else {
+                        audioRecord?.read(pcmBuffer, 0, bufferSizeInBytes) ?: 0
+                    }
                     if (readSize == AudioRecord.ERROR_INVALID_OPERATION || readSize == AudioRecord.ERROR_BAD_VALUE) {
                         //错误
                         onError("需要录音权限")
@@ -103,14 +147,39 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
                         if (isPause) continue
 
                         val readTime = 1000.0 * readSize.toDouble() * 2 / bytesPerSecond
-
-                        val encodeSize: Int = LameManager.encode(pcmBuffer, pcmBuffer, readSize, mp3buffer)
-                        if (encodeSize > 0) {
-                            fos.write(mp3buffer, 0, encodeSize)
-                        }
-                        calculateRealVolume(pcmBuffer, readSize)
                         //short 是2个字节 byte 是1个字节8位
                         onRecording(readTime)
+
+                        if (hasBgMusic) {
+                            calculateRealVolume(buffer)
+                        } else {
+                            calculateRealVolume(pcmBuffer, readSize)
+                        }
+
+                        if (hasBgMusic) {
+                            if (buffer != null) {
+                                val bgData = player?.pcmBufferBytes
+                                val readMixTask = ReadMixTask(buffer, config?.wax.orDefault(), bgData, StarrySkyRecord.currVolumeF)
+                                val mixBuffer = readMixTask.getData()
+                                val encodedSize: Int
+                                val mixReadSize: Int
+                                if (config?.channelConfig == AudioFormat.CHANNEL_IN_STEREO) {
+                                    mixReadSize = mixBuffer.size / 2
+                                    encodedSize = LameManager.encodeInterleaved(mixBuffer, mixReadSize, mp3buffer)
+                                } else {
+                                    mixReadSize = mixBuffer.size
+                                    encodedSize = LameManager.encode(mixBuffer, mixBuffer, mixReadSize, mp3buffer)
+                                }
+                                if (encodedSize > 0) {
+                                    fos.write(mp3buffer, 0, encodedSize)
+                                }
+                            }
+                        } else {
+                            val encodeSize: Int = LameManager.encode(pcmBuffer, pcmBuffer, readSize, mp3buffer)
+                            if (encodeSize > 0) {
+                                fos.write(mp3buffer, 0, encodeSize)
+                            }
+                        }
                     } else {
                         //错误
                         onError("需要录音权限")
@@ -141,9 +210,12 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
      */
     private fun onStart() {
         if (state != RecordState.RECORDING) {
-            MainLooper.instance.runOnUiThread { config.recordCallback?.onStart() }
             state = RecordState.RECORDING
             duration = 0
+            MainLooper.instance.runOnUiThread {
+                player?.isRecording = true
+                config?.recordCallback?.onStart()
+            }
         }
     }
 
@@ -154,7 +226,10 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
         if (state == RecordState.RECORDING) {
             isPause = true
             state = RecordState.PAUSED
-            MainLooper.instance.runOnUiThread { config.recordCallback?.onPause() }
+            MainLooper.instance.runOnUiThread {
+                player?.isRecording = false
+                config?.recordCallback?.onPause()
+            }
         }
     }
 
@@ -165,8 +240,11 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
         if (state != RecordState.STOPPED) {
             isPause = false
             isRecording = false
-            MainLooper.instance.runOnUiThread { config.recordCallback?.onSuccess(recordFile, duration) }
             state = RecordState.STOPPED
+            MainLooper.instance.runOnUiThread {
+                player?.isRecording = false
+                config?.recordCallback?.onSuccess(recordFile, duration)
+            }
         }
     }
 
@@ -177,7 +255,10 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
         if (state == RecordState.PAUSED) {
             isPause = false
             state = RecordState.RECORDING
-            MainLooper.instance.runOnUiThread { config.recordCallback?.onResume() }
+            MainLooper.instance.runOnUiThread {
+                player?.isRecording = true
+                config?.recordCallback?.onResume()
+            }
         }
     }
 
@@ -185,11 +266,24 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
      *  重置
      */
     override fun onReset() {
+        player?.isRecording = false
         isRecording = false
         isPause = false
         state = RecordState.STOPPED
         duration = 0L
         recordFile = null
+    }
+
+    /**
+     * 设置声音
+     */
+    override fun setVolume(volume: Float) {
+        bgLevel = when {
+            volume < 0 -> 0f
+            volume > 1 -> 1f
+            else -> volume
+        }
+        StarrySkyRecord.setAudioVoiceF(volume)
     }
 
     /**
@@ -199,14 +293,14 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
         duration += readTime.toLong()
         MainLooper.instance.runOnUiThread({
             //提示快到录音时间了
-            if (config.recordMaxTime > 15000 && duration > config.recordMaxTime - 10000) {
-                config.recordCallback?.onRemind(duration)
+            if (config?.recordMaxTime.orDefault() > 15000 && duration > config?.recordMaxTime.orDefault() - 10000) {
+                config?.recordCallback?.onRemind(duration)
             }
             //录制回调
-            config.recordCallback?.onRecording(duration, recordVolume)
-        }, config.waveSpeed.toLong())
+            config?.recordCallback?.onRecording(duration, recordVolume)
+        }, config?.waveSpeed.orDefault().toLong())
 
-        if (duration > config.recordMaxTime) {
+        if (duration > config?.recordMaxTime.orDefault()) {
             autoStop()
         }
     }
@@ -217,8 +311,11 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
     private fun onError(msg: String) {
         isPause = false
         isRecording = false
-        MainLooper.instance.runOnUiThread { config.recordCallback?.onError(msg) }
         state = RecordState.STOPPED
+        MainLooper.instance.runOnUiThread {
+            player?.isRecording = false
+            config?.recordCallback?.onError(msg)
+        }
     }
 
     /**
@@ -228,10 +325,11 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
         if (state != RecordState.STOPPED) {
             isPause = false
             isRecording = false
-            MainLooper.instance.runOnUiThread({
-                config.recordCallback?.onSuccess(recordFile, duration)
-            }, config.waveSpeed.toLong())
             state = RecordState.STOPPED
+            MainLooper.instance.runOnUiThread({
+                player?.isRecording = false
+                config?.recordCallback?.onSuccess(recordFile, duration)
+            }, config?.waveSpeed.orDefault().toLong())
         }
     }
 
@@ -255,21 +353,51 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
         }
     }
 
+    private fun calculateRealVolume(buffer: ByteArray?) {
+        buffer?.let {
+            val shorts = BytesTransUtil.bytes2Shorts(it)
+            val readSize = shorts.size
+            calculateRealVolume(shorts, readSize)
+        }
+    }
+
     /**
      * 检查参数
      */
     private fun checkRecordParameter(): Boolean {
         var isOk = true
-        if (config.outPutFile != null) {
-            recordFile = config.outPutFile.apply { takeIf { it?.exists() == false }?.mkdirs() }
-        } else if (!config.outPutFilePath.isNullOrEmpty()) {
-            val fileName = config.outPutFileName ?: System.currentTimeMillis().toString()
-            val dir = File(config.outPutFilePath).apply { takeIf { !it.exists() }?.mkdirs() }
+        if (config?.outPutFile != null) {
+            recordFile = config?.outPutFile.apply { takeIf { it?.exists() == false }?.mkdirs() }
+        } else if (!config?.outPutFilePath.isNullOrEmpty()) {
+            val fileName = config?.outPutFileName ?: System.currentTimeMillis().toString()
+            val dir = File(config?.outPutFilePath).apply { takeIf { !it.exists() }?.mkdirs() }
             recordFile = File(dir, fileName).apply { takeIf { !it.exists() }?.createNewFile() }
         } else {
             isOk = false
         }
         return isOk
+    }
+
+    private fun initAEC(audioSessionId: Int) {
+        if (audioSessionId == 0) return
+        if (NoiseSuppressor.isAvailable()) {
+            noiseSuppressor?.release()
+            noiseSuppressor = null
+            noiseSuppressor = NoiseSuppressor.create(audioSessionId)
+            noiseSuppressor?.enabled = true
+        }
+        if (AcousticEchoCanceler.isAvailable()) {
+            acousticEchoCanceler?.release()
+            acousticEchoCanceler = null
+            acousticEchoCanceler = AcousticEchoCanceler.create(audioSessionId)
+            acousticEchoCanceler?.enabled = true
+        }
+        if (AutomaticGainControl.isAvailable()) {
+            automaticGainControl?.release()
+            automaticGainControl = null
+            automaticGainControl = AutomaticGainControl.create(audioSessionId)
+            automaticGainControl?.enabled = true
+        }
     }
 
     /**
@@ -286,18 +414,4 @@ class AudioMp3Recorder(private val config: RecordConfig) : IRecorder {
      * 获取录音状态
      */
     override fun getRecordState(): Int = state
-
-    fun Int.format(): Int {
-        return when (this) {
-            AudioFormat.ENCODING_PCM_8BIT -> 8
-            AudioFormat.ENCODING_PCM_16BIT -> 16
-            else -> 0
-        }
-    }
-
-    private fun Int.safeQuality(): Int = when {
-        this < 0 -> 0
-        this > 9 -> 9
-        else -> this
-    }
 }
