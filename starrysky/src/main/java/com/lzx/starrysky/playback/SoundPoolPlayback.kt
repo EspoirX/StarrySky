@@ -8,11 +8,10 @@ import android.os.AsyncTask
 import android.os.Build
 import com.lzx.basecode.MainLooper
 import com.lzx.basecode.md5
-import java.io.ByteArrayOutputStream
+import com.lzx.basecode.readAsBytes
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -238,7 +237,7 @@ class SoundPoolPlayback(private val context: Context?) {
             it.requestMethod = "GET"
             it.connect()
             it.inputStream.use { inputStream ->
-                readAsBytes(inputStream)?.let { bytes ->
+                inputStream.readAsBytes()?.let { bytes ->
                     val fileDir = File(cachePath).apply {
                         this.takeIf { !it.exists() }?.mkdirs()
                     }
@@ -260,21 +259,6 @@ class SoundPoolPlayback(private val context: Context?) {
                     }
                 }
             }
-        }
-    }
-
-    private fun readAsBytes(inputStream: InputStream): ByteArray? {
-        ByteArrayOutputStream().use { byteArrayOutputStream ->
-            val byteArray = ByteArray(2048)
-            while (true) {
-                val count = inputStream.read(byteArray, 0, 2048)
-                if (count <= 0) {
-                    break
-                } else {
-                    byteArrayOutputStream.write(byteArray, 0, count)
-                }
-            }
-            return byteArrayOutputStream.toByteArray()
         }
     }
 

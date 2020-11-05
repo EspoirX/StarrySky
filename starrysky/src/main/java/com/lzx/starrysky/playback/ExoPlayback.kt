@@ -26,6 +26,9 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.util.Util
+import com.lzx.basecode.AudioDecoder
+import com.lzx.basecode.isFLAC
+import com.lzx.basecode.isRTMP
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.cache.ICache
@@ -35,8 +38,6 @@ import com.lzx.starrysky.playback.Playback.Companion.STATE_IDLE
 import com.lzx.starrysky.playback.Playback.Companion.STATE_PAUSED
 import com.lzx.starrysky.playback.Playback.Companion.STATE_PLAYING
 import com.lzx.starrysky.utils.StarrySkyUtils
-import com.lzx.basecode.isFLAC
-import com.lzx.basecode.isRTMP
 
 /**
  * isAutoManagerFocus 是否让播放器自动管理焦点
@@ -63,6 +64,9 @@ class ExoPlayback(val context: Context,
     private val mEventListener by lazy { ExoPlayerEventListener() }
     private var sourceTypeErrorInfo: SourceTypeErrorInfo = SourceTypeErrorInfo()
     private var focusManager = FocusManager(context)
+
+    //音频解码器
+    private var audioDecoder = AudioDecoder()
 
     init {
         focusManager.listener = this

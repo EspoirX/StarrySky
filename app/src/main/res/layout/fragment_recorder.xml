@@ -1,25 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#541312">
 
-    <Button
-        android:id="@+id/btnStart"
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnRecord"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/geci"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:lineSpacingExtra="10dp"
+            android:text="@string/geci"
+            android:textColor="#fff"
+            android:textSize="25sp" />
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/btnRecord"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/afb"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/btnAccompaniment"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/b6e"
+        app:layout_constraintBottom_toBottomOf="@+id/btnRecord"
+        app:layout_constraintEnd_toStartOf="@+id/btnRecord"
+        app:layout_constraintTop_toTopOf="@+id/btnRecord" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="开始录音" />
+        android:text="伴奏"
+        android:textColor="#fff"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnAccompaniment"
+        app:layout_constraintStart_toStartOf="@+id/btnAccompaniment"
+        app:layout_constraintTop_toBottomOf="@+id/btnAccompaniment"
+        tools:ignore="SmallSp" />
 
-    <Button
-        android:id="@+id/btnStop"
+    <ImageView
+        android:id="@+id/btnAccVolume"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/ba1"
+        app:layout_constraintBottom_toBottomOf="@+id/btnRecord"
+        app:layout_constraintEnd_toStartOf="@+id/btnAccompaniment"
+        app:layout_constraintTop_toTopOf="@+id/btnRecord" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnStart"
-        android:text="停止录音" />
+        android:text="音量"
+        android:textColor="#fff"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnAccVolume"
+        app:layout_constraintStart_toStartOf="@+id/btnAccVolume"
+        app:layout_constraintTop_toBottomOf="@+id/btnAccVolume"
+        tools:ignore="SmallSp" />
 
-    <Button
-        android:id="@+id/btnPlay"
+    <ImageView
+        android:id="@+id/btnReRecord"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/rerecord"
+        app:layout_constraintBottom_toBottomOf="@+id/btnRecord"
+        app:layout_constraintStart_toEndOf="@+id/btnRecord"
+        app:layout_constraintTop_toTopOf="@+id/btnRecord" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnStop"
-        android:text="播放音乐" />
-</RelativeLayout>
+        android:text="重录"
+        android:textColor="#fff"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnReRecord"
+        app:layout_constraintStart_toStartOf="@+id/btnReRecord"
+        app:layout_constraintTop_toBottomOf="@+id/btnReRecord"
+        tools:ignore="SmallSp" />
+
+    <ImageView
+        android:id="@+id/btnFinish"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/recordfinish"
+        app:layout_constraintBottom_toBottomOf="@+id/btnReRecord"
+        app:layout_constraintStart_toEndOf="@+id/btnReRecord"
+        app:layout_constraintTop_toTopOf="@+id/btnReRecord" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="完成"
+        android:textColor="#fff"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnFinish"
+        app:layout_constraintStart_toStartOf="@+id/btnFinish"
+        app:layout_constraintTop_toBottomOf="@+id/btnFinish"
+        tools:ignore="SmallSp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.viewpager.widget.ViewPager
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.tab.FlacFragment
 import com.lzx.musiclib.tab.M3u8Fragment
@@ -28,6 +30,7 @@ import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.playback.PlaybackStage
 import kotlinx.android.synthetic.main.activity_main.donutProgress
+import kotlinx.android.synthetic.main.activity_main.floatLayout
 import kotlinx.android.synthetic.main.activity_main.songCover
 import kotlinx.android.synthetic.main.activity_main.tabLayout
 import kotlinx.android.synthetic.main.activity_main.viewPager
@@ -68,7 +71,6 @@ class MainActivity : AppCompatActivity() {
 
         val list = mutableListOf<String>()
         list.add("精品推荐")
-//        list.add("热门")
         list.add("FLAC无损")
         list.add("电台(m3u8 HLS)")
         list.add("RTMP 流")
@@ -76,6 +78,12 @@ class MainActivity : AppCompatActivity() {
         val adapter = ViewPagerAdapter(supportFragmentManager, list)
         viewPager?.adapter = adapter
         tabLayout?.setViewPager(viewPager)
+        viewPager?.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                floatLayout?.visibility = if (position == 4) View.GONE else View.VISIBLE
+            }
+        })
 
         timerTaskManager.bindLifecycle(this.lifecycle)
 

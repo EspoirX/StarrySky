@@ -28,7 +28,7 @@ object StarrySkyRecord {
     }
 
     fun with(): RecordConfig.Builder {
-        return RecordConfig.Builder()
+        return RecordConfig().newBuilder()
     }
 
     fun getContext() = context

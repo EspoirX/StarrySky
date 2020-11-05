@@ -10,6 +10,7 @@ import android.media.MediaFormat
 import android.os.Build
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
+import com.lzx.basecode.orDef
 import com.lzx.record.RecordConst
 import com.lzx.record.RecordInfo
 import com.lzx.record.StarrySkyRecord
@@ -18,28 +19,7 @@ import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.floor
 
-fun String.keyToSampleRate(): Int {
-    return when (this) {
-        RecordConst.HZ_8000 -> 8000
-        RecordConst.HZ_16000 -> 16000
-        RecordConst.HZ_22050 -> 22050
-        RecordConst.HZ_32000 -> 32000
-        RecordConst.HZ_44100 -> 44100
-        RecordConst.HZ_48000 -> 48000
-        else -> 44100
-    }
-}
 
-fun String.keyToBitrate(): Int {
-    return when (this) {
-        RecordConst.KBPS_48000 -> 48000
-        RecordConst.KBPS_96000 -> 96000
-        RecordConst.KBPS_128000 -> 128000
-        RecordConst.KBPS_192000 -> 192000
-        RecordConst.KBPS_256000 -> 256000
-        else -> 128000
-    }
-}
 
 @Throws(OutOfMemoryError::class, IllegalStateException::class, Exception::class)
 fun File.readRecordInfo(): RecordInfo? {
@@ -243,12 +223,7 @@ fun Int.format(): Int {
 }
 
 fun Int?.safeQuality(): Int = when {
-    this.orDefault() < 0 -> 0
-    this.orDefault() > 9 -> 9
-    else -> this.orDefault()
+    this.orDef() < 0 -> 0
+    this.orDef() > 9 -> 9
+    else -> this.orDef()
 }
-
-fun Int?.orDefault(default: Int = 0) = this ?: default
-fun Boolean?.orDefault(default: Boolean = false) = this ?: default
-fun Float?.orDefault(default: Float = 0f) = this ?: default
-fun Long?.orDefault(default: Long = 0) = this ?: default

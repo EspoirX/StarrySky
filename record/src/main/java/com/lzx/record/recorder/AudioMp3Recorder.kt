@@ -8,6 +8,7 @@ import android.media.audiofx.NoiseSuppressor
 import android.os.AsyncTask
 import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.MainLooper
+import com.lzx.basecode.orDef
 import com.lzx.record.LameManager
 import com.lzx.record.RecordConfig
 import com.lzx.record.RecordState
@@ -15,7 +16,6 @@ import com.lzx.record.StarrySkyRecord
 import com.lzx.record.player.AudioTrackPlayer
 import com.lzx.record.utils.BytesTransUtil
 import com.lzx.record.utils.format
-import com.lzx.record.utils.orDefault
 import com.lzx.record.utils.safeQuality
 import java.io.File
 import java.io.FileOutputStream
@@ -23,6 +23,8 @@ import kotlin.math.sqrt
 
 /**
  * AudioRecord + lame 录制 mp3
+ *
+ * https://xmaihh.github.io/2019/07/30/Android录音/#边录边播（AudioRecord-AudioTrack）
  */
 class AudioMp3Recorder() : IRecorder {
     val mp3 = "mp3"
@@ -57,7 +59,9 @@ class AudioMp3Recorder() : IRecorder {
     private var bgLevel: Float = 0.30f //背景音乐
 
     override fun setUpRecordConfig(config: RecordConfig) {
-        this.config = config
+        if (this.config == null || this.config?.equals(config) == false) {
+            this.config = config
+        }
         initAudioTrackPlayer()
     }
 
@@ -89,7 +93,7 @@ class AudioMp3Recorder() : IRecorder {
             try {
                 //获取最小缓存区大小
                 bufferSizeInBytes = AudioRecord.getMinBufferSize(
-                    config?.sampleRate.orDefault(), config?.channelConfig.orDefault(), config?.audioFormat.orDefault())
+                    config?.sampleRate.orDef(), config?.channelConfig.orDef(), config?.audioFormat.orDef())
 
                 val bytesPerFrame = if (config?.audioFormat == AudioFormat.ENCODING_PCM_8BIT) 1 else 2
 
@@ -101,25 +105,25 @@ class AudioMp3Recorder() : IRecorder {
                 }
 
                 //创建 AudioRecord
-                audioRecord = AudioRecord(config?.audioSource.orDefault(),
-                    config?.sampleRate.orDefault(),
-                    config?.channelConfig.orDefault(),
-                    config?.audioFormat.orDefault(), bufferSizeInBytes)
+                audioRecord = AudioRecord(config?.audioSource.orDef(),
+                    config?.sampleRate.orDef(),
+                    config?.channelConfig.orDef(),
+                    config?.audioFormat.orDef(), bufferSizeInBytes)
 
-                initAEC(audioRecord?.audioSessionId.orDefault())
+                initAEC(audioRecord?.audioSessionId.orDef())
 
                 val pcmBuffer = ShortArray(bufferSizeInBytes)
 
                 //初始化lame
-                LameManager.init(config?.sampleRate.orDefault(),
-                    config?.channelConfig.orDefault(),
-                    config?.sampleRate.orDefault(),
-                    config?.bitRate.orDefault(),
-                    config?.quality?.safeQuality().orDefault())
+                LameManager.init(config?.sampleRate.orDef(),
+                    config?.channelConfig.orDef(),
+                    config?.sampleRate.orDef(),
+                    config?.bitRate.orDef(),
+                    config?.quality?.safeQuality().orDef())
 
                 audioRecord?.positionNotificationPeriod = FRAME_COUNT
 
-                val fos = FileOutputStream(recordFile, config?.isContinue.orDefault())
+                val fos = FileOutputStream(recordFile, config?.isContinue.orDef())
                 val mp3buffer = ByteArray((7200 + pcmBuffer.size * 2.0 * 1.25).toInt())
 
                 audioRecord?.startRecording()
@@ -133,11 +137,11 @@ class AudioMp3Recorder() : IRecorder {
                 while (isRecording) {
                     var buffer: ByteArray? = null
                     val readSize = if (hasBgMusic) {
-                        val samplesPerFrame = player?.bufferSize ?: AudioDecoder.BUFFER_SIZE
+                        val samplesPerFrame = player?.getBufferSize().orDef(AudioDecoder.BUFFER_SIZE)
                         buffer = ByteArray(samplesPerFrame)
-                        audioRecord?.read(buffer, 0, samplesPerFrame) ?: 0
+                        audioRecord?.read(buffer, 0, samplesPerFrame).orDef()
                     } else {
-                        audioRecord?.read(pcmBuffer, 0, bufferSizeInBytes) ?: 0
+                        audioRecord?.read(pcmBuffer, 0, bufferSizeInBytes).orDef()
                     }
                     if (readSize == AudioRecord.ERROR_INVALID_OPERATION || readSize == AudioRecord.ERROR_BAD_VALUE) {
                         //错误
@@ -158,8 +162,8 @@ class AudioMp3Recorder() : IRecorder {
 
                         if (hasBgMusic) {
                             if (buffer != null) {
-                                val bgData = player?.pcmBufferBytes
-                                val readMixTask = ReadMixTask(buffer, config?.wax.orDefault(), bgData, StarrySkyRecord.currVolumeF)
+                                val bgData = player?.getPcmBufferBytes()
+                                val readMixTask = ReadMixTask(buffer, config?.wax.orDef(), bgData, StarrySkyRecord.currVolumeF)
                                 val mixBuffer = readMixTask.getData()
                                 val encodedSize: Int
                                 val mixReadSize: Int
@@ -293,14 +297,14 @@ class AudioMp3Recorder() : IRecorder {
         duration += readTime.toLong()
         MainLooper.instance.runOnUiThread({
             //提示快到录音时间了
-            if (config?.recordMaxTime.orDefault() > 15000 && duration > config?.recordMaxTime.orDefault() - 10000) {
+            if (config?.recordMaxTime.orDef() > 15000 && duration > config?.recordMaxTime.orDef() - 10000) {
                 config?.recordCallback?.onRemind(duration)
             }
             //录制回调
             config?.recordCallback?.onRecording(duration, recordVolume)
-        }, config?.waveSpeed.orDefault().toLong())
+        }, config?.waveSpeed.orDef().toLong())
 
-        if (duration > config?.recordMaxTime.orDefault()) {
+        if (duration > config?.recordMaxTime.orDef()) {
             autoStop()
         }
     }
@@ -329,7 +333,7 @@ class AudioMp3Recorder() : IRecorder {
             MainLooper.instance.runOnUiThread({
                 player?.isRecording = false
                 config?.recordCallback?.onSuccess(recordFile, duration)
-            }, config?.waveSpeed.orDefault().toLong())
+            }, config?.waveSpeed.orDef().toLong())
         }
     }
 

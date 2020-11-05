@@ -7,8 +7,10 @@ import android.media.AudioTrack
 import android.media.MediaFormat
 import android.os.AsyncTask
 import android.os.Build
+import android.util.Log
 import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.MainLooper
+import com.lzx.basecode.orDef
 import com.lzx.record.RecordConfig
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.atomic.AtomicBoolean
@@ -26,18 +28,34 @@ class AudioTrackPlayer(private val config: RecordConfig) {
     private var isPause = false
     private var need = AtomicBoolean(false)
     private var audioDecoder: AudioDecoder? = null
-    var bufferSize: Int = 0
-    var pcmBufferBytes: ByteArray? = null
-//    private val pcmBuffers = LinkedBlockingDeque<ByteArray>()
+    private val pcmBufferBytes = LinkedBlockingDeque<ByteArray>()
 
     init {
+        audioDecoder = AudioDecoder()
         if (!config.bgMusicUrl.isNullOrEmpty()) {
-            audioDecoder = AudioDecoder(config.bgMusicUrl!!, config.headers)
-            audioDecoder?.initMediaDecode()
+            audioDecoder?.initMediaDecode(config.bgMusicUrl!!, config.headers)
         }
     }
 
+    fun getBufferSize(): Int = audioDecoder?.bufferSize.orDef(AudioDecoder.BUFFER_SIZE)
+
+    fun getPcmBufferBytes(): ByteArray? {
+        if (pcmBufferBytes.isEmpty()) {
+            return null
+        }
+        return pcmBufferBytes.poll()
+    }
+
     fun playMusic() {
+        if (isPlayingMusic && !isPause) {
+            pauseMusic()
+            return
+        }
+        if (isPlayingMusic && isPause) {
+            resumeMusic()
+            return
+        }
+        audioDecoder?.decodePcmInfo()
         isPlayingMusic = true
         config.playerListener?.onStart()
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
@@ -51,8 +69,6 @@ class AudioTrackPlayer(private val config: RecordConfig) {
                 //延迟合成
                 delayFrameArrive()
 
-                audioDecoder?.sawInputEOS = false
-
                 while (isPlayingMusic) {
                     if (isPause) continue
 
@@ -60,16 +76,17 @@ class AudioTrackPlayer(private val config: RecordConfig) {
                         delayFrameArrive()
                     }
 
-                    val pcm = audioDecoder?.getPcmInfo()
+                    val pcm = audioDecoder?.pcmData
                     if (pcm?.bufferBytes == null) {
+                        Log.i("XIAN", "pcm?.bufferBytes == null")
                         continue
                     }
                     audioTrack?.write(pcm.bufferBytes, 0, pcm.bufferBytes.size)
                     //回调进度
-                    val duration = audioDecoder?.mediaFormat?.getLong(MediaFormat.KEY_DURATION) ?: 0
+                    val duration = audioDecoder?.mediaFormat?.getLong(MediaFormat.KEY_DURATION).orDef()
                     onProgress((pcm.time / 1000).toInt(), (duration / 1000).toInt())
 
-                    onFrameArrive(pcm.bufferBytes, pcm.bufferSize)
+                    onFrameArrive(pcm.bufferBytes)
                 }
                 //播放完成
                 onStop()
@@ -79,6 +96,7 @@ class AudioTrackPlayer(private val config: RecordConfig) {
                 audioTrack = null
             } catch (ex: Exception) {
                 ex.printStackTrace()
+                Log.i("XIAN", "catch = " + ex.message.toString())
                 onError(ex.message.toString())
             } finally {
                 isPlayingMusic = false
@@ -94,11 +112,6 @@ class AudioTrackPlayer(private val config: RecordConfig) {
         }
     }
 
-    fun stopMusic() {
-        isPlayingMusic = false
-        onStop()
-    }
-
     fun resumeMusic() {
         if (isPlayingMusic) {
             isPause = false
@@ -107,20 +120,30 @@ class AudioTrackPlayer(private val config: RecordConfig) {
         }
     }
 
+    fun stopMusic() {
+        isPlayingMusic = false
+        onStop()
+    }
+
     fun release() {
         isPlayingMusic = false
         isPause = false
         audioDecoder?.release()
+        pcmBufferBytes.clear()
     }
 
     private fun onError(msg: String) {
         MainLooper.instance.runOnUiThread {
+            isPlayingMusic = false
+            isPause = false
             config.playerListener?.onError(msg)
         }
     }
 
     private fun onStop() {
         MainLooper.instance.runOnUiThread {
+            isPlayingMusic = false
+            isPause = false
             config.playerListener?.onStop()
         }
     }
@@ -142,36 +165,27 @@ class AudioTrackPlayer(private val config: RecordConfig) {
         }
     }
 
+    fun getVolume(): Float = volume
+
     private fun delayFrameArrive() {
         if (config.channelConfig == AudioFormat.CHANNEL_OUT_MONO) {
             //音乐实际开始会慢一点
             repeat(10) {
-                onFrameArrive(ByteArray(1), 0)
+                onFrameArrive(ByteArray(1))
             }
         } else {
             //30 的时候 外放 快于 合成
             repeat(8) {
-                onFrameArrive(ByteArray(1), 0)
+                onFrameArrive(ByteArray(1))
             }
         }
     }
 
-    private fun onFrameArrive(bytes: ByteArray, bufferSize: Int) {
-//        MainLooper.instance.runOnUiThread {
-            pcmBufferBytes = bytes
-            this.bufferSize = bufferSize
-//        }
-//        if (isPlayingMusic && isRecording) {
-//            pcmBuffers.add(bytes)
-//        }
+    private fun onFrameArrive(bytes: ByteArray) {
+        if (isPlayingMusic && isRecording) {
+            pcmBufferBytes.add(bytes)
+        }
     }
-
-//    fun getPcmBuffer(): ByteArray? {
-//        if (pcmBuffers.isEmpty()) {
-//            return null
-//        }
-//        return pcmBuffers.poll()
-//    }
 
     private fun initAudioTrack() {
         val bufferSize = AudioTrack.getMinBufferSize(config.sampleRate, config.channelConfig, config.audioFormat)

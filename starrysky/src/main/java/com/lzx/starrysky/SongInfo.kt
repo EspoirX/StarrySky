@@ -17,6 +17,7 @@ class SongInfo(
     var songCover: String = "",  //音乐封面
     var coverBitmap: Bitmap? = null,  //音乐封面
     var duration: Long = -1, //音乐长度
+    var decode: Boolean = false, //是否需要解码，如果要解码，最好用本地音频
     var headData: HashMap<String, String>? = hashMapOf() //header 信息
 ) : Parcelable, Cloneable {
 
@@ -48,6 +49,7 @@ class SongInfo(
         if (artist != other.artist) return false
         if (songCover != other.songCover) return false
         if (duration != other.duration) return false
+        if (decode != other.decode) return false
         if (headData != other.headData) return false
         if (objectValue != other.objectValue) return false
 
@@ -61,6 +63,7 @@ class SongInfo(
         result = 31 * result + artist.hashCode()
         result = 31 * result + songCover.hashCode()
         result = 31 * result + duration.hashCode()
+        result = 31 * result + decode.hashCode()
         result = 31 * result + (headData?.hashCode() ?: 0)
         result = 31 * result + objectValue.hashCode()
         return result

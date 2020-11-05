@@ -5,10 +5,10 @@ import android.util.Log
 import com.lzx.record.utils.BytesTransUtil
 
 class ReadMixTask(
-    rawData: ByteArray,//录制的人声音
-    private val wax: Float,//人声音增强
-    private val bgData: ByteArray?, //录制的背景音乐 可能没有
-    private val bgWax: Float //背景声音降低
+    rawData: ByteArray,              //录制的人声音
+    private val wax: Float,          //人声音增强
+    private val bgData: ByteArray?,  //录制的背景音乐 可能没有
+    private val bgWax: Float         //背景声音降低
 ) {
     private val rawData: ByteArray = rawData.clone()
 

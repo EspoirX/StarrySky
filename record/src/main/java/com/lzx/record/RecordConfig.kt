@@ -81,10 +81,52 @@ open class RecordConfig internal constructor(builder: Builder) {
     @get:JvmName("playerListener")
     internal var playerListener: PlayerListener? = builder.playerListener
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as RecordConfig
+        if (audioSource != other.audioSource) return false
+        if (sampleRate != other.sampleRate) return false
+        if (channelConfig != other.channelConfig) return false
+        if (audioFormat != other.audioFormat) return false
+        if (outPutFilePath != other.outPutFilePath) return false
+        if (outPutFileName != other.outPutFileName) return false
+        if (outPutFile != other.outPutFile) return false
+        if (isContinue != other.isContinue) return false
+        if (bgMusicUrl != other.bgMusicUrl) return false
+        if (headers != other.headers) return false
+        if (quality != other.quality) return false
+        if (bitRate != other.bitRate) return false
+        if (recordMaxTime != other.recordMaxTime) return false
+        if (wax != other.wax) return false
+        if (waveSpeed != other.waveSpeed) return false
+        if (bgMusicVolume != other.bgMusicVolume) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = audioSource.hashCode()
+        result = 31 * result + sampleRate.hashCode()
+        result = 31 * result + channelConfig.hashCode()
+        result = 31 * result + audioFormat.hashCode()
+        result = 31 * result + outPutFilePath.hashCode()
+        result = 31 * result + outPutFileName.hashCode()
+        result = 31 * result + outPutFile.hashCode()
+        result = 31 * result + isContinue.hashCode()
+        result = 31 * result + bgMusicUrl.hashCode()
+        result = 31 * result + (headers?.hashCode() ?: 0)
+        result = 31 * result + quality.hashCode()
+        result = 31 * result + bitRate.hashCode()
+        result = 31 * result + recordMaxTime.hashCode()
+        result = 31 * result + wax.hashCode()
+        result = 31 * result + waveSpeed.hashCode()
+        result = 31 * result + bgMusicVolume.hashCode()
+        return result
+    }
+
     constructor() : this(Builder())
 
     open fun newBuilder(): Builder = Builder(this)
-
 
     class Builder constructor() {
         // 音源

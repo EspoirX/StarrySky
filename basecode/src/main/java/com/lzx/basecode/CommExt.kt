@@ -14,6 +14,8 @@ import android.os.Build
 import android.os.Process
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.util.Locale
 
 fun Context.getResourceId(name: String, className: String): Int {
@@ -137,4 +139,24 @@ fun isMarshmallow(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 @RequiresApi(Build.VERSION_CODES.M)
 fun Activity.isGranted(permission: String): Boolean {
     return this.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+}
+
+fun Int?.orDef(default: Int = 0) = this ?: default
+fun Boolean?.orDef(default: Boolean = false) = this ?: default
+fun Float?.orDef(default: Float = 0f) = this ?: default
+fun Long?.orDef(default: Long = 0) = this ?: default
+
+fun InputStream.readAsBytes(): ByteArray? {
+    ByteArrayOutputStream().use { byteArrayOutputStream ->
+        val byteArray = ByteArray(2048)
+        while (true) {
+            val count = this.read(byteArray, 0, 2048)
+            if (count <= 0) {
+                break
+            } else {
+                byteArrayOutputStream.write(byteArray, 0, count)
+            }
+        }
+        return byteArrayOutputStream.toByteArray()
+    }
 }
