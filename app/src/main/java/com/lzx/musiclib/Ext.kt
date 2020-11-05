@@ -335,10 +335,6 @@ fun Fragment.addFragmentToActivity(fragmentManager: FragmentManager, frameId: In
     transaction.commit()
 }
 
-fun String.toSdcardPath(): String {
-    return Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + this
-}
-
 fun Context.getPhoneWidth(): Int {
     return this.resources.displayMetrics.widthPixels
 }

@@ -4,6 +4,7 @@ import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.os.AsyncTask
+import android.util.Log
 import java.nio.ByteBuffer
 import java.util.ArrayList
 
@@ -56,6 +57,9 @@ class AudioDecoder {
             return chunkPCMDataContainer.getOrNull(0)?.bufferSize.orDef()
         }
 
+    var bitRate: Int = 0
+    var sampleRate: Int = 0
+    var channelCount: Int = 0
 
     fun initMediaDecode(url: String, headers: HashMap<String, String>?) {
         try {
@@ -74,6 +78,9 @@ class AudioDecoder {
             for (i in 0..numTracks) {
                 mediaFormat = mediaExtractor?.getTrackFormat(i) // 获取音频格式信息
                 mime = mediaFormat?.getString(MediaFormat.KEY_MIME).orEmpty()  // 获取音频类型
+                bitRate = mediaFormat?.getInteger(MediaFormat.KEY_BIT_RATE).orDef()  // 获取比特率
+                sampleRate = mediaFormat?.getInteger(MediaFormat.KEY_SAMPLE_RATE).orDef()  // 获取采样率
+                channelCount = mediaFormat?.getInteger(MediaFormat.KEY_CHANNEL_COUNT).orDef()  // 获取频道数
                 if (mime.startsWith("audio/")) {
                     mediaExtractor?.selectTrack(i) // 选中音轨
                     break
@@ -100,16 +107,18 @@ class AudioDecoder {
     /**
      * 解码背景音乐，运行在子线程
      */
-    fun decodePcmInfo() {
+    fun decodePcmInfo(upperLimit: Int = 0) {
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
             isPCMExtractorEOS = false
             var sawInputEOS = false
             try {
                 while (bufferInfo != null && !isPCMExtractorEOS) {
                     //加入限制，防止垃圾手机卡顿，- - 防止歌曲太大内存不够用了
-//                    if (chunkPCMDataContainer.size > 600) {
-//                        continue
-//                    }
+                    if (upperLimit != 0) {
+                        if (chunkPCMDataContainer.size > upperLimit) {
+                            continue
+                        }
+                    }
                     if (!sawInputEOS) {
                         // 获取输入缓存器,-1代表一直等待，0表示不等待 建议-1,避免丢帧
                         val inputIndex = mediaCodec?.dequeueInputBuffer(-1).orDef(-1)
@@ -209,4 +218,13 @@ class AudioDecoder {
         var bufferSize: Int,
         var time: Long//当前时间
     )
+
+    interface OnDecodeListener {
+        fun getBufferSize(): Int
+        fun getPcmBufferBytes(): ByteArray?
+    }
+
+    interface OnDecodeCallback {
+        fun onDecodeStart(decoder: AudioDecoder)
+    }
 }

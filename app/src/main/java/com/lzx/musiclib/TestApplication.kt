@@ -26,6 +26,7 @@ import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.basecode.MainLooper
+import com.lzx.basecode.toSdcardPath
 import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
@@ -119,7 +120,7 @@ open class TestApplication : Application() {
      * 权限申请拦截器
      */
     class PermissionInterceptor internal constructor(private val mContext: Context) : StarrySkyInterceptor {
-        override fun process(songInfo: SongInfo?, mainLooper: com.lzx.basecode.MainLooper, callback: InterceptorCallback) {
+        override fun process(songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback) {
             if (songInfo == null) {
                 callback.onInterrupt(RuntimeException("SongInfo is null"))
                 return

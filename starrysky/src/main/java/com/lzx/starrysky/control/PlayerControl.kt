@@ -2,6 +2,8 @@ package com.lzx.starrysky.control
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import com.lzx.basecode.AudioDecoder
+import com.lzx.basecode.toSdcardPath
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.playback.FocusInfo
@@ -351,4 +353,20 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
     fun focusStateChange(): MutableLiveData<FocusInfo>
 
     fun playbackState(): MutableLiveData<PlaybackStage>
+
+    /**
+     * 解码音频
+     *
+     * needDownload 是否要先下载再解码（效果会好点）
+     * headers 如果是网络音频，可以设置 headers
+     * filePath 下载时存储的文件夹
+     * fileName 下载时存储的文件名
+     */
+    fun decodeMusic(
+        musicUrl: String,
+        needDownload: Boolean = false,
+        headers: HashMap<String, String>? = null,
+        filePath: String? = "StarrySky/download".toSdcardPath(),
+        fileName: String? = System.currentTimeMillis().toString(),
+        callback: AudioDecoder.OnDecodeCallback)
 }

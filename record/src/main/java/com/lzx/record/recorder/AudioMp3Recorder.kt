@@ -11,7 +11,6 @@ import com.lzx.basecode.MainLooper
 import com.lzx.basecode.orDef
 import com.lzx.record.LameManager
 import com.lzx.record.RecordConfig
-import com.lzx.record.RecordState
 import com.lzx.record.StarrySkyRecord
 import com.lzx.record.player.AudioTrackPlayer
 import com.lzx.record.utils.BytesTransUtil
@@ -26,7 +25,7 @@ import kotlin.math.sqrt
  *
  * https://xmaihh.github.io/2019/07/30/Android录音/#边录边播（AudioRecord-AudioTrack）
  */
-class AudioMp3Recorder() : IRecorder {
+class AudioMp3Recorder : IRecorder {
     val mp3 = "mp3"
     val aac = "aac"
     val wav = "wav"
@@ -41,6 +40,7 @@ class AudioMp3Recorder() : IRecorder {
     private var acousticEchoCanceler: AcousticEchoCanceler? = null
     private var automaticGainControl: AutomaticGainControl? = null
 
+    private var decodeListener: AudioDecoder.OnDecodeListener? = null
     private var config: RecordConfig? = null
 
     // 获取最小缓存区大小
@@ -137,7 +137,11 @@ class AudioMp3Recorder() : IRecorder {
                 while (isRecording) {
                     var buffer: ByteArray? = null
                     val readSize = if (hasBgMusic) {
-                        val samplesPerFrame = player?.getBufferSize().orDef(AudioDecoder.BUFFER_SIZE)
+                        val samplesPerFrame = if (decodeListener != null) {
+                            decodeListener?.getBufferSize().orDef(AudioDecoder.BUFFER_SIZE)
+                        } else {
+                            player?.getBufferSize().orDef(AudioDecoder.BUFFER_SIZE)
+                        }
                         buffer = ByteArray(samplesPerFrame)
                         audioRecord?.read(buffer, 0, samplesPerFrame).orDef()
                     } else {
@@ -162,7 +166,11 @@ class AudioMp3Recorder() : IRecorder {
 
                         if (hasBgMusic) {
                             if (buffer != null) {
-                                val bgData = player?.getPcmBufferBytes()
+                                val bgData = if (decodeListener != null) {
+                                    decodeListener?.getPcmBufferBytes()
+                                } else {
+                                    player?.getPcmBufferBytes()
+                                }
                                 val readMixTask = ReadMixTask(buffer, config?.wax.orDef(), bgData, StarrySkyRecord.currVolumeF)
                                 val mixBuffer = readMixTask.getData()
                                 val encodedSize: Int
@@ -202,6 +210,7 @@ class AudioMp3Recorder() : IRecorder {
                 audioRecord?.release()
                 audioRecord = null
                 LameManager.close()
+                autoStop()
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 onError(ex.message.toString())
@@ -418,4 +427,7 @@ class AudioMp3Recorder() : IRecorder {
      * 获取录音状态
      */
     override fun getRecordState(): Int = state
+    override fun setOnDecodeListener(listener: AudioDecoder.OnDecodeListener) {
+        decodeListener = listener
+    }
 }

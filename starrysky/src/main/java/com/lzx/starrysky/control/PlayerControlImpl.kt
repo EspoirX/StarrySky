@@ -1,9 +1,16 @@
 package com.lzx.starrysky.control
 
 import android.content.Context
+import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.lifecycle.MutableLiveData
+import com.lzx.basecode.AudioDecoder
+import com.lzx.basecode.data
+import com.lzx.basecode.duration
+import com.lzx.basecode.md5
+import com.lzx.basecode.readAsBytes
+import com.lzx.basecode.title
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.isRefrain
@@ -14,10 +21,10 @@ import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.utils.StarrySkyConstant
 import com.lzx.starrysky.utils.StarrySkyUtils
-import com.lzx.basecode.data
-import com.lzx.basecode.duration
-import com.lzx.basecode.md5
-import com.lzx.basecode.title
+import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 class PlayerControlImpl(
     private val provider: MediaSourceProvider,
@@ -27,6 +34,7 @@ class PlayerControlImpl(
     private val focusChangeState = MutableLiveData<FocusInfo>()
     private val playbackState = MutableLiveData<PlaybackStage>()
     private val playerEventListener = hashMapOf<String, OnPlayerEventListener>()
+    private val audioDecoder = AudioDecoder()
 
     override fun playMusicById(songId: String) {
         if (provider.hasSongInfo(songId)) {
@@ -283,6 +291,58 @@ class PlayerControlImpl(
     override fun focusStateChange(): MutableLiveData<FocusInfo> = focusChangeState
 
     override fun playbackState(): MutableLiveData<PlaybackStage> = playbackState
+
+    override fun decodeMusic(musicUrl: String,
+                             needDownload: Boolean,
+                             headers: HashMap<String, String>?,
+                             filePath: String?,
+                             fileName: String?,
+                             callback: AudioDecoder.OnDecodeCallback) {
+        if (musicUrl.isEmpty()) return
+        AsyncTask.THREAD_POOL_EXECUTOR.execute {
+            try {
+                if (needDownload) {
+                    val f = File(filePath + fileName)
+                    if (f.isFile && f.exists()) {
+                        decodeMusicImpl(f.absolutePath, headers, callback)
+                        return@execute
+                    }
+                    val url = URL(musicUrl)
+                    (url.openConnection() as? HttpURLConnection)?.let { http ->
+                        http.connectTimeout = 20 * 1000
+                        http.requestMethod = "GET"
+                        http.connect()
+                        http.inputStream.use { inputStream ->
+                            inputStream.readAsBytes()?.let { bytes ->
+                                val fileDir = File(filePath).apply {
+                                    this.takeIf { !it.exists() }?.mkdirs()
+                                }
+                                val file = File(fileDir.absolutePath + fileName).apply {
+                                    this.takeIf { !it.exists() }?.createNewFile()
+                                }
+                                FileOutputStream(file).use {
+                                    it.write(bytes).also {
+                                        decodeMusicImpl(file.absolutePath, headers, callback)
+                                        http.disconnect()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    decodeMusicImpl(musicUrl, headers, callback)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
+    }
+
+    private fun decodeMusicImpl(url: String, headers: HashMap<String, String>?, callback: AudioDecoder.OnDecodeCallback) {
+        audioDecoder.initMediaDecode(url, headers)
+        audioDecoder.decodePcmInfo(600)
+        callback.onDecodeStart(audioDecoder)
+    }
 
     override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
         playbackState.postValue(playbackStage)

@@ -11,8 +11,7 @@ class InterceptorService(private val interceptors: MutableList<StarrySkyIntercep
     fun doInterceptions(songInfo: SongInfo?, callback: InterceptorCallback?) {
         if (interceptors.isNotEmpty()) {
             AsyncTask.THREAD_POOL_EXECUTOR.execute {
-                val interceptorCounter =
-                    CancelableCountDownLatch(interceptors.size)
+                val interceptorCounter = CancelableCountDownLatch(interceptors.size)
                 try {
                     doImpl(0, interceptorCounter, songInfo)
                     interceptorCounter.await(60L, TimeUnit.SECONDS)

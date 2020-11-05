@@ -11,6 +11,7 @@ import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Environment
 import android.os.Process
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -159,4 +160,8 @@ fun InputStream.readAsBytes(): ByteArray? {
         }
         return byteArrayOutputStream.toByteArray()
     }
+}
+
+fun String.toSdcardPath(): String {
+    return Environment.getExternalStorageDirectory().absolutePath.toString() + "/" + this
 }
