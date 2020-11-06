@@ -17,7 +17,7 @@ import androidx.core.app.NotificationCompat
 import com.lzx.basecode.getPendingIntent
 import com.lzx.basecode.getTargetClass
 import com.lzx.starrysky.R
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_NEXT
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_PAUSE

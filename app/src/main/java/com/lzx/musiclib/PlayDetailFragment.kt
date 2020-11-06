@@ -19,9 +19,8 @@ import com.lzx.musiclib.weight.dialog.getCustomView
 import com.lzx.musiclib.weight.dialog.lifecycleOwner
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
-import com.lzx.starrysky.isRefrain
+import com.lzx.basecode.isRefrain
 import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.basecode.TimerTaskManager
 import kotlinx.android.synthetic.main.fragment_play_detail.btnAccompaniment
 import kotlinx.android.synthetic.main.fragment_play_detail.btnNextSong
 import kotlinx.android.synthetic.main.fragment_play_detail.btnPlayMode

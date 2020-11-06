@@ -6,7 +6,7 @@ import android.os.Handler
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.starrysky.control.PlayerControl
 
 /**

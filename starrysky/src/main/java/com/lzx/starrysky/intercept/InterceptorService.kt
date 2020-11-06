@@ -1,7 +1,7 @@
 package com.lzx.starrysky.intercept
 
 import android.os.AsyncTask
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.basecode.MainLooper
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit

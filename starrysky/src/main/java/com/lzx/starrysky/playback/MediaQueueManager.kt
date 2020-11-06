@@ -2,7 +2,7 @@ package com.lzx.starrysky.playback
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.imageloader.ImageLoader
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack

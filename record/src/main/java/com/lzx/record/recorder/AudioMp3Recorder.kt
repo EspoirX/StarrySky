@@ -6,6 +6,7 @@ import android.media.audiofx.AcousticEchoCanceler
 import android.media.audiofx.AutomaticGainControl
 import android.media.audiofx.NoiseSuppressor
 import android.os.AsyncTask
+import android.util.Log
 import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.MainLooper
 import com.lzx.basecode.orDef
@@ -58,10 +59,12 @@ class AudioMp3Recorder : IRecorder {
     private var hasBgMusic = false
     private var bgLevel: Float = 0.30f //背景音乐
 
-    override fun setUpRecordConfig(config: RecordConfig) {
-        if (this.config == null || this.config?.equals(config) == false) {
-            this.config = config
+    override fun setUpRecordConfig(recordConfig: RecordConfig) {
+        if (this.config == null || this.config?.equals(recordConfig) == false) {
+            this.config = recordConfig
         }
+        Log.i("XIAN", "bitRate = " + config?.bitRate)
+        Log.i("XIAN", "sampleRate = " + config?.sampleRate)
         initAudioTrackPlayer()
     }
 

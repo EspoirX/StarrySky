@@ -4,7 +4,7 @@ import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
-import com.lzx.starrysky.playback.Playback
+import com.lzx.basecode.Playback
 
 class StarrySkyRegister {
     var playback: Playback? = null

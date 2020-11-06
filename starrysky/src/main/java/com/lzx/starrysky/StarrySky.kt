@@ -8,11 +8,11 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
+import com.lzx.basecode.FocusInfo
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
-import com.lzx.starrysky.playback.FocusInfo
-import com.lzx.starrysky.playback.Playback
+import com.lzx.basecode.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.playback.SoundPoolPlayback

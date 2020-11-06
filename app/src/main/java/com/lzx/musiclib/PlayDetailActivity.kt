@@ -1,6 +1,5 @@
 package com.lzx.musiclib
 
-import android.R.attr.path
 import android.content.res.AssetFileDescriptor
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -9,7 +8,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.Observer
 import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.isRefrain
+import com.lzx.basecode.isRefrain
 import com.lzx.starrysky.playback.PlaybackStage
 import kotlinx.android.synthetic.main.activity_play_detail.songCover
 import kotlinx.android.synthetic.main.activity_play_detail.viewPager

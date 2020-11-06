@@ -130,7 +130,7 @@ abstract class SimpleRecorderCallback : RecorderCallback {
  * 录音实现接口
  */
 interface IRecorder {
-    fun setUpRecordConfig(config: RecordConfig)
+    fun setUpRecordConfig(recordConfig: RecordConfig)
     fun getAudioTrackPlayer(): AudioTrackPlayer?
     fun startRecording()
     fun pauseRecording()

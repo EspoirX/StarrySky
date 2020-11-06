@@ -11,9 +11,9 @@ import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.musiclib.weight.SpectrumDrawView
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.isRefrain
+import com.lzx.basecode.isRefrain
 import com.lzx.starrysky.playback.PlaybackStage
 import kotlinx.android.synthetic.main.fragment_recomment.recycleView
 

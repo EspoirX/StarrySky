@@ -4,7 +4,6 @@ import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.os.AsyncTask
-import android.util.Log
 import java.nio.ByteBuffer
 import java.util.ArrayList
 
@@ -60,6 +59,7 @@ class AudioDecoder {
     var bitRate: Int = 0
     var sampleRate: Int = 0
     var channelCount: Int = 0
+    var duration: Long = 0
 
     fun initMediaDecode(url: String, headers: HashMap<String, String>?) {
         try {
@@ -81,6 +81,7 @@ class AudioDecoder {
                 bitRate = mediaFormat?.getInteger(MediaFormat.KEY_BIT_RATE).orDef()  // 获取比特率
                 sampleRate = mediaFormat?.getInteger(MediaFormat.KEY_SAMPLE_RATE).orDef()  // 获取采样率
                 channelCount = mediaFormat?.getInteger(MediaFormat.KEY_CHANNEL_COUNT).orDef()  // 获取频道数
+                duration = mediaFormat?.getLong(MediaFormat.KEY_DURATION).orDef() //时长
                 if (mime.startsWith("audio/")) {
                     mediaExtractor?.selectTrack(i) // 选中音轨
                     break
@@ -226,5 +227,6 @@ class AudioDecoder {
 
     interface OnDecodeCallback {
         fun onDecodeStart(decoder: AudioDecoder)
+        fun onDecodeFail()
     }
 }

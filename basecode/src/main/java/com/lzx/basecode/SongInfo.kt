@@ -1,4 +1,4 @@
-package com.lzx.starrysky
+package com.lzx.basecode
 
 import android.graphics.Bitmap
 import android.os.Parcelable

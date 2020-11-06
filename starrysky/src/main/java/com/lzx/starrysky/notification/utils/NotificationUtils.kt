@@ -10,7 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import com.lzx.starrysky.R
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.INotification.Companion.CHANNEL_ID
 import com.lzx.starrysky.notification.NotificationConfig

@@ -12,7 +12,7 @@ import com.lzx.musiclib.getArray
 import com.lzx.musiclib.getObj
 import com.lzx.musiclib.http.DoubanApi
 import com.lzx.musiclib.http.RetrofitClient
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject

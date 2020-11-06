@@ -2,14 +2,16 @@ package com.lzx.starrysky.playback
 
 import android.content.Context
 import android.os.Bundle
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.FocusInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.InterceptorService
-import com.lzx.starrysky.isRefrain
+import com.lzx.basecode.isRefrain
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.service.MusicService
 import com.lzx.basecode.MainLooper
+import com.lzx.basecode.Playback
 import com.lzx.starrysky.utils.StarrySkyUtils
 
 class PlaybackManager(

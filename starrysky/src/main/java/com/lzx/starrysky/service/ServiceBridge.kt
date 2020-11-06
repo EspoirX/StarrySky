@@ -2,6 +2,7 @@ package com.lzx.starrysky.service
 
 import android.content.Context
 import android.os.Binder
+import com.lzx.basecode.FocusInfo
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.control.PlayerControlImpl
 import com.lzx.starrysky.imageloader.DefaultImageLoader
@@ -11,11 +12,10 @@ import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
 import com.lzx.starrysky.playback.ExoPlayback
-import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.MediaQueueManager
 import com.lzx.starrysky.playback.MediaSessionManager
 import com.lzx.starrysky.playback.MediaSourceProvider
-import com.lzx.starrysky.playback.Playback
+import com.lzx.basecode.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.playback.SoundPoolPlayback

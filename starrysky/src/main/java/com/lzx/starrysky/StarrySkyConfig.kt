@@ -1,12 +1,12 @@
 package com.lzx.starrysky
 
+import com.lzx.basecode.FocusInfo
 import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.StarrySkyNotificationManager
-import com.lzx.starrysky.playback.FocusInfo
-import com.lzx.starrysky.playback.Playback
+import com.lzx.basecode.Playback
 
 /**
  * StarrySky 初始化配置类

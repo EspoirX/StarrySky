@@ -1,6 +1,6 @@
 package com.lzx.starrysky.playback
 
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.basecode.isIndexPlayable
 
 /**

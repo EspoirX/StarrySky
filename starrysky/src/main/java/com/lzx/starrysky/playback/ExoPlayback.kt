@@ -27,16 +27,18 @@ import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.util.Util
 import com.lzx.basecode.AudioDecoder
+import com.lzx.basecode.FocusInfo
+import com.lzx.basecode.Playback
 import com.lzx.basecode.isFLAC
 import com.lzx.basecode.isRTMP
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.cache.ICache
-import com.lzx.starrysky.isRefrain
-import com.lzx.starrysky.playback.Playback.Companion.STATE_BUFFERING
-import com.lzx.starrysky.playback.Playback.Companion.STATE_IDLE
-import com.lzx.starrysky.playback.Playback.Companion.STATE_PAUSED
-import com.lzx.starrysky.playback.Playback.Companion.STATE_PLAYING
+import com.lzx.basecode.isRefrain
+import com.lzx.basecode.Playback.Companion.STATE_BUFFERING
+import com.lzx.basecode.Playback.Companion.STATE_IDLE
+import com.lzx.basecode.Playback.Companion.STATE_PAUSED
+import com.lzx.basecode.Playback.Companion.STATE_PLAYING
 import com.lzx.starrysky.utils.StarrySkyUtils
 
 /**

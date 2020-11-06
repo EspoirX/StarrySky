@@ -19,7 +19,7 @@ import com.lzx.basecode.getPendingIntent
 import com.lzx.basecode.getResourceId
 import com.lzx.basecode.getTargetClass
 import com.lzx.starrysky.R
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.starrysky.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_CLOSE
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_DOWNLOAD

@@ -11,7 +11,7 @@ import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.loadImage
 import com.lzx.musiclib.navigationTo
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.basecode.md5
 import kotlinx.android.synthetic.main.fragment_recomment.recycleView

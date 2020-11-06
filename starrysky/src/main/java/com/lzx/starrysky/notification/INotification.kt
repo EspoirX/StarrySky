@@ -1,7 +1,7 @@
 package com.lzx.starrysky.notification
 
 import android.os.Bundle
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 
 interface INotification {
 

@@ -1,6 +1,6 @@
 package com.lzx.musiclib.bean
 
-import com.lzx.starrysky.SongInfo
+import com.lzx.basecode.SongInfo
 
 class HotSongInfo {
     var title: String? = null
