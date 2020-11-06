@@ -9,6 +9,7 @@ import android.os.AsyncTask
 import android.util.Log
 import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.MainLooper
+import com.lzx.basecode.Playback
 import com.lzx.basecode.orDef
 import com.lzx.record.LameManager
 import com.lzx.record.RecordConfig
@@ -55,7 +56,7 @@ class AudioMp3Recorder : IRecorder {
     private var state = RecordState.STOPPED   //当前状态
     private var recordVolume: Int = 0 //录制音量
     private var duration = 0L //录制时间
-    private var player: AudioTrackPlayer? = null //播放器
+    private var player: Playback? = null //播放器
     private var hasBgMusic = false
     private var bgLevel: Float = 0.30f //背景音乐
 
@@ -73,10 +74,10 @@ class AudioMp3Recorder : IRecorder {
         if (player == null) {
             player = AudioTrackPlayer(config!!)
         }
-        hasBgMusic = !config?.bgMusicUrl.isNullOrEmpty()
+        hasBgMusic = !player?.currPlayInfo?.songUrl.isNullOrEmpty()
     }
 
-    override fun getAudioTrackPlayer(): AudioTrackPlayer? = player
+    override fun getAudioTrackPlayer(): Playback? = player
 
     /**
      * 开始录音
@@ -229,7 +230,7 @@ class AudioMp3Recorder : IRecorder {
             state = RecordState.RECORDING
             duration = 0
             MainLooper.instance.runOnUiThread {
-                player?.isRecording = true
+                player?.setRecording(true)
                 config?.recordCallback?.onStart()
             }
         }
@@ -243,7 +244,7 @@ class AudioMp3Recorder : IRecorder {
             isPause = true
             state = RecordState.PAUSED
             MainLooper.instance.runOnUiThread {
-                player?.isRecording = false
+                player?.setRecording(false)
                 config?.recordCallback?.onPause()
             }
         }
@@ -258,7 +259,7 @@ class AudioMp3Recorder : IRecorder {
             isRecording = false
             state = RecordState.STOPPED
             MainLooper.instance.runOnUiThread {
-                player?.isRecording = false
+                player?.setRecording(false)
                 config?.recordCallback?.onSuccess(recordFile, duration)
             }
         }
@@ -272,7 +273,7 @@ class AudioMp3Recorder : IRecorder {
             isPause = false
             state = RecordState.RECORDING
             MainLooper.instance.runOnUiThread {
-                player?.isRecording = true
+                player?.setRecording(true)
                 config?.recordCallback?.onResume()
             }
         }
@@ -282,7 +283,7 @@ class AudioMp3Recorder : IRecorder {
      *  重置
      */
     override fun onReset() {
-        player?.isRecording = false
+        player?.setRecording(false)
         isRecording = false
         isPause = false
         state = RecordState.STOPPED
@@ -329,7 +330,7 @@ class AudioMp3Recorder : IRecorder {
         isRecording = false
         state = RecordState.STOPPED
         MainLooper.instance.runOnUiThread {
-            player?.isRecording = false
+            player?.setRecording(false)
             config?.recordCallback?.onError(msg)
         }
     }
@@ -343,7 +344,7 @@ class AudioMp3Recorder : IRecorder {
             isRecording = false
             state = RecordState.STOPPED
             MainLooper.instance.runOnUiThread({
-                player?.isRecording = false
+                player?.setRecording(false)
                 config?.recordCallback?.onSuccess(recordFile, duration)
             }, config?.waveSpeed.orDef().toLong())
         }

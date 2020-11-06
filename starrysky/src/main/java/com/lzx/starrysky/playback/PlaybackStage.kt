@@ -1,5 +1,6 @@
 package com.lzx.starrysky.playback
 
+import com.lzx.basecode.Playback
 import com.lzx.basecode.SongInfo
 
 class PlaybackStage {
@@ -17,3 +18,14 @@ class PlaybackStage {
     var stage: String = IDEA
 }
 
+fun Int.changePlaybackState(): String {
+    return when (this) {
+        Playback.STATE_IDLE -> PlaybackStage.IDEA
+        Playback.STATE_BUFFERING -> PlaybackStage.BUFFERING
+        Playback.STATE_PLAYING -> PlaybackStage.PLAYING
+        Playback.STATE_PAUSED -> PlaybackStage.PAUSE
+        Playback.STATE_STOPPED -> PlaybackStage.STOP
+        Playback.STATE_ERROR -> PlaybackStage.ERROR
+        else -> PlaybackStage.IDEA
+    }
+}

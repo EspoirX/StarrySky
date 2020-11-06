@@ -2,6 +2,7 @@ package com.lzx.musiclib.tab
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.media.AudioFormat
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,9 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.lzx.basecode.AudioDecoder
+import com.lzx.basecode.FocusInfo
+import com.lzx.basecode.Playback
+import com.lzx.basecode.SongInfo
 import com.lzx.basecode.orDef
 import com.lzx.basecode.showToast
 import com.lzx.basecode.toSdcardPath
@@ -23,8 +27,7 @@ import com.lzx.musiclib.weight.dialog.lifecycleOwner
 import com.lzx.record.StarrySkyRecord
 import com.lzx.record.recorder.RecordState
 import com.lzx.record.recorder.SimpleRecorderCallback
-import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.playback.changePlaybackState
 import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
@@ -57,7 +60,7 @@ class RecordFragment : BaseFragment() {
         viewModel?.downloadLiveData?.observe(this, {
             activity?.showToast("音频处理成功")
             setUpBtnEnabled(true)
-            StarrySkyRecord.with().setBgMusicUrl(it).player()?.playMusic()
+            StarrySkyRecord.with().playBgMusic(it)
         })
 
         btnRecord?.setOnClickListener {
@@ -115,11 +118,23 @@ class RecordFragment : BaseFragment() {
 //            songInfo.headData?.put("TAG", "Record")
 //            StarrySky.with().playMusicByInfo(songInfo)
             StarrySkyRecord.with()
-                .setBgMusicUrl(url)
                 .isNeedDownloadBgMusic(true)
                 .setBgMusicFileName("周杰伦-告白气球.mp3")
-                .player()?.playMusic()
+                .playBgMusic(url)
         }
+
+        StarrySkyRecord.with().getBgPlayer()?.setCallback(object : Playback.Callback {
+            override fun onPlayerStateChanged(songInfo: SongInfo?, playWhenReady: Boolean, playbackState: Int) {
+                activity?.showToast("播放：" + playbackState.changePlaybackState())
+            }
+
+            override fun onPlaybackError(songInfo: SongInfo?, error: String) {
+                activity?.showToast("播放失败：$error")
+            }
+
+            override fun onFocusStateChange(info: FocusInfo) {
+            }
+        })
 
 //        StarrySky.with().playbackState().observe(this, {
 //            if (it.songInfo?.headData?.get("TAG") == "Record") {
@@ -178,12 +193,12 @@ class RecordFragment : BaseFragment() {
                 seekBar.max = 100
                 title.text = "音量调节"
 
-                val volume = StarrySkyRecord.with().player()?.getVolume().orDef()
+                val volume = StarrySkyRecord.with().getBgPlayer()?.getVolume().orDef()
                 seekBar.progress = (volume * 100f).toInt()
                 desc.text = "当前音量：" + seekBar.progress + " %"
                 seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                        StarrySkyRecord.with().player()?.setVolume(progress.toFloat() / 100f)
+                        StarrySkyRecord.with().getBgPlayer()?.setVolume(progress.toFloat() / 100f)
                         desc.text = "当前音量：$progress %"
                     }
 

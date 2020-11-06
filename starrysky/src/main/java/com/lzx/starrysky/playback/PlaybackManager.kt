@@ -3,15 +3,15 @@ package com.lzx.starrysky.playback
 import android.content.Context
 import android.os.Bundle
 import com.lzx.basecode.FocusInfo
+import com.lzx.basecode.MainLooper
+import com.lzx.basecode.Playback
 import com.lzx.basecode.SongInfo
+import com.lzx.basecode.isRefrain
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.InterceptorService
-import com.lzx.basecode.isRefrain
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.service.MusicService
-import com.lzx.basecode.MainLooper
-import com.lzx.basecode.Playback
 import com.lzx.starrysky.utils.StarrySkyUtils
 
 class PlaybackManager(
@@ -318,18 +318,6 @@ class PlaybackManager(
     interface PlaybackServiceCallback {
         fun onPlaybackStateUpdated(playbackStage: PlaybackStage)
         fun onFocusStateChange(info: FocusInfo)
-    }
-
-    private fun Int.changePlaybackState(): String {
-        return when (this) {
-            Playback.STATE_IDLE -> PlaybackStage.IDEA
-            Playback.STATE_BUFFERING -> PlaybackStage.BUFFERING
-            Playback.STATE_PLAYING -> PlaybackStage.PLAYING
-            Playback.STATE_PAUSED -> PlaybackStage.PAUSE
-            Playback.STATE_STOPPED -> PlaybackStage.STOP
-            Playback.STATE_ERROR -> PlaybackStage.ERROR
-            else -> PlaybackStage.IDEA
-        }
     }
 
 

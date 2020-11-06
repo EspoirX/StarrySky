@@ -1,7 +1,6 @@
 package com.lzx.basecode
 
 
-
 /**
  * 播放器接口，如果要实现其他播放器，实现该接口即可
  */
@@ -54,7 +53,9 @@ interface Playback {
     /**
      * 当前音量
      */
-    var volume: Float
+    fun setVolume(volume: Float)
+
+    fun getVolume(): Float
 
     /**
      * 当前播放的 songInfo
@@ -107,6 +108,12 @@ interface Playback {
      * 获取速度
      */
     fun getPlaybackSpeed(): Float
+
+    fun getBufferSize(): Int
+
+    fun getPcmBufferBytes(): ByteArray?
+
+    fun setRecording(isRecording: Boolean)
 
     interface Callback {
         /**

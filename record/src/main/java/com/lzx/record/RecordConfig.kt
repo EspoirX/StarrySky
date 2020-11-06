@@ -2,11 +2,10 @@ package com.lzx.record
 
 import android.media.AudioFormat
 import android.media.MediaRecorder
-import com.lzx.basecode.getFileNameFromUrl
+import com.lzx.basecode.Playback
+import com.lzx.basecode.SongInfo
 import com.lzx.basecode.toSdcardPath
-import com.lzx.record.player.AudioTrackPlayer
 import com.lzx.record.recorder.IRecorder
-import com.lzx.record.recorder.PlayerListener
 import com.lzx.record.recorder.RecorderCallback
 import java.io.File
 
@@ -36,7 +35,7 @@ open class RecordConfig {
     var isContinue: Boolean = false
 
     //背景音乐url
-    var bgMusicUrl: String? = null
+//    var bgMusicUrl: String? = null
 
     //是否需要下载背景音乐
     var needDownloadBgMusic: Boolean = false
@@ -45,8 +44,7 @@ open class RecordConfig {
     var bgMusicFilePath: String = "StarrySky/download/".toSdcardPath()
 
     //背景音乐文件名
-    var bgMusicFileName: String = bgMusicUrl?.getFileNameFromUrl()
-        ?: System.currentTimeMillis().toString()
+    var bgMusicFileName: String = System.currentTimeMillis().toString()
 
     //如果是网络音乐，可以指定 headers
     var headers: HashMap<String, String>? = null
@@ -73,7 +71,7 @@ open class RecordConfig {
     var recordCallback: RecorderCallback? = null
 
     //播放器回调
-    var playerListener: PlayerListener? = null
+//    var playerListener: PlayerListener? = null
 
     fun reset() {
         audioSource = MediaRecorder.AudioSource.MIC
@@ -84,7 +82,7 @@ open class RecordConfig {
         outPutFileName = null
         outPutFile = null
         isContinue = false
-        bgMusicUrl = null
+//        bgMusicUrl = null
         headers = null
         quality = 3
         bitRate = 64
@@ -93,7 +91,7 @@ open class RecordConfig {
         waveSpeed = 300
         bgMusicVolume = 0F
         recordCallback = null
-        playerListener = null
+//        playerListener = null
     }
 
     fun setAudioSource(source: Int) = apply { this.audioSource = source }
@@ -112,9 +110,9 @@ open class RecordConfig {
 
     fun setRecordCallback(callback: RecorderCallback?) = apply { this.recordCallback = callback }
 
-    fun setPlayerListener(listener: PlayerListener?) = apply { this.playerListener = listener }
+//    fun setPlayerListener(listener: PlayerListener?) = apply { this.playerListener = listener }
 
-    fun setBgMusicUrl(url: String) = apply { bgMusicUrl = url }
+//    fun setBgMusicUrl(url: String) = apply { bgMusicUrl = url }
 
     fun isNeedDownloadBgMusic(isDownload: Boolean) = apply { needDownloadBgMusic = isDownload }
 
@@ -146,9 +144,14 @@ open class RecordConfig {
         return StarrySkyRecord.recorder
     }
 
-    fun player(): AudioTrackPlayer? {
+    fun getBgPlayer(): Playback? {
         StarrySkyRecord.recorder?.setUpRecordConfig(this)
         return StarrySkyRecord.recorder?.getAudioTrackPlayer()
+    }
+
+    fun playBgMusic(url: String) {
+        StarrySkyRecord.recorder?.setUpRecordConfig(this)
+        StarrySkyRecord.recorder?.getAudioTrackPlayer()?.play(SongInfo(songUrl = url), true)
     }
 
 }

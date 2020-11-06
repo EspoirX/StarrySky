@@ -29,17 +29,18 @@ import com.google.android.exoplayer2.util.Util
 import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.FocusInfo
 import com.lzx.basecode.Playback
-import com.lzx.basecode.isFLAC
-import com.lzx.basecode.isRTMP
-import com.lzx.basecode.SongInfo
-import com.lzx.starrysky.cache.ExoCache
-import com.lzx.starrysky.cache.ICache
-import com.lzx.basecode.isRefrain
 import com.lzx.basecode.Playback.Companion.STATE_BUFFERING
 import com.lzx.basecode.Playback.Companion.STATE_IDLE
 import com.lzx.basecode.Playback.Companion.STATE_PAUSED
 import com.lzx.basecode.Playback.Companion.STATE_PLAYING
+import com.lzx.basecode.SongInfo
+import com.lzx.basecode.isFLAC
+import com.lzx.basecode.isRTMP
+import com.lzx.basecode.isRefrain
+import com.lzx.starrysky.cache.ExoCache
+import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.utils.StarrySkyUtils
+import java.util.concurrent.LinkedBlockingDeque
 
 /**
  * isAutoManagerFocus 是否让播放器自动管理焦点
@@ -69,6 +70,9 @@ class ExoPlayback(val context: Context,
 
     //音频解码器
     private var audioDecoder = AudioDecoder()
+    private var isRecording = false
+    private val pcmBufferBytes = LinkedBlockingDeque<ByteArray>()
+
 
     init {
         focusManager.listener = this
@@ -108,11 +112,11 @@ class ExoPlayback(val context: Context,
 
     override var currentMediaId: String = ""
 
-    override var volume: Float
-        get() = player?.volume ?: -1f
-        set(value) {
-            player?.volume = value
-        }
+    override fun setVolume(volume: Float) {
+        player?.volume = volume
+    }
+
+    override fun getVolume(): Float = player?.volume ?: -1f
 
     override val currPlayInfo: SongInfo?
         get() = currSongInfo
@@ -389,6 +393,18 @@ class ExoPlayback(val context: Context,
 
     override fun getPlaybackSpeed(): Float {
         return player?.playbackParameters?.speed ?: 1.0f
+    }
+
+    override fun getBufferSize(): Int {
+        return 0
+    }
+
+    override fun getPcmBufferBytes(): ByteArray? {
+        return null
+    }
+
+    override fun setRecording(isRecording: Boolean) {
+        this.isRecording = isRecording
     }
 
     override fun setCallback(callback: Playback.Callback) {

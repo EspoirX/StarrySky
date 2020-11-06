@@ -97,10 +97,10 @@ class PlayerControlImpl(
         if (volume > 1) {
             volume = 1f
         }
-        playbackManager.getRefrainPlayback()?.volume = volume
+        playbackManager.getRefrainPlayback()?.setVolume(volume)
     }
 
-    override fun getRefrainVolume(): Float = playbackManager.getRefrainPlayback()?.volume ?: -0f
+    override fun getRefrainVolume(): Float = playbackManager.getRefrainPlayback()?.getVolume() ?: -0f
 
     override fun getRefrainInfo(): SongInfo? = provider.refrain
 
@@ -226,10 +226,10 @@ class PlayerControlImpl(
         if (volume > 1) {
             volume = 1f
         }
-        playbackManager.playback.volume = volume
+        playbackManager.playback.setVolume(volume)
     }
 
-    override fun getVolume(): Float = playbackManager.playback.volume
+    override fun getVolume(): Float = playbackManager.playback.getVolume()
 
     override fun getDuration(): Long = playbackManager.playback.duration
 

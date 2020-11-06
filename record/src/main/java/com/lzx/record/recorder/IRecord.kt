@@ -1,6 +1,7 @@
 package com.lzx.record.recorder
 
 import com.lzx.basecode.AudioDecoder
+import com.lzx.basecode.Playback
 import com.lzx.record.RecordConfig
 import com.lzx.record.player.AudioTrackPlayer
 import java.io.File
@@ -131,7 +132,7 @@ abstract class SimpleRecorderCallback : RecorderCallback {
  */
 interface IRecorder {
     fun setUpRecordConfig(recordConfig: RecordConfig)
-    fun getAudioTrackPlayer(): AudioTrackPlayer?
+    fun getAudioTrackPlayer(): Playback?
     fun startRecording()
     fun pauseRecording()
     fun stopRecording()
