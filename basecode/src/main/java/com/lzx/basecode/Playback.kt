@@ -113,6 +113,8 @@ interface Playback {
 
     fun getPcmBufferBytes(): ByteArray?
 
+    fun getAudioDecoder(): AudioDecoder?
+
     fun setRecording(isRecording: Boolean)
 
     interface Callback {

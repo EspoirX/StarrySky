@@ -132,7 +132,7 @@ abstract class SimpleRecorderCallback : RecorderCallback {
  */
 interface IRecorder {
     fun setUpRecordConfig(recordConfig: RecordConfig)
-    fun getAudioTrackPlayer(): Playback?
+    fun getPlayer(): Playback?
     fun startRecording()
     fun pauseRecording()
     fun stopRecording()
@@ -142,7 +142,7 @@ interface IRecorder {
     fun isRecording(): Boolean
     fun isPaused(): Boolean
     fun getRecordState(): Int
-    fun setOnDecodeListener(listener: AudioDecoder.OnDecodeListener)
+//    fun setOnDecodeListener(listener: AudioDecoder.OnDecodeListener)
 }
 
 /**

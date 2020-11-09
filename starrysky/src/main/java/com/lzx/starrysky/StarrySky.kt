@@ -9,18 +9,18 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
 import com.lzx.basecode.FocusInfo
+import com.lzx.basecode.KtPreferences
+import com.lzx.basecode.Playback
+import com.lzx.basecode.isMainProcess
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.imageloader.ImageLoaderStrategy
-import com.lzx.basecode.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.playback.SoundPoolPlayback
 import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.service.ServiceBridge
-import com.lzx.basecode.KtPreferences
 import com.lzx.starrysky.utils.StarrySkyConstant
-import com.lzx.basecode.isMainProcess
 import java.util.WeakHashMap
 
 
@@ -72,6 +72,13 @@ object StarrySky {
     fun get(): StarrySky {
         return this
     }
+
+    /**
+     * 获取播放器（确保连接服务成功后调用）
+     */
+    @JvmStatic
+    fun getPlayer() = bridge?.player
+
 
     /**
      * 初始化前检查

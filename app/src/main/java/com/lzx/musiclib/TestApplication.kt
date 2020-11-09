@@ -15,8 +15,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
-import com.lzx.record.StarrySkyRecord
+import com.lzx.basecode.MainLooper
 import com.lzx.basecode.SongInfo
+import com.lzx.basecode.toSdcardPath
+import com.lzx.record.StarrySkyRecord
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyConfig
 import com.lzx.starrysky.cache.ICache
@@ -25,8 +27,7 @@ import com.lzx.starrysky.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
-import com.lzx.basecode.MainLooper
-import com.lzx.basecode.toSdcardPath
+import com.lzx.starrysky.playback.ExoPlayback
 import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
@@ -104,6 +105,13 @@ open class TestApplication : Application() {
         StarrySky.init(this, config, object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 this@TestApplication.showToast("连接成功")
+
+                //初始化StarrySky录音功能
+                StarrySkyRecord.initStarrySkyRecord(this@TestApplication)
+                //指定播放录音的播放器(默认播放器不支持seekTo)
+                StarrySkyRecord.setPlayer(ExoPlayback(this@TestApplication, null, true))
+
+                //发个本地广播通知StarrySky初始化成功了，需要处理的地方可监听该广播
                 val localBroadcastManager = LocalBroadcastManager.getInstance(this@TestApplication)
                 localBroadcastManager.sendBroadcast(Intent("onServiceConnectedSuccessAction"))
             }
@@ -112,8 +120,6 @@ open class TestApplication : Application() {
                 this@TestApplication.showToast("连接失败")
             }
         })
-
-        StarrySkyRecord.initStarrySkyRecord(this)
     }
 
     /**

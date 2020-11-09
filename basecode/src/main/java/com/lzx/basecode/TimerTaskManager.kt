@@ -25,16 +25,13 @@ class TimerTaskManager : LifecycleObserver {
     /**
      * 开始更新进度条
      */
-    fun startToUpdateProgress() {
+    fun startToUpdateProgress(timeInternal: Long = PROGRESS_UPDATE_INTERNAL) {
         stopToUpdateProgress()
         if (!mExecutorService.isShutdown) {
             mScheduleFuture = mExecutorService.scheduleAtFixedRate({
-                if (mUpdateProgressTask != null) {
-                    MainLooper.instance.post(mUpdateProgressTask)
-                }
-            },
-                PROGRESS_UPDATE_INITIAL_INTERVAL,
-                PROGRESS_UPDATE_INTERNAL,
+                mUpdateProgressTask?.let { MainLooper.instance.post(it) }
+            }, PROGRESS_UPDATE_INITIAL_INTERVAL,
+                timeInternal,
                 TimeUnit.MILLISECONDS)
         }
     }

@@ -2,7 +2,6 @@ package com.lzx.musiclib.tab
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.media.AudioFormat
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +47,6 @@ class RecordFragment : BaseFragment() {
     }
 
     private var viewModel: MusicViewModel? = null
-    private var audioDecoder: AudioDecoder? = null
 
     override fun getResourceId(): Int = R.layout.fragment_recorder
 
@@ -107,16 +105,14 @@ class RecordFragment : BaseFragment() {
                     }
                 })
         }
-        btnFinish?.setOnClickListener { StarrySkyRecord.recorder?.stopRecording() }
+        btnFinish?.setOnClickListener {
+            StarrySkyRecord.with().getBgPlayer()?.pause()
+            StarrySkyRecord.recorder?.stopRecording()
+        }
         btnAccVolume?.setOnClickListener { showControlDialog() }
         //伴奏
         btnAccompaniment?.setOnClickListener {
             val url = "https://github.com/EspoirX/lzxTreasureBox/raw/master/周杰伦-告白气球.mp3"
-//            val songInfo = SongInfo()
-//            songInfo.songId = url.md5()
-//            songInfo.songUrl = url
-//            songInfo.headData?.put("TAG", "Record")
-//            StarrySky.with().playMusicByInfo(songInfo)
             StarrySkyRecord.with()
                 .isNeedDownloadBgMusic(true)
                 .setBgMusicFileName("周杰伦-告白气球.mp3")
@@ -135,38 +131,6 @@ class RecordFragment : BaseFragment() {
             override fun onFocusStateChange(info: FocusInfo) {
             }
         })
-
-//        StarrySky.with().playbackState().observe(this, {
-//            if (it.songInfo?.headData?.get("TAG") == "Record") {
-//                if (it.stage == PlaybackStage.PLAYING) {
-//                    val path = "StarrySkyRecord".toSdcardPath()
-//                    val fileName = "/告白气球.mp3"
-//                    StarrySkyRecord.decodeMusic(it.songInfo?.songUrl.orEmpty(),
-//                        true, filePath = path, fileName = fileName,
-//                        callback = object : AudioDecoder.OnDecodeCallback {
-//                            override fun onDecodeStart(decoder: AudioDecoder) {
-//                                audioDecoder = decoder
-//                                //更新信息
-//                                StarrySkyRecord.with()
-//                                    .setBitRate(decoder.bitRate)
-//                                    .setChannelConfig(decoder.channelCount)
-//                                    .setSamplingRate(decoder.sampleRate)
-//                                    .prepare()
-//                            }
-//                        })
-//                }
-//            }
-//        })
-
-//        StarrySkyRecord.recorder?.setOnDecodeListener(object : AudioDecoder.OnDecodeListener {
-//            override fun getBufferSize(): Int {
-//                return audioDecoder?.bufferSize.orDef(AudioDecoder.BUFFER_SIZE)
-//            }
-//
-//            override fun getPcmBufferBytes(): ByteArray? {
-//                return audioDecoder?.pcmData?.bufferBytes
-//            }
-//        })
     }
 
     private fun setUpBtnEnabled(isEnabled: Boolean) {

@@ -70,6 +70,5 @@ class SongInfo(
     }
 }
 
-fun SongInfo?.isRefrain(): Boolean {
-    return "Refrain" == this?.headData?.get("SongType")
-}
+fun SongInfo?.isRefrain(): Boolean = "Refrain" == this?.headData?.get("SongType")
+fun SongInfo?.isRecord(): Boolean = "StarrySkyRecord" == this?.headData?.get("StarrySkyRecord")

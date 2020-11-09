@@ -6,8 +6,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
 import android.os.AsyncTask
-import android.util.Log
 import com.lzx.basecode.AudioDecoder
+import com.lzx.basecode.Playback
 import com.lzx.basecode.getFileNameFromUrl
 import com.lzx.basecode.readAsBytes
 import com.lzx.basecode.toSdcardPath
@@ -23,6 +23,7 @@ object StarrySkyRecord {
 
     //具体录音实现
     var recorder: IRecorder? = null
+    private var player: Playback? = null
     var config = RecordConfig()
     private var context: Context? = null
     private var audioManager: AudioManager? = null
@@ -47,6 +48,12 @@ object StarrySkyRecord {
     }
 
     fun getAudioDecoder() = audioDecoder
+
+    fun setPlayer(player: Playback?) {
+        this.player = player
+    }
+
+    fun getPlayer(): Playback? = player
 
     /**
      * 解码音频

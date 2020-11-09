@@ -3,6 +3,7 @@ package com.lzx.starrysky.service
 import android.content.Context
 import android.os.Binder
 import com.lzx.basecode.FocusInfo
+import com.lzx.basecode.Playback
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.control.PlayerControlImpl
 import com.lzx.starrysky.imageloader.DefaultImageLoader
@@ -15,7 +16,6 @@ import com.lzx.starrysky.playback.ExoPlayback
 import com.lzx.starrysky.playback.MediaQueueManager
 import com.lzx.starrysky.playback.MediaSessionManager
 import com.lzx.starrysky.playback.MediaSourceProvider
-import com.lzx.basecode.Playback
 import com.lzx.starrysky.playback.PlaybackManager
 import com.lzx.starrysky.playback.PlaybackStage
 import com.lzx.starrysky.playback.SoundPoolPlayback
@@ -30,6 +30,7 @@ class ServiceBridge(private val context: Context) : Binder() {
     var imageLoader: ImageLoader? = null
     var sessionManager: MediaSessionManager? = null
     var soundPoolPlayback: SoundPoolPlayback? = null
+    var player: Playback? = null
 
     fun start(isAutoManagerFocus: Boolean = true, isCreateRefrainPlayer: Boolean = false) {
         //数据存储
@@ -46,7 +47,7 @@ class ServiceBridge(private val context: Context) : Binder() {
         //缓存
         val cache = register.cache
         //播放器
-        val player = if (register.playback == null) ExoPlayback(context, cache, isAutoManagerFocus) else register.playback
+        player = if (register.playback == null) ExoPlayback(context, cache, isAutoManagerFocus) else register.playback
         var refrainPlayback: Playback? = null
         if (isCreateRefrainPlayer) {
             refrainPlayback = if (register.refrainPlayback == null) ExoPlayback(context, cache, isAutoManagerFocus) else register.refrainPlayback

@@ -42,7 +42,6 @@ class AudioMp3Recorder : IRecorder {
     private var acousticEchoCanceler: AcousticEchoCanceler? = null
     private var automaticGainControl: AutomaticGainControl? = null
 
-    private var decodeListener: AudioDecoder.OnDecodeListener? = null
     private var config: RecordConfig? = null
 
     // 获取最小缓存区大小
@@ -64,20 +63,18 @@ class AudioMp3Recorder : IRecorder {
         if (this.config == null || this.config?.equals(recordConfig) == false) {
             this.config = recordConfig
         }
-        Log.i("XIAN", "bitRate = " + config?.bitRate)
-        Log.i("XIAN", "sampleRate = " + config?.sampleRate)
         initAudioTrackPlayer()
     }
 
     private fun initAudioTrackPlayer() {
         //如果设置了背景音乐，则初始化解码器，播放器等相关东西
         if (player == null) {
-            player = AudioTrackPlayer(config!!)
+            player = if (StarrySkyRecord.getPlayer() != null) StarrySkyRecord.getPlayer() else AudioTrackPlayer(config!!)
         }
         hasBgMusic = !player?.currPlayInfo?.songUrl.isNullOrEmpty()
     }
 
-    override fun getAudioTrackPlayer(): Playback? = player
+    override fun getPlayer(): Playback? = player
 
     /**
      * 开始录音
@@ -90,6 +87,9 @@ class AudioMp3Recorder : IRecorder {
         if (isRecording) {
             config?.recordCallback?.onError("正在录音中")
             return
+        }
+        player?.getAudioDecoder()?.let {
+            config?.setBitRate(it.bitRate)?.setSamplingRate(it.sampleRate)?.setChannelConfig(it.channelCount)
         }
         isRecording = true
         duration = 0
@@ -141,11 +141,7 @@ class AudioMp3Recorder : IRecorder {
                 while (isRecording) {
                     var buffer: ByteArray? = null
                     val readSize = if (hasBgMusic) {
-                        val samplesPerFrame = if (decodeListener != null) {
-                            decodeListener?.getBufferSize().orDef(AudioDecoder.BUFFER_SIZE)
-                        } else {
-                            player?.getBufferSize().orDef(AudioDecoder.BUFFER_SIZE)
-                        }
+                        val samplesPerFrame = player?.getBufferSize().orDef(AudioDecoder.BUFFER_SIZE)
                         buffer = ByteArray(samplesPerFrame)
                         audioRecord?.read(buffer, 0, samplesPerFrame).orDef()
                     } else {
@@ -170,11 +166,7 @@ class AudioMp3Recorder : IRecorder {
 
                         if (hasBgMusic) {
                             if (buffer != null) {
-                                val bgData = if (decodeListener != null) {
-                                    decodeListener?.getPcmBufferBytes()
-                                } else {
-                                    player?.getPcmBufferBytes()
-                                }
+                                val bgData = player?.getPcmBufferBytes()
                                 val readMixTask = ReadMixTask(buffer, config?.wax.orDef(), bgData, StarrySkyRecord.currVolumeF)
                                 val mixBuffer = readMixTask.getData()
                                 val encodedSize: Int
@@ -431,7 +423,4 @@ class AudioMp3Recorder : IRecorder {
      * 获取录音状态
      */
     override fun getRecordState(): Int = state
-    override fun setOnDecodeListener(listener: AudioDecoder.OnDecodeListener) {
-        decodeListener = listener
-    }
 }

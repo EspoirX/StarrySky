@@ -1,5 +1,6 @@
 package com.lzx.basecode
 
+import android.media.AudioFormat
 import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaFormat
@@ -56,9 +57,9 @@ class AudioDecoder {
             return chunkPCMDataContainer.getOrNull(0)?.bufferSize.orDef()
         }
 
-    var bitRate: Int = 0
-    var sampleRate: Int = 0
-    var channelCount: Int = 0
+    var bitRate: Int = 64
+    var sampleRate: Int = 44100
+    var channelCount: Int = AudioFormat.CHANNEL_IN_STEREO
     var duration: Long = 0
 
     fun initMediaDecode(url: String, headers: HashMap<String, String>?) {
@@ -220,10 +221,10 @@ class AudioDecoder {
         var time: Long//当前时间
     )
 
-    interface OnDecodeListener {
-        fun getBufferSize(): Int
-        fun getPcmBufferBytes(): ByteArray?
-    }
+//    interface OnDecodeListener {
+//        fun getBufferSize(): Int
+//        fun getPcmBufferBytes(): ByteArray?
+//    }
 
     interface OnDecodeCallback {
         fun onDecodeStart(decoder: AudioDecoder)

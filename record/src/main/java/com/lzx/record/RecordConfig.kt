@@ -4,6 +4,7 @@ import android.media.AudioFormat
 import android.media.MediaRecorder
 import com.lzx.basecode.Playback
 import com.lzx.basecode.SongInfo
+import com.lzx.basecode.md5
 import com.lzx.basecode.toSdcardPath
 import com.lzx.record.recorder.IRecorder
 import com.lzx.record.recorder.RecorderCallback
@@ -33,9 +34,6 @@ open class RecordConfig {
 
     //是否继续录制
     var isContinue: Boolean = false
-
-    //背景音乐url
-//    var bgMusicUrl: String? = null
 
     //是否需要下载背景音乐
     var needDownloadBgMusic: Boolean = false
@@ -70,9 +68,6 @@ open class RecordConfig {
     //录音回调
     var recordCallback: RecorderCallback? = null
 
-    //播放器回调
-//    var playerListener: PlayerListener? = null
-
     fun reset() {
         audioSource = MediaRecorder.AudioSource.MIC
         sampleRate = 44100
@@ -91,7 +86,6 @@ open class RecordConfig {
         waveSpeed = 300
         bgMusicVolume = 0F
         recordCallback = null
-//        playerListener = null
     }
 
     fun setAudioSource(source: Int) = apply { this.audioSource = source }
@@ -146,12 +140,15 @@ open class RecordConfig {
 
     fun getBgPlayer(): Playback? {
         StarrySkyRecord.recorder?.setUpRecordConfig(this)
-        return StarrySkyRecord.recorder?.getAudioTrackPlayer()
+        return StarrySkyRecord.recorder?.getPlayer()
     }
 
     fun playBgMusic(url: String) {
         StarrySkyRecord.recorder?.setUpRecordConfig(this)
-        StarrySkyRecord.recorder?.getAudioTrackPlayer()?.play(SongInfo(songUrl = url), true)
+        val headers = hashMapOf<String, String>()
+        headers["StarrySkyRecord"] = "StarrySkyRecord"
+        val songInfo = SongInfo(songId = url.md5(), songUrl = url, headData = headers)
+        StarrySkyRecord.recorder?.getPlayer()?.play(songInfo, true)
     }
 
 }

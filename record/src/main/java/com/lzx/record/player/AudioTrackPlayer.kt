@@ -5,7 +5,6 @@ import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
 import android.os.Build
-import android.util.Log
 import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.MainLooper
 import com.lzx.basecode.Playback
@@ -90,6 +89,8 @@ class AudioTrackPlayer(private val config: RecordConfig) : Playback {
         }
         return pcmBufferBytes.poll()
     }
+
+    override fun getAudioDecoder(): AudioDecoder? = audioDecoder
 
     override fun setRecording(isRecording: Boolean) {
         this.isRecording = isRecording

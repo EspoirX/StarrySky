@@ -2,6 +2,7 @@ package com.lzx.starrysky.playback
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.DefaultRenderersFactory.ExtensionRendererMode
@@ -34,8 +35,10 @@ import com.lzx.basecode.Playback.Companion.STATE_IDLE
 import com.lzx.basecode.Playback.Companion.STATE_PAUSED
 import com.lzx.basecode.Playback.Companion.STATE_PLAYING
 import com.lzx.basecode.SongInfo
+import com.lzx.basecode.TimerTaskManager
 import com.lzx.basecode.isFLAC
 import com.lzx.basecode.isRTMP
+import com.lzx.basecode.isRecord
 import com.lzx.basecode.isRefrain
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.cache.ICache
@@ -71,11 +74,21 @@ class ExoPlayback(val context: Context,
     //音频解码器
     private var audioDecoder = AudioDecoder()
     private var isRecording = false
+    private var timerTask: TimerTaskManager? = null
     private val pcmBufferBytes = LinkedBlockingDeque<ByteArray>()
-
 
     init {
         focusManager.listener = this
+        timerTask = TimerTaskManager()
+        timerTask?.setUpdateProgressTask {
+            val isPlaying = player?.playbackState == Player.STATE_READY && player?.playWhenReady == true
+            if (isPlaying && isRecording) {
+                audioDecoder.pcmData?.bufferBytes?.let {
+                    Log.i("XIAN", "bufferBytes = $it")
+                    pcmBufferBytes.add(it)
+                }
+            }
+        }
     }
 
     override val playbackState: Int
@@ -132,7 +145,7 @@ class ExoPlayback(val context: Context,
             return
         }
         currSongInfo = songInfo
-        val mediaHasChanged = mediaId != currentMediaId
+        var mediaHasChanged = mediaId != currentMediaId
         if (mediaHasChanged) {
             currentMediaId = mediaId
         }
@@ -152,6 +165,13 @@ class ExoPlayback(val context: Context,
         //代理url
         val proxyUrl = cache?.getProxyUrl(source)
         source = if (proxyUrl.isNullOrEmpty()) source else proxyUrl
+        //解码
+        if (songInfo.isRecord()) {
+            audioDecoder.initMediaDecode(url = source, songInfo.headData)
+            audioDecoder.decodePcmInfo(600)
+            timerTask?.startToUpdateProgress(100)
+            mediaHasChanged = true //如果是录音解码，每次都当是个新歌曲
+        }
         mediaSource = createMediaSource(source)
         if (mediaSource == null) return
         if (mediaHasChanged || player == null) {
@@ -337,13 +357,16 @@ class ExoPlayback(val context: Context,
                 focusManager.release()
             }
         }
+        pcmBufferBytes.clear()
     }
 
     override fun stop() {
+        timerTask?.removeUpdateProgressTask()
         releaseResources(true)
     }
 
     override fun pause() {
+        timerTask?.stopToUpdateProgress()
         player?.playWhenReady = false
         if (!isAutoManagerFocus) {
             player?.playbackState?.let { focusManager.updateAudioFocus(getPlayWhenReady(), it) }
@@ -396,12 +419,17 @@ class ExoPlayback(val context: Context,
     }
 
     override fun getBufferSize(): Int {
-        return 0
+        return audioDecoder.bufferSize
     }
 
     override fun getPcmBufferBytes(): ByteArray? {
-        return null
+        if (pcmBufferBytes.isEmpty()) {
+            return null
+        }
+        return pcmBufferBytes.poll()
     }
+
+    override fun getAudioDecoder(): AudioDecoder? = audioDecoder
 
     override fun setRecording(isRecording: Boolean) {
         this.isRecording = isRecording
@@ -441,6 +469,7 @@ class ExoPlayback(val context: Context,
                 sourceTypeErrorInfo.seekToPositionWhenError = sourceTypeErrorInfo.seekToPosition
                 sourceTypeErrorInfo.currPositionWhenError = currentStreamPosition
             }
+            timerTask?.removeUpdateProgressTask()
             callback?.onPlaybackError(currSongInfo, "ExoPlayer error $what")
         }
     }
