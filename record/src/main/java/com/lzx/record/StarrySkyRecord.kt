@@ -70,51 +70,69 @@ object StarrySkyRecord {
         filePath: String? = "StarrySky/download/".toSdcardPath(),
         fileName: String? = musicUrl?.getFileNameFromUrl() ?: System.currentTimeMillis().toString(),
         callback: AudioDecoder.OnDecodeCallback) {
-        if (musicUrl.isNullOrEmpty()) return
+        simpleDownload(needDownload, musicUrl, filePath, fileName) {
+            it?.let {
+                decodeMusicImpl(it, headers, callback)
+            }
+        }
+    }
+
+    /**
+     * 简单的下载功能
+     */
+    fun simpleDownload(needDownload: Boolean = true,
+                       downloadUrl: String?,
+                       filePath: String?,
+                       fileName: String?,
+                       callBack: ((path: String?) -> Unit)) {
+        if (downloadUrl.isNullOrEmpty()) return
         if (isDowloading.get()) return
         AsyncTask.THREAD_POOL_EXECUTOR.execute {
             try {
-                if (needDownload) {
-                    val f = File(filePath + fileName)
-                    if (f.isFile && f.exists()) {
-                        decodeMusicImpl(f.absolutePath, headers, callback)
-                        return@execute
-                    }
-                    isDowloading.compareAndSet(true, true)
-                    val url = URL(musicUrl)
-                    (url.openConnection() as? HttpURLConnection)?.let { http ->
-                        http.connectTimeout = 20 * 1000
-                        http.requestMethod = "GET"
-                        http.connect()
-                        http.inputStream.use { inputStream ->
-                            inputStream.readAsBytes()?.let { bytes ->
-                                val fileDir = File(filePath).apply {
-                                    this.takeIf { !it.exists() }?.mkdirs()
-                                }
-                                val file = File(fileDir.absolutePath + "/" + fileName).apply {
-                                    this.takeIf { !it.exists() }?.createNewFile()
-                                }
-                                FileOutputStream(file).use {
-                                    it.write(bytes).also {
-                                        decodeMusicImpl(file.absolutePath, headers, callback)
-                                        http.disconnect()
-                                    }
+                if (!needDownload) {
+                    isDowloading.compareAndSet(false, true)
+                    callBack.invoke(downloadUrl)
+                    return@execute
+                }
+                val f = File(filePath + fileName)
+                if (f.isFile && f.exists()) {
+                    isDowloading.compareAndSet(false, true)
+                    callBack.invoke(f.absolutePath)
+                    return@execute
+                }
+                isDowloading.compareAndSet(true, true)
+                val url = URL(downloadUrl)
+                (url.openConnection() as? HttpURLConnection)?.let { http ->
+                    http.connectTimeout = 20 * 1000
+                    http.requestMethod = "GET"
+                    http.connect()
+                    http.inputStream.use { inputStream ->
+                        inputStream.readAsBytes()?.let { bytes ->
+                            val fileDir = File(filePath).apply {
+                                this.takeIf { !it.exists() }?.mkdirs()
+                            }
+                            val file = File(fileDir.absolutePath + "/" + fileName).apply {
+                                this.takeIf { !it.exists() }?.createNewFile()
+                            }
+                            FileOutputStream(file).use {
+                                it.write(bytes).also {
+                                    isDowloading.compareAndSet(false, true)
+                                    http.disconnect()
+                                    callBack.invoke(f.absolutePath)
                                 }
                             }
                         }
                     }
-                } else {
-                    decodeMusicImpl(musicUrl, headers, callback)
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 isDowloading.compareAndSet(false, true)
+                callBack.invoke(null)
             }
         }
     }
 
     private fun decodeMusicImpl(url: String, headers: HashMap<String, String>?, callback: AudioDecoder.OnDecodeCallback) {
-        isDowloading.compareAndSet(false, true)
         audioDecoder.initMediaDecode(url, headers)
         audioDecoder.decodePcmInfo(600)
         callback.onDecodeStart(audioDecoder)

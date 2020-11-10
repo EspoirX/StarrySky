@@ -2,6 +2,7 @@ package com.lzx.musiclib.tab
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.lzx.basecode.FocusInfo
+import com.lzx.basecode.MainLooper
 import com.lzx.basecode.Playback
 import com.lzx.basecode.SongInfo
 import com.lzx.basecode.TimerTaskManager
@@ -41,6 +43,7 @@ import kotlinx.android.synthetic.main.fragment_recorder.btnFinish
 import kotlinx.android.synthetic.main.fragment_recorder.btnRecord
 import kotlinx.android.synthetic.main.fragment_recorder.geci
 import java.io.File
+
 
 class RecordFragment : BaseFragment() {
 
@@ -107,10 +110,22 @@ class RecordFragment : BaseFragment() {
         //伴奏
         btnAccompaniment?.setOnClickListener {
             val url = "https://github.com/EspoirX/lzxTreasureBox/raw/master/周杰伦-告白气球.mp3"
-            StarrySkyRecord.with()
-                .isNeedDownloadBgMusic(true)
-                .setBgMusicFileName("周杰伦-告白气球.mp3")
-                .playBgMusic(url)
+            val processDialog = ProgressDialog.show(activity, "提示", "正在处理音频，请稍等...")
+            processDialog.setCanceledOnTouchOutside(false)
+            StarrySkyRecord.simpleDownload(downloadUrl = url,
+                filePath = "StarrySky/download/".toSdcardPath(),
+                fileName = "周杰伦-告白气球.mp3") {
+                MainLooper.instance.runOnUiThread {
+                    if (it.isNullOrEmpty()) {
+                        processDialog.dismiss()
+                        activity?.showToast("音频处理失败，请检查网络")
+                    } else {
+                        processDialog.dismiss()
+                        activity?.showToast("音频处理成功")
+                        StarrySkyRecord.with().playBgMusic(url)
+                    }
+                }
+            }
         }
         //录音状态监听
         StarrySkyRecord.with().setRecordCallback(object : SimpleRecorderCallback() {
@@ -141,7 +156,6 @@ class RecordFragment : BaseFragment() {
         //录音播放器回调监听
         StarrySkyRecord.with().getBgPlayer()?.setCallback(object : Playback.Callback {
             override fun onPlayerStateChanged(songInfo: SongInfo?, playWhenReady: Boolean, playbackState: Int) {
-                activity?.showToast("播放：" + playbackState.changePlaybackState())
                 if (playbackState == Playback.STATE_PLAYING) {
                     timerTaskManager.startToUpdateProgress()
                 } else {

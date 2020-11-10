@@ -36,13 +36,13 @@ open class RecordConfig {
     //是否继续录制
     var isContinue: Boolean = false
 
-    //是否需要下载背景音乐
+    //是否需要下载背景音乐（使用默认播放器的时候有用）
     var needDownloadBgMusic: Boolean = false
 
-    //背景音乐下载保存路径
+    //背景音乐下载保存路径（使用默认播放器的时候有用）
     var bgMusicFilePath: String = "StarrySky/download/".toSdcardPath()
 
-    //背景音乐文件名
+    //背景音乐文件名（使用默认播放器的时候有用）
     var bgMusicFileName: String = System.currentTimeMillis().toString()
 
     //如果是网络音乐，可以指定 headers
@@ -107,10 +107,6 @@ open class RecordConfig {
     fun setIsContinue(isContinue: Boolean) = apply { this.isContinue = isContinue }
 
     fun setRecordCallback(callback: RecorderCallback?) = apply { this.recordCallback = callback }
-
-//    fun setPlayerListener(listener: PlayerListener?) = apply { this.playerListener = listener }
-
-//    fun setBgMusicUrl(url: String) = apply { bgMusicUrl = url }
 
     fun isNeedDownloadBgMusic(isDownload: Boolean) = apply { needDownloadBgMusic = isDownload }
 

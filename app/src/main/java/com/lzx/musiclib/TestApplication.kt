@@ -106,11 +106,6 @@ open class TestApplication : Application() {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 this@TestApplication.showToast("连接成功")
 
-                //初始化StarrySky录音功能
-                StarrySkyRecord.initStarrySkyRecord(this@TestApplication)
-                //指定播放录音的播放器(默认播放器不支持seekTo)
-                StarrySkyRecord.setPlayer(ExoPlayback(this@TestApplication, null, true))
-
                 //发个本地广播通知StarrySky初始化成功了，需要处理的地方可监听该广播
                 val localBroadcastManager = LocalBroadcastManager.getInstance(this@TestApplication)
                 localBroadcastManager.sendBroadcast(Intent("onServiceConnectedSuccessAction"))
@@ -120,6 +115,11 @@ open class TestApplication : Application() {
                 this@TestApplication.showToast("连接失败")
             }
         })
+
+        //初始化StarrySky录音功能
+        StarrySkyRecord.initStarrySkyRecord(this@TestApplication)
+        //指定播放录音的播放器(默认播放器不支持seekTo)
+        StarrySkyRecord.setPlayer(ExoPlayback(this@TestApplication, null, true))
     }
 
     /**
