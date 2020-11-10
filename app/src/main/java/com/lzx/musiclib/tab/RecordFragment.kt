@@ -8,22 +8,24 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
-import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.FocusInfo
 import com.lzx.basecode.Playback
 import com.lzx.basecode.SongInfo
+import com.lzx.basecode.TimerTaskManager
 import com.lzx.basecode.orDef
 import com.lzx.basecode.showToast
 import com.lzx.basecode.toSdcardPath
 import com.lzx.musiclib.R
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.dp
+import com.lzx.musiclib.utils.RecordUtils
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.musiclib.weight.dialog.CommonBehavior
 import com.lzx.musiclib.weight.dialog.createMaterialDialog
 import com.lzx.musiclib.weight.dialog.getCustomView
 import com.lzx.musiclib.weight.dialog.lifecycleOwner
 import com.lzx.record.StarrySkyRecord
+import com.lzx.record.recorder.IRecordByteDataListener
 import com.lzx.record.recorder.RecordState
 import com.lzx.record.recorder.SimpleRecorderCallback
 import com.lzx.starrysky.playback.changePlaybackState
@@ -31,6 +33,8 @@ import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
+import kotlinx.android.synthetic.main.fragment_play_detail.seekBar
+import kotlinx.android.synthetic.main.fragment_recorder.audioView
 import kotlinx.android.synthetic.main.fragment_recorder.btnAccVolume
 import kotlinx.android.synthetic.main.fragment_recorder.btnAccompaniment
 import kotlinx.android.synthetic.main.fragment_recorder.btnFinish
@@ -47,6 +51,7 @@ class RecordFragment : BaseFragment() {
     }
 
     private var viewModel: MusicViewModel? = null
+    private var timerTaskManager = TimerTaskManager()
 
     override fun getResourceId(): Int = R.layout.fragment_recorder
 
@@ -54,6 +59,7 @@ class RecordFragment : BaseFragment() {
         val text = geci?.text.toString().replace("\\n", "\n")
         geci?.text = text
 
+        timerTaskManager.bindLifecycle(lifecycle)
         viewModel = ViewModelProvider(this)[MusicViewModel::class.java]
         viewModel?.downloadLiveData?.observe(this, {
             activity?.showToast("音频处理成功")
@@ -61,6 +67,7 @@ class RecordFragment : BaseFragment() {
             StarrySkyRecord.with().playBgMusic(it)
         })
 
+        //录音
         btnRecord?.setOnClickListener {
             SoulPermission.getInstance().checkAndRequestPermissions(Permissions.build(
                 Manifest.permission.RECORD_AUDIO,
@@ -73,22 +80,6 @@ class RecordFragment : BaseFragment() {
                                 val path = "StarrySkyRecord".toSdcardPath()
                                 StarrySkyRecord.with()
                                     .setRecordOutputFile(path)
-                                    .setRecordCallback(object : SimpleRecorderCallback() {
-                                        override fun onStart() {
-                                            super.onStart()
-                                            btnRecord?.setImageResource(R.drawable.b0c)
-                                        }
-
-                                        override fun onPause() {
-                                            super.onPause()
-                                            btnRecord?.setImageResource(R.drawable.afb)
-                                        }
-
-                                        override fun onSuccess(file: File?, time: Long) {
-                                            super.onSuccess(file, time)
-                                            btnRecord?.setImageResource(R.drawable.afb)
-                                        }
-                                    })
                                     .setRecordOutputFileName("录音.mp3")
                                     .startRecord()
                             }
@@ -105,10 +96,13 @@ class RecordFragment : BaseFragment() {
                     }
                 })
         }
+        //完成录音
         btnFinish?.setOnClickListener {
             StarrySkyRecord.with().getBgPlayer()?.pause()
             StarrySkyRecord.recorder?.stopRecording()
+            activity?.showToast("录音完成，文件目录：sdcard->StarrySkyRecord/录音.mp3")
         }
+        //伴奏音量
         btnAccVolume?.setOnClickListener { showControlDialog() }
         //伴奏
         btnAccompaniment?.setOnClickListener {
@@ -118,10 +112,41 @@ class RecordFragment : BaseFragment() {
                 .setBgMusicFileName("周杰伦-告白气球.mp3")
                 .playBgMusic(url)
         }
+        //录音状态监听
+        StarrySkyRecord.with().setRecordCallback(object : SimpleRecorderCallback() {
+            override fun onStart() {
+                super.onStart()
+                btnRecord?.setImageResource(R.drawable.b0c)
+            }
 
+            override fun onPause() {
+                super.onPause()
+                btnRecord?.setImageResource(R.drawable.afb)
+            }
+
+            override fun onSuccess(file: File?, time: Long) {
+                super.onSuccess(file, time)
+                btnRecord?.setImageResource(R.drawable.afb)
+            }
+        })
+        //录音频谱数据
+        StarrySkyRecord.with().setRecordByteDataListener(object : IRecordByteDataListener {
+            override fun onRecordByteData(data: ByteArray?) {
+                val fftData = RecordUtils.makeFftData(data)
+                fftData?.let {
+                    audioView?.setWaveData(it)
+                }
+            }
+        })
+        //录音播放器回调监听
         StarrySkyRecord.with().getBgPlayer()?.setCallback(object : Playback.Callback {
             override fun onPlayerStateChanged(songInfo: SongInfo?, playWhenReady: Boolean, playbackState: Int) {
                 activity?.showToast("播放：" + playbackState.changePlaybackState())
+                if (playbackState == Playback.STATE_PLAYING) {
+                    timerTaskManager.startToUpdateProgress()
+                } else {
+                    timerTaskManager.stopToUpdateProgress()
+                }
             }
 
             override fun onPlaybackError(songInfo: SongInfo?, error: String) {
@@ -129,6 +154,23 @@ class RecordFragment : BaseFragment() {
             }
 
             override fun onFocusStateChange(info: FocusInfo) {
+            }
+        })
+        //背景音乐进度监听
+        timerTaskManager.setUpdateProgressTask {
+            val position = StarrySkyRecord.with().getBgPlayer()?.currentStreamPosition.orDef()
+            val duration = StarrySkyRecord.with().getBgPlayer()?.duration.orDef()
+            if (seekBar.max.toLong() != duration) {
+                seekBar.max = duration.toInt()
+            }
+            seekBar.progress = position.toInt()
+        }
+        //背景音乐 seekTo
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                StarrySkyRecord.with().getBgPlayer()?.seekTo(seekBar.progress.toLong())
             }
         })
     }
@@ -139,7 +181,6 @@ class RecordFragment : BaseFragment() {
         btnAccompaniment?.isEnabled = isEnabled
         btnFinish?.isEnabled = isEnabled
     }
-
 
     @SuppressLint("SetTextI18n")
     private fun showControlDialog() {

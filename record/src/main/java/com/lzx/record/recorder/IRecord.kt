@@ -1,9 +1,7 @@
 package com.lzx.record.recorder
 
-import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.Playback
 import com.lzx.record.RecordConfig
-import com.lzx.record.player.AudioTrackPlayer
 import java.io.File
 
 /**
@@ -64,49 +62,6 @@ interface RecorderCallback {
     fun onAutoComplete(file: String, time: Long)
 }
 
-/**
- * 录音播放器回调
- */
-interface PlayerListener {
-
-    /**
-     * 开始播放
-     */
-    fun onStart()
-
-    /**
-     * 暂停
-     */
-    fun onPause()
-
-    /**
-     * 继续播放
-     */
-    fun onResume()
-
-    /**
-     * 停止释放
-     */
-    fun onStop()
-
-    /**
-     * 播放结束
-     */
-    fun onCompletion()
-
-    /**
-     * 错误
-     */
-    fun onError(msg: String)
-
-    /**
-     * 进度条
-     * @param current 当前位置
-     * @param duration 总长度
-     */
-    fun onProgress(current: Int, duration: Int)
-}
-
 abstract class SimpleRecorderCallback : RecorderCallback {
     override fun onStart() {}
 
@@ -142,7 +97,10 @@ interface IRecorder {
     fun isRecording(): Boolean
     fun isPaused(): Boolean
     fun getRecordState(): Int
-//    fun setOnDecodeListener(listener: AudioDecoder.OnDecodeListener)
+}
+
+interface IRecordByteDataListener {
+    fun onRecordByteData(data: ByteArray?)
 }
 
 /**
@@ -153,3 +111,4 @@ object RecordState {
     const val PAUSED = 1
     const val STOPPED = 2
 }
+

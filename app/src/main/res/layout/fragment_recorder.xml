@@ -6,14 +6,18 @@
     android:layout_height="match_parent"
     android:background="#541312">
 
+    <com.lzx.musiclib.weight.AudioView
+        android:id="@+id/audioView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="150dp"
         android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnRecord"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintBottom_toTopOf="@+id/seekBar"
+        app:layout_constraintTop_toBottomOf="@+id/audioView">
 
         <TextView
             android:id="@+id/geci"
@@ -25,6 +29,23 @@
             android:textColor="#fff"
             android:textSize="25sp" />
     </ScrollView>
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"
+        android:maxHeight="3.4dp"
+        android:minHeight="3.4dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:progressDrawable="@drawable/seek_bar_pro"
+        android:splitTrack="false"
+        android:thumb="@drawable/seek_bar_thumb"
+        app:layout_constraintBottom_toTopOf="@+id/btnRecord"
+        app:layout_constraintTop_toBottomOf="@+id/squareView" />
 
     <ImageView
         android:id="@+id/btnRecord"

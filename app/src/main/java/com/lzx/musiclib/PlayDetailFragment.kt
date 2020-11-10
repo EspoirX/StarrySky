@@ -10,6 +10,8 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.lzx.basecode.TimerTaskManager
+import com.lzx.basecode.isRefrain
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.musiclib.weight.dialog.CommonBehavior
@@ -19,7 +21,6 @@ import com.lzx.musiclib.weight.dialog.getCustomView
 import com.lzx.musiclib.weight.dialog.lifecycleOwner
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
-import com.lzx.basecode.isRefrain
 import com.lzx.starrysky.playback.PlaybackStage
 import kotlinx.android.synthetic.main.fragment_play_detail.btnAccompaniment
 import kotlinx.android.synthetic.main.fragment_play_detail.btnNextSong
@@ -53,7 +54,7 @@ class PlayDetailFragment : BaseFragment() {
     private var channelId: Int = 10
 
     private var viewModel: MusicViewModel? = null
-    private var timerTaskManager = com.lzx.basecode.TimerTaskManager()
+    private var timerTaskManager =  TimerTaskManager()
     private var dialog: MaterialDialog? = null
     private var refrainList = mutableListOf<String>()
     private val soundPoolList = mutableListOf<String>()
@@ -293,6 +294,7 @@ class PlayDetailFragment : BaseFragment() {
                     seekBar.progress = StarrySky.with().getPlaybackSpeed().toInt() * 100
                     desc.text = "当前速度：" + seekBar.progress + " %"
                 }
+
                 seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                         if ("Volume" == type) {
@@ -302,6 +304,8 @@ class PlayDetailFragment : BaseFragment() {
                             StarrySky.with().onDerailleur(false, progress.toFloat() / 100)
                             desc.text = "当前速度：$progress %"
                         }
+
+
                     }
 
                     override fun onStartTrackingTouch(seekBar: SeekBar) {}

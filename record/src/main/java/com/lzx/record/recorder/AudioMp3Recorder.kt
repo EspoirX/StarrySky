@@ -6,7 +6,6 @@ import android.media.audiofx.AcousticEchoCanceler
 import android.media.audiofx.AutomaticGainControl
 import android.media.audiofx.NoiseSuppressor
 import android.os.AsyncTask
-import android.util.Log
 import com.lzx.basecode.AudioDecoder
 import com.lzx.basecode.MainLooper
 import com.lzx.basecode.Playback
@@ -160,8 +159,10 @@ class AudioMp3Recorder : IRecorder {
 
                         if (hasBgMusic) {
                             calculateRealVolume(buffer)
+                            notifyByteData(buffer)
                         } else {
                             calculateRealVolume(pcmBuffer, readSize)
+                            notifyByteData(BytesTransUtil.shorts2Bytes(pcmBuffer))
                         }
 
                         if (hasBgMusic) {
@@ -211,6 +212,12 @@ class AudioMp3Recorder : IRecorder {
                 ex.printStackTrace()
                 onError(ex.message.toString())
             }
+        }
+    }
+
+    private fun notifyByteData(data: ByteArray?) {
+        MainLooper.instance.runOnUiThread {
+            config?.recordByteDataListener?.onRecordByteData(data)
         }
     }
 
