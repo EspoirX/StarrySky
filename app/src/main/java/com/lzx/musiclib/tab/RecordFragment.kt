@@ -80,7 +80,7 @@ class RecordFragment : BaseFragment() {
                     override fun onAllPermissionOk(allPermissions: Array<Permission>) {
                         when {
                             StarrySkyRecord.recorder?.getRecordState() == RecordState.STOPPED -> {
-                                val path = "StarrySkyRecord".toSdcardPath()
+                                val path = "StarrySky/record/".toSdcardPath()
                                 StarrySkyRecord.with()
                                     .setRecordOutputFile(path)
                                     .setRecordOutputFileName("录音.mp3")
@@ -103,7 +103,7 @@ class RecordFragment : BaseFragment() {
         btnFinish?.setOnClickListener {
             StarrySkyRecord.with().getBgPlayer()?.pause()
             StarrySkyRecord.recorder?.stopRecording()
-            activity?.showToast("录音完成，文件目录：sdcard->StarrySkyRecord/录音.mp3")
+            activity?.showToast("录音完成，文件目录：sdcard->StarrySky/record/录音.mp3")
         }
         //伴奏音量
         btnAccVolume?.setOnClickListener { showControlDialog() }
