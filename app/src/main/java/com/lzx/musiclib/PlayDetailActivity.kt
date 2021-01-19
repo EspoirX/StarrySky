@@ -8,8 +8,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.Observer
 import com.lzx.starrysky.StarrySky
-import com.lzx.basecode.isRefrain
-import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.manager.PlaybackStage
 import kotlinx.android.synthetic.main.activity_play_detail.songCover
 import kotlinx.android.synthetic.main.activity_play_detail.viewPager
 import java.io.ByteArrayOutputStream
@@ -28,9 +27,9 @@ class PlayDetailActivity : AppCompatActivity() {
         viewPager?.adapter = PlayDetailAdapter(supportFragmentManager, channelId)
 
         StarrySky.with().playbackState().observe(this, Observer {
-            if (it.songInfo.isRefrain()) {
-                return@Observer
-            }
+//            if (it.songInfo.isRefrain()) {
+//                return@Observer
+//            }
             when (it.stage) {
                 PlaybackStage.PLAYING -> {
                     songCover?.loadImage(it.songInfo?.songCover)

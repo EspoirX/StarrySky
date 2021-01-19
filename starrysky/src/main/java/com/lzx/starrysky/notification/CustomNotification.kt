@@ -13,14 +13,13 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.media.session.MediaSessionCompat
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.lzx.basecode.getPendingIntent
-import com.lzx.basecode.getResourceId
-import com.lzx.basecode.getTargetClass
 import com.lzx.starrysky.R
-import com.lzx.basecode.SongInfo
-import com.lzx.starrysky.imageloader.ImageLoaderCallBack
+import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_CLOSE
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_DOWNLOAD
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_FAVORITE
@@ -69,10 +68,15 @@ import com.lzx.starrysky.notification.INotification.Companion.LAYOUT_NOTIFY_BIG_
 import com.lzx.starrysky.notification.INotification.Companion.LAYOUT_NOTIFY_PLAY
 import com.lzx.starrysky.notification.INotification.Companion.NOTIFICATION_ID
 import com.lzx.starrysky.notification.INotification.Companion.TIME_INTERVAL
+import com.lzx.starrysky.notification.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.notification.utils.NotificationColorUtils
 import com.lzx.starrysky.notification.utils.NotificationUtils
-import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.service.MusicService
+import com.lzx.starrysky.playback.Playback
+import com.lzx.starrysky.manager.PlaybackStage
+import com.lzx.starrysky.utils.getPendingIntent
+import com.lzx.starrysky.utils.getResourceId
+import com.lzx.starrysky.utils.getTargetClass
+import com.lzx.starrysky.utils.orDef
 
 class CustomNotification constructor(
     val context: Context,
@@ -111,6 +115,9 @@ class CustomNotification constructor(
 
     private var lastClickTime: Long = 0
 
+    private var hasNextSong = false
+    private var hasPreSong = false
+
     init {
         notificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         packageName = context.applicationContext.packageName
@@ -128,10 +135,13 @@ class CustomNotification constructor(
         notificationManager.cancelAll()
     }
 
-    override fun onPlaybackStateChanged(songInfo: SongInfo?, state: String) {
+    override fun onPlaybackStateChanged(songInfo: SongInfo?, state: String,
+                                        hasNextSong: Boolean, hasPreSong: Boolean) {
+        this.hasNextSong = hasNextSong
+        this.hasPreSong = hasPreSong
         playbackState = state
         this.songInfo = songInfo
-        if (state == PlaybackStage.STOP || state == PlaybackStage.IDEA) {
+        if (state == PlaybackStage.IDEA) {
             stopNotification()
         } else {
             val notification = createNotification()
@@ -141,25 +151,40 @@ class CustomNotification constructor(
         }
     }
 
+    override fun setSessionToken(mediaSession: MediaSessionCompat.Token?) {
+    }
+
+    private fun pauseMusic(player: Playback?) {
+        if (player?.isPlaying() == true) {
+            player.pause()
+        }
+    }
+
+    private fun restoreMusic(player: Playback?) {
+        player?.getCurrPlayInfo()?.let {
+            player.play(it, true)
+        }
+    }
+
     override fun onReceive(context: Context?, intent: Intent?) {
         val action = intent?.action ?: return
         val nowTime = System.currentTimeMillis()
         if (nowTime - lastClickTime <= TIME_INTERVAL) {
             return
         }
-        val playerControl = (context as MusicService).bridge?.playerControl
+        val player = (context as MusicService).binder?.player
         when (action) {
-            ACTION_PAUSE -> playerControl?.pauseMusic()
-            ACTION_PLAY -> playerControl?.restoreMusic()
+            ACTION_PAUSE -> pauseMusic(player)
+            ACTION_PLAY -> restoreMusic(player)
             ACTION_PLAY_OR_PAUSE -> {
                 if (playbackState == PlaybackStage.PLAYING) {
-                    playerControl?.pauseMusic()
+                    pauseMusic(player)
                 } else {
-                    playerControl?.restoreMusic()
+                    restoreMusic(player)
                 }
             }
-            ACTION_NEXT -> playerControl?.skipToNext()
-            ACTION_PREV -> playerControl?.skipToPrevious()
+            ACTION_NEXT -> player?.skipToNext()
+            ACTION_PREV -> player?.skipToPrevious()
             ACTION_CLOSE -> stopNotification()
         }
         lastClickTime = nowTime
@@ -212,7 +237,6 @@ class CustomNotification constructor(
     private fun setNotificationPlaybackState(builder: NotificationCompat.Builder) {
         if (!mStarted) {
             (context as MusicService).stopForeground(true)
-            return
         }
         builder.setOngoing(playbackState == PlaybackStage.PLAYING)
     }
@@ -253,7 +277,7 @@ class CustomNotification constructor(
         remoteView?.setTextViewText(ID_TXT_NOTIFY_SONGNAME.getResId(), songName)
         remoteView?.setTextViewText(ID_TXT_NOTIFY_ARTISTNAME.getResId(), artistName)
         //设置播放暂停按钮
-        if (playbackState == PlaybackStage.PLAYING) {
+        if (playbackState == PlaybackStage.PLAYING || playbackState == PlaybackStage.BUFFERING) {
             val name =
                 if (isDark) DRAWABLE_NOTIFY_BTN_DARK_PAUSE_SELECTOR else DRAWABLE_NOTIFY_BTN_LIGHT_PAUSE_SELECTOR
             remoteView?.setImageViewResource(ID_IMG_NOTIFY_PLAY_OR_PAUSE.getResId(), name.getResDrawable())
@@ -288,10 +312,7 @@ class CustomNotification constructor(
             isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_DOWNLOAD, DRAWABLE_NOTIFY_BTN_LIGHT_DOWNLOAD))
 
 
-        //上一首下一首按钮
-        val playerControl = (context as MusicService).bridge?.playerControl
-        val hasNextSong = playerControl?.isSkipToNextEnabled() ?: false
-        val hasPreSong = playerControl?.isSkipToPreviousEnabled() ?: false
+//        //上一首下一首按钮
         disableNextBtn(hasNextSong, isDark)
         disablePreviousBtn(hasPreSong, isDark)
 
@@ -303,8 +324,10 @@ class CustomNotification constructor(
                 art = BitmapFactory.decodeResource(context.resources, R.drawable.default_art)
             }
         }
-        remoteView?.setImageViewBitmap(ID_IMG_NOTIFY_ICON.getResId(), art)
-        bigRemoteView?.setImageViewBitmap(ID_IMG_NOTIFY_ICON.getResId(), art)
+        if (art != null) {
+            remoteView?.setImageViewBitmap(ID_IMG_NOTIFY_ICON.getResId(), art)
+            bigRemoteView?.setImageViewBitmap(ID_IMG_NOTIFY_ICON.getResId(), art)
+        }
         notificationManager?.notify(NOTIFICATION_ID, notification)
 
         if (!fetchArtUrl.isNullOrEmpty()) {
@@ -316,13 +339,15 @@ class CustomNotification constructor(
      * 加载封面
      */
     private fun fetchBitmapFromURLAsync(fetchArtUrl: String, notification: Notification?) {
-        val imageLoader = (context as MusicService).bridge?.imageLoader
-        imageLoader?.load(fetchArtUrl, object : ImageLoaderCallBack {
+        StarrySky.getImageLoader()?.load(fetchArtUrl, object : ImageLoaderCallBack {
             override fun onBitmapLoaded(bitmap: Bitmap?) {
                 bitmap?.let {
                     remoteView?.setImageViewBitmap(ID_IMG_NOTIFY_ICON.getResId(), it)
                     bigRemoteView?.setImageViewBitmap(ID_IMG_NOTIFY_ICON.getResId(), it)
-                    notificationManager?.notify(NOTIFICATION_ID, notification)
+                    //https://github.com/EspoirX/StarrySky/issues/188
+                    if (mNotification != null) {
+                        notificationManager?.notify(NOTIFICATION_ID, notification)
+                    }
                 }
             }
 
@@ -375,7 +400,6 @@ class CustomNotification constructor(
                 filter.addAction(ACTION_PLAY_OR_PAUSE)
                 filter.addAction(ACTION_CLOSE)
                 context.registerReceiver(this, filter)
-                MusicService.isRunningForeground = true
                 (context as MusicService).startForeground(NOTIFICATION_ID, notification)
                 mStarted = true
             }
@@ -391,7 +415,6 @@ class CustomNotification constructor(
             } catch (ex: IllegalArgumentException) {
                 ex.printStackTrace()
             }
-            MusicService.isRunningForeground = false
             (context as MusicService).stopForeground(true)
         }
     }
@@ -399,11 +422,11 @@ class CustomNotification constructor(
     override fun onCommand(command: String?, extras: Bundle?) {
         when (command) {
             ACTION_UPDATE_FAVORITE -> {
-                val isFavorite = extras?.getBoolean("isFavorite") ?: false
+                val isFavorite = extras?.getBoolean("isFavorite").orDef()
                 updateFavoriteUI(isFavorite)
             }
             ACTION_UPDATE_LYRICS -> {
-                val isChecked = extras?.getBoolean("isChecked") ?: false
+                val isChecked = extras?.getBoolean("isChecked").orDef()
                 updateLyricsUI(isChecked)
             }
         }
@@ -426,7 +449,9 @@ class CustomNotification constructor(
             bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_FAVORITE.getResId(),
                 isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_FAVORITE, DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE))
         }
-        notificationManager?.notify(NOTIFICATION_ID, mNotification)
+        if (mNotification != null) {
+            notificationManager?.notify(NOTIFICATION_ID, mNotification)
+        }
     }
 
     /**
@@ -446,7 +471,9 @@ class CustomNotification constructor(
             bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_LYRICS.getResId(),
                 isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_LYRICS, DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS))
         }
-        notificationManager?.notify(NOTIFICATION_ID, mNotification)
+        if (mNotification != null) {
+            notificationManager?.notify(NOTIFICATION_ID, mNotification)
+        }
     }
 
     private fun String.getPendingIntent(): PendingIntent {

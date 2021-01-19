@@ -51,7 +51,6 @@ dependencies {
     api "com.google.android.exoplayer:exoplayer-core:2.12.0"
     api "com.google.android.exoplayer:extension-mediasession:2.12.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    api project(':basecode')
 }
 repositories {
     mavenCentral()

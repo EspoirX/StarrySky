@@ -1,7 +1,8 @@
 package com.lzx.starrysky.notification
 
 import android.os.Bundle
-import com.lzx.basecode.SongInfo
+import android.support.v4.media.session.MediaSessionCompat
+import com.lzx.starrysky.SongInfo
 
 interface INotification {
 
@@ -24,9 +25,15 @@ interface INotification {
     /**
      * 状态改变
      */
-    fun onPlaybackStateChanged(songInfo: SongInfo?, playbackState: String)
+    fun onPlaybackStateChanged(songInfo: SongInfo?, playbackState: String,
+                               hasNextSong: Boolean, hasPreSong: Boolean)
+
+    fun setSessionToken(mediaSession: MediaSessionCompat.Token?)
 
     companion object {
+        const val SYSTEM_NOTIFICATION = 1
+        const val CUSTOM_NOTIFICATION = 2
+
         const val NOTIFICATION_ID = 412
         const val REQUEST_CODE = 100
 

@@ -2,7 +2,6 @@ package com.lzx.starrysky.playback
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.DefaultRenderersFactory.ExtensionRendererMode
@@ -27,23 +26,18 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.util.Util
-import com.lzx.basecode.AudioDecoder
-import com.lzx.basecode.FocusInfo
-import com.lzx.basecode.Playback
-import com.lzx.basecode.Playback.Companion.STATE_BUFFERING
-import com.lzx.basecode.Playback.Companion.STATE_IDLE
-import com.lzx.basecode.Playback.Companion.STATE_PAUSED
-import com.lzx.basecode.Playback.Companion.STATE_PLAYING
-import com.lzx.basecode.SongInfo
-import com.lzx.basecode.TimerTaskManager
-import com.lzx.basecode.isFLAC
-import com.lzx.basecode.isRTMP
-import com.lzx.basecode.isRecord
-import com.lzx.basecode.isRefrain
+import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.cache.ICache
-import com.lzx.starrysky.utils.StarrySkyUtils
-import java.util.concurrent.LinkedBlockingDeque
+import com.lzx.starrysky.playback.Playback.Companion.STATE_BUFFERING
+import com.lzx.starrysky.playback.Playback.Companion.STATE_ERROR
+import com.lzx.starrysky.playback.Playback.Companion.STATE_IDLE
+import com.lzx.starrysky.playback.Playback.Companion.STATE_PAUSED
+import com.lzx.starrysky.playback.Playback.Companion.STATE_PLAYING
+import com.lzx.starrysky.utils.isFLAC
+import com.lzx.starrysky.utils.isRTMP
+import com.lzx.starrysky.utils.orDef
 
 /**
  * isAutoManagerFocus 是否让播放器自动管理焦点
@@ -65,63 +59,38 @@ class ExoPlayback(val context: Context,
     private var trackSelectorParameters: DefaultTrackSelector.Parameters? = null
 
     private var currSongInfo: SongInfo? = null
-    private var exoPlayerNullIsStopped = false
     private var callback: Playback.Callback? = null
     private val mEventListener by lazy { ExoPlayerEventListener() }
     private var sourceTypeErrorInfo: SourceTypeErrorInfo = SourceTypeErrorInfo()
     private var focusManager = FocusManager(context)
 
-    //音频解码器
-    private var audioDecoder = AudioDecoder()
-    private var isRecording = false
-    private var timerTask: TimerTaskManager? = null
-    private val pcmBufferBytes = LinkedBlockingDeque<ByteArray>()
-
     init {
         focusManager.listener = this
-        timerTask = TimerTaskManager()
-        timerTask?.setUpdateProgressTask {
-            val isPlaying = player?.playbackState == Player.STATE_READY && player?.playWhenReady == true
-            if (isPlaying && isRecording) {
-                audioDecoder.pcmData?.bufferBytes?.let {
-                    Log.i("XIAN", "bufferBytes = $it")
-                    pcmBufferBytes.add(it)
+    }
+
+    override fun playbackState(): Int {
+        return if (player == null) {
+            STATE_IDLE
+        } else {
+            when (player?.playbackState) {
+                Player.STATE_IDLE -> STATE_IDLE //error或stop
+                Player.STATE_BUFFERING -> STATE_BUFFERING
+                Player.STATE_READY -> {
+                    if (player?.playWhenReady == true) STATE_PLAYING else STATE_PAUSED
                 }
+                Player.STATE_ENDED -> STATE_IDLE
+                else -> STATE_IDLE
             }
         }
     }
 
-    override val playbackState: Int
-        get() {
-            return if (player == null) {
-                if (exoPlayerNullIsStopped) STATE_PAUSED else STATE_IDLE
-            } else {
-                when (player?.playbackState) {
-                    Player.STATE_IDLE -> STATE_IDLE
-                    Player.STATE_BUFFERING -> STATE_BUFFERING
-                    Player.STATE_READY -> {
-                        if (player?.playWhenReady == true) STATE_PLAYING else STATE_PAUSED
-                    }
-                    Player.STATE_ENDED -> STATE_IDLE
-                    else -> STATE_IDLE
-                }
-            }
-        }
+    override fun isPlaying(): Boolean = player?.playWhenReady == true
 
-    override val isConnected: Boolean
-        get() = true
+    override fun currentStreamPosition(): Long = player?.currentPosition.orDef()
 
-    override val isPlaying: Boolean
-        get() = player?.playWhenReady == true
+    override fun bufferedPosition(): Long = player?.bufferedPosition.orDef()
 
-    override val currentStreamPosition: Long
-        get() = player?.currentPosition ?: 0
-
-    override val bufferedPosition: Long
-        get() = player?.bufferedPosition ?: 0
-
-    override val duration: Long
-        get() = player?.duration ?: -1
+    override fun duration(): Long = player?.duration.orDef()
 
     override var currentMediaId: String = ""
 
@@ -131,11 +100,9 @@ class ExoPlayback(val context: Context,
 
     override fun getVolume(): Float = player?.volume ?: -1f
 
-    override val currPlayInfo: SongInfo?
-        get() = currSongInfo
+    override fun getCurrPlayInfo(): SongInfo? = currSongInfo
 
-    override val audioSessionId: Int
-        get() = player?.audioSessionId ?: 0
+    override fun getAudioSessionId(): Int = player?.audioSessionId.orDef()
 
     private fun getPlayWhenReady() = player?.playWhenReady ?: false
 
@@ -145,11 +112,11 @@ class ExoPlayback(val context: Context,
             return
         }
         currSongInfo = songInfo
-        var mediaHasChanged = mediaId != currentMediaId
+        val mediaHasChanged = mediaId != currentMediaId
         if (mediaHasChanged) {
             currentMediaId = mediaId
         }
-        StarrySkyUtils.log(
+        StarrySky.log(
             "title = " + songInfo.songName +
                 " \n音频是否有改变 = " + mediaHasChanged +
                 " \n是否立即播放 = " + isPlayWhenReady +
@@ -158,24 +125,17 @@ class ExoPlayback(val context: Context,
         //url 处理
         var source = songInfo.songUrl
         if (source.isEmpty()) {
-            callback?.onPlaybackError(currPlayInfo, "播放 url 为空")
+            callback?.onPlaybackError(currSongInfo, "播放 url 为空")
             return
         }
         source = source.replace(" ".toRegex(), "%20") // Escape spaces for URL
         //代理url
         val proxyUrl = cache?.getProxyUrl(source)
         source = if (proxyUrl.isNullOrEmpty()) source else proxyUrl
-        //解码
-        if (songInfo.isRecord()) {
-            audioDecoder.initMediaDecode(url = source, songInfo.headData)
-            audioDecoder.decodePcmInfo(600)
-            timerTask?.startToUpdateProgress(100)
-            mediaHasChanged = true //如果是录音解码，每次都当是个新歌曲
-        }
+
         mediaSource = createMediaSource(source)
         if (mediaSource == null) return
         if (mediaHasChanged || player == null) {
-            releaseResources(false)  // release everything except the player
             //创建播放器实例
             createExoPlayer()
             player?.setMediaSource(mediaSource!!)
@@ -200,17 +160,14 @@ class ExoPlayback(val context: Context,
                 }
             }
         }
-        StarrySkyUtils.log("isPlayWhenReady = $isPlayWhenReady")
-        StarrySkyUtils.log("---------------------------------------")
+        StarrySky.log("isPlayWhenReady = $isPlayWhenReady")
+        StarrySky.log("---------------------------------------")
         //如果准备好就播放
         if (isPlayWhenReady) {
             player?.playWhenReady = true
             if (!isAutoManagerFocus) {
                 player?.playbackState?.let { focusManager.updateAudioFocus(getPlayWhenReady(), it) }
             }
-        }
-        if (songInfo.isRefrain()) {
-            StarrySkyUtils.log("播放伴奏 = ${songInfo.songId}")
         }
     }
 
@@ -347,31 +304,21 @@ class ExoPlayback(val context: Context,
         }
     }
 
-    private fun releaseResources(releasePlayer: Boolean) {
-        if (releasePlayer) {
-            player?.release()
-            player?.removeListener(mEventListener)
-            player = null
-            exoPlayerNullIsStopped = true
-            if (!isAutoManagerFocus) {
-                focusManager.release()
-            }
-        }
-        pcmBufferBytes.clear()
-    }
-
     override fun stop() {
-        timerTask?.removeUpdateProgressTask()
-        releaseResources(true)
+        player?.stop(true)
+        player?.release()
+        player?.removeListener(mEventListener)
+        player = null
+        if (!isAutoManagerFocus) {
+            focusManager.release()
+        }
     }
 
     override fun pause() {
-        timerTask?.stopToUpdateProgress()
         player?.playWhenReady = false
         if (!isAutoManagerFocus) {
             player?.playbackState?.let { focusManager.updateAudioFocus(getPlayWhenReady(), it) }
         }
-        releaseResources(false)
     }
 
     override fun seekTo(position: Long) {
@@ -382,20 +329,20 @@ class ExoPlayback(val context: Context,
         }
     }
 
-    override fun onFastForward() {
+    override fun onFastForward(speed: Float) {
         player?.let {
             val currSpeed = it.playbackParameters.speed
             val currPitch = it.playbackParameters.pitch
-            val newSpeed = currSpeed + 0.5f
+            val newSpeed = currSpeed + speed
             it.setPlaybackParameters(PlaybackParameters(newSpeed, currPitch))
         }
     }
 
-    override fun onRewind() {
+    override fun onRewind(speed: Float) {
         player?.let {
             val currSpeed = it.playbackParameters.speed
             val currPitch = it.playbackParameters.pitch
-            var newSpeed = currSpeed - 0.5f
+            var newSpeed = currSpeed - speed
             if (newSpeed <= 0) {
                 newSpeed = 0f
             }
@@ -418,39 +365,37 @@ class ExoPlayback(val context: Context,
         return player?.playbackParameters?.speed ?: 1.0f
     }
 
-    override fun getBufferSize(): Int {
-        return audioDecoder.bufferSize
+    override fun skipToNext() {
+        callback?.skipToNext()
     }
 
-    override fun getPcmBufferBytes(): ByteArray? {
-        if (pcmBufferBytes.isEmpty()) {
-            return null
-        }
-        return pcmBufferBytes.poll()
+    override fun skipToPrevious() {
+        callback?.skipToPrevious()
     }
 
-    override fun getAudioDecoder(): AudioDecoder? = audioDecoder
-
-    override fun setRecording(isRecording: Boolean) {
-        this.isRecording = isRecording
-    }
-
-    override fun setCallback(callback: Playback.Callback) {
+    override fun setCallback(callback: Playback.Callback?) {
         this.callback = callback
     }
 
     private inner class ExoPlayerEventListener : Player.EventListener {
+        private var hasError = false
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             var newState = STATE_IDLE
             when (playbackState) {
-                Player.STATE_IDLE -> newState = STATE_IDLE
+                Player.STATE_IDLE -> {
+                    //error和stop的时候会是这个状态，这里过滤掉error，避免重复回调
+                    newState = if (hasError) STATE_ERROR else STATE_IDLE
+                }
                 Player.STATE_READY -> {
                     newState = if (player?.playWhenReady == true) STATE_PLAYING else STATE_PAUSED
                 }
                 Player.STATE_ENDED -> newState = STATE_IDLE
                 Player.STATE_BUFFERING -> newState = STATE_BUFFERING
             }
-            callback?.onPlayerStateChanged(currSongInfo, playWhenReady, newState)
+            if (!hasError) {
+                callback?.onPlayerStateChanged(currSongInfo, playWhenReady, newState)
+                hasError = false
+            }
             if (playbackState == Player.STATE_READY) {
                 sourceTypeErrorInfo.clear()
             }
@@ -458,6 +403,7 @@ class ExoPlayback(val context: Context,
 
         override fun onPlayerError(error: ExoPlaybackException) {
             error.printStackTrace()
+            hasError = true
             val what: String = when (error.type) {
                 ExoPlaybackException.TYPE_SOURCE -> error.sourceException.message.toString()
                 ExoPlaybackException.TYPE_RENDERER -> error.rendererException.message.toString()
@@ -467,9 +413,8 @@ class ExoPlayback(val context: Context,
             if (error.type == ExoPlaybackException.TYPE_SOURCE) {
                 sourceTypeErrorInfo.happenSourceError = true
                 sourceTypeErrorInfo.seekToPositionWhenError = sourceTypeErrorInfo.seekToPosition
-                sourceTypeErrorInfo.currPositionWhenError = currentStreamPosition
+                sourceTypeErrorInfo.currPositionWhenError = currentStreamPosition()
             }
-            timerTask?.removeUpdateProgressTask()
             callback?.onPlaybackError(currSongInfo, "ExoPlayer error $what")
         }
     }

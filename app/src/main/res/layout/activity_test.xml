@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/playMusicById"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="播放byId" />
+
+        <Button
+            android:id="@+id/playMusicByUrl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="播放byUrl" />
+
+
+        <Button
+            android:id="@+id/playMusicByInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="播放byInfo" />
+
+        <Button
+            android:id="@+id/playMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="播放byList" />
+
+        <Button
+            android:id="@+id/pauseMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="暂停" />
+
+        <Button
+            android:id="@+id/restoreMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="恢复" />
+
+
+        <Button
+            android:id="@+id/stopMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止" />
+
+        <Button
+            android:id="@+id/skipToNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下一首" />
+
+        <Button
+            android:id="@+id/skipToPrevious"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="上一首" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/setRepeatMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设置播放模式" />
+
+        <Button
+            android:id="@+id/getRepeatMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取播放模式" />
+
+
+        <Button
+            android:id="@+id/getPlayList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取播放列表" />
+
+        <Button
+            android:id="@+id/getNowPlayingSongInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取播放信息" />
+
+        <Button
+            android:id="@+id/getNowPlayingIndex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取播放下标" />
+
+        <Button
+            android:id="@+id/isSkipToNextEnabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="是否能下一首" />
+
+
+        <Button
+            android:id="@+id/isSkipToPreviousEnabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="是否能上一首" />
+
+
+        <Button
+            android:id="@+id/getAudioSessionId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="sessionId" />
+
+
+        <Button
+            android:id="@+id/querySongInfoInLocal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="查本地音乐" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvPro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="进度：" />
+
+        <SeekBar
+            android:id="@+id/seekBarPro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="3.4dp"
+            android:minHeight="3.4dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:progressDrawable="@drawable/seek_bar_pro"
+            android:splitTrack="false"
+            android:thumb="@drawable/seek_bar_thumb" />
+
+        <TextView
+            android:id="@+id/tvVolume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="音量 ：" />
+
+        <SeekBar
+            android:id="@+id/seekBarVolume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:maxHeight="3.4dp"
+            android:minHeight="3.4dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:progressDrawable="@drawable/seek_bar_pro"
+            android:splitTrack="false"
+            android:thumb="@drawable/seek_bar_thumb" />
+
+        <TextView
+            android:id="@+id/tvSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="音速 ：" />
+
+        <SeekBar
+            android:id="@+id/seekBarSpeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="200"
+            android:maxHeight="3.4dp"
+            android:minHeight="3.4dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:progressDrawable="@drawable/seek_bar_pro"
+            android:splitTrack="false"
+            android:thumb="@drawable/seek_bar_thumb" />
+
+        <Button
+            android:id="@+id/cacheSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="缓存" />
+
+        <Button
+            android:id="@+id/interceptor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加拦截器" />
+
+        <Button
+            android:id="@+id/soundPool"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="soundPool" />
+    </LinearLayout>
+</LinearLayout>

@@ -10,8 +10,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.lzx.basecode.TimerTaskManager
-import com.lzx.basecode.isRefrain
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.musiclib.weight.dialog.CommonBehavior
@@ -21,7 +19,8 @@ import com.lzx.musiclib.weight.dialog.getCustomView
 import com.lzx.musiclib.weight.dialog.lifecycleOwner
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
-import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.manager.PlaybackStage
+import com.lzx.starrysky.utils.TimerTaskManager
 import kotlinx.android.synthetic.main.fragment_play_detail.btnAccompaniment
 import kotlinx.android.synthetic.main.fragment_play_detail.btnNextSong
 import kotlinx.android.synthetic.main.fragment_play_detail.btnPlayMode
@@ -54,7 +53,7 @@ class PlayDetailFragment : BaseFragment() {
     private var channelId: Int = 10
 
     private var viewModel: MusicViewModel? = null
-    private var timerTaskManager =  TimerTaskManager()
+    private var timerTaskManager = TimerTaskManager()
     private var dialog: MaterialDialog? = null
     private var refrainList = mutableListOf<String>()
     private val soundPoolList = mutableListOf<String>()
@@ -107,12 +106,12 @@ class PlayDetailFragment : BaseFragment() {
         soundPoolList.add("hglo8.ogg")
 
         StarrySky.with().playbackState().observe(this, Observer {
-            if (it.songInfo.isRefrain()) {
-                if (it.stage == PlaybackStage.PLAYING) {
-                    nextBeat = -1
-                }
-                return@Observer
-            }
+//            if (it.songInfo.isRefrain()) {
+//                if (it.stage == PlaybackStage.PLAYING) {
+//                    nextBeat = -1
+//                }
+//                return@Observer
+//            }
             when (it.stage) {
                 PlaybackStage.PLAYING -> {
                     songName?.text = it.songInfo?.songName
@@ -121,7 +120,7 @@ class PlayDetailFragment : BaseFragment() {
                     timerTaskManager.startToUpdateProgress()
                 }
                 PlaybackStage.PAUSE,
-                PlaybackStage.STOP -> {
+                PlaybackStage.IDEA -> {
                     btnPlayState?.setImageResource(R.drawable.gdt_ic_play)
                     timerTaskManager.stopToUpdateProgress()
                 }
@@ -129,10 +128,6 @@ class PlayDetailFragment : BaseFragment() {
                     btnPlayState?.setImageResource(R.drawable.gdt_ic_pause)
                     timerTaskManager.stopToUpdateProgress()
                     activity?.showToast("播放失败：" + it.errorMsg)
-                }
-                PlaybackStage.IDEA -> {
-                    btnPlayState?.setImageResource(R.drawable.gdt_ic_play)
-                    timerTaskManager.stopToUpdateProgress()
                 }
             }
         })
@@ -151,7 +146,7 @@ class PlayDetailFragment : BaseFragment() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                StarrySky.with().seekTo(seekBar.progress.toLong())
+                StarrySky.with().seekTo(seekBar.progress.toLong(),true)
             }
         })
         btnVolume?.setOnClickListener {
@@ -214,22 +209,22 @@ class PlayDetailFragment : BaseFragment() {
                 }
             }
         }
-        if (StarrySky.with().isRefrainPlaying()) {
-            txtAccompaniment?.text = "伴奏关"
-            isStartRefraining = true
-        } else {
-            txtAccompaniment?.text = "伴奏开"
-            isStartRefraining = false
-        }
+//        if (StarrySky.with().isRefrainPlaying()) {
+//            txtAccompaniment?.text = "伴奏关"
+//            isStartRefraining = true
+//        } else {
+//            txtAccompaniment?.text = "伴奏开"
+//            isStartRefraining = false
+//        }
         btnAccompaniment?.setOnClickListener {
-            isStartRefraining = if (StarrySky.with().isRefrainPlaying() || StarrySky.with().isRefrainBuffering()) {
-                StarrySky.with().stopRefrain()
-                txtAccompaniment?.text = "伴奏开"
-                false
-            } else {
-                txtAccompaniment?.text = "伴奏关"
-                true
-            }
+//            isStartRefraining = if (StarrySky.with().isRefrainPlaying() || StarrySky.with().isRefrainBuffering()) {
+//                StarrySky.with().stopRefrain()
+//                txtAccompaniment?.text = "伴奏开"
+//                false
+//            } else {
+//                txtAccompaniment?.text = "伴奏关"
+//                true
+//            }
         }
     }
 
@@ -264,7 +259,7 @@ class PlayDetailFragment : BaseFragment() {
 //        StarrySky.with().playRefrain(SongInfo(url.md5(), url))
 
         //使用 SongPool播放伴奏
-        StarrySky.soundPool().prepareForAssets(soundPoolList) {
+        StarrySky.soundPool()?.prepareForAssets(soundPoolList) {
             it.playSound(i)
         }
     }
@@ -317,6 +312,6 @@ class PlayDetailFragment : BaseFragment() {
     }
 
     override fun unInitView() {
-        StarrySky.soundPool().release()
+        StarrySky.soundPool()?.release()
     }
 }

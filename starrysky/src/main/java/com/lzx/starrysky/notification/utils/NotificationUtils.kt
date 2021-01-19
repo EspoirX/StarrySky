@@ -1,16 +1,20 @@
 package com.lzx.starrysky.notification.utils
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
 import com.lzx.starrysky.R
-import com.lzx.basecode.SongInfo
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.INotification.Companion.CHANNEL_ID
 import com.lzx.starrysky.notification.NotificationConfig
@@ -72,4 +76,24 @@ object NotificationUtils {
             manager.createNotificationChannel(notificationChannel)
         }
     }
+
+
+    fun createNoCrashNotification(context: Context): Notification {
+        val notifyBuilder = if (Build.VERSION.SDK_INT >= 26) {
+            val manager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+            createNotificationChannel(context, manager)
+            val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            builder.setVibrate(longArrayOf(0L))
+            builder.setSound(null as Uri?)
+            builder.setDefaults(0)
+            builder
+        } else {
+            NotificationCompat.Builder(context)
+        }
+        return notifyBuilder
+            .setContentTitle("防止崩溃notification")
+            .setSmallIcon(R.drawable.ic_notification).build()
+
+    }
 }
+

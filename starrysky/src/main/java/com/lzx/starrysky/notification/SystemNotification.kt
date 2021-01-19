@@ -13,20 +13,23 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
-import com.lzx.basecode.getPendingIntent
-import com.lzx.basecode.getTargetClass
 import com.lzx.starrysky.R
-import com.lzx.basecode.SongInfo
-import com.lzx.starrysky.imageloader.ImageLoaderCallBack
+import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_NEXT
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_PAUSE
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_PLAY
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_PREV
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_STOP
+import com.lzx.starrysky.notification.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.notification.utils.NotificationUtils
-import com.lzx.starrysky.playback.PlaybackStage
-import com.lzx.starrysky.service.MusicService
+import com.lzx.starrysky.playback.Playback
+import com.lzx.starrysky.manager.PlaybackStage
+import com.lzx.starrysky.utils.getPendingIntent
+import com.lzx.starrysky.utils.getTargetClass
 
 class SystemNotification constructor(
     val context: Context,
@@ -43,10 +46,13 @@ class SystemNotification constructor(
     private var playbackState: String = PlaybackStage.IDEA
     private var songInfo: SongInfo? = null
 
+    private var mediaSession: MediaSessionCompat.Token? = null
     private val mNotificationManager: NotificationManager?
     private val packageName: String
     private var mStarted = false
     private var lastClickTime: Long = 0
+    private var hasNextSong = false
+    private var hasPreSong = false
 
     init {
         mNotificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
@@ -61,10 +67,13 @@ class SystemNotification constructor(
         mNotificationManager.cancelAll()
     }
 
-    override fun onPlaybackStateChanged(songInfo: SongInfo?, playbackState: String) {
+    override fun onPlaybackStateChanged(songInfo: SongInfo?, playbackState: String,
+                                        hasNextSong: Boolean, hasPreSong: Boolean) {
+        this.hasNextSong = hasNextSong
+        this.hasPreSong = hasPreSong
         this.playbackState = playbackState
         this.songInfo = songInfo
-        if (playbackState == PlaybackStage.STOP || playbackState == PlaybackStage.IDEA) {
+        if (playbackState == PlaybackStage.IDEA) {
             stopNotification()
         } else {
             val notification = createNotification()
@@ -74,18 +83,34 @@ class SystemNotification constructor(
         }
     }
 
+    override fun setSessionToken(mediaSession: MediaSessionCompat.Token?) {
+        this.mediaSession = mediaSession
+    }
+
+    private fun pauseMusic(player: Playback?) {
+        if (player?.isPlaying() == true) {
+            player.pause()
+        }
+    }
+
+    private fun restoreMusic(player: Playback?) {
+        player?.getCurrPlayInfo()?.let {
+            player.play(it, true)
+        }
+    }
+
     override fun onReceive(context: Context?, intent: Intent?) {
         val action = intent?.action ?: return
         val nowTime = System.currentTimeMillis()
         if (nowTime - lastClickTime <= INotification.TIME_INTERVAL) {
             return
         }
-        val playerControl = (context as MusicService).bridge?.playerControl
+        val player = (context as MusicService).binder?.player
         when (action) {
-            ACTION_PAUSE -> playerControl?.pauseMusic()
-            ACTION_PLAY -> playerControl?.restoreMusic()
-            ACTION_NEXT -> playerControl?.skipToNext()
-            ACTION_PREV -> playerControl?.skipToPrevious()
+            ACTION_PAUSE -> pauseMusic(player)
+            ACTION_PLAY -> restoreMusic(player)
+            ACTION_NEXT -> player?.skipToNext()
+            ACTION_PREV -> player?.skipToPrevious()
         }
         lastClickTime = nowTime
     }
@@ -106,7 +131,6 @@ class SystemNotification constructor(
                 filter.addAction(ACTION_PLAY)
                 filter.addAction(ACTION_PREV)
                 context.registerReceiver(this, filter)
-                MusicService.isRunningForeground = true
                 (context as MusicService).startForeground(INotification.NOTIFICATION_ID, notification)
                 mStarted = true
             }
@@ -122,7 +146,6 @@ class SystemNotification constructor(
             } catch (ex: IllegalArgumentException) {
                 ex.printStackTrace()
             }
-            MusicService.isRunningForeground = false
             (context as MusicService).stopForeground(true)
         }
     }
@@ -151,14 +174,13 @@ class SystemNotification constructor(
         val smallIcon = if (config.smallIconRes != -1) config.smallIconRes else
             R.drawable.ic_notification
 
-        val token = (context as MusicService).bridge?.sessionManager?.getMediaSession()
         notificationBuilder
             .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
                 // show only play/pause in compact view
                 .setShowActionsInCompactView(playPauseButtonPosition)
                 .setShowCancelButton(true)
                 .setCancelButtonIntent(mStopIntent)
-                .setMediaSession(token)
+                .setMediaSession(mediaSession)
             )
             .setDeleteIntent(mStopIntent)
             .setColorized(true)
@@ -185,7 +207,6 @@ class SystemNotification constructor(
 
     private fun setNotificationPlaybackState(builder: NotificationCompat.Builder) {
         if (!mStarted) {
-            MusicService.isRunningForeground = false
             (context as MusicService).stopForeground(true)
             return
         }
@@ -199,8 +220,7 @@ class SystemNotification constructor(
         fetchArtUrl: String,
         notificationBuilder: NotificationCompat.Builder
     ) {
-        val imageLoader = (context as MusicService).bridge?.imageLoader
-        imageLoader?.load(fetchArtUrl, object : ImageLoaderCallBack {
+        StarrySky.getImageLoader()?.load(fetchArtUrl, object : ImageLoaderCallBack {
             override fun onBitmapLoaded(bitmap: Bitmap?) {
                 if (bitmap == null) {
                     return
@@ -220,12 +240,9 @@ class SystemNotification constructor(
      */
     private fun addActions(notificationBuilder: NotificationCompat.Builder): Int {
         var playPauseButtonPosition = 0
-        val playerControl = (context as MusicService).bridge?.playerControl
-        val hasNext = playerControl?.isSkipToNextEnabled() ?: false
-        val hasPrevious = playerControl?.isSkipToPreviousEnabled() ?: false
 
         // 如果有上一首
-        if (hasPrevious) {
+        if (hasPreSong) {
             val icon = if (config.skipPreviousDrawableRes != -1) config.skipPreviousDrawableRes else R.drawable.ic_skip_previous_white_24dp
             val title = if (config.skipPreviousTitle.isNotEmpty()) config.skipPreviousTitle else context.getString(R.string.label_previous)
             notificationBuilder.addAction(icon, title, mPreviousIntent)
@@ -250,7 +267,7 @@ class SystemNotification constructor(
         notificationBuilder.addAction(NotificationCompat.Action(icon, label, intent))
 
         // 如果有下一首
-        if (hasNext) {
+        if (hasNextSong) {
             val actionIcon = if (config.skipNextDrawableRes != -1) config.skipNextDrawableRes else R.drawable.ic_skip_next_white_24dp
             val title = if (config.skipNextTitle.isNotEmpty()) config.skipNextTitle else context.getString(R.string.label_next)
             notificationBuilder.addAction(actionIcon, title, mNextIntent)

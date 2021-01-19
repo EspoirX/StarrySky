@@ -1,6 +1,6 @@
 package com.lzx.starrysky.intercept
 
-import com.lzx.basecode.SongInfo
+import com.lzx.starrysky.SongInfo
 
 
 interface InterceptorCallback {

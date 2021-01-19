@@ -11,10 +11,9 @@ import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.base.BaseFragment
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.musiclib.weight.SpectrumDrawView
-import com.lzx.basecode.SongInfo
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
-import com.lzx.basecode.isRefrain
-import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.manager.PlaybackStage
 import kotlinx.android.synthetic.main.fragment_recomment.recycleView
 
 class PlayListFragment : BaseFragment() {
@@ -37,9 +36,9 @@ class PlayListFragment : BaseFragment() {
         channelId = arguments?.getInt("channelId") ?: 10
         viewModel = ViewModelProvider(this)[MusicViewModel::class.java]
         StarrySky.with().playbackState().observe(this, Observer {
-            if (it.songInfo.isRefrain()) {
-                return@Observer
-            }
+//            if (it.songInfo.isRefrain()) {
+//                return@Observer
+//            }
             when (it.stage) {
                 PlaybackStage.PLAYING -> {
                     initRecycleView(StarrySky.with().getPlayList())

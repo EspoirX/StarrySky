@@ -4,23 +4,23 @@ import android.app.PendingIntent
 import android.os.Bundle
 
 class NotificationConfig private constructor(
-    val targetClass: String?, //通知栏点击转跳界面
-    val targetClassBundle: Bundle?, //点击通知栏传递的参数
-    val nextIntent: PendingIntent?,  //下一首按钮 PendingIntent
-    val preIntent: PendingIntent?, //上一首按钮 PendingIntent
-    val closeIntent: PendingIntent?, //关闭按钮 PendingIntent
-    val favoriteIntent: PendingIntent?, //喜欢或收藏按钮 PendingIntent
-    val lyricsIntent: PendingIntent?, //桌面歌词按钮 PendingIntent
-    val playIntent: PendingIntent?, //播放按钮 PendingIntent
-    val pauseIntent: PendingIntent?, // 暂停按钮 PendingIntent
+    val targetClass: String?,              //通知栏点击转跳界面
+    val targetClassBundle: Bundle?,        //点击通知栏传递的参数
+    val nextIntent: PendingIntent?,        //下一首按钮 PendingIntent
+    val preIntent: PendingIntent?,         //上一首按钮 PendingIntent
+    val closeIntent: PendingIntent?,       //关闭按钮 PendingIntent
+    val favoriteIntent: PendingIntent?,    //喜欢或收藏按钮 PendingIntent
+    val lyricsIntent: PendingIntent?,      //桌面歌词按钮 PendingIntent
+    val playIntent: PendingIntent?,        //播放按钮 PendingIntent
+    val pauseIntent: PendingIntent?,       // 暂停按钮 PendingIntent
     val playOrPauseIntent: PendingIntent?, // 播放/暂停按钮 PendingIntent
-    val stopIntent: PendingIntent?, //停止按钮 PendingIntent
-    val downloadIntent: PendingIntent?,  //下载按钮 PendingIntent
-    val pendingIntentMode: Int, //通知栏点击模式
-    val skipPreviousDrawableRes: Int,  //上一首的drawable res
-    val skipPreviousTitle: String,  //上一首的 title
-    val skipNextDrawableRes: Int,  //下一首的drawable res
-    val skipNextTitle: String,  //下一首的 title
+    val stopIntent: PendingIntent?,        //停止按钮 PendingIntent
+    val downloadIntent: PendingIntent?,    //下载按钮 PendingIntent
+    val pendingIntentMode: Int,            //通知栏点击模式
+    val skipPreviousDrawableRes: Int,      //上一首的drawable res
+    val skipPreviousTitle: String,         //上一首的 title
+    val skipNextDrawableRes: Int,          //下一首的drawable res
+    val skipNextTitle: String,             //下一首的 title
     val labelPause: String,
     val pauseDrawableRes: Int,
     val labelPlay: String,

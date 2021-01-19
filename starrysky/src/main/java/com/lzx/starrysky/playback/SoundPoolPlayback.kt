@@ -6,9 +6,10 @@ import android.media.AudioManager
 import android.media.SoundPool
 import android.os.AsyncTask
 import android.os.Build
-import com.lzx.basecode.MainLooper
-import com.lzx.basecode.md5
-import com.lzx.basecode.readAsBytes
+import com.lzx.starrysky.utils.MainLooper
+import com.lzx.starrysky.utils.md5
+import com.lzx.starrysky.utils.orDef
+import com.lzx.starrysky.utils.readAsBytes
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -26,6 +27,7 @@ class SoundPoolPlayback(private val context: Context?) {
     private var songIdList = mutableListOf<Int>()
     private var maxSongSize = 12
     private var hasLoaded = false
+    private val volumeMap = hashMapOf<Int, SoundPoolVolume>()
     private val am = context?.getSystemService(Context.AUDIO_SERVICE) as AudioManager?
     private val maxVolume = am?.getStreamMaxVolume(AudioManager.STREAM_MUSIC)?.toFloat() ?: 0F
     private val currentVolume = am?.getStreamVolume(AudioManager.STREAM_MUSIC)?.toFloat() ?: 0F
@@ -294,8 +296,9 @@ class SoundPoolPlayback(private val context: Context?) {
         val left = if (leftVolume == -1f) volumeRatio else leftVolume
         val right = if (rightVolume == -1f) volumeRatio else rightVolume
         return songIdList.getOrNull(index)?.let {
-            soundPool?.play(it, left, right, priority, loop, rate) ?: 0
-        } ?: 0
+            volumeMap[it] = SoundPoolVolume(left, right)
+            soundPool?.play(it, left, right, priority, loop, rate).orDef()
+        }.orDef()
     }
 
     /**
@@ -324,8 +327,14 @@ class SoundPoolPlayback(private val context: Context?) {
     fun setVolume(streamID: Int, leftVolume: Float, rightVolume: Float) = apply {
         if (leftVolume >= 0 && rightVolume >= 0) {
             soundPool?.setVolume(streamID, leftVolume, rightVolume)
+            volumeMap[streamID] = SoundPoolVolume(leftVolume, rightVolume)
         }
     }
+
+    /**
+     * 获取当前音量
+     */
+    fun getVolume(streamID: Int): SoundPoolVolume? = volumeMap[streamID]
 
     /**
      * 设置指定播放流的优先级，playSound 中已说明 priority 的作用.
@@ -346,3 +355,5 @@ class SoundPoolPlayback(private val context: Context?) {
         soundPool = null
     }
 }
+
+data class SoundPoolVolume(var leftVolume: Float, var rightVolume: Float)

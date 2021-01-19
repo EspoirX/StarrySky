@@ -7,7 +7,6 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.os.Looper
 import android.os.Parcelable
 import android.util.TypedValue
@@ -27,7 +26,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
-import com.lzx.basecode.MainLooper
+import com.lzx.starrysky.utils.MainLooper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray

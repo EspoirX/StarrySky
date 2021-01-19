@@ -1,33 +1,27 @@
 package com.lzx.musiclib
 
+//import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import android.Manifest
 import android.app.Application
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.IBinder
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
-import com.lzx.basecode.MainLooper
-import com.lzx.basecode.SongInfo
-import com.lzx.basecode.toSdcardPath
-import com.lzx.record.StarrySkyRecord
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.StarrySkyConfig
 import com.lzx.starrysky.cache.ICache
-import com.lzx.starrysky.imageloader.ImageLoaderCallBack
-import com.lzx.starrysky.imageloader.ImageLoaderStrategy
+import com.lzx.starrysky.intercept.AsyncInterceptor
 import com.lzx.starrysky.intercept.InterceptorCallback
-import com.lzx.starrysky.intercept.StarrySkyInterceptor
+import com.lzx.starrysky.intercept.SyncInterceptor
 import com.lzx.starrysky.notification.NotificationConfig
-import com.lzx.starrysky.playback.ExoPlayback
+import com.lzx.starrysky.notification.imageloader.ImageLoaderCallBack
+import com.lzx.starrysky.notification.imageloader.ImageLoaderStrategy
+import com.lzx.starrysky.utils.StarrySkyConstant
+import com.lzx.starrysky.utils.toSdcardPath
 import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
@@ -60,14 +54,14 @@ open class TestApplication : Application() {
                 return@targetClassBundle bundle
             }
         }
-        val config = StarrySkyConfig().newBuilder()
-            .isOpenCache(true)
+        StarrySky.init(this)
+            .setOpenCache(true)
             .setCacheDestFileDir("000StarrySkyCache/".toSdcardPath())
-//            .setCacheMaxBytes(1024 * 1024 * 1024)  //设置缓存上限，默认 512 * 1024 * 1024
-//            .setCache(AndroidVideoCache(this))
+            .setCacheMaxBytes(1024 * 1024 * 1024)  //设置缓存上限，默认 512 * 1024 * 1024
+            .setCache(AndroidVideoCache(this))
             .addInterceptor(PermissionInterceptor(this))
 //            .addInterceptor(RequestSongInfoInterceptor())
-//            .addInterceptor(RequestSongCoverInterceptor())
+            .addInterceptor(RequestSongCoverInterceptor())
             .setImageLoader(object : ImageLoaderStrategy {
                 //使用自定义图片加载器
                 override fun loadImage(context: Context, url: String?, callBack: ImageLoaderCallBack) {
@@ -85,48 +79,16 @@ open class TestApplication : Application() {
                     })
                 }
             })
-            .isOpenNotification(true)
-            .setNotificationConfig(notificationConfig)
-            .isCreateRefrainPlayer(true)
-            .isAutoManagerFocus(false)  //因为开了伴奏播放器，所以要关闭自动焦点管理功能
-            //自己管理焦点的示例代码
-//            .setOnAudioFocusChangeListener(object : AudioFocusChangeListener {
-//                override fun onAudioFocusChange(focusInfo: FocusInfo) {
-//                    Log.i("TestApplication", "焦点state=" + focusInfo.audioFocusState + " 播放=" + focusInfo.playerCommand + " 音量=" + focusInfo.volume)
-//                    StarrySky.with().setVolume(focusInfo.volume)
-//                    if (focusInfo.playerCommand == FocusManager.DO_NOT_PLAY || focusInfo.playerCommand == FocusManager.WAIT_FOR_CALLBACK) {
-//                        StarrySky.with().pauseMusic()
-//                    } else if (focusInfo.playerCommand == FocusManager.PLAY_WHEN_READY) {
-//                        StarrySky.with().restoreMusic()
-//                    }
-//                }
-//            })
-            .build()
-        StarrySky.init(this, config, object : ServiceConnection {
-            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                this@TestApplication.showToast("连接成功")
-
-                //发个本地广播通知StarrySky初始化成功了，需要处理的地方可监听该广播
-                val localBroadcastManager = LocalBroadcastManager.getInstance(this@TestApplication)
-                localBroadcastManager.sendBroadcast(Intent("onServiceConnectedSuccessAction"))
-            }
-
-            override fun onServiceDisconnected(name: ComponentName?) {
-                this@TestApplication.showToast("连接失败")
-            }
-        })
-
-        //初始化StarrySky录音功能
-        StarrySkyRecord.initStarrySkyRecord(this@TestApplication)
-        //指定播放录音的播放器(默认播放器不支持seekTo)
-        StarrySkyRecord.setPlayer(ExoPlayback(this@TestApplication, null, true))
+            .setNotificationSwitch(true)
+            //.setNotificationConfig(notificationConfig)
+            .apply()
     }
 
     /**
      * 权限申请拦截器
      */
-    class PermissionInterceptor internal constructor(private val mContext: Context) : StarrySkyInterceptor {
-        override fun process(songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback) {
+    class PermissionInterceptor internal constructor(private val mContext: Context) : AsyncInterceptor() {
+        override fun process(songInfo: SongInfo?, callback: InterceptorCallback) {
             if (songInfo == null) {
                 callback.onInterrupt(RuntimeException("SongInfo is null"))
                 return
@@ -149,13 +111,14 @@ open class TestApplication : Application() {
                     override fun onPermissionDenied(refusedPermissions: Array<Permission>) {
                         SpConstant.HAS_PERMISSION = false
                         callback.onInterrupt(RuntimeException("没有权限，播放失败"))
-                        mainLooper.runOnUiThread(Runnable {
-                            mContext.showToast("没有权限，播放失败")
-                        })
+                        mContext.showToast("没有权限，播放失败")
                     }
                 })
         }
+
+        override fun getTag(): String = "PermissionInterceptor"
     }
+
 
     /**
      * 请求播放url拦截器
@@ -188,27 +151,39 @@ open class TestApplication : Application() {
 //    }
 
     /**
-     * 请求封面url拦截器
+     * 模拟请求封面url拦截器
      */
-//    class RequestSongCoverInterceptor : StarrySkyInterceptor {
-//        private val viewModel = MusicViewModel()
-//        override fun process(
-//            songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback
-//        ) {
-//            if (songInfo == null) {
-//                callback.onInterrupt(RuntimeException("SongInfo is null"))
-//                return
-//            }
-//            if (songInfo.songCover.isEmpty() && songInfo.headData?.get("source") == "qqMusic") {
-//                viewModel.getQQMusicSongCover(songInfo.songId) {
-//                    songInfo.songCover = it
-//                    callback.onContinue(songInfo)
-//                }
-//            } else {
-//                callback.onContinue(songInfo)
-//            }
-//        }
-//    }
+    class RequestSongCoverInterceptor : SyncInterceptor {
+
+        val z = "https://n.sinaimg.cn/sinacn10115/439/w641h598/20200214/4a9b-ipmxpvz8164848.jpg"
+        val a = "https://www.yxwoo.com/uploads/images/xiaz/2020/0629/1593419103514.jpg"
+        val b = "https://tupian.qqw21.com/article/UploadPic/2020-6/202061122583635797.jpg"
+        val c = "https://img.xintp.com/2020/06/05/41xmurd45ei.jpg"
+        val d = "https://www.yxwoo.com/uploads/images/xiaz/2020/0629/1593419103842.jpg"
+        val e = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWIl7bedDSfIb9VLSrQWKIS85S0p-Be-qhLw&usqp=CAU"
+        val f = "https://i.pinimg.com/736x/05/f9/a2/05f9a2605cd47a742bad0466f632fa72.jpg"
+        val g = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFkIzh8fgjP8MCnV8ziC6nkEkUfMEcbjSssA&usqp=CAU"
+
+        val map = hashMapOf<String, String>()
+
+        init {
+            map["z"] = z
+            map["a"] = a
+            map["b"] = b
+            map["c"] = c
+            map["d"] = d
+            map["e"] = e
+            map["f"] = f
+            map["g"] = g
+        }
+
+        override fun process(songInfo: SongInfo?): SongInfo? {
+            songInfo?.songCover = map[songInfo?.songName].orEmpty()
+            return songInfo
+        }
+
+        override fun getTag(): String = "RequestSongCoverInterceptor"
+    }
 
     /**
      * 使用 AndroidVideoCache 这个第三方库做缓存的例子
@@ -234,17 +209,17 @@ open class TestApplication : Application() {
         }
 
         override fun getProxyUrl(url: String): String? {
-            return getProxy()?.getProxyUrl(url)
+            return if (isOpenCache()) getProxy()?.getProxyUrl(url) else url
         }
 
         override fun isOpenCache(): Boolean {
-            return super.isOpenCache()
+            return StarrySkyConstant.KEY_CACHE_SWITCH
         }
 
         override fun getCacheDirectory(context: Context, destFileDir: String?): File? {
             var fileDir = destFileDir
             if (fileDir.isNullOrEmpty()) {
-                fileDir = "StarrySkyCache/".toSdcardPath()
+                fileDir = "00StarrySkyCache/".toSdcardPath()
             }
             if (cacheFile == null && fileDir.isNotEmpty()) {
                 cacheFile = File(fileDir)

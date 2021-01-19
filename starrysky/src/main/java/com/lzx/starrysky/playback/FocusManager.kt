@@ -8,9 +8,7 @@ import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.C.AudioFocusGain
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.util.Util
-import com.lzx.basecode.FocusInfo
-import com.lzx.basecode.Playback
-import com.lzx.starrysky.utils.StarrySkyUtils
+import com.lzx.starrysky.StarrySky
 
 /**
  * 焦点管理
@@ -224,7 +222,7 @@ class FocusManager(val context: Context) {
                 }
                 listener?.focusStateChange(FocusInfo(null, audioFocusState, playerCommand, volumeMultiplier))
             }
-            else -> StarrySkyUtils.log("Unknown focus change type: $focusChange")
+            else -> StarrySky.log("Unknown focus change type: $focusChange")
         }
     }
 

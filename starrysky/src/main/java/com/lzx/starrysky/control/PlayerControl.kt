@@ -1,135 +1,237 @@
 package com.lzx.starrysky.control
 
 import android.content.Context
+import android.provider.MediaStore
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MutableLiveData
-import com.lzx.basecode.FocusInfo
+import androidx.lifecycle.OnLifecycleEvent
+import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.OnPlayerEventListener
-import com.lzx.basecode.SongInfo
-import com.lzx.starrysky.playback.PlaybackManager
-import com.lzx.starrysky.playback.PlaybackStage
+import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.intercept.ISyInterceptor
+import com.lzx.starrysky.manager.PlaybackManager
+import com.lzx.starrysky.manager.PlaybackStage
+import com.lzx.starrysky.playback.FocusInfo
+import com.lzx.starrysky.queue.MediaSourceProvider
+import com.lzx.starrysky.utils.StarrySkyConstant
+import com.lzx.starrysky.utils.TimerTaskManager
+import com.lzx.starrysky.utils.data
+import com.lzx.starrysky.utils.duration
+import com.lzx.starrysky.utils.isIndexPlayable
+import com.lzx.starrysky.utils.md5
+import com.lzx.starrysky.utils.orDef
+import com.lzx.starrysky.utils.title
 
-data class RepeatMode(val repeatMode: Int, val isLoop: Boolean) {
-    companion object {
-        const val KEY_REPEAT_MODE = "StarrySky#KEY_REPEAT_MODE"
-        const val REPEAT_MODE_NONE = 100     //顺序播放
-        const val REPEAT_MODE_ONE = 200      //单曲播放
-        const val REPEAT_MODE_SHUFFLE = 300  //随机播放
-        const val REPEAT_MODE_REVERSE = 400  //倒序播放
+
+class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackManager.PlaybackServiceCallback, LifecycleObserver {
+
+    private val focusChangeState = MutableLiveData<FocusInfo>()
+    private val playbackState = MutableLiveData<PlaybackStage>()
+    private val playerEventListener = hashMapOf<String, OnPlayerEventListener>()
+    private var timerTaskManager: TimerTaskManager? = null
+    private val provider = MediaSourceProvider()
+    private var isSkipMediaQueue = false
+    private var withOutCallback = false
+    private val interceptors = mutableListOf<ISyInterceptor>() //局部拦截器，用完会自动清理
+
+    private val playbackManager = PlaybackManager(provider, appInterceptors)
+
+    internal fun attachPlayerCallback() {
+        playbackManager.attachPlayerCallback(this)
     }
-}
-
-interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
 
     /**
-     * 根据songId播放,调用前请确保已经设置了播放列表
+     * 是否跳过播放队列
      */
-    fun playMusicById(songId: String)
+    fun skipMediaQueue(isSkipMediaQueue: Boolean) = apply {
+        this.isSkipMediaQueue = isSkipMediaQueue
+    }
 
     /**
-     * 根据 SongInfo 播放，实际也是根据 songId 播放
+     * 不需要回调
      */
-    fun playMusicByInfo(info: SongInfo)
+    fun withOutCallback() = apply {
+        withOutCallback = true
+    }
 
     /**
-     * 只播放当前这首歌，播完就停止
+     * 根据 songId 播放,调用前请确保已经设置了播放列表
+     * skipMediaQueue 模式下不能使用
      */
-    fun playSingleMusicByInfo(info: SongInfo)
+    fun playMusicById(songId: String) {
+        if (isSkipMediaQueue) {
+            throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
+        }
+        if (!provider.hasSongInfo(songId)) return
+        val songInfo = provider.getSongInfoById(songId)
+        playMusicImpl(songInfo)
+    }
+
+    /**
+     * 根据songUrl播放，songId 默认为 url 的 md5
+     */
+    fun playMusicByUrl(url: String) {
+        val songInfo = SongInfo().apply {
+            songId = url.md5()
+            songUrl = url
+        }
+        if (!isSkipMediaQueue) {
+            provider.addSongInfo(songInfo)
+        }
+        playMusicImpl(songInfo)
+    }
+
+    /**
+     * 根据 SongInfo 播放,songId 或 songUrl 不能为空
+     */
+    fun playMusicByInfo(info: SongInfo) {
+        if (info.songId.isEmpty() || info.songUrl.isEmpty()) {
+            throw IllegalStateException("songId 或 songUrl 不能为空")
+        }
+        if (!isSkipMediaQueue) {
+            provider.addSongInfo(info)
+        }
+        playMusicImpl(info)
+    }
 
     /**
      * 播放
-     *
      * @param mediaList 播放列表
      * @param index     要播放的歌曲在播放列表中的下标
      */
-    fun playMusic(songInfos: MutableList<SongInfo>, index: Int)
+    fun playMusic(mediaList: MutableList<SongInfo>, index: Int) {
+        if (mediaList.isEmpty()) {
+            throw IllegalStateException("songInfos 不能为空")
+        }
+        if (!index.isIndexPlayable(mediaList)) {
+            throw IllegalStateException("请检查下标合法性")
+        }
+        if (!isSkipMediaQueue) {
+            updatePlayList(mediaList)
+        }
+        playMusicImpl(mediaList.getOrNull(index))
+    }
+
+    private fun playMusicImpl(songInfo: SongInfo?) {
+        if (songInfo == null) return
+        playbackManager
+            .attachInterceptors(interceptors)
+            .attachSkipMediaQueue(isSkipMediaQueue)
+            .attachWithOutCallback(withOutCallback)
+            .onPlayMusicImpl(songInfo, true)
+        interceptors.clear()
+        isSkipMediaQueue = false
+    }
+
+    /**
+     * 获取拦截器
+     */
+    fun interceptors(): MutableList<ISyInterceptor> = interceptors
+
+    /**
+     * 添加拦截器
+     */
+    fun addInterceptor(interceptor: ISyInterceptor): PlayerControl {
+        val noSame = interceptors.filter { it.getTag() == interceptor.getTag() }.isNullOrEmpty()
+        if (noSame) { //如果没有相同的才添加
+            interceptors += interceptor
+        }
+        return this
+    }
+
+    /**
+     * 清除拦截器
+     */
+    fun clearInterceptor() {
+        interceptors.clear()
+    }
 
     /**
      * 暂停
      */
-    fun pauseMusic()
+    fun pauseMusic() {
+        playbackManager.onPause()
+    }
 
     /**
-     * 恢复播放
+     * 恢复播放（暂停后恢复）
      */
-    fun restoreMusic()
+    fun restoreMusic() {
+        playbackManager.onRestoreMusic()
+    }
 
     /**
      * 停止播放
      */
-    fun stopMusic()
+    fun stopMusic() {
+        playbackManager.onStop()
+    }
 
     /**
-     * 准备播放
+     * 准备播放，准备的是队列当前下标的音频
      */
-    fun prepare()
+    fun prepare() {
+        if (isSkipMediaQueue) {
+            throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
+        }
+        playbackManager.onPrepare()
+    }
 
     /**
-     * 准备播放，根据songId
+     * 根据songId准备,调用前请确保已经设置了播放列表
      */
-    fun prepareFromSongId(songId: String)
+    fun prepareById(songId: String) {
+        if (isSkipMediaQueue) {
+            throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
+        }
+        playbackManager.onPrepareById(songId)
+    }
 
     /**
-     * 使用该方法前请在初始化时将 isCreateRefrainPlayer 标记设为 true
-     * 将 isAutoManagerFocus 是否自动管理焦点设为 false，否则无法同时播放
-     * 需求焦点管理的请实现 setOnAudioFocusChangeListener 方法监听焦点自己处理
-     *
-     * 允许同时播放另一个音频，该音频没有队列管理概念，没有通知栏功能
-     * 会创建另一个播放实例去播放，有播放回调，有拦截器功能，该音频的 headData 里面
-     * 统一都添加了 key = SongType,value = Refrain 的标记
-     * 如果使用了该方法，请在回调监听和拦截器功能的时候做好区分
-     * SongInfo 有扩展方法 isRefrain 可以方便判断
+     * 根据songUrl准备
      */
-    fun playRefrain(info: SongInfo)
+    fun prepareByUrl(songUrl: String) {
+        playbackManager.onPrepareByUrl(songUrl)
+    }
 
     /**
-     * 停止另一个音频
+     * 根据 SongInfo 准备
      */
-    fun stopRefrain()
-
-    /**
-     * 另一个音频设置音量
-     */
-    fun setRefrainVolume(audioVolume: Float)
-
-    /**
-     * 获取另一个音频音量
-     */
-    fun getRefrainVolume(): Float
-
-    /**
-     * 获取另一个音频信息
-     */
-    fun getRefrainInfo(): SongInfo?
-
-    /**
-     * 判断另一个音频是否在播放
-     */
-    fun isRefrainPlaying(): Boolean
-
-    /**
-     * 判断另一个音频是否缓冲
-     */
-    fun isRefrainBuffering(): Boolean
+    fun prepareByInfo(info: SongInfo) {
+        playbackManager.onPrepareByInfo(info)
+    }
 
     /**
      * 下一首
      */
-    fun skipToNext()
+    fun skipToNext() {
+        playbackManager.onSkipToNext()
+    }
 
     /**
      * 上一首
      */
-    fun skipToPrevious()
+    fun skipToPrevious() {
+        playbackManager.onSkipToPrevious()
+    }
 
     /**
-     * 快进 每调一次加 0.5 倍
+     * 快进 每调一次加 speed 倍
      */
-    fun fastForward()
+    fun fastForward(speed: Float) {
+        if (speed <= 0) {
+            throw IllegalStateException("speed 必须大于0")
+        }
+        playbackManager.onFastForward(speed)
+    }
 
     /**
-     * 快退 每调一次减 0.5 倍，最小为 0
+     * 快退 每调一次减 speed 倍，最小为 0
      */
-    fun rewind()
+    fun rewind(speed: Float) {
+        playbackManager.onRewind(speed)
+    }
 
     /**
      * 指定语速,通过此方法可配置任意倍速，注意结果要大于0
@@ -137,12 +239,17 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
      * @param refer    refer 是否已当前速度为基数
      * @param multiple multiple 倍率
      */
-    fun onDerailleur(refer: Boolean, multiple: Float)
+    fun onDerailleur(refer: Boolean, multiple: Float) {
+        playbackManager.onDerailleur(refer, multiple)
+    }
 
     /**
      * 移动到媒体流中的新位置,以毫秒为单位。
+     * isPlayWhenPaused：如果是暂停状态下 seekTo 后是否马上播放
      */
-    fun seekTo(pos: Long)
+    fun seekTo(pos: Long, isPlayWhenPaused: Boolean = true) {
+        playbackManager.onSeekTo(pos, isPlayWhenPaused)
+    }
 
     /**
      * 设置播放模式
@@ -154,7 +261,13 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
      *
      * isLoop 播放倒最后一首时是否从第一首开始循环播放,该参数对随机播放无效
      */
-    fun setRepeatMode(repeatMode: Int, isLoop: Boolean)
+    fun setRepeatMode(repeatMode: Int, isLoop: Boolean) {
+        if (isSkipMediaQueue && repeatMode != RepeatMode.REPEAT_MODE_ONE) {
+            throw IllegalStateException("isSkipMediaQueue 模式下只能设置单曲模式")
+        }
+        RepeatMode.saveRepeatMode(repeatMode, isLoop)
+        playbackManager.setRepeatMode(repeatMode, isLoop)
+    }
 
     /**
      * 获取播放模式,默认顺序播放
@@ -163,192 +276,310 @@ interface PlayerControl : PlaybackManager.PlaybackServiceCallback {
      * REPEAT_MODE_SHUFFLE   随机播放
      * REPEAT_MODE_REVERSE   倒序播放
      */
-    fun getRepeatMode(): RepeatMode
+    fun getRepeatMode(): RepeatMode = RepeatMode.with
 
     /**
      * 获取播放列表
      */
-    fun getPlayList(): MutableList<SongInfo>
+    fun getPlayList(): MutableList<SongInfo> = provider.songList
 
     /**
      * 更新播放列表
      */
-    fun updatePlayList(songInfos: MutableList<SongInfo>)
+    fun updatePlayList(songInfos: MutableList<SongInfo>) {
+        provider.songList = songInfos
+    }
 
     /**
      * 添加更多播放列表
      */
-    fun addPlayList(infos: MutableList<SongInfo>)
+    fun addPlayList(infos: MutableList<SongInfo>) {
+        provider.addSongInfos(infos)
+    }
 
     /**
      * 添加一首歌
      */
-    fun addSongInfo(info: SongInfo)
+    fun addSongInfo(info: SongInfo) {
+        provider.addSongInfo(info)
+    }
 
     /**
      * 添加一首歌,指定位置
      */
-    fun addSongInfo(index: Int, info: SongInfo)
+    fun addSongInfo(index: Int, info: SongInfo) {
+        provider.addSongInfo(index, info)
+    }
 
     /**
      * 删除歌曲
      * 正在播放删除后下一首开始播，暂停删除下一首暂停，跟随播放模式，删除后触发歌曲改变回调
      */
-    fun removeSongInfo(songId: String)
+    fun removeSongInfo(songId: String) {
+        playbackManager.removeSongInfo(songId)
+    }
 
     /**
      * 清除播放列表
      */
-    fun clearPlayList()
+    fun clearPlayList() {
+        provider.clearSongInfos()
+    }
 
     /**
      * 获取当前播放的歌曲信息
      */
-    fun getNowPlayingSongInfo(): SongInfo?
+    fun getNowPlayingSongInfo(): SongInfo? = playbackManager.player()?.getCurrPlayInfo()
 
     /**
      * 获取当前播放的歌曲songId
      */
-    fun getNowPlayingSongId(): String
+    fun getNowPlayingSongId(): String = getNowPlayingSongInfo()?.songId.orEmpty()
 
     /**
      *  获取当前播放的歌曲url
      */
-    fun getNowPlayingSongUrl(): String
+    fun getNowPlayingSongUrl(): String = getNowPlayingSongInfo()?.songUrl.orEmpty()
 
     /**
      * 获取当前播放歌曲的下标
      */
-    fun getNowPlayingIndex(): Int
+    fun getNowPlayingIndex(): Int {
+        val songId = getNowPlayingSongId()
+        return provider.getIndexById(songId)
+    }
 
     /**
      * 以ms为单位获取当前缓冲的位置。
      */
-    fun getBufferedPosition(): Long
+    fun getBufferedPosition(): Long = playbackManager.player()?.bufferedPosition().orDef()
 
     /**
      * 获取播放位置 毫秒为单位。
      */
-    fun getPlayingPosition(): Long
+    fun getPlayingPosition(): Long = playbackManager.player()?.currentStreamPosition().orDef()
 
     /**
      * 是否有下一首
      */
-    fun isSkipToNextEnabled(): Boolean
+    fun isSkipToNextEnabled(): Boolean = playbackManager.isSkipToNextEnabled()
 
     /**
      * 是否有上一首
      */
-    fun isSkipToPreviousEnabled(): Boolean
+    fun isSkipToPreviousEnabled(): Boolean = playbackManager.isSkipToPreviousEnabled()
 
     /**
      * 将当前播放速度作为正常播放的倍数。 倒带时这应该是负数， 值为1表示正常播放，0表示暂停。
      */
-    fun getPlaybackSpeed(): Float
+    fun getPlaybackSpeed(): Float = playbackManager.player()?.getPlaybackSpeed().orDef()
 
     /**
      * 比较方便的判断当前媒体是否在播放
      */
-    fun isPlaying(): Boolean
+    fun isPlaying(): Boolean = playbackState.value?.stage == PlaybackStage.PLAYING
 
     /**
      * 比较方便的判断当前媒体是否暂停中
      */
-    fun isPaused(): Boolean
+    fun isPaused(): Boolean = playbackState.value?.stage == PlaybackStage.PAUSE
 
     /**
      * 比较方便的判断当前媒体是否空闲
      */
-    fun isIdea(): Boolean
+    fun isIdea(): Boolean = playbackState.value?.stage == PlaybackStage.IDEA
 
     /**
      * 比较方便的判断当前媒体是否缓冲
      */
-    fun isBuffering(): Boolean
+    fun isBuffering(): Boolean = playbackState.value?.stage == PlaybackStage.BUFFERING
 
     /**
      * 判断传入的音乐是不是正在播放的音乐
      */
-    fun isCurrMusicIsPlayingMusic(songId: String?): Boolean
+    fun isCurrMusicIsPlayingMusic(songId: String?): Boolean {
+        return if (songId.isNullOrEmpty()) {
+            false
+        } else {
+            val playingMusic = getNowPlayingSongInfo()
+            playingMusic != null && songId == playingMusic.songId
+        }
+    }
 
     /**
      * 判断传入的音乐是否正在播放
      */
-    fun isCurrMusicIsPlaying(songId: String?): Boolean
+    fun isCurrMusicIsPlaying(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isPlaying()
 
     /**
      * 判断传入的音乐是否正在暂停
      */
-    fun isCurrMusicIsPaused(songId: String?): Boolean
+    fun isCurrMusicIsPaused(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isPaused()
 
     /**
      * 判断传入的音乐是否空闲
      */
-    fun isCurrMusicIsIdea(songId: String?): Boolean
+    fun isCurrMusicIsIdea(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isIdea()
 
     /**
      * 判断传入的音乐是否缓冲
      */
-    fun isCurrMusicIsBuffering(songId: String?): Boolean
+    fun isCurrMusicIsBuffering(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isBuffering()
 
     /**
      * 设置音量, 范围 0到1
      */
-    fun setVolume(audioVolume: Float)
+    fun setVolume(audioVolume: Float) {
+        var volume = audioVolume
+        if (volume < 0) {
+            volume = 0f
+        }
+        if (volume > 1) {
+            volume = 1f
+        }
+        playbackManager.player()?.setVolume(volume)
+    }
 
     /**
      * 获取音量
      */
-    fun getVolume(): Float
+    fun getVolume(): Float = playbackManager.player()?.getVolume().orDef()
 
     /**
-     * 获取媒体时长，单位毫秒
+     * 获取媒体时长，单位毫秒 195146
      */
-    fun getDuration(): Long
+    fun getDuration(): Long = playbackManager.player()?.duration().orDef()
 
     /**
      * 获取 AudioSessionId
      */
-    fun getAudioSessionId(): Int
+    fun getAudioSessionId(): Int = playbackManager.player()?.getAudioSessionId().orDef()
 
     /**
      * 扫描本地媒体信息
      */
-    fun querySongInfoInLocal(context: Context): List<SongInfo>
+    fun querySongInfoInLocal(context: Context): List<SongInfo> {
+        val songInfos = mutableListOf<SongInfo>()
+        val cursor = context.contentResolver.query(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null,
+            null, MediaStore.Audio.AudioColumns.IS_MUSIC) ?: return songInfos
+        while (cursor.moveToNext()) {
+            val song = SongInfo()
+            song.songUrl = cursor.data
+            song.songName = cursor.title
+            song.duration = cursor.duration
+            val songId = if (song.songUrl.isNotEmpty()) song.songUrl.md5() else System.currentTimeMillis().toString().md5()
+            song.songId = songId
+            songInfos.add(song)
+        }
+        cursor.close()
+        return songInfos
+    }
 
     /**
      * 缓存开关，可控制是否使用缓存功能
      */
-    fun cacheSwitch(switch: Boolean)
+    fun cacheSwitch(switch: Boolean) {
+        StarrySkyConstant.KEY_CACHE_SWITCH = switch
+    }
 
     /**
      * 定时停止
      * time 时间，单位毫秒，传 0 为不开启
+     * isPause 到时间了是否暂停，如果为false，则到时间后会调用stop
      * isFinishCurrSong 时间到后是否播放完当前歌曲再停
      */
-    fun stopByTimedOff(time: Long, isFinishCurrSong: Boolean)
+    fun stopByTimedOff(time: Long, isPause: Boolean, isFinishCurrSong: Boolean) {
+        if (time <= 0) {
+            return
+        }
+        if (isSkipMediaQueue) {
+            throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
+        }
+        playbackManager.onStopByTimedOff(time, isPause, isFinishCurrSong)
+    }
 
     /**
      * 添加一个状态监听
      * tag: 给每个播放器添加一个tag 可以根据 tag 来删除，用 tag 的原因是在使用的时候发现，
      * 如果靠对象来remove，不是很方便。所以该用tag
      */
-    fun addPlayerEventListener(listener: OnPlayerEventListener?, tag: String)
+    fun addPlayerEventListener(listener: OnPlayerEventListener?, tag: String) {
+        listener?.let {
+            if (!playerEventListener.containsKey(tag)) {
+                playerEventListener[tag] = it
+            }
+        }
+    }
 
     /**
      * 删除一个状态监听
      */
-    fun removePlayerEventListener(tag: String)
+    fun removePlayerEventListener(tag: String) {
+        playerEventListener.remove(tag)
+    }
 
     /**
      * 删除所有状态监听
      */
-    fun clearPlayerEventListener()
+    fun clearPlayerEventListener() {
+        playerEventListener.clear()
+    }
 
     /**
      * 焦点变化监听
      */
-    fun focusStateChange(): MutableLiveData<FocusInfo>
+    fun focusStateChange(): MutableLiveData<FocusInfo> = focusChangeState
 
-    fun playbackState(): MutableLiveData<PlaybackStage>
+    /**
+     * 状态监听,LiveData 方式
+     */
+    fun playbackState(): MutableLiveData<PlaybackStage> = playbackState
+
+    /**
+     * 进度监听
+     */
+    fun setOnPlayProgressListener(lifecycle: Lifecycle, listener: OnPlayProgressListener) {
+        timerTaskManager = null
+        lifecycle.removeObserver(this)
+        lifecycle.addObserver(this)
+        timerTaskManager = TimerTaskManager()
+        timerTaskManager?.setUpdateProgressTask {
+            val position = getPlayingPosition()
+            val duration = getDuration()
+            listener.onPlayProgress(position, duration)
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    private fun onDestroy() {
+        timerTaskManager?.removeUpdateProgressTask()
+        timerTaskManager = null
+    }
+
+    override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
+        when (playbackStage.stage) {
+            PlaybackStage.PLAYING -> {
+                timerTaskManager?.startToUpdateProgress()
+            }
+            PlaybackStage.PAUSE,
+            PlaybackStage.ERROR,
+            PlaybackStage.IDEA -> {
+                timerTaskManager?.stopToUpdateProgress()
+            }
+        }
+        //postValue 可能会丢数据，这里保证主线程调用
+        playbackState.value = playbackStage
+        playerEventListener.forEach {
+            it.value.onPlaybackStageChange(playbackStage)
+        }
+    }
+
+    override fun onFocusStateChange(info: FocusInfo) {
+        focusChangeState.postValue(info)
+    }
+
+    fun resetVariable() {
+        playbackManager.resetVariable()
+    }
 }

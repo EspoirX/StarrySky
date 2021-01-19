@@ -19,13 +19,6 @@
             android:exported="false"
             tools:ignore="ExportedService" />
 
-        <!--4.4机器上如果不注册这个会报错-->
-        <receiver android:name="androidx.media.session.MediaButtonReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
-        </receiver>
-
         <!--修复缓存中把网断了的崩溃-->
         <service
             android:name="com.google.android.exoplayer2.scheduler.PlatformScheduler$PlatformSchedulerService"

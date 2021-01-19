@@ -1,12 +1,19 @@
 package com.lzx.starrysky.intercept
 
 import android.os.AsyncTask
-import com.lzx.basecode.SongInfo
-import com.lzx.basecode.MainLooper
+import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.utils.MainLooper
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class InterceptorService(private val interceptors: MutableList<StarrySkyInterceptor>) {
+class InterceptorService {
+
+    private var interceptors = mutableListOf<ISyInterceptor>()
+
+    fun attachInterceptors(interceptors: MutableList<ISyInterceptor>) {
+        this.interceptors.clear()
+        this.interceptors.addAll(interceptors)
+    }
 
     fun doInterceptions(songInfo: SongInfo?, callback: InterceptorCallback?) {
         if (interceptors.isNotEmpty()) {
@@ -23,7 +30,9 @@ class InterceptorService(private val interceptors: MutableList<StarrySkyIntercep
                             callback?.onInterrupt(RuntimeException(songInfo.tag.toString()))
                         }
                         else -> {
-                            callback?.onContinue(songInfo)
+                            MainLooper.instance.runOnUiThread {
+                                callback?.onContinue(songInfo)
+                            }
                         }
                     }
                 } catch (ex: Exception) {
@@ -41,17 +50,26 @@ class InterceptorService(private val interceptors: MutableList<StarrySkyIntercep
     ) {
         if (index < interceptors.size) {
             val interceptor = interceptors[index]
-            interceptor.process(songInfo, MainLooper.instance, object : InterceptorCallback {
-                override fun onContinue(songInfo: SongInfo?) {
+            if (interceptor is SyncInterceptor) {
+                val info = interceptor.process(songInfo)
+                if (info != null) {
                     interceptorCounter.countDown()
-                    doImpl(index + 1, interceptorCounter, songInfo) //执行下一个
-                }
-
-                override fun onInterrupt(exception: Throwable?) {
-                    songInfo?.tag = if (null == exception) RuntimeException("No message.") else exception.message
+                    doImpl(index + 1, interceptorCounter, info) //执行下一个
+                } else {
                     interceptorCounter.cancel()
                 }
-            })
+            } else if (interceptor is AsyncInterceptor) {
+                interceptor.process(songInfo, object : InterceptorCallback {
+                    override fun onContinue(songInfo: SongInfo?) {
+                        interceptorCounter.countDown()
+                        doImpl(index + 1, interceptorCounter, songInfo) //执行下一个
+                    }
+
+                    override fun onInterrupt(exception: Throwable?) {
+                        interceptorCounter.cancel()
+                    }
+                })
+            }
         }
     }
 }
