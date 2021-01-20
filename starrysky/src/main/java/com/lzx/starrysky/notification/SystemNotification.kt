@@ -18,7 +18,7 @@ import androidx.core.app.NotificationCompat
 import com.lzx.starrysky.R
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.service.MusicService
+import com.lzx.starrysky.manager.PlaybackStage
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_NEXT
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_PAUSE
 import com.lzx.starrysky.notification.INotification.Companion.ACTION_PLAY
@@ -27,7 +27,7 @@ import com.lzx.starrysky.notification.INotification.Companion.ACTION_STOP
 import com.lzx.starrysky.notification.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.notification.utils.NotificationUtils
 import com.lzx.starrysky.playback.Playback
-import com.lzx.starrysky.manager.PlaybackStage
+import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.utils.getPendingIntent
 import com.lzx.starrysky.utils.getTargetClass
 

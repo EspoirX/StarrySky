@@ -215,5 +215,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="soundPool" />
+
+        <Button
+            android:id="@+id/notifySwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="通知栏切换" />
     </LinearLayout>
 </LinearLayout>

@@ -396,7 +396,7 @@ class PlaybackManager(provider: MediaSourceProvider,
         when (newState) {
             PlaybackStage.BUFFERING,
             PlaybackStage.PAUSE -> {
-                startNotification(currPlayInfo, newState)
+                StarrySky.getBinder()?.startNotification(currPlayInfo, newState)
             }
         }
         StarrySky.log("PlaybackStage = $newState")
@@ -409,10 +409,6 @@ class PlaybackManager(provider: MediaSourceProvider,
         if (!withOutCallback) {
             serviceCallback?.onPlaybackStateUpdated(playbackState)
         }
-    }
-
-    private fun startNotification(currPlayInfo: SongInfo?, state: String) {
-        StarrySky.getBinder()?.startNotification(currPlayInfo, state)
     }
 
     interface PlaybackServiceCallback {

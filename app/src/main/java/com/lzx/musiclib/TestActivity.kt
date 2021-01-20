@@ -13,6 +13,7 @@ import com.lzx.starrysky.intercept.AsyncInterceptor
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.SyncInterceptor
 import com.lzx.starrysky.manager.PlaybackStage
+import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.utils.MainLooper
 import kotlinx.android.synthetic.main.activity_test.cacheSwitch
 import kotlinx.android.synthetic.main.activity_test.getAudioSessionId
@@ -23,6 +24,7 @@ import kotlinx.android.synthetic.main.activity_test.getRepeatMode
 import kotlinx.android.synthetic.main.activity_test.interceptor
 import kotlinx.android.synthetic.main.activity_test.isSkipToNextEnabled
 import kotlinx.android.synthetic.main.activity_test.isSkipToPreviousEnabled
+import kotlinx.android.synthetic.main.activity_test.notifySwitch
 import kotlinx.android.synthetic.main.activity_test.pauseMusic
 import kotlinx.android.synthetic.main.activity_test.playMusic
 import kotlinx.android.synthetic.main.activity_test.playMusicById
@@ -171,13 +173,22 @@ class TestActivity : AppCompatActivity() {
             if (StarrySky.with().isPlaying()) {
                 StarrySky.with().stopMusic()
             }
-
             StarrySky.soundPool()?.prepareForAssets(soundPoolList) {
                 if (index > soundPoolList.lastIndex) {
                     index = 0
                 }
                 it.playSound(index)
                 index++
+            }
+        }
+        notifySwitch?.setOnClickListener {
+            val type = StarrySky.getNotificationType()
+            if (type == INotification.SYSTEM_NOTIFICATION) {
+                StarrySky.changeNotification(INotification.CUSTOM_NOTIFICATION)
+                showToast("当前使用自定义通知栏")
+            } else {
+                StarrySky.changeNotification(INotification.SYSTEM_NOTIFICATION)
+                showToast("当前使用系统通知栏")
             }
         }
 

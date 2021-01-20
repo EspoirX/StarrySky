@@ -6,6 +6,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.cache.ICache
+import com.lzx.starrysky.manager.changePlaybackState
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.NotificationManager
@@ -41,30 +42,41 @@ class ServiceBinder(private val context: Context) : Binder() {
         this.notificationFactory = notificationFactory
         //通知栏配置
         if (isOpenNotification) {
-            notification = if (notificationType == INotification.SYSTEM_NOTIFICATION) {
-                notificationManager.getSystemNotification(context, notificationConfig)
-                    .also { systemNotification = it }
+            //先提前创建好，后面好切换
+            notificationManager.getSystemNotification(context, notificationConfig)
+                .also { systemNotification = it }
+            //自定义
+            if (this.notificationFactory != null) {
+                this.notificationFactory?.build(context, notificationConfig)
+                    .also { customNotification = it }
             } else {
-                if (this.notificationFactory != null) {
-                    this.notificationFactory?.build(context, notificationConfig)
-                        .also { customNotification = it }
-                } else {
-                    notificationManager.getCustomNotification(context, notificationConfig)
-                        .also { customNotification = it }
-                }
+                notificationManager.getCustomNotification(context, notificationConfig)
+                    .also { customNotification = it }
+            }
+            //
+            notification = if (notificationType == INotification.SYSTEM_NOTIFICATION) {
+                systemNotification
+            } else {
+                customNotification
             }
         }
     }
 
     fun changeNotification(notificationType: Int) {
         if (this.notificationType == notificationType) return
+        notification?.stopNotification()
         notification = if (notificationType == INotification.SYSTEM_NOTIFICATION) {
             systemNotification
         } else {
             customNotification
         }
         this.notificationType = notificationType
+        player?.let {
+            notification?.startNotification(it.getCurrPlayInfo(), it.playbackState().changePlaybackState())
+        }
     }
+
+    fun getNotificationType() = notificationType
 
     fun onChangedNotificationState(songInfo: SongInfo?, playbackState: String,
                                    hasNextSong: Boolean, hasPreSong: Boolean) {

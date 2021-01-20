@@ -267,6 +267,12 @@ object StarrySky {
         getBinder()?.changeNotification(notificationType)
     }
 
+    /**
+     * 获取当前通知栏类型
+     */
+    @JvmStatic
+    fun getNotificationType() = getBinder()?.getNotificationType()
+        ?: INotification.SYSTEM_NOTIFICATION
 
     @JvmStatic
     fun isOpenCache() = StarrySkyConstant.KEY_CACHE_SWITCH
