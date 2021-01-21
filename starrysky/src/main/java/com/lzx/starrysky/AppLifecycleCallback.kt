@@ -6,7 +6,11 @@ import android.os.Bundle
 
 
 class AppLifecycleCallback : ActivityLifecycleCallbacks {
+
+    internal var currActivity: Activity? = null
+
     override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
+        currActivity = activity
     }
 
     override fun onActivityStarted(activity: Activity?) {
@@ -25,6 +29,8 @@ class AppLifecycleCallback : ActivityLifecycleCallbacks {
     }
 
     override fun onActivityDestroyed(activity: Activity?) {
+        StarrySky.with().removeProgressListener(activity)
+        currActivity = null
         StarrySky.with().resetVariable()
     }
 }

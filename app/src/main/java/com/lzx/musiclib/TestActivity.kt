@@ -271,7 +271,7 @@ class TestActivity : AppCompatActivity() {
             showToast("已删除")
         }
 
-        StarrySky.with().setOnPlayProgressListener(lifecycle, object : OnPlayProgressListener {
+        StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {
             @SuppressLint("SetTextI18n")
             override fun onPlayProgress(currPos: Long, duration: Long) {
                 if (seekBarPro.max.toLong() != duration) {

@@ -75,7 +75,7 @@
             app:donut_finished_color="@android:color/holo_red_light"
             app:donut_finished_stroke_width="2dp"
             app:donut_text_color="@android:color/transparent"
-            app:donut_unfinished_color="@android:color/white"
+            app:donut_unfinished_color="#46DC4C"
             app:donut_unfinished_stroke_width="2dp" />
     </RelativeLayout>
 

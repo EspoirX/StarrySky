@@ -68,7 +68,7 @@ class PlayDetailActivity : AppCompatActivity() {
             initDetailUI(currSong)
         }
         //进度监听
-        StarrySky.with().setOnPlayProgressListener(lifecycle, object : OnPlayProgressListener {
+        StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {
             @SuppressLint("SetTextI18n")
             override fun onPlayProgress(currPos: Long, duration: Long) {
                 if (seekBar.max.toLong() != duration) {

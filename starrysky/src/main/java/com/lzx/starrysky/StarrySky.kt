@@ -247,6 +247,8 @@ object StarrySky {
         }
     }
 
+    internal fun getCurrActivity() = appLifecycleCallback.currActivity
+
     /**
      * 获取操作 api
      */
@@ -381,6 +383,7 @@ object StarrySky {
         notificationFactory = null
         imageStrategy = null
         imageLoader = null
+        playerControl?.release()
         playerControl = null
         playerCache = null
         playback = null

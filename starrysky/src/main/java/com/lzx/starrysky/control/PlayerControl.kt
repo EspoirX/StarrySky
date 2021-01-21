@@ -1,14 +1,13 @@
 package com.lzx.starrysky.control
 
+import android.app.Activity
 import android.content.Context
 import android.provider.MediaStore
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.OnLifecycleEvent
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.intercept.ISyInterceptor
 import com.lzx.starrysky.manager.PlaybackManager
 import com.lzx.starrysky.manager.PlaybackStage
@@ -24,11 +23,12 @@ import com.lzx.starrysky.utils.orDef
 import com.lzx.starrysky.utils.title
 
 
-class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackManager.PlaybackServiceCallback, LifecycleObserver {
+class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackManager.PlaybackServiceCallback {
 
     private val focusChangeState = MutableLiveData<FocusInfo>()
     private val playbackState = MutableLiveData<PlaybackStage>()
     private val playerEventListener = hashMapOf<String, OnPlayerEventListener>()
+    private val progressListener = hashMapOf<String, OnPlayProgressListener>()
     private var timerTaskManager: TimerTaskManager? = null
     private val provider = MediaSourceProvider()
     private var isSkipMediaQueue = false
@@ -36,6 +36,17 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     private val interceptors = mutableListOf<ISyInterceptor>() //局部拦截器，用完会自动清理
 
     private val playbackManager = PlaybackManager(provider, appInterceptors)
+
+    init {
+        timerTaskManager = TimerTaskManager()
+        timerTaskManager?.setUpdateProgressTask {
+            val position = getPlayingPosition()
+            val duration = getDuration()
+            progressListener.forEach {
+                it.value.onPlayProgress(position, duration)
+            }
+        }
+    }
 
     internal fun attachPlayerCallback() {
         playbackManager.attachPlayerCallback(this)
@@ -543,22 +554,17 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     /**
      * 进度监听
      */
-    fun setOnPlayProgressListener(lifecycle: Lifecycle, listener: OnPlayProgressListener) {
-        timerTaskManager = null
-        lifecycle.removeObserver(this)
-        lifecycle.addObserver(this)
-        timerTaskManager = TimerTaskManager()
-        timerTaskManager?.setUpdateProgressTask {
-            val position = getPlayingPosition()
-            val duration = getDuration()
-            listener.onPlayProgress(position, duration)
+    fun setOnPlayProgressListener(listener: OnPlayProgressListener) {
+        val pkgActivityName = StarrySky.getCurrActivity()?.toString()
+        pkgActivityName?.let {
+            progressListener.put(it, listener)
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun onDestroy() {
-        timerTaskManager?.removeUpdateProgressTask()
-        timerTaskManager = null
+    internal fun removeProgressListener(activity: Activity?) {
+        activity?.let {
+            progressListener.remove(it.toString())
+        }
     }
 
     override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
@@ -585,5 +591,10 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
 
     fun resetVariable() {
         playbackManager.resetVariable()
+    }
+
+    fun release() {
+        timerTaskManager?.stopToUpdateProgress()
+        timerTaskManager = null
     }
 }
