@@ -85,7 +85,8 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     /**
      * 根据 SongInfo 播放,songId 或 songUrl 不能为空
      */
-    fun playMusicByInfo(info: SongInfo) {
+    fun playMusicByInfo(info: SongInfo?) {
+        if (info == null) return
         if (info.songId.isEmpty() || info.songUrl.isEmpty()) {
             throw IllegalStateException("songId 或 songUrl 不能为空")
         }
@@ -315,8 +316,11 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      * 删除歌曲
      * 正在播放删除后下一首开始播，暂停删除下一首暂停，跟随播放模式，删除后触发歌曲改变回调
      */
-    fun removeSongInfo(songId: String) {
-        playbackManager.removeSongInfo(songId)
+    fun removeSongInfo(songId: String?) {
+        if (isSkipMediaQueue) {
+            throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
+        }
+        songId?.let { playbackManager.removeSongInfo(it) }
     }
 
     /**

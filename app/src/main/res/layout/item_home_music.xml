@@ -10,8 +10,8 @@
 
     <com.gcssloop.widget.RCImageView
         android:id="@+id/cover"
-        android:layout_width="95dp"
-        android:layout_height="95dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_margin="15dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
@@ -20,8 +20,8 @@
         app:round_corner="8dp" />
 
     <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:src="@drawable/gdt_ic_express_play"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/cover"
@@ -59,28 +59,6 @@
         app:layout_constraintStart_toEndOf="@+id/cover"
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
-    <ImageView
-        android:id="@+id/icUser"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:layout_marginLeft="15dp"
-        android:src="@drawable/ic_user"
-        app:layout_constraintBottom_toBottomOf="@+id/username"
-        app:layout_constraintStart_toEndOf="@+id/cover"
-        app:layout_constraintTop_toTopOf="@+id/username" />
-
-    <TextView
-        android:id="@+id/username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:text="dada"
-        android:textColor="#959595"
-        android:textSize="13sp"
-        app:layout_constraintBottom_toBottomOf="@+id/cover"
-        app:layout_constraintStart_toEndOf="@+id/icUser" />
 
     <View
         android:layout_width="match_parent"

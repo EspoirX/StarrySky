@@ -178,7 +178,9 @@ open class TestApplication : Application() {
         }
 
         override fun process(songInfo: SongInfo?): SongInfo? {
-            songInfo?.songCover = map[songInfo?.songName].orEmpty()
+            if (songInfo?.songCover.isNullOrEmpty()) {
+                songInfo?.songCover = map[songInfo?.songName].orEmpty()
+            }
             return songInfo
         }
 

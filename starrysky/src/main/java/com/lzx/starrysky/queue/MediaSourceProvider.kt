@@ -28,6 +28,8 @@ class MediaSourceProvider {
             }
         }
 
+    fun getSourceSize() = songSources.size
+
     fun updateShuffleSongList() {
         if (shuffleSongSources.isNotEmpty()) {
             shuffleSongSources.clear()

@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
+import com.lzx.starrysky.control.isModeOne
+import com.lzx.starrysky.control.isModeShuffle
 import com.lzx.starrysky.notification.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.utils.isIndexPlayable
 
@@ -12,11 +14,11 @@ class MediaQueueManager(val provider: MediaSourceProvider) {
     private var currentIndex: Int = 0
 
     /**
-     * isActiveTrigger 是否主动触发
+     * ignoreShuffle 是否忽略随机模式
      */
-    fun getCurrentSongInfo(isActiveTrigger: Boolean): SongInfo? {
+    fun getCurrentSongInfo(ignoreShuffle: Boolean): SongInfo? {
         val repeatMode = RepeatMode.with.repeatMode
-        val playingQueue = if (!isActiveTrigger && repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
+        val playingQueue = if (!ignoreShuffle && repeatMode.isModeShuffle()) {
             provider.getShuffleSongList()
         } else {
             provider.songList
@@ -26,7 +28,7 @@ class MediaQueueManager(val provider: MediaSourceProvider) {
 
     fun getCurrSongList(): MutableList<SongInfo> {
         val repeatMode = RepeatMode.with.repeatMode
-        return if (repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
+        return if (repeatMode.isModeShuffle()) {
             provider.getShuffleSongList()
         } else {
             provider.songList
@@ -35,6 +37,7 @@ class MediaQueueManager(val provider: MediaSourceProvider) {
 
     fun skipQueuePosition(amount: Int): Boolean {
         val playingQueue = provider.songList
+
         if (playingQueue.size == 0) {
             return false
         }
@@ -44,8 +47,7 @@ class MediaQueueManager(val provider: MediaSourceProvider) {
             index = if (repeatMode.isLoop) {
                 playingQueue.size - 1
             } else {
-                if (repeatMode.repeatMode == RepeatMode.REPEAT_MODE_ONE ||
-                    repeatMode.repeatMode == RepeatMode.REPEAT_MODE_SHUFFLE) {
+                if (repeatMode.repeatMode.isModeOne() || repeatMode.repeatMode.isModeShuffle()) {
                     playingQueue.lastIndex
                 } else {
                     0
@@ -88,9 +90,6 @@ class MediaQueueManager(val provider: MediaSourceProvider) {
     }
 
     fun updateMusicArt(songInfo: SongInfo?) {
-//        if (songInfo == null || songInfo.coverBitmap != null) {
-//            return
-//        }
         //更新封面 bitmap
         val coverUrl = songInfo?.songCover.orEmpty()
         if (coverUrl.isNotEmpty() && songInfo?.coverBitmap == null) {
@@ -107,4 +106,6 @@ class MediaQueueManager(val provider: MediaSourceProvider) {
             })
         }
     }
+
+    fun getCurrIndex() = currentIndex
 }

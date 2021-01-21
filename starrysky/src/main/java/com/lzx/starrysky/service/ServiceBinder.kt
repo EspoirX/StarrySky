@@ -23,8 +23,6 @@ class ServiceBinder(private val context: Context) : Binder() {
     private var notificationConfig: NotificationConfig? = null
     private var notificationManager = NotificationManager()
     var notification: INotification? = null
-    private var systemNotification: INotification? = null
-    private var customNotification: INotification? = null
     private var notificationFactory: NotificationManager.NotificationFactory? = null
     private var playerCache: ICache? = null
     private var cacheDestFileDir: String = ""
@@ -42,34 +40,27 @@ class ServiceBinder(private val context: Context) : Binder() {
         this.notificationFactory = notificationFactory
         //通知栏配置
         if (isOpenNotification) {
-            //先提前创建好，后面好切换
+            createNotification()
+        }
+    }
+
+    private fun createNotification() {
+        notification = if (notificationType == INotification.SYSTEM_NOTIFICATION) {
             notificationManager.getSystemNotification(context, notificationConfig)
-                .also { systemNotification = it }
-            //自定义
+        } else {
             if (this.notificationFactory != null) {
                 this.notificationFactory?.build(context, notificationConfig)
-                    .also { customNotification = it }
             } else {
                 notificationManager.getCustomNotification(context, notificationConfig)
-                    .also { customNotification = it }
-            }
-            //
-            notification = if (notificationType == INotification.SYSTEM_NOTIFICATION) {
-                systemNotification
-            } else {
-                customNotification
             }
         }
     }
 
     fun changeNotification(notificationType: Int) {
+        if (!isOpenNotification) return
         if (this.notificationType == notificationType) return
         notification?.stopNotification()
-        notification = if (notificationType == INotification.SYSTEM_NOTIFICATION) {
-            systemNotification
-        } else {
-            customNotification
-        }
+        createNotification()
         this.notificationType = notificationType
         player?.let {
             notification?.startNotification(it.getCurrPlayInfo(), it.playbackState().changePlaybackState())

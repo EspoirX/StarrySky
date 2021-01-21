@@ -39,3 +39,8 @@ data class RepeatMode(val repeatMode: Int, val isLoop: Boolean) {
             }
     }
 }
+
+fun Int.isModeNone() = this == RepeatMode.REPEAT_MODE_NONE
+fun Int.isModeOne() = this == RepeatMode.REPEAT_MODE_ONE
+fun Int.isModeShuffle() = this == RepeatMode.REPEAT_MODE_SHUFFLE
+fun Int.isModeReverse() = this == RepeatMode.REPEAT_MODE_REVERSE

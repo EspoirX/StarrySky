@@ -1,0 +1,86 @@
+{
+  data: {
+    songlist: [
+      {
+        albumid: "001w7xrX3jbMHh",
+        albumname: "Darin",
+        singer: "Dari",
+        songmid: "000VRKyI0xWFvz",
+        songname: "Be What You Wanna Be",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002sUMVg2yvwR4.m4a?guid=2796982635&vkey=83FD2E29E93DD4835B82959C1A4065A3FF432C91AE51467C606663658B23DC4BA3C5BF888DFDBD0C9C620A7710881B929C52F8FBB3A8E211&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "000VybM92HVMdS",
+        albumname: "Blue Brand 2집 - Trauma Part.2 (BlueBrand 2辑 Trauma Part 2)",
+        singer: "MC梦 (MC몽),Mellow (멜로우)",
+        songmid: "003pLnJW0O1eNj",
+        songname: "죽을 만큼 아파서 (死一样的痛苦)",
+        "url": "http://isure.stream.qqmusic.qq.com/C400001Dxn2J0Q7QEB.m4a?guid=2796982635&vkey=F0412819763CB568950C65A2410886F5343F0F540C5471C42641730692CF56FD5D17FD7D97DFB56B586892BF5182555F96E9EF102B8155DA&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "002BM8B70Z8csC",
+        albumname: "Batte forte",
+        singer: "Lollipop",
+        songmid: "003YNZnS0XiEVD",
+        songname: "Batte Forte (Solo Vox-127Bpm)",
+        "url": "http://isure.stream.qqmusic.qq.com/C400001EpgLP4c49TC.m4a?guid=2796982635&vkey=DA14335DF99950C522462040B2CDA2975B42AD2FF1EA124C440372BD27D4F02D2210FE3889F535420239E8367DDB403CCD9CBDA4F1A464F6&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0027ciun1zPx3g",
+        albumname: "Aquarium",
+        singer: "Aqua",
+        songmid: "001jka610QFYjR",
+        songname: "Barbie Girl",
+        "url": "http://isure.stream.qqmusic.qq.com/C400004akAdv4aZUvT.m4a?guid=2796982635&vkey=A52B7A26A39E4274C2EDF2DA144DEDFA5B145BB3C24DC569A36169F35AD34303BEF16BB649BBCC9185828BD9C737C173FDEEAF14F1B3737D&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0033AuAC2W1Ho0",
+        albumname: "Koyote 6",
+        singer: "高耀太 (코요태)",
+        songmid: "000u8bXy3TEy3J",
+        songname: "불꽃 (火花)",
+        "url": "http://isure.stream.qqmusic.qq.com/C400001Cau8F3vpbQk.m4a?guid=2796982635&vkey=8D838D23AC973738C19F87F82A2A601E25F9E724A8574C0E5D34E6095B0C26C35483ECE03DAABDED8CD428A09F353DF85CAE0B7C9E638BCC&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0022RcGJ0rmlLP",
+        albumname: "t.A.T.u. - The Best",
+        singer: "t.A.T.u.",
+        songmid: "001qQdGd2Nd6DU",
+        songname: "Loves Me Not",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000A3S302U7P7T.m4a?guid=2796982635&vkey=53A760EF163B6922CA746DE510602A33641AD18DF59FD666ADBFBA834A4ECCFE757EE3C0B7127014AD1567F46426B6D1EA5871D02AE56B84&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "002KSDg90IaScI",
+        albumname: "自定义",
+        singer: "许嵩",
+        songmid: "002mZevo3wHvsc",
+        songname: "有何不可",
+        "url": "http://isure.stream.qqmusic.qq.com/C4000043aj132xwlEf.m4a?guid=2796982635&vkey=4DBE9033310C109C0378DC1767C7408401B9BF2C194EF5C436FE8C293168D3935A9F26E7E3772D7167931137399705EAC80BB6D56D2340E6&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "001FqfYI0fIXA1",
+        albumname: "Stronger",
+        singer: "Inez",
+        songmid: "001QGkPq0aoTGP",
+        songname: "Stronger (Original Edit)",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002vmqRd3fcUp3.m4a?guid=2796982635&vkey=E493AB5D869E0478ACD004E2AA4A07A3D23B45F127BA9DC43476F97641A635643A7F735DDDEB3F4F4F2C413BEE6B5009A4E9B4B5BA3674BD&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0015qGHu3KjkCl",
+        albumname: "F.I.R.飞儿乐团",
+        singer: "F.I.R.飞儿乐团",
+        songmid: "000wyGAY1FfsZ9",
+        songname: "我们的爱",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002gpG0T2Yk0YH.m4a?guid=2796982635&vkey=449CF521D41766CEF491EFF73F408BBFAEDF0BB594B2190B99541AC748CD358B17704C582CD60BC232A0CAC71A764203ECBE96F1FEC963C9&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "004Pv1Kr0YmMPq",
+        albumname: "孤单北半球",
+        singer: "欧得洋",
+        songmid: "00029Buj0clcBE",
+        songname: "孤单北半球",
+        "url": "http://isure.stream.qqmusic.qq.com/C400003lnIgf1jFLgC.m4a?guid=2796982635&vkey=F2E39431BE5AECA7CC5333EA4A4D4ED9F2DCF6FA37D50839E56EC11299C06FB0E480B8A0F1FF8CDD23C7F9BAE5F6DCA42C648CA0AC88F9B3&uin=1899&fromtag=66"
+      }
+    ]
+  }
+}

@@ -4,6 +4,7 @@ package com.lzx.starrysky.manager
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
+import com.lzx.starrysky.control.isModeShuffle
 import com.lzx.starrysky.intercept.ISyInterceptor
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.InterceptorService
@@ -13,7 +14,7 @@ import com.lzx.starrysky.queue.MediaQueueManager
 import com.lzx.starrysky.queue.MediaSourceProvider
 import com.lzx.starrysky.utils.md5
 
-class PlaybackManager(provider: MediaSourceProvider,
+class PlaybackManager(private val provider: MediaSourceProvider,
                       private val appInterceptors: MutableList<ISyInterceptor>
 ) : Playback.Callback {
 
@@ -294,31 +295,31 @@ class PlaybackManager(provider: MediaSourceProvider,
         val isSameInfo = songId == player()?.getCurrPlayInfo()?.songId
         val isPlaying = player()?.playbackState() == Playback.STATE_PLAYING && isSameInfo
         val isPaused = player()?.playbackState() == Playback.STATE_PAUSED && isSameInfo
-        if (isPlaying) {
+        if (isPlaying || isPaused) {
             if (mediaQueue.skipQueuePosition(1)) {
-                deleteAndUpdateInfo(songId)
-                onPlayMusicImpl(player()?.getCurrPlayInfo(), true)
-            }
-        } else if (isPaused) {
-            onStop()
-            if (mediaQueue.skipQueuePosition(1)) {
-                deleteAndUpdateInfo(songId)
-                onPlayMusicImpl(player()?.getCurrPlayInfo(), false)
+                deleteAndUpdateInfo(songId, true)
             }
         } else {
-            deleteAndUpdateInfo(songId)
+            deleteAndUpdateInfo(songId, false)
         }
     }
 
     /**
      * 删除歌曲并更新下标
      */
-    private fun deleteAndUpdateInfo(songId: String) {
+    private fun deleteAndUpdateInfo(songId: String, isPlayNextSong: Boolean) {
         val repeatMode = RepeatMode.with.repeatMode
-        val isActiveTrigger = repeatMode != RepeatMode.REPEAT_MODE_SHUFFLE
-        val skipSongInfo = mediaQueue.getCurrentSongInfo(isActiveTrigger)
+        val playIngInfo = mediaQueue.getCurrentSongInfo(!repeatMode.isModeShuffle())
         mediaQueue.provider.deleteSongInfoById(songId)
-        mediaQueue.updateIndexByPlayingInfo(skipSongInfo)
+        mediaQueue.provider.updateShuffleSongList()
+        mediaQueue.updateIndexByPlayingInfo(playIngInfo)
+        if (mediaQueue.provider.getSourceSize() == 0) {
+            onStop()
+        } else {
+            if (isPlayNextSong) {
+                onPlayMusicImpl(playIngInfo, true)
+            }
+        }
     }
 
     /**

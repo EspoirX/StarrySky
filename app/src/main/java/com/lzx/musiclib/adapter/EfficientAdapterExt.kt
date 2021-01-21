@@ -125,6 +125,12 @@ fun <T> androidx.recyclerview.widget.RecyclerView.updateData(position: Int, data
     }
 }
 
+fun <T> androidx.recyclerview.widget.RecyclerView.notifyDataSetChanged() {
+    if (adapter != null && adapter is EfficientAdapter<*>) {
+        (adapter as EfficientAdapter<T>).notifyDataSetChanged()
+    }
+}
+
 fun <T> androidx.recyclerview.widget.RecyclerView.getItem(position: Int): T? {
     return if (adapter != null && adapter is EfficientAdapter<*>) {
         (adapter as EfficientAdapter<T>).getItem(position)

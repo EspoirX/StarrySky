@@ -50,8 +50,8 @@ android {
         implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-beta01"
 
         implementation project(':starrysky')
-//        implementation project(':mylibrary')
         implementation 'com.lzx:StarrySkyFlacExt:1.0.0'
+
         implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.0'
         implementation 'com.google.android.exoplayer:extension-rtmp:2.12.0'
         implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.0'
@@ -63,7 +63,9 @@ android {
         implementation 'com.gcssloop.widget:rclayout:1.8.1'
         implementation 'com.mikhaellopez:circularimageview:4.2.0'
         implementation 'com.noober.background:core:1.6.5'
-
+        implementation 'com.afollestad.material-dialogs:core:3.3.0'
+        implementation 'com.afollestad.material-dialogs:bottomsheets:3.3.0'
+        
         implementation 'com.tencent.bugly:crashreport:3.1.0'
         implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
 

@@ -3,15 +3,13 @@
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:orientation="horizontal"
-    android:paddingLeft="20dp">
+    android:orientation="horizontal" >
 
-    <ImageView
+    <com.lzx.musiclib.weight.SpectrumDrawView
         android:id="@+id/imgAnim"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/anim_playing" />
+        android:layout_gravity="center_vertical" />
 
     <TextView
         android:id="@+id/songName"

@@ -5,19 +5,11 @@
     android:background="@drawable/shape_bg_dialog"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/playModel"
+    <Button
+        android:id="@+id/indexBtn"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center_vertical"
-        android:paddingLeft="20dp"
-        android:text="顺序播放(10)"
-        android:textColor="#000000" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="#f9f9f9" />
+        android:layout_height="wrap_content"
+        android:text="查看当前播放下标" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleView"

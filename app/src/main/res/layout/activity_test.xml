@@ -65,6 +65,17 @@
             android:layout_height="wrap_content"
             android:text="上一首" />
 
+        <Button
+            android:id="@+id/flac"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="播放flac" />
+
+        <Button
+            android:id="@+id/delete"
+            android:text="删除第一首"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <LinearLayout
@@ -130,6 +141,11 @@
             android:layout_height="wrap_content"
             android:text="查本地音乐" />
 
+        <Button
+            android:id="@+id/m3u8Btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="播放m3u8" />
 
     </LinearLayout>
 
@@ -221,5 +237,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="通知栏切换" />
+
+        <Button
+            android:id="@+id/updateList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="更新列表" />
+
+        <Button
+            android:id="@+id/rtmpBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="播放rtmp" />
     </LinearLayout>
 </LinearLayout>

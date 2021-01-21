@@ -1,0 +1,87 @@
+//封面 https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg
+{
+  data: {
+    songlist: [
+      {
+        albumid: "002gEpSV1caBBd",
+        albumname: "有情人终成眷属",
+        singer: "郑源",
+        songmid: "003hfgrZ22YLrw",
+        songname: "一万个理由",
+        "url": "http://isure.stream.qqmusic.qq.com/C400003vyfmo4M64WU.m4a?guid=2796982635&vkey=58C390DDBCADF7816D7989066693090652B9B12F61121357D56283AED406274B77BBB67F8323F2DCC1E0FC181C223F4075ED4F66CC1BE284&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "000NbMJH2BkDTL",
+        albumname: "回到我身边",
+        singer: "东来东往",
+        songmid: "0014yS112MT0AY",
+        songname: "别说我的眼泪你无所谓",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000slR0Z1cKNLC.m4a?guid=2796982635&vkey=0DEBFEF141C96DB3427C5BCA6C7E3374E4CF3772209DD59EC4EB7B112F0C42B23D72BFFD4507AAF2ABC6E6379B1C8BF17042C2476E928D01&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0018JLc316SNJi",
+        albumname: "Dance Again...The Hits",
+        singer: "Jennifer Lopez",
+        songmid: "002xJTTM2ZJT9I",
+        songname: "On The Floor",
+        "url": "http://isure.stream.qqmusic.qq.com/C400003Tmf270iI4xP.m4a?guid=2796982635&vkey=9F072282204E511B16F038F3EDB8615D9286D3E383D0E8EA824671112C0690F8E23A5AC9CB4B0F360CAA4FE6478D0E75FB2B4678BA458207&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "002d9uwF467dxn",
+        albumname: "Confessions (Special edition)",
+        singer: "Usher",
+        songmid: "004HWMfG2XUDDh",
+        songname: "Yeah",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002wKJmn2AIudy.m4a?guid=2796982635&vkey=638B79FE1EDABCFA7A6B79373AD61D43A2756EC963D32DCE25EE2309AAE44BD57C9796457AFF6C7EF440B3A2C1E3BAFD5B383EA5C566B610&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "004UNgYb3KIfqN",
+        albumname: "Breakaway (Limited Edition)",
+        singer: "Kelly Clarkson",
+        songmid: "0023F44C3hf4yF",
+        songname: "Because Of You",
+        "url": "http://isure.stream.qqmusic.qq.com/C400003itHyf0XQUoi.m4a?guid=2796982635&vkey=B878BF3389D39DE5E0FC1138A2744793318DE51BF56EDAFDCA3840484E467BD7F6AC6512DB1C1190C188B51EFB6E4F8D406AEC45C0EECA4E&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "003jZnhb1y4CBv",
+        albumname: "《反恐精英》游戏主题曲",
+        singer: "Nightwish",
+        songmid: "0038Plkh3wMA7l",
+        songname: "She Is My Sin",
+        "url": "http://isure.stream.qqmusic.qq.com/C4000020gAlh0fH3lI.m4a?guid=2796982635&vkey=73CAC2C6BDE8BB4A637FDC211DC57F7F5FDD78A9432D147D3096DEDA0E7A2E77016096C56CD9CFC1F5A21ADEF71FA484D10853E572CFDCC4&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "001OiCYO0R7VhX",
+        albumname: "《第一次爱的人》英文版",
+        singer: "M2M",
+        songmid: "000IpnIU2r4MTS",
+        songname: "The Day You Went Away",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000hjH2z09lsN3.m4a?guid=2796982635&vkey=5E7A5FF92E41F193A15BBD1035AD4FF7681A26CDB36BCAB93FC8AB007432FF46AA1AFD7E752AE52A8508BB9E7BA521ABE438E864D833DF5B&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "003SJ18t3drSI2",
+        albumname: "Just One Last Dance",
+        singer: "Sarah Connor",
+        songmid: "002zeIt80wBT4G",
+        songname: "Just One Last Dance (Radio Version)",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000Bq8Tm1Otp1L.m4a?guid=2796982635&vkey=74D3695EB8B89845BC021E0D6EE69BCFC86AAB3E446DA4FE2F3E01D1A4863DB04A52A78A2499B8D77FEFFA6C4A93C04486303C8176283354&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0010NWdr0yCKw9",
+        albumname: "Spin",
+        singer: "Darren Hayes",
+        songmid: "003q10ID3LXRXC",
+        songname: "Creepin' up on You",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000TZC680fUx7j.m4a?guid=2796982635&vkey=04DB0F240B8A37DEE817B5AE9F2C557AC828C12D1F1C2D1A6DEC0AA3695CD13144508A9CEA17462646B4728DE30F8CB8726AB216EC4111A8&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "004EzVN12fbZ31",
+        albumname: "Covergirl",
+        singer: "Groove Coverage",
+        songmid: "004LeHPw3Ovh8T",
+        songname: "Far Away From Home",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002oGxlL2tBFUW.m4a?guid=2796982635&vkey=0A75E772F32ED044B4730F64F9F5ADD6C6F75011DA5DF766334FBD649BCD010B653618C42EBD5BA9FE5D027AE3C664FDD567BF1A5DB2FA79&uin=1899&fromtag=66"
+      }
+    ]
+  }
+}

@@ -5,6 +5,89 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="个人信息" />
+
+    <LinearLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/user"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/dynamic"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="动态" />
+
+        <Button
+            android:id="@+id/card"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="卡片" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout"
+        android:padding="5dp"
+        android:text="播放列表："
+        android:textSize="18sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/text" />
+
+    <RelativeLayout
+        android:id="@+id/floatLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="80dp">
+
+        <com.gcssloop.widget.RCImageView
+            android:id="@+id/songCover"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            app:round_as_circle="true" />
+
+        <com.lzx.musiclib.weight.DonutProgress
+            android:id="@+id/donutProgress"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:layout_centerInParent="true"
+            app:donut_circle_starting_degree="-90"
+            app:donut_finished_color="@android:color/holo_red_light"
+            app:donut_finished_stroke_width="2dp"
+            app:donut_text_color="@android:color/transparent"
+            app:donut_unfinished_color="@android:color/white"
+            app:donut_unfinished_stroke_width="2dp" />
+    </RelativeLayout>
+
+</RelativeLayout>
+
+    <!--
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <com.lzx.musiclib.weight.CustomTabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
@@ -56,4 +139,4 @@
             app:donut_unfinished_color="@android:color/white"
             app:donut_unfinished_stroke_width="2dp" />
     </RelativeLayout>
-</RelativeLayout>
+</RelativeLayout>-->

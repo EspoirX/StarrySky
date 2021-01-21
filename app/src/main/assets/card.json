@@ -1,0 +1,273 @@
+//封面 https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg
+{
+  card1: {
+    songlist: [
+      {
+        albumid: "003Au5WN4cxRcU",
+        albumname: "Wu Ha",
+        singer: "潘玮柏,张韶涵",
+        songmid: "002Kk6Jq3QAqvO",
+        songname: "快乐崇拜",
+        "url": "http://isure.stream.qqmusic.qq.com/C400003Kj8Cy0n8mjo.m4a?guid=2796982635&vkey=008B19BD341CFF438D58ABE9E2E411C3C08AB8F4C54D0D14806FA29899EFD7527640A1C0E09DC6F0164F60F6927E0B3E88577EB772037DE4&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "001jmC6x1RMfh0",
+        albumname: "Vae新歌+精选珍藏合辑",
+        singer: "许嵩",
+        songmid: "004ENQPZ0dHaqy",
+        songname: "断桥残雪",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002zCpfX1fiWS5.m4a?guid=2796982635&vkey=4BDD32386B48658EDC57555CC2699194649E34561E80D2F110E8FD4C4BF5F67B7A51F59A67EEB4F86A848DA86D8FC5B00D13815F4BBF8FB7&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "002CJON012PxwU",
+        albumname: "寻雾启示",
+        singer: "许嵩",
+        songmid: "003cLs112yMAcW",
+        songname: "灰色头像",
+        "url": "http://isure.stream.qqmusic.qq.com/C400003bkH590BZsnQ.m4a?guid=2796982635&vkey=40B25D17D39346896C64D8616D6004DA28B3E660A95D5E14EB7FBB4EC0C173A69A1A1CDF2E486BAACF4A3BAC0EF108AA9AFE459CDDA35C25&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0032Xb5e2fiEH0",
+        albumname: "เจอกับตัวเอง...ถึงรู้",
+        singer: "ซาร่า นุศรา ผุงประเสริฐ",
+        songmid: "003bjPYf0jqq6j",
+        songname: "เจอกับตัวเอง...ถึงรู้",
+        "url": "http://isure.stream.qqmusic.qq.com/C4000020T6ad3BKnaI.m4a?guid=2796982635&vkey=FBB6EC9A77D1837325C12FE2C87B0754B33727C076FFFA1ACAAE9000D68CEC7A80E88DE8F4669C602F1679E68C3FFD93D6272C12CC34A4B0&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "003H7gaL4PuVuF",
+        albumname: "Dance Dance Dance",
+        singer: "海鸣威",
+        songmid: "001sdaYF1SYjhZ",
+        songname: "老人与海",
+        "url": "http://isure.stream.qqmusic.qq.com/C400003nCVk71nPDhY.m4a?guid=2796982635&vkey=8F28330B18D42A14020BFD071AB1DCA097728AD0E21CC7D46928AEF0F466F1DA64352BF1C206B8EC283D92D035FB1846BEFB54C4195E7239&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "003JtFWs496kCE",
+        albumname: "A Little Love",
+        singer: "冯曦妤",
+        songmid: "003HSXFk2orQJj",
+        songname: "Proud Of You",
+        "url": "http://isure.stream.qqmusic.qq.com/C400001m1FNA3ofQhB.m4a?guid=2796982635&vkey=8FCDA26BC8334BF3587BB0719BB977F2D19FD615231F39AA3051264054FE86F3CB238500D6037E0A8C610853497FC7702EFF72B2187AA2FD&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "000V1USK3p6z4D",
+        albumname: "Nana",
+        singer: "Nana",
+        songmid: "004JGgSX45imUV",
+        songname: "Lonely",
+        "url": "http://isure.stream.qqmusic.qq.com/C400001XlyN02D6iqb.m4a?guid=2796982635&vkey=DAD85AEA100631EF91EF9484C2DA4515BC16A5C4E23344F13425C7A0B90AE136C8C6248C428E2E10846B7297BB0BEBCBBAA83E9B4D044916&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0038x0Rf0RiGVB",
+        albumname: "Lenka",
+        singer: "Lenka",
+        songmid: "003dVPlm0eIfHC",
+        songname: "Trouble Is A Friend",
+        "url": "http://isure.stream.qqmusic.qq.com/C400003dVPlm0eIfHC.m4a?guid=2796982635&vkey=5D2726CFF4FAB67AF27C315297DFE2DDA0EC6F7B7CF397151A98657CDCEB11CA0D00E24A44367472A87A44B5F5DAD7C482A98C2959D5DB5B&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "00271uao3rmdXo",
+        albumname: "Te Gusta Conducir Dance",
+        singer: "Ultradance",
+        songmid: "000aVnvJ4CDbtQ",
+        songname: "Dragostea Din Tei",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002v8Vj61bvIb0.m4a?guid=2796982635&vkey=D45248CACD4E1F37410ADAFC406EB490D58E96074ABA7E2ACEF954C4C4D417BE9E16CF303DFC860713D729D68B321962F2F08F95C0E28B60&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0035f8nw11cjkf",
+        albumname: "素颜",
+        singer: "许嵩",
+        songmid: "004Gq0xE1YC8xp",
+        songname: "素颜",
+        "url": "http://isure.stream.qqmusic.qq.com/C400001sE4o50UXy4q.m4a?guid=2796982635&vkey=B204A1BD211E482E887783F4027C31CF1E9B15B14AB7DAA16B56297927DC25B0669103C69F421EEC4B3E7439A3C4139C42DF69C138A2D66A&uin=1899&fromtag=66"
+      }
+    ]
+  },
+  "card2": {
+    songlist: [
+      {
+        albumid: "003aRSLw4H140N",
+        albumname: "That's Bubble Dance, Vol. 2",
+        singer: "Gelato",
+        songmid: "0006OWiH3sTTIH",
+        songname: "Penguin'S Game (English Version)",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002d6CyJ1nUdEX.m4a?guid=2796982635&vkey=80307964F63F13B0FEC6A15B4D47755B13B51047E8F94B0E80A42C8A0CBE65E4C4D8512126F7DD5821860F4D1502402DE31976F22ADB4CE8&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0041uLZw3dLYXi",
+        albumname: "Golden Sky",
+        singer: "Smile.DK",
+        songmid: "002lSXnK30r1Pc",
+        songname: "Golden Sky",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002zKNJT0Z4KFt.m4a?guid=2796982635&vkey=3B255FEBE82F3E9DD1958E7DD00C0477D1FF6AE11EBEAB0809B339108B5CA4BD5E8EFA8EDD0B98DED2753788B3978A41E3BEA10620FDECA7&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "002Uy6XF42Wgye",
+        albumname: "7 Years And 50 Days",
+        singer: "Groove Coverage",
+        songmid: "003l20pI0Mzhqk",
+        songname: "She",
+        "url": "http://isure.stream.qqmusic.qq.com/C400001PH5wb2mlywa.m4a?guid=2796982635&vkey=056E302B5730E8130B316772C93D27455E6E0080CE0BD4C3F74AB4871DA13FF001F79AB07D097C8188609308F61F318AD0248BB6ACA3CE1B&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "002QnJlq3O84nr",
+        albumname: "洛丽塔",
+        singer: "卓亚君",
+        songmid: "001MkQqN1Kou96",
+        songname: "洛丽塔",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000f2s6f46AGTq.m4a?guid=2796982635&vkey=48CC3F3F84AFE64FE965BFBE4F99112E4961C5252D1EAB28DC73E46A6E5B63B837EDE0A1EA7E1936067C2855AC7DBEB2CC42AD67C0986326&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "000BnatB1xaYkq",
+        albumname: "How Do You Do",
+        singer: "Befour",
+        songmid: "004OF0UZ1VntBD",
+        songname: "How Do You Do?",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000SlHwU1KiKzh.m4a?guid=2796982635&vkey=A0E45EB927300BF5AF5E74D79170BA7224AF30638071BCC95228B8A6A8F9EFFA183855AED7B2B5199B9431D53AF693793720157D1BFD7BBC&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "001ZaCQY2OxVMg",
+        albumname: "歌曲合辑",
+        singer: "DJ Carpi",
+        songmid: "0012uAY73GQho2",
+        songname: "The Power Of Pleasure",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002TuuPa3bv5dM.m4a?guid=2796982635&vkey=CFDFF2E84E483B00A67DADCFF6D4D384EBD590494E52A795F10186FE88775837C964390744EB1E7E5EC2E3DC785E1A4392D0AB84593FB7EE&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "001TOFoC0K5WZR",
+        albumname: "Hey Oh",
+        singer: "Tragédie",
+        songmid: "004EZ9XZ1Sj1cI",
+        songname: "Hey Oh",
+        "url": "http://isure.stream.qqmusic.qq.com/C400001IKFE91lAOf6.m4a?guid=2796982635&vkey=17BFA2E3D8C413FC8933F63156DDAA6E73B1F7E48F45D427D80DB41978369F19558AE14EF32BA33199DB784B55D9D2E0FC41B8B942FF00C6&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "001DaXF23vHd1s",
+        albumname: "Time...",
+        singer: "July (줄라이)",
+        songmid: "0015xqSa3G50mK",
+        songname: "My Soul",
+        "url": "http://isure.stream.qqmusic.qq.com/C400003eOKpY2dxfZX.m4a?guid=2796982635&vkey=922C24104FC29C320858FA855897363CA5A97C55789BE36491AF06A12B0155C244D8EE04EADE1D0C9415877395FAEB706BEE8371DF808487&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "000B5Zhw0nH713",
+        albumname: "Je m'appelle Helene",
+        singer: "Hélène Rollès",
+        songmid: "0009Sakx35S4rp",
+        songname: "Je m'appelle Hélène",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000QnI6k47biMJ.m4a?guid=2796982635&vkey=DB11545B3CB0A717A8380F7BCC6C2398F954E6035810D9370B0D7CC15F65C8D8FD9D5B3EE9211A26B516649B32D047D23CBFE6DE367FC008&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "003uIqVp1erSxD",
+        albumname: "Not Going Under",
+        singer: "Maria Arredondo",
+        songmid: "003TB1qd4Gnbuu",
+        songname: "Burning",
+        "url": "http://isure.stream.qqmusic.qq.com/C400004deyvL4F5lmW.m4a?guid=2796982635&vkey=C5DFB30423105A44522363094EE14261A73918820251A110453AB242E8E85C3D80216501826DC4F45D4A53478C9258756215DC6C5A6B85E3&uin=1899&fromtag=66"
+      }
+    ]
+  },
+  "card3": {
+    songlist: [
+      {
+        albumid: "002ma2S64Gjtgl",
+        albumname: "Deutschland sucht den Superstar: United",
+        singer: "Alexander Klaws",
+        songmid: "002Siavv2kQbJ7",
+        songname: "Cry On My Shoulder",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002LnVsz01ojdG.m4a?guid=2796982635&vkey=36DA1688E2D97CFF78DE5563FF08EC2DB0439E0B03BDC4AF9DE0F4C8DAC552F2D755F3657CB592247B75D8DF619D86F5FCBAB019B6142673&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "001RR5sW0F95RL",
+        albumname: "Burning Youth VOL 1",
+        singer: "John The Whistler",
+        songmid: "003WEBJZ3eiYAU",
+        songname: "Wild Wild Web",
+        "url": "http://isure.stream.qqmusic.qq.com/C40000030ogT1gJX2V.m4a?guid=2796982635&vkey=CFC6678999DD0976B27CCD84CD48EA54615E0182D59C27AEE21F9B831F70877910134E4729359070B2960B53F7DA0418C843FCD0EB00E0ED&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "004gOmmO3VaCYO",
+        albumname: "舞动人生",
+        singer: "罗百吉",
+        songmid: "001hv99C2g6QOn",
+        songname: "I Miss You",
+        "url": "http://isure.stream.qqmusic.qq.com/C400004eCnvF1pSwYX.m4a?guid=2796982635&vkey=AFF658EA8144496A5B9303DD10BA570B54FB76C17AE514099251C392D764655136769C41C28B81286DDC3727BE2650A5E20FC591217111A8&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0042fRAt2YZpjE",
+        albumname: "RNB舞曲6",
+        singer: "Mario & Nesty (마리오&네스티)",
+        songmid: "000p95c14NfAbc",
+        songname: "Never Say Good Bye",
+        "url": "http://isure.stream.qqmusic.qq.com/C400001RHjaD12snkm.m4a?guid=2796982635&vkey=6F3690AF4C42EB957D89795B178A1529A5431992327AEA474C7211B76D69D373090F8259974BD2CFDD61B101B1379525B9EDA09DBA060E6D&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "003O2lBq1Sflys",
+        albumname: "世界上最动听的歌之男儿有情",
+        singer: "Backstreet Boys",
+        songmid: "003xVjty30792D",
+        songname: "As Long as You Love Me",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000zD9lm3GHQEd.m4a?guid=2796982635&vkey=DF180371E6C67D76E7D912B61DB5709425538F5BAE39900523EA6E9802D7C41C33A1E02E2A946002FE7A40A49B95BF7C997952B3CFD2A0A2&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "003RB7Lk0Uues1",
+        albumname: "Git Fresh",
+        singer: "Deep Side",
+        songmid: "001gip3A1SpQc2",
+        songname: "Booty Music",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002eE8MJ2PjsUP.m4a?guid=2796982635&vkey=26FDE3CF577D25C4E8495DFE2C7A88A1D4A42EDCF5D41FEFE555A85B63BDF62D2704E1F83427746288BA7569142942940C44BB4590CCB6A0&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "003DNbaB3IiFJn",
+        albumname: "全年伤感歌曲大盘点2",
+        singer: "沈千琦",
+        songmid: "003IoR9o1WVc8q",
+        songname: "感动天感动地",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000rd9zO1c8mMu.m4a?guid=2796982635&vkey=4B8BA6D051E1866CD139CD1B9223037E31D71E0BD18E8D743895F49BA20A027BBA49203A1BFF2D240F1E2F512E77DD92D3DC933D9171FC24&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "0005rprN0S7mIv",
+        albumname: "I Leave The World Today",
+        singer: "Baracuda",
+        songmid: "004Rek6L3j8cPv",
+        songname: "I Leave The World Today - Video Mix",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002AlnRk3lqCoG.m4a?guid=2796982635&vkey=F188D797CD68A9E1E7D6F8C414EE437D5505BBC5C7C602225C183E6BB9AF122C14B87407D63D0F3FC5AD33C89479A3E1D4D283CA289A1606&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "001jmC6x1RMfh0",
+        albumname: "Vae新歌+精选珍藏合辑",
+        singer: "许嵩",
+        songmid: "003CMXGI2yRUDo",
+        songname: "玫瑰花的葬礼",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000HHUoA1MSnBA.m4a?guid=2796982635&vkey=95440AD5D420AFF6AC0848B74E7C645F2A982F706882807A52E1EEFCBF093644F4A22D0219B1D6B2A644799CBAB204B9AEBC6159DE42E56B&uin=1899&fromtag=66"
+      },
+      {
+        albumid: "004EzVN12fbZ31",
+        albumname: "Covergirl",
+        singer: "Groove Coverage",
+        songmid: "002thvIe14MNTC",
+        songname: "God Is A Girl (Album Version)",
+        "url": "http://isure.stream.qqmusic.qq.com/C400002U8IpQ4T87qO.m4a?guid=2796982635&vkey=01B6CC79A19ACE026F32C254EF0E44BD7554F2F1125F97F9C7DD6EC6085EA963EC3E1C89AE51A2D152511752772307FD219B07BDAD58CC72&uin=1899&fromtag=66"
+      }
+    ]
+  },
+  "card4": {
+    songlist: [
+      {
+        albumname: "Jade",
+        singer: "Sweetbox",
+        songmid: "002SJWRQ08Tkry",
+        songname: "Don't Push Me",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000pdXXm4PjA6U.m4a?guid=2796982635&vkey=E9A6C60A976689C9C87BD2FF6AE7E447CACD25794C7F620C932BFF2F158AC3A3DAFA935650CDC6956277C7CCEA1D735B5520F0F05AA7D43B&uin=1899&fromtag=66"
+      },
+      {
+        albumname: "犯贱",
+        singer: "徐良",
+        songmid: "000fHxUW1i2uG8",
+        songname: "红装",
+        "url": "http://isure.stream.qqmusic.qq.com/C400000z8Z1Q0FrqEr.m4a?guid=2796982635&vkey=011A491F9F6CCD56B4089B7FBE1D0C02F656377EDD233BEFF6AEFC20FD24D8EFDB35C31A95966FEFAF8151E1859A4B91B529BFB911989452&uin=1899&fromtag=66"
+      }
+    ]
+  }
+}

@@ -24,6 +24,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
 import com.lzx.starrysky.utils.MainLooper
@@ -341,3 +343,11 @@ fun Context.getPhoneWidth(): Int {
 fun Context.getPhoneHeight(): Int {
     return this.resources.displayMetrics.heightPixels
 }
+
+//顶层函数版
+inline fun <reified T : ViewModel> getViewModel(owner: ViewModelStoreOwner, configLiveData: T.() -> Unit = {}): T =
+    ViewModelProvider(owner)[T::class.java].apply { configLiveData() }
+
+//扩展函数版
+inline fun <reified T : ViewModel> ViewModelStoreOwner.getSelfViewModel(configLiveData: T.() -> Unit = {}): T =
+    getViewModel(this, configLiveData)
