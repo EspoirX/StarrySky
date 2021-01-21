@@ -15,7 +15,10 @@ import com.lzx.starrysky.intercept.SyncInterceptor
 import com.lzx.starrysky.manager.PlaybackStage
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.utils.MainLooper
+import com.lzx.starrysky.utils.md5
 import kotlinx.android.synthetic.main.activity_test.cacheSwitch
+import kotlinx.android.synthetic.main.activity_test.delete
+import kotlinx.android.synthetic.main.activity_test.flac
 import kotlinx.android.synthetic.main.activity_test.getAudioSessionId
 import kotlinx.android.synthetic.main.activity_test.getNowPlayingIndex
 import kotlinx.android.synthetic.main.activity_test.getNowPlayingSongInfo
@@ -24,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_test.getRepeatMode
 import kotlinx.android.synthetic.main.activity_test.interceptor
 import kotlinx.android.synthetic.main.activity_test.isSkipToNextEnabled
 import kotlinx.android.synthetic.main.activity_test.isSkipToPreviousEnabled
+import kotlinx.android.synthetic.main.activity_test.m3u8Btn
 import kotlinx.android.synthetic.main.activity_test.notifySwitch
 import kotlinx.android.synthetic.main.activity_test.pauseMusic
 import kotlinx.android.synthetic.main.activity_test.playMusic
@@ -32,6 +36,7 @@ import kotlinx.android.synthetic.main.activity_test.playMusicByInfo
 import kotlinx.android.synthetic.main.activity_test.playMusicByUrl
 import kotlinx.android.synthetic.main.activity_test.querySongInfoInLocal
 import kotlinx.android.synthetic.main.activity_test.restoreMusic
+import kotlinx.android.synthetic.main.activity_test.rtmpBtn
 import kotlinx.android.synthetic.main.activity_test.seekBarPro
 import kotlinx.android.synthetic.main.activity_test.seekBarSpeed
 import kotlinx.android.synthetic.main.activity_test.seekBarVolume
@@ -43,17 +48,18 @@ import kotlinx.android.synthetic.main.activity_test.stopMusic
 import kotlinx.android.synthetic.main.activity_test.tvPro
 import kotlinx.android.synthetic.main.activity_test.tvSpeed
 import kotlinx.android.synthetic.main.activity_test.tvVolume
+import kotlinx.android.synthetic.main.activity_test.updateList
 
 class TestActivity : AppCompatActivity() {
 
     val z = "https://github.com/EspoirX/lzxTreasureBox/raw/master/%E5%91%A8%E6%9D%B0%E4%BC%A6-%E5%91%8A%E7%99%BD%E6%B0%94%E7%90%83.mp3"
-    val a = "http://musicall.bs2dl.yy.com/odgube404c8b5f2040538c13667ffe13e195_124493272196875776_1000377059_bs2_format.aac"
-    val b = "https://musicall.bs2dl.yy.com/odgud9920364f39b4b4dba7176354bff4638_131088925343375188_44815391_bs2_format.aac"
-    val c = "http://musicall.bs2dl.huanjuyun.com/odgu4718dd56e4fd4d679d057722e6c3262b_82863562902891919_44028220_bs2_format_1562780034.aac"
-    val d = "http://musicall.bs2dl.yy.com/odgu235e603857254b9dbfb41f02dc7b1c90_131160036913908871_47464487_bs2_format.aac"
-    val e = "http://musicall.bs2dl.yy.com/odguae65e25206cc43d78f563034d9bdc459_118382661783854139_45387239_bs2_format.aac"
-    val f = "http://musicall.bs2dl.yy.com/odgud249a26ec99a478c838966cb69f30d5b_132815537382758232_45834629_bs2_format.aac"
-    val g = "http://musicall.bs2dl.huanjuyun.com/odgu3ec10e9921484e8dbbef0e9245fabb56_73838702584411398_18655347_bs2_format_1562799252.aac"
+    val a = "https://github.com/EspoirX/lzxTreasureBox/raw/master/a.aac"
+    val b = "https://github.com/EspoirX/lzxTreasureBox/raw/master/b.aac"
+    val c = "https://github.com/EspoirX/lzxTreasureBox/raw/master/c.aac"
+    val d = "https://github.com/EspoirX/lzxTreasureBox/raw/master/d.aac"
+    val e = "https://github.com/EspoirX/lzxTreasureBox/raw/master/e.aac"
+    val f = "https://github.com/EspoirX/lzxTreasureBox/raw/master/f.aac"
+    val g = "https://github.com/EspoirX/lzxTreasureBox/raw/master/g.aac"
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,6 +85,46 @@ class TestActivity : AppCompatActivity() {
         soundPoolList.add("hglo6.ogg")
         soundPoolList.add("hglo7.ogg")
         soundPoolList.add("hglo8.ogg")
+
+        val m3u8 = mutableListOf<Pair<String, String>>()
+        m3u8.add(Pair("CRI汉语环球", "http://sk.cri.cn/hyhq.m3u8"))
+        m3u8.add(Pair("CRI环球资讯", "http://sk.cri.cn/nhzs.m3u8"))
+        m3u8.add(Pair("CRI劲曲调频", "http://sk.cri.cn/887.m3u8"))
+        m3u8.add(Pair("CRI怀旧金曲", "http://sk.cri.cn/oldies.m3u8"))
+        m3u8.add(Pair("CRI客家之声", "http://sk.cri.cn/hakka.m3u8"))
+        m3u8.add(Pair("CRI闽南之音", "http://sk.cri.cn/minnan.m3u8"))
+        m3u8.add(Pair("CRI世界华声", "http://sk.cri.cn/hxfh.m3u8"))
+        m3u8.add(Pair("CRl News", "http://sk.cri.cn/905.m3u8"))
+        m3u8.add(Pair("CRI EZFM", "http://sk.cri.cn/915.m3u8"))
+        m3u8.add(Pair("CRI Nairobi 91.9", "http://sk.cri.cn/kenya.m3u8"))
+        m3u8.add(Pair("CRI music", "http://sk.cri.cn/am1008.m3u8"))
+
+        val m3u8List = mutableListOf<SongInfo>()
+        m3u8.forEach {
+            val songInfo = SongInfo(it.second.md5(), it.second)
+            songInfo.artist = it.first
+            songInfo.songName = it.first
+            songInfo.songCover = "https://blog.xmcdn.com/wp-content/uploads/2014/07/%E5%BD%95%E9%9F%B3.jpg"
+            m3u8List.add(songInfo)
+        }
+
+        val rtmp = mutableListOf<Pair<String, String>>()
+        rtmp.add(Pair("香港财经", "rtmp://202.69.69.180:443/webcast/bshdlive-pc"))
+        rtmp.add(Pair("韩国GoodTV", "rtmp://mobliestream.c3tv.com:554/live/goodtv.sdp"))
+        rtmp.add(Pair("韩国朝鲜日报", "rtmp://live.chosun.gscdn.com/live/tvchosun1.stream"))
+        rtmp.add(Pair("美国1", "rtmp://ns8.indexforce.com/home/mystream"))
+        rtmp.add(Pair("美国2", "rtmp://media3.scctv.net/live/scctv_800"))
+        rtmp.add(Pair("美国中文电视", "rtmp://media3.sinovision.net:1935/live/livestream"))
+        rtmp.add(Pair("湖南卫视", "rtmp://58.200.131.2:1935/livetv/hunantv"))
+
+        val rtmpList = mutableListOf<SongInfo>()
+        rtmp.forEach {
+            val songInfo = SongInfo(it.second.md5(), it.second)
+            songInfo.artist = it.first
+            songInfo.songName = it.first
+            songInfo.songCover = "https://img95.699pic.com/photo/50052/5059.jpg_wh300.jpg"
+            rtmpList.add(songInfo)
+        }
 
         playMusicById?.setOnClickListener {
             StarrySky.with().playMusicById("z")
@@ -190,6 +236,39 @@ class TestActivity : AppCompatActivity() {
                 StarrySky.changeNotification(INotification.SYSTEM_NOTIFICATION)
                 showToast("当前使用系统通知栏")
             }
+        }
+        updateList?.setOnClickListener {
+            val list = mutableListOf<SongInfo>()
+            songList.add(SongInfo("f", f, "f"))
+            songList.add(SongInfo("g", g, "g"))
+            StarrySky.with().updatePlayList(list)
+
+            val size = StarrySky.with().getPlayList().size
+            showToast("size = $size")
+        }
+
+        flac?.setOnClickListener {
+            val list = mutableListOf<SongInfo>()
+            val info = SongInfo()
+            info.songId = "11111"
+            info.songUrl = "https://github.com/EspoirX/lzxTreasureBox/raw/master/%E6%83%B3%E4%B8%8D%E5%88%B0.flac"
+            info.songName = "庄心妍-想不到"
+            info.artist = "庄心妍"
+            info.songCover = "https://y.gtimg.cn/music/photo_new/T001R300x300M000003Cn3Yh16q1MO.jpg?max_age=2592000"
+            list.add(info)
+            StarrySky.with().playMusic(list, 0)
+        }
+        m3u8Btn?.setOnClickListener {
+            StarrySky.with().playMusic(m3u8List, 0)
+        }
+
+        rtmpBtn?.setOnClickListener {
+            StarrySky.with().playMusic(rtmpList, 0)
+        }
+        delete?.setOnClickListener {
+            val list = StarrySky.with().getPlayList()
+            StarrySky.with().removeSongInfo(list.getOrNull(1)?.songId)
+            showToast("已删除")
         }
 
         StarrySky.with().setOnPlayProgressListener(lifecycle, object : OnPlayProgressListener {
