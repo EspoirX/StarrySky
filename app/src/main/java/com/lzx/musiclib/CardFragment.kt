@@ -9,6 +9,7 @@ import com.lzx.musiclib.weight.GalleryItemDecoration
 import com.lzx.musiclib.weight.OnViewPagerListener
 import com.lzx.musiclib.weight.ViewPagerLayoutManager
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.manager.PlaybackStage
 import com.lzx.starrysky.utils.orDef
 import kotlinx.android.synthetic.main.fragment_card.recycleView
 
@@ -42,6 +43,12 @@ class CardFragment : BaseFragment() {
         }
         initRecycleView()
         viewModel?.getCardMusicList(cardType)
+        StarrySky.with().playbackState().observe(this, {
+            if (it.stage == PlaybackStage.IDEA && !it.isStop) {
+                //重播
+                playCurVoice(curPlayPos)
+            }
+        })
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
@@ -89,7 +96,6 @@ class CardFragment : BaseFragment() {
         val songInfo = cardAdapter?.getItem(position) ?: return
         activity?.showToast("当前播放：" + songInfo.songName)
         StarrySky.with()
-            .withOutCallback()
             .skipMediaQueue(true)
             .playMusicByInfo(songInfo)
     }

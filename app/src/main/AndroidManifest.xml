@@ -39,6 +39,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".PlayDetailActivity" />
         <activity android:name=".CardActivity" />
+        <activity android:name=".DynamicDetailActivity"/>
 
     </application>
 

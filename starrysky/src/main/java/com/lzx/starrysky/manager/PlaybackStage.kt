@@ -13,8 +13,9 @@ class PlaybackStage {
         const val ERROR = "ERROR"          //出错
     }
 
-    var lastSongInfo: SongInfo? = null //上一个音频信息（切歌回调时有用）
+    var lastSongInfo: SongInfo? = null  //上一个音频信息（切歌回调时有用）
     var songInfo: SongInfo? = null      //当前音频信息
+    var isStop: Boolean = false    //由于播完完成和停止播放都会回调IDEA，如果要做区分的话可以用这个字段，停止就是true，播放完成就是false
     var errorMsg: String? = null
     var stage: String = IDEA
 }

@@ -62,6 +62,8 @@ open class TestActivity : AppCompatActivity() {
     val f = "https://github.com/EspoirX/lzxTreasureBox/raw/master/f.aac"
     val g = "https://github.com/EspoirX/lzxTreasureBox/raw/master/g.aac"
 
+    val h = "http://musicall.bs2dl.yy.com/odgu22aaa407a9f549209cec2d15da354e84_36349153675243306_17802239_bs2_format.aac"
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,7 +133,7 @@ open class TestActivity : AppCompatActivity() {
             StarrySky.with().playMusicById("z")
         }
         playMusicByUrl?.setOnClickListener {
-            StarrySky.with().playMusicByUrl(f)
+            StarrySky.with().playMusicByUrl(h)
         }
         playMusicByInfo?.setOnClickListener {
             StarrySky.with().playMusicByInfo(SongInfo("a", a))

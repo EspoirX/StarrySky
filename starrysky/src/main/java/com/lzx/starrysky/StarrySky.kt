@@ -270,6 +270,14 @@ object StarrySky {
     }
 
     /**
+     * 关闭通知栏
+     */
+    @JvmStatic
+    fun closeNotification(){
+        getBinder()?.stopNotification()
+    }
+
+    /**
      * 获取当前通知栏类型
      */
     @JvmStatic

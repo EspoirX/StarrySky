@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="动态详情"
+        android:textColor="#000"
+        android:textSize="16sp"
+        tools:ignore="MissingConstraints" />
+
+
+    <com.gcssloop.widget.RCImageView
+        android:id="@+id/cover"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="20dp"
+        android:src="#000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:round_as_circle="true" />
+
+    <TextView
+        android:id="@+id/desc"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="我是一个很丑的动态详情巴拉巴拉"
+        android:textColor="#000"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@+id/cover"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/songName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="#000"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@+id/desc"
+        tools:ignore="MissingConstraints" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginRight="10dp"
+        android:maxHeight="3.4dp"
+        android:minHeight="3.4dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:progressDrawable="@drawable/seek_bar_pro"
+        android:splitTrack="false"
+        android:thumb="@drawable/seek_bar_thumb"
+        app:layout_constraintTop_toBottomOf="@+id/songName" />
+
+    <TextView
+        android:id="@+id/progressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/seekBar"
+        android:layout_marginLeft="10dp"
+        android:text="00:00"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar"
+        app:layout_constraintStart_toStartOf="@+id/seekBar" />
+
+    <TextView
+        android:id="@+id/timeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" / 00:00"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar"
+        app:layout_constraintStart_toEndOf="@+id/progressText" />
+</androidx.constraintlayout.widget.ConstraintLayout>

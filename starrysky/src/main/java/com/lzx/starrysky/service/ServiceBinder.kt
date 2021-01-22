@@ -78,6 +78,10 @@ class ServiceBinder(private val context: Context) : Binder() {
         notification?.startNotification(currPlayInfo, state)
     }
 
+    fun stopNotification() {
+        notification?.stopNotification()
+    }
+
     fun setSessionToken(mediaSession: MediaSessionCompat.Token?) {
         notification?.setSessionToken(mediaSession)
     }

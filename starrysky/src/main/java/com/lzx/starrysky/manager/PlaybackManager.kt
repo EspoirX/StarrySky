@@ -405,6 +405,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
         playbackState.errorMsg = errorMsg
         playbackState.songInfo = currPlayInfo
         playbackState.stage = newState
+        playbackState.isStop = isActionStop
 
         sessionManager.updateMetaData(currPlayInfo)
         if (!withOutCallback) {

@@ -30,6 +30,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     private val playerEventListener = hashMapOf<String, OnPlayerEventListener>()
     private val progressListener = hashMapOf<String, OnPlayProgressListener>()
     private var timerTaskManager: TimerTaskManager? = null
+    private var isRunningTimeTask = false
     private val provider = MediaSourceProvider()
     private var isSkipMediaQueue = false
     private var withOutCallback = false
@@ -40,6 +41,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     init {
         timerTaskManager = TimerTaskManager()
         timerTaskManager?.setUpdateProgressTask {
+            isRunningTimeTask = true
             val position = getPlayingPosition()
             val duration = getDuration()
             progressListener.forEach {
@@ -62,8 +64,8 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     /**
      * 不需要回调
      */
-    fun withOutCallback() = apply {
-        withOutCallback = true
+    fun withOutCallback(withOutCallback: Boolean) = apply {
+        this.withOutCallback = withOutCallback
     }
 
     /**
@@ -556,6 +558,9 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
         pkgActivityName?.let {
             progressListener.put(it, listener)
         }
+        if (!isRunningTimeTask) {
+            timerTaskManager?.startToUpdateProgress()
+        }
     }
 
     internal fun removeProgressListener(activity: Activity?) {
@@ -573,6 +578,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
             PlaybackStage.ERROR,
             PlaybackStage.IDEA -> {
                 timerTaskManager?.stopToUpdateProgress()
+                isRunningTimeTask = false
             }
         }
         //postValue 可能会丢数据，这里保证主线程调用
@@ -592,6 +598,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
 
     fun release() {
         timerTaskManager?.stopToUpdateProgress()
+        isRunningTimeTask = false
         timerTaskManager = null
     }
 }

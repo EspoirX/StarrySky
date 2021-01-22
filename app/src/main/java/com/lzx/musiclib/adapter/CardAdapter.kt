@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.gcssloop.widget.RCImageView
+import com.lzx.musiclib.DynamicDetailActivity
 import com.lzx.musiclib.R
 import com.lzx.musiclib.loadImage
+import com.lzx.musiclib.navigationTo
 import com.lzx.starrysky.SongInfo
 
 class CardAdapter(private val context: Activity?) :
@@ -54,8 +56,6 @@ class CardAdapter(private val context: Activity?) :
         }
     }
 
-    //
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_card, parent, false)
         return CardHolder(view)
@@ -68,6 +68,9 @@ class CardAdapter(private val context: Activity?) :
         cardHolder.headerImg.loadImage("https://i2.gqxz.com/uploads/202009/14/200914110924764.jpg")
         cardHolder.songName.text = info?.songName
         cardHolder.singer.text = info?.artist
+        cardHolder.itemView.setOnClickListener {
+            context?.navigationTo<DynamicDetailActivity>("songInfo" to info)
+        }
     }
 
     class CardHolder(holder: View) : RecyclerView.ViewHolder(holder) {
