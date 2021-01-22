@@ -77,6 +77,7 @@ class CardFragment : BaseFragment() {
             }
 
             override fun onPageSelected(position: Int, isBottom: Boolean) {
+                if (curPlayPos == position) return
                 playCurVoice(position)
             }
         })
@@ -84,7 +85,6 @@ class CardFragment : BaseFragment() {
 
     fun playCurVoice(position: Int) {
         if (!isVisibleToUser) return
-        if (curPlayPos == position) return
         curPlayPos = position
         val songInfo = cardAdapter?.getItem(position) ?: return
         activity?.showToast("当前播放：" + songInfo.songName)
