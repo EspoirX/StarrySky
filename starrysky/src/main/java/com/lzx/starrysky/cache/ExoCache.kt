@@ -7,6 +7,7 @@ import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.CacheSpan
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
+import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.utils.StarrySkyConstant
 import java.io.File
 
@@ -18,11 +19,8 @@ class ExoCache(private val context: Context,
     private var cacheFile: File? = null
     private var exoCache: Cache? = null
 
-    override fun startCache(url: String) {
-        //什么都不做
-    }
-
-    override fun getProxyUrl(url: String): String? {
+    override fun getProxyUrl(url: String, songInfo: SongInfo): String? {
+        //do nothing
         return null
     }
 

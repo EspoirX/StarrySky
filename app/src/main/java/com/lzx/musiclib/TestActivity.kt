@@ -50,7 +50,8 @@ import kotlinx.android.synthetic.main.activity_test.tvSpeed
 import kotlinx.android.synthetic.main.activity_test.tvVolume
 import kotlinx.android.synthetic.main.activity_test.updateList
 
-class TestActivity : AppCompatActivity() {
+
+open class TestActivity : AppCompatActivity() {
 
     val z = "https://github.com/EspoirX/lzxTreasureBox/raw/master/%E5%91%A8%E6%9D%B0%E4%BC%A6-%E5%91%8A%E7%99%BD%E6%B0%94%E7%90%83.mp3"
     val a = "https://github.com/EspoirX/lzxTreasureBox/raw/master/a.aac"
@@ -315,21 +316,25 @@ class TestActivity : AppCompatActivity() {
         })
 
         StarrySky.with().playbackState().observe(this, {
-            if (it.stage == PlaybackStage.PLAYING) {
-                seekBarVolume.progress = (StarrySky.with().getVolume() * 100f).toInt()
-                tvVolume.text = "音量：" + seekBarVolume.progress + " %"
+            when (it.stage) {
+                PlaybackStage.PLAYING -> {
+                    seekBarVolume.progress = (StarrySky.with().getVolume() * 100f).toInt()
+                    tvVolume.text = "音量：" + seekBarVolume.progress + " %"
 
-                seekBarSpeed.progress = StarrySky.with().getPlaybackSpeed().toInt() * 100
-                tvSpeed.text = "音速：" + seekBarSpeed.progress + " %"
-            } else if (it.stage == PlaybackStage.SWITCH) {
-                showToast("切歌:last=" + it.lastSongInfo?.songName + " curr=" + it.songInfo?.songName)
-            } else if (it.stage == PlaybackStage.IDEA) {
-                seekBarPro.progress = 0
-                tvPro.text = "进度："
-                seekBarVolume.progress = 0
-                tvVolume.text = "音量："
-                seekBarSpeed.progress = 0
-                tvSpeed.text = "音速："
+                    seekBarSpeed.progress = StarrySky.with().getPlaybackSpeed().toInt() * 100
+                    tvSpeed.text = "音速：" + seekBarSpeed.progress + " %"
+                }
+                PlaybackStage.SWITCH -> {
+                    showToast("切歌:last=" + it.lastSongInfo?.songName + " curr=" + it.songInfo?.songName)
+                }
+                PlaybackStage.IDEA -> {
+                    seekBarPro.progress = 0
+                    tvPro.text = "进度："
+                    seekBarVolume.progress = 0
+                    tvVolume.text = "音量："
+                    seekBarSpeed.progress = 0
+                    tvSpeed.text = "音速："
+                }
             }
         })
     }

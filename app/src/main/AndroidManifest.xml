@@ -38,6 +38,7 @@
         <activity android:name=".TestActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".PlayDetailActivity" />
+        <activity android:name=".CardActivity" />
 
     </application>
 

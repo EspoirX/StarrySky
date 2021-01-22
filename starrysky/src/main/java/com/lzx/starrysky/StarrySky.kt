@@ -279,6 +279,9 @@ object StarrySky {
     @JvmStatic
     fun isOpenCache() = StarrySkyConstant.KEY_CACHE_SWITCH
 
+    @JvmStatic
+    fun getPlayerCache(): ICache? = getBinder()?.getPlayerCache()
+
     /**
      * 获取图片加载器
      */

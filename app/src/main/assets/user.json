@@ -1,86 +1,265 @@
-//封面 https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg
 {
   data: {
     songlist: [
       {
-        albumid: "001OiCYO0R7VhX",
-        albumname: "Shades Of Purple",
-        singer: "M2M",
-        songmid: "000Z9mNt109oQd",
-        songname: "Pretty Boy",
-        "url": "http://isure.stream.qqmusic.qq.com/C400001UkZDU4WMt0m.m4a?guid=2796982635&vkey=84D1D8F5156DFB800A115D1B7D5914E9A657FFDF3B299AA548EE34F26D911FA602EC64097753FE034F20B9B1FB158E3FAB5CF11B18483A2C&uin=1899&fromtag=66"
+        albummid: "002tOHqR0QJSR3",
+        albumname: "念旧",
+        singer: [
+          {
+            id: 3026094,
+            mid: "002oKQfI4E0PBk",
+            name: "阿悠悠"
+          }
+        ],
+        songmid: "0046jPQe24MGzG",
+        songname: "念旧"
       },
       {
-        albumid: "003ha6C92GRuVE",
-        albumname: "《仙剑奇侠传3》电视剧插曲",
-        singer: "张芸京",
-        songmid: "003Ho2cO2RXwUc",
-        songname: "偏爱",
-        "url": "http://isure.stream.qqmusic.qq.com/C400000Uxq6T3znnQ5.m4a?guid=2796982635&vkey=1D33F22D1CCC65A33E435A092D0CA774874564BA15DD533401EB6DC89BA504FB9F9B9BB3F26C95CE8245F10399A876B6E642544E0428B99C&uin=1899&fromtag=66"
+        albummid: "003vsrnW4bOLik",
+        albumname: "白羊",
+        singer: [
+          {
+            id: 1060995,
+            mid: "003NTUrM17PJhv",
+            name: "徐秉龙"
+          }
+        ],
+        songmid: "0016aHoC1IyI1d",
+        songname: "白羊"
       },
       {
-        albumid: "0021PN293GeJEp",
-        albumname: "首选",
-        singer: "张栋梁",
-        songmid: "000uB0Xh1Ti4uC",
-        songname: "当你孤单你会想起谁",
-        "url": "http://isure.stream.qqmusic.qq.com/C400002DeKTs03KJjA.m4a?guid=2796982635&vkey=7FA4574408B0102BEA7AD9DCB6B8AC19575E8EEAD8BF9894C10CD96B882FF7D7DA66B8AB0EB7CCABF9137A98B03643BE95B1A08B9F67921F&uin=1899&fromtag=66"
+        albummid: "0035f8nw11cjkf",
+        albumname: "素颜",
+        singer: [
+          {
+            id: 7221,
+            mid: "000CK5xN3yZDJt",
+            name: "许嵩"
+          }
+        ],
+        songmid: "004Gq0xE1YC8xp",
+        songname: "素颜"
       },
       {
-        albumid: "0031Twar1kdZDH",
-        albumname: "贝多芬的悲伤",
-        singer: "郑毅",
-        songmid: "0014RFLk2l8yAS",
-        songname: "贝多芬的悲伤",
-        "url": "http://isure.stream.qqmusic.qq.com/C400002wbkav41kyg8.m4a?guid=2796982635&vkey=DD221B0C43988972170E01FF130CEDA75B5F5D22465022A72574D0544BF1C97E74B6A72703C8E01792CDF79795295A010DCC59C37B5AF865&uin=1899&fromtag=66"
+        albummid: "003kbejM3p8Iwu",
+        albumname: "橙",
+        singer: [
+          {
+            id: 1223079,
+            mid: "002YZobd2SDROn",
+            name: "RAiNBOW计划"
+          }
+        ],
+        songmid: "003JCOaR4dktYn",
+        songname: "记念"
       },
       {
-        albumid: "001c3O5s1IYH1N",
-        albumname: "《非诚勿扰》女嘉宾出场曲",
-        singer: "Avril Lavigne",
-        songmid: "002ahg36338TQF",
-        songname: "Girlfriend",
-        "url": "http://isure.stream.qqmusic.qq.com/C400000vebLG4US1mo.m4a?guid=2796982635&vkey=0FD8BF43D52418DB9EDD4E4BD64591C1F27A316CADC303197E4E2920C79E8C906FB5AF71CAD6A6A0D23CE44029478ABC981D92A2045C1768&uin=1899&fromtag=66"
+        albummid: "0042miPf28nzum",
+        albumname: "爱情万岁",
+        singer: [
+          {
+            id: 74,
+            mid: "000Sp0Bz4JXH0o",
+            name: "五月天"
+          }
+        ],
+        songmid: "003L6xyk0vvEeA",
+        songname: "温柔"
       },
       {
-        albumid: "0009jvLZ1fzkQS",
-        albumname: "Big Big World",
-        singer: "Emilia Rydberg",
-        songmid: "003AC4Vq2gG1XN",
-        songname: "Big Big World",
-        "url": "http://isure.stream.qqmusic.qq.com/C400000zvPLH1BuMIv.m4a?guid=2796982635&vkey=69DFC14B169311DAC692DA5AA14C09C4E14756DD10AA2A2C321F97D0A8E68342A096D18BA98745ABE32730333E2AFB2F520BC5607FB31276&uin=1899&fromtag=66"
+        albummid: "000QoNyb1yWsoo",
+        albumname: "喜欢",
+        singer: [
+          {
+            id: 158556,
+            mid: "003VJ4nP0Q19xJ",
+            name: "阿肆"
+          }
+        ],
+        songmid: "0015EQT708bZlQ",
+        songname: "喜欢"
       },
       {
-        albumid: "001jmC6x1RMfh0",
-        albumname: "Vae新歌+精选珍藏合辑",
-        singer: "许嵩",
-        songmid: "0040LXJE2q7t6o",
-        songname: "城府",
-        "url": "http://isure.stream.qqmusic.qq.com/C400004ehEIQ23I5MA.m4a?guid=2796982635&vkey=9FAC48D1EA7B08F7A4121FC8592A7DE60273F521A15516C14D739E4B767EE48BA5CE3072ABE943DA2BD412F6BE62F325F4EAE252C06DDFAD&uin=1899&fromtag=66"
+        albummid: "002lJJi244utqN",
+        albumname: "嚣张",
+        singer: [
+          {
+            id: 3344766,
+            mid: "001IkitI4Gcu5u",
+            name: "en"
+          }
+        ],
+        songmid: "001Hp44V3pCQ53",
+        songname: "嚣张"
       },
       {
-        albumid: "003zlF0g0wRSz4",
-        albumname: "哥只是个传说",
-        singer: "陈旭",
-        songmid: "000DTUUP0jeeKV",
-        songname: "哥只是个传说",
-        "url": "http://isure.stream.qqmusic.qq.com/C400000zfUD913wiLv.m4a?guid=2796982635&vkey=7BF84D21B72DC17FF06FAB521923C1F9D15BBA1ECAF1C855DE3F621814D13748289FC1D31D85E25545FFC6F4FE71CCF596CA5F0D1467B9D8&uin=1899&fromtag=66"
+        albummid: "002qKmDU213sp1",
+        albumname: "火海",
+        singer: [
+          {
+            id: 3582101,
+            mid: "000xlzgO0kbiaL",
+            name: "Li-2c"
+          }
+        ],
+        songmid: "000YXQfn1ezLYv",
+        songname: "火海"
       },
       {
-        albumid: "0038x0Rf0RiGVB",
-        albumname: "Lenka",
-        singer: "Lenka",
-        songmid: "0032BCwe2WuApU",
-        songname: "The Show",
-        "url": "http://isure.stream.qqmusic.qq.com/C4000032BCwe2WuApU.m4a?guid=2796982635&vkey=5FBE060F51049986CD19159358A2278F2CE78F585E273A44C8F1A67A17D79C2BBC610DC075CB33A425D95E4CAE39123EB8423E84CECBCE9B&uin=1899&fromtag=66"
+        albummid: "0000PlWG1tS3LL",
+        albumname: "燕无歇",
+        singer: [
+          {
+            id: 4605080,
+            mid: "002wl8GA0aBbGI",
+            name: "是七叔呢"
+          }
+        ],
+        songmid: "003qYzO34BNVmt",
+        songname: "燕无歇"
       },
       {
-        albumid: "004fkgLh2f7UY8",
-        albumname: "茉莉花开",
-        singer: "徐誉滕",
-        songmid: "002CQ7e82p2SCl",
-        songname: "等一分钟",
-        "url": "http://isure.stream.qqmusic.qq.com/C400001oxW2s1XKymf.m4a?guid=2796982635&vkey=53A31AB6623194735275EF83F32A5B8E5F06B14C54C380877C495BFC54210639C67F05A297ADF94E440F4E7CFCAFA659A92D04D1A5F57824&uin=1899&fromtag=66"
+        albummid: "001VSGRA2zWqP5",
+        albumname: "云与海",
+        singer: [
+          {
+            id: 1517630,
+            mid: "0009dWas0XxekN",
+            name: "阿YueYue"
+          }
+        ],
+        songmid: "004IFjwP42XBGI",
+        songname: "云与海"
+      },
+      {
+        albummid: "000jcKFG0sQrD0",
+        albumname: "雨爱",
+        singer: [
+          {
+            id: 4658,
+            mid: "000ZVS6E1f6f0d",
+            name: "杨丞琳"
+          }
+        ],
+        songmid: "000rh0dE2TyUic",
+        songname: "雨爱"
+      },
+      {
+        albummid: "001hGx1Z0so1YX",
+        albumname: "我是如此相信",
+        singer: [
+          {
+            id: 4558,
+            mid: "0025NhlN2yWrP4",
+            name: "周杰伦"
+          }
+        ],
+        songmid: "001PLl3C4gPSCI",
+        songname: "我是如此相信"
+      },
+      {
+        albummid: "004Fnn211o8Pah",
+        albumname: "脆弱星球",
+        singer: [
+          {
+            id: 3245210,
+            mid: "003UjtPe0ZiR1W",
+            name: "杨胖雨"
+          }
+        ],
+        songmid: "004VFmJc3zdGeG",
+        songname: "脆弱星球"
+      },
+      {
+        albummid: "000nDYTv13VFUr",
+        albumname: "生命因你而火热",
+        singer: [
+          {
+            id: 4470,
+            mid: "000keDtj2Um0rT",
+            name: "新裤子"
+          }
+        ],
+        songmid: "0039xIWi3YZNpe",
+        songname: "生活因你而火热"
+      },
+      {
+        albummid: "0039Rnk60ZLKHx",
+        albumname: "我爱你",
+        singer: [
+          {
+            id: 3417721,
+            mid: "003gFfHo4H6AHY",
+            name: "程jiajia"
+          }
+        ],
+        songmid: "0013uCFc0CZ4NY",
+        songname: "我爱你"
+      },
+      {
+        albummid: "0009X2zr42vhaU",
+        albumname: "爱‧歌姬",
+        singer: [
+          {
+            id: 245,
+            mid: "0010PLKl2Wgolz",
+            name: "F.I.R.飞儿乐团"
+          }
+        ],
+        songmid: "0016IvEW0kcA1M",
+        songname: "月牙湾"
+      },
+      {
+        albummid: "002ZAHJs3IIZN7",
+        albumname: "第二街区",
+        singer: [
+          {
+            id: 1116464,
+            mid: "000FitP93WHhtY",
+            name: "葛东琪"
+          }
+        ],
+        songmid: "000a2bMl33mXkU",
+        songname: "悬溺"
+      },
+      {
+        albummid: "002C0kX720gMQi",
+        albumname: "100天",
+        singer: [
+          {
+            id: 4286,
+            mid: "001BLpXF2DyJe2",
+            name: "林俊杰"
+          }
+        ],
+        songmid: "002E8ebM3TFWmA",
+        songname: "背对背拥抱"
+      },
+      {
+        albummid: "003vyvvf2kbfel",
+        albumname: "仙剑奇侠传三 电视剧原声带",
+        singer: [
+          {
+            id: 16002,
+            mid: "0032tJkm2MGj8i",
+            name: "青鸟飞鱼"
+          }
+        ],
+        songmid: "003hj8yv0e6SW8",
+        songname: "此生不换"
+      },
+      {
+        albummid: "002ehzTm0TxXC2",
+        albumname: "这一刻",
+        singer: [
+          {
+            id: 109,
+            mid: "001pWERg3vFgg8",
+            name: "孙燕姿"
+          }
+        ],
+        songmid: "001xJbdb2MBaaz",
+        songname: "遇见"
       }
     ]
   }

@@ -3,15 +3,14 @@ package com.lzx.musiclib.viewmodel
 import androidx.lifecycle.ViewModel
 import com.lzx.musiclib.TestApplication
 import com.lzx.musiclib.forEach
+import com.lzx.musiclib.getArray
 import com.lzx.starrysky.SongInfo
 import org.json.JSONObject
 import java.io.BufferedInputStream
 
 class MusicViewModel : ViewModel() {
 
-
     fun getHomeMusic() = getMusicList("home.json")
-
 
     private fun getMusicList(file: String): MutableList<SongInfo> {
         var json: String
@@ -27,11 +26,10 @@ class MusicViewModel : ViewModel() {
         var name = 0
         arrayJson.forEach<JSONObject> {
             val info = SongInfo()
+            info.songName = it?.getString("songname").orEmpty()
             info.songId = it?.getString("songmid").orEmpty()
-            info.songUrl = it?.getString("url").orEmpty()
-            info.songName = name.toString() //it?.getString("songname").orEmpty()
-            info.artist = it?.getString("singer").orEmpty()
-            val albumid = it?.getString("albumid").orEmpty()
+            info.artist = it?.getArray("singer")?.getJSONObject(0)?.getString("name").orEmpty()
+            val albumid = it?.getString("albummid").orEmpty()
             info.songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${albumid}.jpg"
             list.add(info)
             name++

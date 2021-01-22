@@ -2,84 +2,303 @@
   data: {
     songlist: [
       {
-        albumid: "001w7xrX3jbMHh",
-        albumname: "Darin",
-        singer: "Dari",
-        songmid: "000VRKyI0xWFvz",
-        songname: "Be What You Wanna Be",
-        "url": "http://isure.stream.qqmusic.qq.com/C400002sUMVg2yvwR4.m4a?guid=2796982635&vkey=83FD2E29E93DD4835B82959C1A4065A3FF432C91AE51467C606663658B23DC4BA3C5BF888DFDBD0C9C620A7710881B929C52F8FBB3A8E211&uin=1899&fromtag=66"
+        albummid: "003g4JnU23vCjt",
+        albumname: "2005 年终舞曲总冠军",
+        singer: [
+          {
+            id: 4884,
+            mid: "0037AubJ1lwdxl",
+            name: "Sebastien L. & Hana Ko"
+          }
+        ],
+        songmid: "000nmgnO3CwxJ9",
+        songname: "不得不爱"
       },
       {
-        albumid: "000VybM92HVMdS",
-        albumname: "Blue Brand 2집 - Trauma Part.2 (BlueBrand 2辑 Trauma Part 2)",
-        singer: "MC梦 (MC몽),Mellow (멜로우)",
-        songmid: "003pLnJW0O1eNj",
-        songname: "죽을 만큼 아파서 (死一样的痛苦)",
-        "url": "http://isure.stream.qqmusic.qq.com/C400001Dxn2J0Q7QEB.m4a?guid=2796982635&vkey=F0412819763CB568950C65A2410886F5343F0F540C5471C42641730692CF56FD5D17FD7D97DFB56B586892BF5182555F96E9EF102B8155DA&uin=1899&fromtag=66"
+        albummid: "001IPNxq3vvwa8",
+        albumname: "Hear My Voice",
+        singer: [
+          {
+            id: 265,
+            mid: "001JDzPT3JdvqK",
+            name: "王力宏"
+          }
+        ],
+        songmid: "003ZhYnR1oJJME",
+        songname: "愛の奇蹟 (爱的奇迹)"
       },
       {
-        albumid: "002BM8B70Z8csC",
-        albumname: "Batte forte",
-        singer: "Lollipop",
-        songmid: "003YNZnS0XiEVD",
-        songname: "Batte Forte (Solo Vox-127Bpm)",
-        "url": "http://isure.stream.qqmusic.qq.com/C400001EpgLP4c49TC.m4a?guid=2796982635&vkey=DA14335DF99950C522462040B2CDA2975B42AD2FF1EA124C440372BD27D4F02D2210FE3889F535420239E8367DDB403CCD9CBDA4F1A464F6&uin=1899&fromtag=66"
+        albummid: "0048pWY92Ex9T4",
+        albumname: "无尽的爱",
+        singer: [
+          {
+            id: 13,
+            mid: "000nmQ1v0JGExN",
+            name: "成龙"
+          }
+        ],
+        songmid: "003Y1fMp1caTyN",
+        songname: "美丽的神话"
       },
       {
-        albumid: "0027ciun1zPx3g",
-        albumname: "Aquarium",
-        singer: "Aqua",
-        songmid: "001jka610QFYjR",
-        songname: "Barbie Girl",
-        "url": "http://isure.stream.qqmusic.qq.com/C400004akAdv4aZUvT.m4a?guid=2796982635&vkey=A52B7A26A39E4274C2EDF2DA144DEDFA5B145BB3C24DC569A36169F35AD34303BEF16BB649BBCC9185828BD9C737C173FDEEAF14F1B3737D&uin=1899&fromtag=66"
+        albummid: "0024bjiL2aocxT",
+        albumname: "十一月的萧邦",
+        singer: [
+          {
+            id: 4558,
+            mid: "0025NhlN2yWrP4",
+            name: "周杰伦"
+          }
+        ],
+        songmid: "001zMQr71F1Qo8",
+        songname: "夜曲"
       },
       {
-        albumid: "0033AuAC2W1Ho0",
-        albumname: "Koyote 6",
-        singer: "高耀太 (코요태)",
-        songmid: "000u8bXy3TEy3J",
-        songname: "불꽃 (火花)",
-        "url": "http://isure.stream.qqmusic.qq.com/C400001Cau8F3vpbQk.m4a?guid=2796982635&vkey=8D838D23AC973738C19F87F82A2A601E25F9E724A8574C0E5D34E6095B0C26C35483ECE03DAABDED8CD428A09F353DF85CAE0B7C9E638BCC&uin=1899&fromtag=66"
+        albummid: "002gMsEJ3gUI0b",
+        albumname: "琦乐无穷",
+        singer: [
+          {
+            id: 4933,
+            mid: "001TbaO92sYdO1",
+            name: "王恩琦"
+          }
+        ],
+        songmid: "002IXWmf2T4P0N",
+        songname: "风筝"
       },
       {
-        albumid: "0022RcGJ0rmlLP",
-        albumname: "t.A.T.u. - The Best",
-        singer: "t.A.T.u.",
-        songmid: "001qQdGd2Nd6DU",
-        songname: "Loves Me Not",
-        "url": "http://isure.stream.qqmusic.qq.com/C400000A3S302U7P7T.m4a?guid=2796982635&vkey=53A760EF163B6922CA746DE510602A33641AD18DF59FD666ADBFBA834A4ECCFE757EE3C0B7127014AD1567F46426B6D1EA5871D02AE56B84&uin=1899&fromtag=66"
+        albummid: "0024bjiL2aocxT",
+        albumname: "十一月的萧邦",
+        singer: [
+          {
+            id: 4558,
+            mid: "0025NhlN2yWrP4",
+            name: "周杰伦"
+          }
+        ],
+        songmid: "003iY6cU4YG0xi",
+        songname: "黑色毛衣"
       },
       {
-        albumid: "002KSDg90IaScI",
-        albumname: "自定义",
-        singer: "许嵩",
-        songmid: "002mZevo3wHvsc",
-        songname: "有何不可",
-        "url": "http://isure.stream.qqmusic.qq.com/C4000043aj132xwlEf.m4a?guid=2796982635&vkey=4DBE9033310C109C0378DC1767C7408401B9BF2C194EF5C436FE8C293168D3935A9F26E7E3772D7167931137399705EAC80BB6D56D2340E6&uin=1899&fromtag=66"
+        albummid: "0025CwW50uC4hZ",
+        albumname: "高手",
+        singer: [
+          {
+            id: 4359,
+            mid: "000iM9BB2TXFqu",
+            name: "潘玮柏"
+          }
+        ],
+        songmid: "001kQq0u0nS4Vc",
+        songname: "不得不爱"
       },
       {
-        albumid: "001FqfYI0fIXA1",
-        albumname: "Stronger",
-        singer: "Inez",
-        songmid: "001QGkPq0aoTGP",
-        songname: "Stronger (Original Edit)",
-        "url": "http://isure.stream.qqmusic.qq.com/C400002vmqRd3fcUp3.m4a?guid=2796982635&vkey=E493AB5D869E0478ACD004E2AA4A07A3D23B45F127BA9DC43476F97641A635643A7F735DDDEB3F4F4F2C413BEE6B5009A4E9B4B5BA3674BD&uin=1899&fromtag=66"
+        albummid: "002AaUF60cnS3w",
+        albumname: "童话",
+        singer: [
+          {
+            id: 20,
+            mid: "004TXjLD41LEZI",
+            name: "光良"
+          }
+        ],
+        songmid: "004aupsp1RFXAN",
+        songname: "童话"
       },
       {
-        albumid: "0015qGHu3KjkCl",
-        albumname: "F.I.R.飞儿乐团",
-        singer: "F.I.R.飞儿乐团",
-        songmid: "000wyGAY1FfsZ9",
-        songname: "我们的爱",
-        "url": "http://isure.stream.qqmusic.qq.com/C400002gpG0T2Yk0YH.m4a?guid=2796982635&vkey=449CF521D41766CEF491EFF73F408BBFAEDF0BB594B2190B99541AC748CD358B17704C582CD60BC232A0CAC71A764203ECBE96F1FEC963C9&uin=1899&fromtag=66"
+        albummid: "000I5jJB3blWeN",
+        albumname: "范特西",
+        singer: [
+          {
+            id: 4558,
+            mid: "0025NhlN2yWrP4",
+            name: "周杰伦"
+          }
+        ],
+        songmid: "000amRvH3wxv56",
+        songname: "安静"
       },
       {
-        albumid: "004Pv1Kr0YmMPq",
-        albumname: "孤单北半球",
-        singer: "欧得洋",
-        songmid: "00029Buj0clcBE",
-        songname: "孤单北半球",
-        "url": "http://isure.stream.qqmusic.qq.com/C400003lnIgf1jFLgC.m4a?guid=2796982635&vkey=F2E39431BE5AECA7CC5333EA4A4D4ED9F2DCF6FA37D50839E56EC11299C06FB0E480B8A0F1FF8CDD23C7F9BAE5F6DCA42C648CA0AC88F9B3&uin=1899&fromtag=66"
+        albummid: "00094rqv1nESWo",
+        albumname: "爱情已死",
+        singer: [
+          {
+            id: 182,
+            mid: "003bdcMg1ML7YC",
+            name: "郑伊健"
+          }
+        ],
+        songmid: "0039Vidj3R9pjC",
+        songname: "内伤"
+      },
+      {
+        albummid: "003Ls5Jo4EFBIH",
+        albumname: "清新的小女孩（中文版）",
+        singer: [
+          {
+            id: 4246,
+            mid: "003iPzNg35cWzp",
+            name: "程响"
+          }
+        ],
+        songmid: "001xLIXo2w9V7U",
+        songname: "世界这么大还是遇见你"
+      },
+      {
+        albummid: "000EI9tu27e5iy",
+        albumname: "少年",
+        singer: [
+          {
+            id: 43665,
+            mid: "004dr7ZS36C2B1",
+            name: "梦然"
+          }
+        ],
+        songmid: "000S7TGL43hhBO",
+        songname: "少年"
+      },
+      {
+        albummid: "002VZssh2qt9ra",
+        albumname: "信仰",
+        singer: [
+          {
+            id: 3487463,
+            mid: "002moRNc1l02Dr",
+            name: "刘大壮"
+          }
+        ],
+        songmid: "003ytFCS1KR7Je",
+        songname: "信仰"
+      },
+      {
+        albummid: "001NdeIO15yfsS",
+        albumname: "勇气",
+        singer: [
+          {
+            id: 2174368,
+            mid: "000xbcRD1xjp1P",
+            name: "棉子"
+          }
+        ],
+        songmid: "00249jt23Gt2LA",
+        songname: "勇气"
+      },
+      {
+        albummid: "003S4ZHu2musnh",
+        albumname: "你在等什么",
+        singer: [
+          {
+            id: 11958,
+            mid: "000FRh9z07xgN1",
+            name: "汪东城"
+          }
+        ],
+        songmid: "000jet8E1YXUXq",
+        songname: "我应该去爱你"
+      },
+      {
+        albummid: "0008nl2Y1HlxUm",
+        albumname: "后继者",
+        singer: [
+          {
+            id: 29858,
+            mid: "00067r4p0wBDDN",
+            name: "任然"
+          }
+        ],
+        songmid: "003qKlqV1PVMB8",
+        songname: "后继者"
+      },
+      {
+        albummid: "004dnamR28fSU6",
+        albumname: "另一个我",
+        singer: [
+          {
+            id: 2079450,
+            mid: "000wHoyF0OZB6B",
+            name: "胡66"
+          }
+        ],
+        songmid: "000OjsEW0QrPAd",
+        songname: "后来遇见他"
+      },
+      {
+        albummid: "0007Agfj3l7kaM",
+        albumname: "活该",
+        singer: [
+          {
+            id: 3170726,
+            mid: "001qp57h3myxGG",
+            name: "谌宥"
+          }
+        ],
+        songmid: "004MUURb0bx6Md",
+        songname: "活该"
+      },
+      {
+        albummid: "003cnv3z1IHcYt",
+        albumname: "慢慢懂",
+        singer: [
+          {
+            id: 3954,
+            mid: "001z2JmX09LLgL",
+            name: "汪苏泷"
+          }
+        ],
+        songmid: "003gUSz24CSQsT",
+        songname: "小星星"
+      },
+      {
+        albummid: "003Z67tp1En5jM",
+        albumname: "我爱你不问归期",
+        singer: [
+          {
+            id: 963482,
+            mid: "004GZcGF2ZgJYo",
+            name: "白小白"
+          }
+        ],
+        songmid: "0015LkaZ20fy1P",
+        songname: "我爱你不问归期"
+      },
+      {
+        albummid: "001qHmKU29WX7K",
+        albumname: "夏至未至 电视剧原声带",
+        singer: [
+          {
+            id: 33680,
+            mid: "0037dNIC0n5pW8",
+            name: "岑宁儿"
+          }
+        ],
+        songmid: "0006V3BG48q1uP",
+        songname: "追光者"
+      },
+      {
+        albummid: "00250U7u3eBcbl",
+        albumname: "蓬莱间 网剧原声带",
+        singer: [
+          {
+            id: 2141484,
+            mid: "002yXVei3EgBnw",
+            name: "陈意涵Estelle"
+          }
+        ],
+        songmid: "002tavHZ0pw076",
+        songname: "我喜欢你"
+      },
+      {
+        albummid: "0007sxRu0jEvnU",
+        albumname: "我乐意沉默释放内心焰火",
+        singer: [
+          {
+            id: 198135,
+            mid: "001IoTZp19YMDG",
+            name: "易烊千玺"
+          }
+        ],
+        songmid: "002KNcIH2LzRyz",
+        songname: "恒温动物"
       }
     ]
   }

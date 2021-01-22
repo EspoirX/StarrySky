@@ -1,86 +1,530 @@
-//封面 https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg
 {
-  data: {
+  recom: {
     songlist: [
       {
-        albumid: "002gEpSV1caBBd",
+        albummid: "0024bjiL2aocxT",
+        albumname: "十一月的萧邦",
+        singer: [
+          {
+            id: 4558,
+            mid: "0025NhlN2yWrP4",
+            name: "周杰伦"
+          }
+        ],
+        songmid: "0027oMO61wWi55",
+        songname: "发如雪"
+      },
+      {
+        albummid: "003DMiXN1Tc7FK",
+        albumname: "潘朵拉",
+        singer: [
+          {
+            id: 224,
+            mid: "002raUWw3PXdkT",
+            name: "张韶涵"
+          }
+        ],
+        songmid: "004ZX0AQ49Bc8Y",
+        songname: "隐形的翅膀"
+      },
+      {
+        albummid: "0015Bu2k2XMLJD",
+        albumname: "Begin...",
+        singer: [
+          {
+            id: 4367,
+            mid: "003RVAdJ1YT5AI",
+            name: "王心凌"
+          }
+        ],
+        songmid: "003mJoop4YXSIh",
+        songname: "Baby Baby Tell Me"
+      },
+      {
+        albummid: "002gEpSV1caBBd",
         albumname: "有情人终成眷属",
-        singer: "郑源",
-        songmid: "003hfgrZ22YLrw",
-        songname: "一万个理由",
-        "url": "http://isure.stream.qqmusic.qq.com/C400003vyfmo4M64WU.m4a?guid=2796982635&vkey=58C390DDBCADF7816D7989066693090652B9B12F61121357D56283AED406274B77BBB67F8323F2DCC1E0FC181C223F4075ED4F66CC1BE284&uin=1899&fromtag=66"
+        singer: [
+          {
+            id: 4715,
+            mid: "001e4pOU25pgzC",
+            name: "郑源"
+          }
+        ],
+        songmid: "003cDGoB1kuq7J",
+        songname: "我不后悔"
       },
       {
-        albumid: "000NbMJH2BkDTL",
-        albumname: "回到我身边",
-        singer: "东来东往",
-        songmid: "0014yS112MT0AY",
-        songname: "别说我的眼泪你无所谓",
-        "url": "http://isure.stream.qqmusic.qq.com/C400000slR0Z1cKNLC.m4a?guid=2796982635&vkey=0DEBFEF141C96DB3427C5BCA6C7E3374E4CF3772209DD59EC4EB7B112F0C42B23D72BFFD4507AAF2ABC6E6379B1C8BF17042C2476E928D01&uin=1899&fromtag=66"
+        albummid: "003mUYW22JXKVK",
+        albumname: "薛之谦",
+        singer: [
+          {
+            id: 5062,
+            mid: "002J4UUk29y8BY",
+            name: "薛之谦"
+          }
+        ],
+        songmid: "002MijoR3XjD4s",
+        songname: "黄色枫叶"
       },
       {
-        albumid: "0018JLc316SNJi",
-        albumname: "Dance Again...The Hits",
-        singer: "Jennifer Lopez",
-        songmid: "002xJTTM2ZJT9I",
-        songname: "On The Floor",
-        "url": "http://isure.stream.qqmusic.qq.com/C400003Tmf270iI4xP.m4a?guid=2796982635&vkey=9F072282204E511B16F038F3EDB8615D9286D3E383D0E8EA824671112C0690F8E23A5AC9CB4B0F360CAA4FE6478D0E75FB2B4678BA458207&uin=1899&fromtag=66"
+        albummid: "003W3sH205CWuu",
+        albumname: "音乐密码",
+        singer: [
+          {
+            id: 159,
+            mid: "0022VU5J1D8BRP",
+            name: "胡彦斌"
+          }
+        ],
+        songmid: "003dDpLY3IinWv",
+        songname: "愿望"
       },
       {
-        albumid: "002d9uwF467dxn",
-        albumname: "Confessions (Special edition)",
-        singer: "Usher",
-        songmid: "004HWMfG2XUDDh",
-        songname: "Yeah",
-        "url": "http://isure.stream.qqmusic.qq.com/C400002wKJmn2AIudy.m4a?guid=2796982635&vkey=638B79FE1EDABCFA7A6B79373AD61D43A2756EC963D32DCE25EE2309AAE44BD57C9796457AFF6C7EF440B3A2C1E3BAFD5B383EA5C566B610&uin=1899&fromtag=66"
+        albummid: "003KftnP0aOc82",
+        albumname: "梦想的翅膀",
+        singer: [
+          {
+            id: 20,
+            mid: "004TXjLD41LEZI",
+            name: "光良"
+          }
+        ],
+        songmid: "002gHxrq2Linfq",
+        songname: "约定"
       },
       {
-        albumid: "004UNgYb3KIfqN",
-        albumname: "Breakaway (Limited Edition)",
-        singer: "Kelly Clarkson",
-        songmid: "0023F44C3hf4yF",
-        songname: "Because Of You",
-        "url": "http://isure.stream.qqmusic.qq.com/C400003itHyf0XQUoi.m4a?guid=2796982635&vkey=B878BF3389D39DE5E0FC1138A2744793318DE51BF56EDAFDCA3840484E467BD7F6AC6512DB1C1190C188B51EFB6E4F8D406AEC45C0EECA4E&uin=1899&fromtag=66"
+        albummid: "001S4Kte2to1ou",
+        albumname: "公转自转",
+        singer: [
+          {
+            id: 265,
+            mid: "001JDzPT3JdvqK",
+            name: "王力宏"
+          }
+        ],
+        songmid: "003CAdsr2zKjdX",
+        songname: "爱你等于爱自己"
       },
       {
-        albumid: "003jZnhb1y4CBv",
-        albumname: "《反恐精英》游戏主题曲",
-        singer: "Nightwish",
-        songmid: "0038Plkh3wMA7l",
-        songname: "She Is My Sin",
-        "url": "http://isure.stream.qqmusic.qq.com/C4000020gAlh0fH3lI.m4a?guid=2796982635&vkey=73CAC2C6BDE8BB4A637FDC211DC57F7F5FDD78A9432D147D3096DEDA0E7A2E77016096C56CD9CFC1F5A21ADEF71FA484D10853E572CFDCC4&uin=1899&fromtag=66"
+        albummid: "000ISeg94WBekN",
+        albumname: "真的用心良苦",
+        singer: [
+          {
+            id: 4715,
+            mid: "001e4pOU25pgzC",
+            name: "郑源"
+          }
+        ],
+        songmid: "004IuFgE0FFSaP",
+        songname: "一万个理由"
       },
       {
-        albumid: "001OiCYO0R7VhX",
-        albumname: "《第一次爱的人》英文版",
-        singer: "M2M",
-        songmid: "000IpnIU2r4MTS",
-        songname: "The Day You Went Away",
-        "url": "http://isure.stream.qqmusic.qq.com/C400000hjH2z09lsN3.m4a?guid=2796982635&vkey=5E7A5FF92E41F193A15BBD1035AD4FF7681A26CDB36BCAB93FC8AB007432FF46AA1AFD7E752AE52A8508BB9E7BA521ABE438E864D833DF5B&uin=1899&fromtag=66"
+        albummid: "000bqmL93RnsP0",
+        albumname: "花天囍世",
+        singer: [
+          {
+            id: 3374,
+            mid: "003X8dpJ2wUlSm",
+            name: "花儿乐队"
+          }
+        ],
+        songmid: "004EkLcM1xMNx7",
+        songname: "我的果汁分你一半"
       },
       {
-        albumid: "003SJ18t3drSI2",
-        albumname: "Just One Last Dance",
-        singer: "Sarah Connor",
-        songmid: "002zeIt80wBT4G",
-        songname: "Just One Last Dance (Radio Version)",
-        "url": "http://isure.stream.qqmusic.qq.com/C400000Bq8Tm1Otp1L.m4a?guid=2796982635&vkey=74D3695EB8B89845BC021E0D6EE69BCFC86AAB3E446DA4FE2F3E01D1A4863DB04A52A78A2499B8D77FEFFA6C4A93C04486303C8176283354&uin=1899&fromtag=66"
+        albummid: "001NlbyT2j5O98",
+        albumname: "我和你",
+        singer: [
+          {
+            id: 3562757,
+            mid: "002NRZHw2y2Mmz",
+            name: "皮卡丘多多"
+          }
+        ],
+        songmid: "0023WEQw3a9Jng",
+        songname: "我和你"
       },
       {
-        albumid: "0010NWdr0yCKw9",
-        albumname: "Spin",
-        singer: "Darren Hayes",
-        songmid: "003q10ID3LXRXC",
-        songname: "Creepin' up on You",
-        "url": "http://isure.stream.qqmusic.qq.com/C400000TZC680fUx7j.m4a?guid=2796982635&vkey=04DB0F240B8A37DEE817B5AE9F2C557AC828C12D1F1C2D1A6DEC0AA3695CD13144508A9CEA17462646B4728DE30F8CB8726AB216EC4111A8&uin=1899&fromtag=66"
+        albummid: "0015komM0KjU4b",
+        albumname: "创造营2020 第1期",
+        singer: [
+          {
+            id: 1518533,
+            mid: "000PJRig3WnHYX",
+            name: "硬糖少女303希林娜依·高"
+          }
+        ],
+        songmid: "000LPeSu4D2piP",
+        songname: "喜欢你 (Live)"
       },
       {
-        albumid: "004EzVN12fbZ31",
-        albumname: "Covergirl",
-        singer: "Groove Coverage",
-        songmid: "004LeHPw3Ovh8T",
-        songname: "Far Away From Home",
-        "url": "http://isure.stream.qqmusic.qq.com/C400002oGxlL2tBFUW.m4a?guid=2796982635&vkey=0A75E772F32ED044B4730F64F9F5ADD6C6F75011DA5DF766334FBD649BCD010B653618C42EBD5BA9FE5D027AE3C664FDD567BF1A5DB2FA79&uin=1899&fromtag=66"
+        albummid: "000a933P3Ipjln",
+        albumname: "卧龙与酒",
+        singer: [
+          {
+            id: 1508668,
+            mid: "002o1QJZ4JPZqZ",
+            name: "Ayo97"
+          }
+        ],
+        songmid: "0042xeq137FRKW",
+        songname: "感谢你曾来过"
+      },
+      {
+        albummid: "001Jb1pP30QFwc",
+        albumname: "那时正好（女生版）",
+        singer: [
+          {
+            id: 1334507,
+            mid: "000J1k6o0kBkL3",
+            name: "李奕遐"
+          }
+        ],
+        songmid: "002KZEnh1foOj1",
+        songname: "那时正好 (女生版)"
+      },
+      {
+        albummid: "001Y6ljG1PpGtY",
+        albumname: "画一个星星一个你",
+        singer: [
+          {
+            id: 2114249,
+            mid: "000TMGAe1Wsp8T",
+            name: "小星星Aurora"
+          }
+        ],
+        songmid: "0019G8kN4bpHIF",
+        songname: "坠落星空"
+      },
+      {
+        albummid: "0007mqZW20QLJB",
+        albumname: "今天我只想你了一次",
+        singer: [
+          {
+            id: 2614601,
+            mid: "003Rc7tU01TXKL",
+            name: "蓝心羽"
+          }
+        ],
+        songmid: "00244EMA0GM1LZ",
+        songname: "今天我只想你了一次"
+      },
+      {
+        albummid: "000lWE4r1fd6pY",
+        albumname: "静悄悄",
+        singer: [
+          {
+            id: 2079155,
+            mid: "002LajQX2OUoVP",
+            name: "陈泫孝（大泫）"
+          }
+        ],
+        songmid: "001IHtxC3ssiUZ",
+        songname: "静悄悄"
+      },
+      {
+        albummid: "002xZY322UIvKv",
+        albumname: "过活",
+        singer: [
+          {
+            id: 3482740,
+            mid: "003oBNRL33WGmC",
+            name: "高鱼"
+          }
+        ],
+        songmid: "000kt3hk4anpun",
+        songname: "过活"
+      },
+      {
+        albummid: "002apRhZ4Bq99d",
+        albumname: "不良少年",
+        singer: [
+          {
+            id: 3954,
+            mid: "001z2JmX09LLgL",
+            name: "汪苏泷"
+          }
+        ],
+        songmid: "004gZy7l1GYJ1Q",
+        songname: "后会无期"
+      },
+      {
+        albummid: "000B65U545XNmU",
+        albumname: "一千零一次我爱你",
+        singer: [
+          {
+            id: 1558279,
+            mid: "000RMs5q41sNKL",
+            name: "李浩然"
+          }
+        ],
+        songmid: "002cuXIY2chdzV",
+        songname: "一千零一次我爱你"
+      }
+    ]
+  },
+  news: {
+    songlist: [
+      {
+        albummid: "0029GgMd2qVyYA",
+        albumname: "Fighting！生存之道",
+        singer: [
+          {
+            id: 4996,
+            mid: "002fvJdl2yNaXT",
+            name: "Tank"
+          }
+        ],
+        songmid: "0039me4T4QhY5n",
+        songname: "三国恋 (卡拉OK版)"
+      },
+      {
+        albummid: "003MnF5k1NjKVt",
+        albumname: "盖世英雄（日本版）",
+        singer: [
+          {
+            id: 265,
+            mid: "001JDzPT3JdvqK",
+            name: "王力宏"
+          }
+        ],
+        songmid: "003rxPcS0GjX38",
+        songname: "在梅边"
+      },
+      {
+        albummid: "000dt9Py0BrReK",
+        albumname: "白月光与朱砂痣",
+        singer: [
+          {
+            id: 2716679,
+            mid: "002sT7040IAT6z",
+            name: "大籽"
+          }
+        ],
+        songmid: "002iqQ4I1wyB7L",
+        songname: "白月光与朱砂痣"
+      },
+      {
+        albummid: "003VgmFW4IZ06U",
+        albumname: "渐冷",
+        singer: [
+          {
+            id: 3005709,
+            mid: "002g8vs10Ll8OS",
+            name: "雪二"
+          }
+        ],
+        songmid: "003yomQ62KUCP2",
+        songname: "渐冷"
+      },
+      {
+        albummid: "001a9I9u40EtrZ",
+        albumname: "失眠播报",
+        singer: [
+          {
+            id: 1368227,
+            mid: "002ABvK84PI0ht",
+            name: "林晨阳"
+          }
+        ],
+        songmid: "003tAAjZ0g0ABk",
+        songname: "失眠播报"
+      },
+      {
+        albummid: "00431aJU0XFrgv",
+        albumname: "四季予你",
+        singer: [
+          {
+            id: 4246,
+            mid: "003iPzNg35cWzp",
+            name: "程响"
+          }
+        ],
+        songmid: "004bd0Av3rVEE3",
+        songname: "四季予你"
+      },
+      {
+        albummid: "000GUWxh1CK1Ql",
+        albumname: "枕边童话",
+        singer: [
+          {
+            id: 5463175,
+            mid: "001ERaVL4BqBWg",
+            name: "小田音乐社"
+          }
+        ],
+        songmid: "00390cuQ14GAOf",
+        songname: "枕边童话"
+      },
+      {
+        albummid: "001Pj9F21SiHNx",
+        albumname: "冬眠",
+        singer: [
+          {
+            id: 2169579,
+            mid: "0001CJGI3KUaN6",
+            name: "司南"
+          }
+        ],
+        songmid: "001U2GJO2hSzQW",
+        songname: "冬眠"
+      },
+      {
+        albummid: "002Neh8l0uciQZ",
+        albumname: "魔杰座",
+        singer: [
+          {
+            id: 4558,
+            mid: "0025NhlN2yWrP4",
+            name: "周杰伦"
+          }
+        ],
+        songmid: "003cI52o4daJJL",
+        songname: "花海"
+      },
+      {
+        albummid: "003jLHVg2uyEW8",
+        albumname: "错季",
+        singer: [
+          {
+            id: 6436005,
+            mid: "002a99541U3WDI",
+            name: "秋原依"
+          }
+        ],
+        songmid: "001WrUzP2tEyg2",
+        songname: "错季"
+      },
+      {
+        albummid: "004Pr20l0ALlST",
+        albumname: "所有的酒，都不如你",
+        singer: [
+          {
+            id: 1091366,
+            mid: "004S3vUn27fDYv",
+            name: "鹿先森乐队"
+          }
+        ],
+        songmid: "00137PsH37ByvH",
+        songname: "春风十里"
+      },
+      {
+        albummid: "001Zrk6t0urxvG",
+        albumname: "像鱼",
+        singer: [
+          {
+            id: 2161796,
+            mid: "004OSbYx4geABL",
+            name: "王贰浪"
+          }
+        ],
+        songmid: "000NHikR1jV7Zz",
+        songname: "像鱼"
+      },
+      {
+        albummid: "002g6zv02X7SNi",
+        albumname: "JJ陆",
+        singer: [
+          {
+            id: 4286,
+            mid: "001BLpXF2DyJe2",
+            name: "林俊杰"
+          }
+        ],
+        songmid: "0026G2Lq3Cl7ig",
+        songname: "不潮不用花钱"
+      },
+      {
+        albummid: "000A2zt73JBL4s",
+        albumname: "放个大招给你看",
+        singer: [
+          {
+            id: 1441799,
+            mid: "0023dQD40to8NP",
+            name: "永彬Ryan.B"
+          }
+        ],
+        songmid: "003SQyoA0efQc5",
+        songname: "放个大招给你看",
+        vid: ""
+      },
+      {
+        albummid: "002NctSK10Kan8",
+        albumname: "走不出的回忆",
+        singer: [
+          {
+            id: 29858,
+            mid: "00067r4p0wBDDN",
+            name: "任然"
+          }
+        ],
+        songmid: "002X2A9s2qIVBe",
+        songname: "走不出的回忆"
+      },
+      {
+        albummid: "0017zqT34WuQwa",
+        albumname: "我等你",
+        singer: [
+          {
+            id: 51,
+            mid: "003jJGvv3C82KZ",
+            name: "刘若英"
+          }
+        ],
+        songmid: "000XeLXA3X8CTH",
+        songname: "后来"
+      },
+      {
+        albummid: "001hXTHb3qUhyB",
+        albumname: "感官先生",
+        singer: [
+          {
+            id: 65838,
+            mid: "000I3b6g4MWa7q",
+            name: "刘凤瑶"
+          }
+        ],
+        songmid: "002Kb6741nuhcw",
+        songname: "感官先生"
+      },
+      {
+        albummid: "002mWqFa3dx5lQ",
+        albumname: "非酋",
+        singer: [
+          {
+            id: 1475423,
+            mid: "001HZe4X4ALVaf",
+            name: "薛明媛"
+          }
+        ],
+        songmid: "003Naz5p1bcB7h",
+        songname: "非酋"
+      },
+      {
+        albummid: "001jmC6x1RMfh0",
+        albumname: "Vae新歌+精选珍藏合辑",
+        singer: [
+          {
+            id: 7221,
+            mid: "000CK5xN3yZDJt",
+            name: "许嵩"
+          }
+        ],
+        songmid: "002iKNJG1FFDyU",
+        songname: "清明雨上"
+      },
+      {
+        albummid: "002Neh8l0uciQZ",
+        albumname: "魔杰座",
+        singer: [
+          {
+            id: 4558,
+            mid: "0025NhlN2yWrP4",
+            name: "周杰伦"
+          }
+        ],
+        songmid: "003aAYrm3GE0Ac",
+        songname: "稻香"
       }
     ]
   }

@@ -2,6 +2,7 @@ package com.lzx.starrysky.playback
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.DefaultRenderersFactory.ExtensionRendererMode
@@ -130,9 +131,9 @@ class ExoPlayback(val context: Context,
         }
         source = source.replace(" ".toRegex(), "%20") // Escape spaces for URL
         //代理url
-        val proxyUrl = cache?.getProxyUrl(source)
+        val proxyUrl = cache?.getProxyUrl(source, songInfo)
         source = if (proxyUrl.isNullOrEmpty()) source else proxyUrl
-
+        Log.i("XIAN", "url = " + source)
         mediaSource = createMediaSource(source)
         if (mediaSource == null) return
         if (mediaHasChanged || player == null) {

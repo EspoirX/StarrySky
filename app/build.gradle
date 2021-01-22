@@ -65,5 +65,7 @@ android {
         implementation 'com.tencent.bugly:crashreport:3.1.0'
         implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
 
+        implementation "com.github.ssseasonnn.RxDownload:rxdownload4:1.0.9"
+
     }
 }

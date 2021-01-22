@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
+import com.danikula.videocache.file.Md5FileNameGenerator
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.cache.ICache
@@ -45,7 +46,6 @@ open class TestApplication : Application() {
         context = this
         //bugly
         CrashReport.initCrashReport(applicationContext, "9e447caa98", false)
-
         val notificationConfig = NotificationConfig.create {
             targetClass { "com.lzx.musiclib.MainActivity" }
             targetClassBundle {
@@ -55,13 +55,12 @@ open class TestApplication : Application() {
             }
         }
         StarrySky.init(this)
-            .setOpenCache(true)
+            .setOpenCache(false)
             .setCacheDestFileDir("000StarrySkyCache/".toSdcardPath())
             .setCacheMaxBytes(1024 * 1024 * 1024)  //设置缓存上限，默认 512 * 1024 * 1024
             .setCache(AndroidVideoCache(this))
             .addInterceptor(PermissionInterceptor(this))
-//            .addInterceptor(RequestSongInfoInterceptor())
-            .addInterceptor(RequestSongCoverInterceptor())
+            .addInterceptor(RequestSongInfoInterceptor())
             .setImageLoader(object : ImageLoaderStrategy {
                 //使用自定义图片加载器
                 override fun loadImage(context: Context, url: String?, callBack: ImageLoaderCallBack) {
@@ -119,41 +118,10 @@ open class TestApplication : Application() {
         override fun getTag(): String = "PermissionInterceptor"
     }
 
-
     /**
-     * 请求播放url拦截器
+     * 模拟请求封面，url拦截器
      */
-//    class RequestSongInfoInterceptor : StarrySkyInterceptor {
-//        private val viewModel = MusicViewModel()
-//        override fun process(
-//            songInfo: SongInfo?, mainLooper: MainLooper, callback: InterceptorCallback
-//        ) {
-//            if (songInfo == null) {
-//                callback.onInterrupt(RuntimeException("SongInfo is null"))
-//                return
-//            }
-//            if (songInfo.songUrl.isEmpty() && songInfo.headData?.get("source") == "qqMusic") {
-//                viewModel.getQQMusicUrl(songInfo.songId) {
-//                    songInfo.songUrl = it
-//                    callback.onContinue(songInfo)
-//                }
-//            } else if (songInfo.songUrl.isEmpty() && songInfo.headData?.get("source") == "baiduMusic") {
-//                viewModel.getBaiduMusicUrl(songInfo.songId) {
-//                    songInfo.songCover = it.songCover
-//                    songInfo.songUrl = it.songUrl
-//                    songInfo.duration = it.duration
-//                    callback.onContinue(songInfo)
-//                }
-//            } else {
-//                callback.onContinue(songInfo)
-//            }
-//        }
-//    }
-
-    /**
-     * 模拟请求封面url拦截器
-     */
-    class RequestSongCoverInterceptor : SyncInterceptor {
+    class RequestSongInfoInterceptor : SyncInterceptor {
 
         val z = "https://n.sinaimg.cn/sinacn10115/439/w641h598/20200214/4a9b-ipmxpvz8164848.jpg"
         val a = "https://www.yxwoo.com/uploads/images/xiaz/2020/0629/1593419103514.jpg"
@@ -181,6 +149,10 @@ open class TestApplication : Application() {
             if (songInfo?.songCover.isNullOrEmpty()) {
                 songInfo?.songCover = map[songInfo?.songName].orEmpty()
             }
+            if (songInfo?.songUrl.isNullOrEmpty()) {
+                val name = songInfo?.songName + "(" + songInfo?.songId + ").m4a"
+                songInfo?.songUrl = "https://github.com/EspoirX/lzxTreasureBox/raw/master/$name"
+            }
             return songInfo
         }
 
@@ -195,23 +167,35 @@ open class TestApplication : Application() {
         private var proxy: HttpProxyCacheServer? = null
         private var cacheFile: File? = null
 
-        override fun startCache(url: String) {
-            //什么都不做
+        private fun getProxy(songInfo: SongInfo?): HttpProxyCacheServer? {
+            return if (proxy == null) newProxy(songInfo).also { proxy = it } else proxy
         }
 
-        private fun getProxy(): HttpProxyCacheServer? {
-            return if (proxy == null) newProxy().also { proxy = it } else proxy
-        }
-
-        private fun newProxy(): HttpProxyCacheServer? {
-            return HttpProxyCacheServer.Builder(context)
+        private fun newProxy(songInfo: SongInfo?): HttpProxyCacheServer? {
+            val builder = HttpProxyCacheServer.Builder(context)
                 .maxCacheSize(1024 * 1024 * 1024)       // 1 Gb for cache
                 .cacheDirectory(getCacheDirectory(context, ""))
-                .build()
+            if (songInfo == null) {
+                builder.fileNameGenerator(Md5FileNameGenerator())
+            } else {
+                builder.fileNameGenerator { url ->
+                    val extension = getExtension(url)
+                    val name = songInfo.songId
+                    if (extension.isEmpty()) name else "$name.$extension"
+                }
+            }
+            return builder.build()
         }
 
-        override fun getProxyUrl(url: String): String? {
-            return if (isOpenCache()) getProxy()?.getProxyUrl(url) else url
+        private fun getExtension(url: String?): String {
+            if (url.isNullOrEmpty()) return ""
+            val dotIndex = url.lastIndexOf('.')
+            val slashIndex = url.lastIndexOf('/')
+            return if (dotIndex != -1 && dotIndex > slashIndex && dotIndex + 2 + 4 > url.length) url.substring(dotIndex + 1, url.length) else ""
+        }
+
+        override fun getProxyUrl(url: String, songInfo: SongInfo): String? {
+            return if (isOpenCache()) getProxy(songInfo)?.getProxyUrl(url) else url
         }
 
         override fun isOpenCache(): Boolean {
@@ -239,7 +223,8 @@ open class TestApplication : Application() {
         }
 
         override fun isCache(url: String): Boolean {
-            return getProxy()?.isCached(url) ?: false
+            return true
+            // return getProxy(null)?.isCached(url) ?: false
         }
     }
 }

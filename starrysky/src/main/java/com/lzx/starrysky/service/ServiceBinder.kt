@@ -101,6 +101,8 @@ class ServiceBinder(private val context: Context) : Binder() {
         soundPool = SoundPoolPlayback(context)
     }
 
+    fun getPlayerCache(): ICache? = playerCache
+
     fun onStopByTimedOff(time: Long, pause: Boolean, finishCurrSong: Boolean) {
         if (context is MusicService) {
             context.onStopByTimedOffImpl(time, pause, finishCurrSong)
