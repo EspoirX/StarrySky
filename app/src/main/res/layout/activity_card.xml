@@ -1,0 +1,38 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.lzx.musiclib.weight.CustomTabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:tl_iconVisible="false"
+        app:tl_indicator_color="#E91E63"
+        app:tl_indicator_corner_radius="5dp"
+        app:tl_indicator_gravity="BOTTOM"
+        app:tl_indicator_height="4dp"
+        app:tl_indicator_margin_bottom="5dp"
+        app:tl_indicator_width="6dp"
+        app:tl_indicator_width_equal_title="false"
+        app:tl_tab_gravity="center"
+        app:tl_tab_padding="14dp"
+        app:tl_textBold="SELECT"
+        app:tl_textSelectColor="#2B4AF6"
+        app:tl_textSelectsize="18sp"
+        app:tl_textUnselectColor="#000000"
+        app:tl_textsize="17sp"
+        tools:ignore="MissingConstraints" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+</androidx.constraintlayout.widget.ConstraintLayout>

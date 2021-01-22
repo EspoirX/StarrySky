@@ -1,6 +1,6 @@
 //封面 https://y.gtimg.cn/music/photo_new/T002R300x300M000${mid}.jpg
 {
-  card1: {
+  "card1": {
     songlist: [
       {
         albummid: "003JcO560RtmXN",
@@ -396,7 +396,6 @@
         songmid: "002v8e1V0yiw0j",
         songname: "我的世界没有你"
       },
-
       {
         albummid: "004fqcR20kKXfn",
         albumname: "红昭愿",
@@ -925,7 +924,6 @@
         songmid: "002GwAma2DGN2x",
         songname: "永不失联的爱 (Live)"
       },
-
       {
         albummid: "001fmWDH4I0aBK",
         albumname: "那女孩对我说",

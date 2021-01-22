@@ -131,7 +131,7 @@ open class TestActivity : AppCompatActivity() {
             StarrySky.with().playMusicById("z")
         }
         playMusicByUrl?.setOnClickListener {
-            StarrySky.with().playMusicByUrl(z)
+            StarrySky.with().playMusicByUrl(f)
         }
         playMusicByInfo?.setOnClickListener {
             StarrySky.with().playMusicByInfo(SongInfo("a", a))

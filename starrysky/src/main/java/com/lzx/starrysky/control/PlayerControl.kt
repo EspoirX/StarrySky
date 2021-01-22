@@ -98,9 +98,6 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      */
     fun playMusicByInfo(info: SongInfo?) {
         if (info == null) return
-        if (info.songId.isEmpty() || info.songUrl.isEmpty()) {
-            throw IllegalStateException("songId 或 songUrl 不能为空")
-        }
         if (!isSkipMediaQueue) {
             provider.addSongInfo(info)
         }

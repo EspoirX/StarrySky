@@ -17,6 +17,7 @@ import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.manager.PlaybackStage
+import kotlinx.android.synthetic.main.activity_main.card
 import kotlinx.android.synthetic.main.activity_main.donutProgress
 import kotlinx.android.synthetic.main.activity_main.recycleView
 import kotlinx.android.synthetic.main.activity_main.songCover
@@ -74,6 +75,9 @@ class MainActivity : AppCompatActivity() {
             StarrySky.with().getNowPlayingSongInfo()?.let {
                 navigationTo<PlayDetailActivity>("songId" to it.songId)
             }
+        }
+        card?.setOnClickListener {
+            navigationTo<CardActivity>()
         }
     }
 
