@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.gcssloop.widget.RCImageView
+        android:id="@+id/userHeader"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginRight="13dp"
+        android:src="#000"
+        app:round_as_circle="true" />
+
+    <TextView
+        android:id="@+id/nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="13dp"
+        android:layout_toRightOf="@+id/userHeader"
+        android:text="dadasdasd"
+        android:textColor="#000"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nickname"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/userHeader"
+        android:text="刚刚"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userHeader"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="13dp"
+        android:text="动态内容动态内容动态内容动态内容动态内容动态内容" />
+
+    <com.lzx.musiclib.weight.MomentAudioView
+        android:id="@+id/audioView"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@+id/desc"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="100dp"
+        app:round_corner="12dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@id/audioView"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="10dp"
+        android:background="#BE000000" />
+</RelativeLayout>

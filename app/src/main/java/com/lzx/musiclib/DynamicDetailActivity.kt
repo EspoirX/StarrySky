@@ -12,11 +12,11 @@ import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.manager.PlaybackStage
-import kotlinx.android.synthetic.main.activiity_dynamic.cover
-import kotlinx.android.synthetic.main.activiity_dynamic.progressText
-import kotlinx.android.synthetic.main.activiity_dynamic.seekBar
-import kotlinx.android.synthetic.main.activiity_dynamic.songName
-import kotlinx.android.synthetic.main.activiity_dynamic.timeText
+import kotlinx.android.synthetic.main.activiity_dynamic_detail.cover
+import kotlinx.android.synthetic.main.activiity_dynamic_detail.progressText
+import kotlinx.android.synthetic.main.activiity_dynamic_detail.seekBar
+import kotlinx.android.synthetic.main.activiity_dynamic_detail.songName
+import kotlinx.android.synthetic.main.activiity_dynamic_detail.timeText
 
 class DynamicDetailActivity : AppCompatActivity() {
 
@@ -25,7 +25,7 @@ class DynamicDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activiity_dynamic)
+        setContentView(R.layout.activiity_dynamic_detail)
 
         songInfo = intent.getParcelableExtra("songInfo")
 

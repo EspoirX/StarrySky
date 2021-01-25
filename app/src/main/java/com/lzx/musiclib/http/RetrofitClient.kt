@@ -17,17 +17,13 @@ object RetrofitClient {
             return builder.build()
         }
 
-    fun <S> getService(serviceClass: Class<S>, baseUrl: String = DoubanApi.BASE_URL1): S {
+    fun <S> getService(serviceClass: Class<S>, baseUrl: String = QQMusicApi.BASE_URL): S {
         return Retrofit.Builder()
                 .client(client)
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(serviceClass)
-    }
-
-    fun getDoubanMusic(): DoubanApi {
-        return getService(DoubanApi::class.java)
     }
 
     fun getQQMusic(): QQMusicApi {

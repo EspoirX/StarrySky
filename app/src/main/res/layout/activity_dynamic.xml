@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.lzx.musiclib.weight.CustomTabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tl_iconVisible="false"
+        app:tl_indicator_color="#E91E63"
+        app:tl_indicator_corner_radius="5dp"
+        app:tl_indicator_gravity="BOTTOM"
+        app:tl_indicator_height="4dp"
+        app:tl_indicator_margin_bottom="5dp"
+        app:tl_indicator_width="6dp"
+        app:tl_indicator_width_equal_title="false"
+        app:tl_tab_gravity="center"
+        app:tl_tab_padding="14dp"
+        app:tl_textBold="SELECT"
+        app:tl_textSelectColor="#2B4AF6"
+        app:tl_textSelectsize="18sp"
+        app:tl_textUnselectColor="#000000"
+        app:tl_textsize="17sp"
+        tools:ignore="MissingConstraints" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+
+    <RelativeLayout
+        android:id="@+id/voiceBar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#FF9800"
+        android:translationY="-50dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout">
+
+        <com.gcssloop.widget.RCImageView
+            android:id="@+id/userHeader"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            app:round_as_circle="true" />
+
+        <TextView
+            android:id="@+id/songName"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/btnNext"
+            android:layout_toRightOf="@+id/userHeader"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/btnNext"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/btnPlay"
+            android:src="@drawable/icon_dynamic_top_next" />
+
+        <ImageView
+            android:id="@+id/btnPlay"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/btnClose" />
+
+        <ProgressBar
+            android:id="@+id/btnPro"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/btnClose"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/anim_round_rotate"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/icon_bar_close"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp" />
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

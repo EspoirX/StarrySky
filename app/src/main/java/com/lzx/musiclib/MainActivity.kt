@@ -19,6 +19,7 @@ import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.manager.PlaybackStage
 import kotlinx.android.synthetic.main.activity_main.card
 import kotlinx.android.synthetic.main.activity_main.donutProgress
+import kotlinx.android.synthetic.main.activity_main.dynamic
 import kotlinx.android.synthetic.main.activity_main.recycleView
 import kotlinx.android.synthetic.main.activity_main.songCover
 
@@ -78,6 +79,9 @@ class MainActivity : AppCompatActivity() {
         }
         card?.setOnClickListener {
             navigationTo<CardActivity>()
+        }
+        dynamic?.setOnClickListener {
+            navigationTo<DynamicActivity>()
         }
     }
 

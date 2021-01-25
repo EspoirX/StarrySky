@@ -16,12 +16,6 @@ import com.lzx.starrysky.SongInfo
 class CardAdapter(private val context: Activity?) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    companion object {
-        const val TYPE_FIRST = 0
-        const val TYPE_NORMAL = 1
-        const val TAG = "SquareAdapter"
-    }
-
     private val list = mutableListOf<SongInfo>()
 
     fun submitList(list: MutableList<SongInfo>, isRefresh: Boolean) {
@@ -35,26 +29,6 @@ class CardAdapter(private val context: Activity?) :
     fun getList() = list
 
     fun getItem(position: Int): SongInfo? = list.getOrNull(position)
-
-    fun insertedData(position: Int, data: SongInfo) = apply {
-        try {
-            list.add(position, data)
-            notifyItemInserted(position)
-            notifyItemRangeChanged(position, list.size - position)
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
-    }
-
-    fun removedData(position: Int) {
-        try {
-            list.removeAt(position)
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(position, list.size - position)
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_card, parent, false)

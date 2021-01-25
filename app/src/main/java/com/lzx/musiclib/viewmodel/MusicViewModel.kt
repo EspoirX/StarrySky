@@ -70,4 +70,41 @@ class MusicViewModel : ViewModel() {
             }
         }
     }
+
+    var dynamicLiveData = MutableLiveData<MutableList<SongInfo>>()
+    fun getDynamicMusicList(typeText: String?) {
+        var type = ""
+        if (typeText == "推荐") {
+            type = "recom"
+        } else if (typeText == "最新") {
+            type = "news"
+        }
+        if (type.isEmpty()) return
+        viewModelScope.launch(Dispatchers.IO) {
+            var json: String?
+            val asset = TestApplication.context?.assets
+            asset?.open("dynamic.json").use { it ->
+                BufferedInputStream(it).use {
+                    json = it.reader().readText()
+                }
+            }
+            if (json.isNullOrEmpty()) {
+                dynamicLiveData.postValue(mutableListOf())
+            } else {
+                val arrayJson = JSONObject(json).getJSONObject(type)
+                    .getJSONArray("songlist")
+                val list = mutableListOf<SongInfo>()
+                arrayJson.forEach<JSONObject> {
+                    val info = SongInfo()
+                    info.songName = it?.getString("songname").orEmpty()
+                    info.songId = it?.getString("songmid").orEmpty()
+                    info.artist = it?.getArray("singer")?.getJSONObject(0)?.getString("name").orEmpty()
+                    val albumid = it?.getString("albummid").orEmpty()
+                    info.songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${albumid}.jpg"
+                    list.add(info)
+                }
+                dynamicLiveData.postValue(list)
+            }
+        }
+    }
 }
