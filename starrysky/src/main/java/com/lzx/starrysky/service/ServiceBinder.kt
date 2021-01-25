@@ -70,12 +70,16 @@ class ServiceBinder(private val context: Context) : Binder() {
     fun getNotificationType() = notificationType
 
     fun onChangedNotificationState(songInfo: SongInfo?, playbackState: String,
-                                   hasNextSong: Boolean, hasPreSong: Boolean) {
-        notification?.onPlaybackStateChanged(songInfo, playbackState, hasNextSong, hasPreSong)
+                                   hasNextSong: Boolean, hasPreSong: Boolean, open: Boolean) {
+        if (open) {
+            notification?.onPlaybackStateChanged(songInfo, playbackState, hasNextSong, hasPreSong)
+        }
     }
 
-    fun startNotification(currPlayInfo: SongInfo?, state: String) {
-        notification?.startNotification(currPlayInfo, state)
+    fun startNotification(currPlayInfo: SongInfo?, state: String, open: Boolean) {
+        if (open) {
+            notification?.startNotification(currPlayInfo, state)
+        }
     }
 
     fun stopNotification() {

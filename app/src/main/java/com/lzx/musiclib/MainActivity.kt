@@ -81,6 +81,8 @@ class MainActivity : AppCompatActivity() {
             navigationTo<CardActivity>()
         }
         dynamic?.setOnClickListener {
+            StarrySky.with().stopMusic()
+            StarrySky.closeNotification()
             navigationTo<DynamicActivity>()
         }
     }

@@ -34,6 +34,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     private val provider = MediaSourceProvider()
     private var isSkipMediaQueue = false
     private var withOutCallback = false
+    private var openNotification = true
     private val interceptors = mutableListOf<ISyInterceptor>() //局部拦截器，用完会自动清理
 
     private val playbackManager = PlaybackManager(provider, appInterceptors)
@@ -66,6 +67,13 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      */
     fun withOutCallback(withOutCallback: Boolean) = apply {
         this.withOutCallback = withOutCallback
+    }
+
+    /**
+     * 是否需要通知栏
+     */
+    fun openNotification(openNotification: Boolean) = apply {
+        this.openNotification = openNotification
     }
 
     /**
@@ -130,9 +138,11 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
             .attachInterceptors(interceptors)
             .attachSkipMediaQueue(isSkipMediaQueue)
             .attachWithOutCallback(withOutCallback)
+            .attachOpenNotification(openNotification)
             .onPlayMusicImpl(songInfo, true)
         interceptors.clear()
         isSkipMediaQueue = false
+        openNotification = false
     }
 
     /**

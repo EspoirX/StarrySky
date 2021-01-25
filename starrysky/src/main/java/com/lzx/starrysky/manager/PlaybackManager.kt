@@ -23,6 +23,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
     private var sessionManager = MediaSessionManager(StarrySky.context()!!, this)
     var isSkipMediaQueue = false
     private var withOutCallback = false
+    private var openNotification = true
     private var lastSongInfo: SongInfo? = null
     private var serviceCallback: PlaybackServiceCallback? = null
     private var isActionStop = false
@@ -63,11 +64,19 @@ class PlaybackManager(private val provider: MediaSourceProvider,
     }
 
     /**
+     * 是否需要通知栏
+     */
+    fun attachOpenNotification(openNotification: Boolean) = apply {
+        this.openNotification = openNotification
+    }
+
+    /**
      * onDestroy 后重置变量
      */
     internal fun resetVariable() {
         isSkipMediaQueue = false
         withOutCallback = false
+        openNotification = true
         interceptorService.attachInterceptors(appInterceptors)
     }
 
@@ -393,11 +402,11 @@ class PlaybackManager(private val provider: MediaSourceProvider,
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {
         val newState = state.changePlaybackState()
         StarrySky.getBinder()?.onChangedNotificationState(currPlayInfo, newState,
-            isSkipToNextEnabled(), isSkipToPreviousEnabled())
+            isSkipToNextEnabled(), isSkipToPreviousEnabled(), openNotification)
         when (newState) {
             PlaybackStage.BUFFERING,
             PlaybackStage.PAUSE -> {
-                StarrySky.getBinder()?.startNotification(currPlayInfo, newState)
+                StarrySky.getBinder()?.startNotification(currPlayInfo, newState, openNotification)
             }
         }
         StarrySky.log("PlaybackStage = $newState")

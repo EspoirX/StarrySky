@@ -44,12 +44,6 @@ class MomentAudioView : RCRelativeLayout, LifecycleObserver {
         ivPlay = findViewById(R.id.img_play)
         title = findViewById(R.id.title)
         desc = findViewById(R.id.desc)
-        OnClickListener {
-            songInfo?.let { playVoice() }
-        }.let {
-            ivPlay.setOnClickListener(it)
-            this.setOnClickListener(it)
-        }
     }
 
     fun setVoiceInfo(info: SongInfo?) {
@@ -69,14 +63,6 @@ class MomentAudioView : RCRelativeLayout, LifecycleObserver {
             ivPlay.setImageResource(R.drawable.moment_audio_view_pause)
         } else {
             ivPlay.setImageResource(R.drawable.moment_audio_view_play)
-        }
-    }
-
-    private fun playVoice() {
-        if (StarrySky.with().isCurrMusicIsPlaying(dynamicId)) {
-            StarrySky.with().pauseMusic()
-        } else {
-            StarrySky.with().playMusicByInfo(songInfo)
         }
     }
 

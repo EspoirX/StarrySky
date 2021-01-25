@@ -21,7 +21,6 @@ class DynamicAdapter : RecyclerView.Adapter<DynamicAdapter.DynamicHolder>() {
             this.list.clear()
         }
         this.list.addAll(list)
-        StarrySky.with().updatePlayList(list)
         notifyDataSetChanged()
     }
 
@@ -38,7 +37,15 @@ class DynamicAdapter : RecyclerView.Adapter<DynamicAdapter.DynamicHolder>() {
 
         val isPlaying = StarrySky.with().isCurrMusicIsPlaying(info.songId)
         holder.audioView.setUIState(isPlaying)
-
+        holder.audioView.setOnClickListener {
+            if (StarrySky.with().isCurrMusicIsPlaying(info.songId)) {
+                StarrySky.with().pauseMusic()
+            } else {
+                StarrySky.with()
+                    .openNotification(false)
+                    .playMusic(list, position)
+            }
+        }
     }
 
     override fun getItemCount(): Int = list.size
