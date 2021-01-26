@@ -12,6 +12,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
 import com.danikula.videocache.file.Md5FileNameGenerator
+import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.cache.ICache
@@ -151,7 +152,7 @@ open class TestApplication : Application() {
             }
             if (songInfo?.songUrl.isNullOrEmpty()) {
                 val name = songInfo?.songName + "(" + songInfo?.songId + ").m4a"
-                songInfo?.songUrl = "https://github.com/EspoirX/lzxTreasureBox/raw/master/$name"
+                songInfo?.songUrl = MusicViewModel.baseUrl + name
             }
             return songInfo
         }

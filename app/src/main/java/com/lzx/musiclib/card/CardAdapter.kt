@@ -1,4 +1,4 @@
-package com.lzx.musiclib.adapter
+package com.lzx.musiclib.card
 
 import android.app.Activity
 import android.view.LayoutInflater
@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.gcssloop.widget.RCImageView
-import com.lzx.musiclib.DynamicDetailActivity
 import com.lzx.musiclib.R
+import com.lzx.musiclib.dynamic.DynamicDetailActivity
 import com.lzx.musiclib.loadImage
 import com.lzx.musiclib.navigationTo
 import com.lzx.starrysky.SongInfo
@@ -43,7 +43,7 @@ class CardAdapter(private val context: Activity?) :
         cardHolder.songName.text = info?.songName
         cardHolder.singer.text = info?.artist
         cardHolder.itemView.setOnClickListener {
-            context?.navigationTo<DynamicDetailActivity>("songInfo" to info)
+            context?.navigationTo<DynamicDetailActivity>("songInfo" to info, "from" to "card")
         }
     }
 

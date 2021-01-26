@@ -42,7 +42,7 @@
         android:layout_marginLeft="13dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="13dp"
-        android:text="动态内容动态内容动态内容动态内容动态内容动态内容" />
+        android:text="动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容动态内容" />
 
     <com.lzx.musiclib.weight.MomentAudioView
         android:id="@+id/audioView"

@@ -249,6 +249,8 @@ object StarrySky {
 
     internal fun getCurrActivity() = appLifecycleCallback.currActivity
 
+    internal fun getVisibleActivity() = appLifecycleCallback.getVisibleActivity()
+
     /**
      * 获取操作 api
      */
@@ -273,8 +275,16 @@ object StarrySky {
      * 关闭通知栏
      */
     @JvmStatic
-    fun closeNotification(){
+    fun closeNotification() {
         getBinder()?.stopNotification()
+    }
+
+    /**
+     * 是否打开通知栏
+     */
+    @JvmStatic
+    fun setIsOpenNotification(open: Boolean) {
+        getBinder()?.setIsOpenNotification(open)
     }
 
     /**

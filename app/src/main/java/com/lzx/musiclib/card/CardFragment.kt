@@ -1,9 +1,11 @@
-package com.lzx.musiclib
+package com.lzx.musiclib.card
 
 import android.os.Bundle
 import android.view.View
-import com.lzx.musiclib.adapter.CardAdapter
+import com.lzx.musiclib.R
 import com.lzx.musiclib.base.BaseFragment
+import com.lzx.musiclib.getSelfViewModel
+import com.lzx.musiclib.showToast
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.musiclib.weight.GalleryItemDecoration
 import com.lzx.musiclib.weight.OnViewPagerListener
@@ -64,12 +66,11 @@ class CardFragment : BaseFragment() {
     }
 
     private fun initRecycleView() {
-        cardAdapter = CardAdapter(activity)
         linearLayoutManager = ViewPagerLayoutManager(activity)
         linearLayoutManager?.recycleChildrenOnDetach = true
         recycleView.layoutManager = linearLayoutManager
         recycleView.addItemDecoration(GalleryItemDecoration())
-        recycleView.adapter = cardAdapter
+        recycleView.adapter = CardAdapter(activity).also { cardAdapter = it }
         linearLayoutManager?.setOnViewPagerListener(object : OnViewPagerListener {
             override fun onInitComplete() {
                 val position = linearLayoutManager?.getCurrPosition().orDef()

@@ -1,4 +1,4 @@
-package com.lzx.musiclib
+package com.lzx.musiclib.card
 
 import android.os.Bundle
 import android.view.ViewGroup
@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import com.lzx.musiclib.R
 import kotlinx.android.synthetic.main.activity_card.tabLayout
 import kotlinx.android.synthetic.main.activity_card.viewpager
 

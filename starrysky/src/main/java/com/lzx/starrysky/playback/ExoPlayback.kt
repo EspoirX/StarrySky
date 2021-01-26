@@ -91,7 +91,7 @@ class ExoPlayback(val context: Context,
 
     override fun bufferedPosition(): Long = player?.bufferedPosition.orDef()
 
-    override fun duration(): Long = player?.duration.orDef()
+    override fun duration(): Long = if (player?.duration.orDef() > 0) player?.duration.orDef() else 0
 
     override var currentMediaId: String = ""
 
@@ -133,7 +133,6 @@ class ExoPlayback(val context: Context,
         //代理url
         val proxyUrl = cache?.getProxyUrl(source, songInfo)
         source = if (proxyUrl.isNullOrEmpty()) source else proxyUrl
-        Log.i("XIAN", "url = " + source)
         mediaSource = createMediaSource(source)
         if (mediaSource == null) return
         if (mediaHasChanged || player == null) {

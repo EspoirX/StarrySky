@@ -1,4 +1,4 @@
-package com.lzx.musiclib
+package com.lzx.musiclib.dynamic
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -8,6 +8,9 @@ import android.os.Bundle
 import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import com.lzx.musiclib.R
+import com.lzx.musiclib.formatTime
+import com.lzx.musiclib.loadImage
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
@@ -20,6 +23,7 @@ import kotlinx.android.synthetic.main.activiity_dynamic_detail.timeText
 
 class DynamicDetailActivity : AppCompatActivity() {
 
+    private var from: String? = null
     private var songInfo: SongInfo? = null
     private var rotationAnim: ObjectAnimator? = null
 
@@ -27,7 +31,12 @@ class DynamicDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activiity_dynamic_detail)
 
+        from = intent.getStringExtra("from")
         songInfo = intent.getParcelableExtra("songInfo")
+
+        if (from == "dynamic") {
+            StarrySky.closeNotification()
+        }
 
         cover.loadImage(songInfo?.songCover)
         songName.text = songInfo?.songName

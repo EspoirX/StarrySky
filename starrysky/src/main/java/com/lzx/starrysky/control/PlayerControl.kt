@@ -32,10 +32,11 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     private var timerTaskManager: TimerTaskManager? = null
     private var isRunningTimeTask = false
     private val provider = MediaSourceProvider()
-    private var isSkipMediaQueue = false
-    private var withOutCallback = false
-    private var openNotification = true
+
     private val interceptors = mutableListOf<ISyInterceptor>() //局部拦截器，用完会自动清理
+    private var isSkipMediaQueueMap = hashMapOf<String, Boolean>()
+    private var withOutCallbackMap = hashMapOf<String, Boolean>()
+
 
     private val playbackManager = PlaybackManager(provider, appInterceptors)
 
@@ -59,29 +60,24 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      * 是否跳过播放队列
      */
     fun skipMediaQueue(isSkipMediaQueue: Boolean) = apply {
-        this.isSkipMediaQueue = isSkipMediaQueue
+        isSkipMediaQueueMap[StarrySky.getVisibleActivity().toString()] = isSkipMediaQueue
     }
 
     /**
      * 不需要回调
      */
     fun withOutCallback(withOutCallback: Boolean) = apply {
-        this.withOutCallback = withOutCallback
+        withOutCallbackMap[StarrySky.getVisibleActivity().toString()] = withOutCallback
     }
 
-    /**
-     * 是否需要通知栏
-     */
-    fun openNotification(openNotification: Boolean) = apply {
-        this.openNotification = openNotification
-    }
+    internal fun isSkipMediaQueue() = isSkipMediaQueueMap[StarrySky.getVisibleActivity().toString()].orDef()
 
     /**
      * 根据 songId 播放,调用前请确保已经设置了播放列表
      * skipMediaQueue 模式下不能使用
      */
     fun playMusicById(songId: String) {
-        if (isSkipMediaQueue) {
+        if (isSkipMediaQueue()) {
             throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
         }
         if (!provider.hasSongInfo(songId)) return
@@ -97,7 +93,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
             songId = url.md5()
             songUrl = url
         }
-        if (!isSkipMediaQueue) {
+        if (!isSkipMediaQueue()) {
             provider.addSongInfo(songInfo)
         }
         playMusicImpl(songInfo)
@@ -108,7 +104,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      */
     fun playMusicByInfo(info: SongInfo?) {
         if (info == null) return
-        if (!isSkipMediaQueue) {
+        if (!isSkipMediaQueue()) {
             provider.addSongInfo(info)
         }
         playMusicImpl(info)
@@ -126,7 +122,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
         if (!index.isIndexPlayable(mediaList)) {
             throw IllegalStateException("请检查下标合法性")
         }
-        if (!isSkipMediaQueue) {
+        if (!isSkipMediaQueue()) {
             updatePlayList(mediaList)
         }
         playMusicImpl(mediaList.getOrNull(index))
@@ -136,13 +132,12 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
         if (songInfo == null) return
         playbackManager
             .attachInterceptors(interceptors)
-            .attachSkipMediaQueue(isSkipMediaQueue)
-            .attachWithOutCallback(withOutCallback)
-            .attachOpenNotification(openNotification)
+            .attachSkipMediaQueue(isSkipMediaQueueMap)
+            .attachWithOutCallback(withOutCallbackMap)
             .onPlayMusicImpl(songInfo, true)
         interceptors.clear()
-        isSkipMediaQueue = false
-        openNotification = false
+        isSkipMediaQueueMap.clear()
+        withOutCallbackMap.clear()
     }
 
     /**
@@ -193,7 +188,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      * 准备播放，准备的是队列当前下标的音频
      */
     fun prepare() {
-        if (isSkipMediaQueue) {
+        if (isSkipMediaQueue()) {
             throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
         }
         playbackManager.onPrepare()
@@ -203,7 +198,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      * 根据songId准备,调用前请确保已经设置了播放列表
      */
     fun prepareById(songId: String) {
-        if (isSkipMediaQueue) {
+        if (isSkipMediaQueue()) {
             throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
         }
         playbackManager.onPrepareById(songId)
@@ -283,7 +278,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      * isLoop 播放倒最后一首时是否从第一首开始循环播放,该参数对随机播放无效
      */
     fun setRepeatMode(repeatMode: Int, isLoop: Boolean) {
-        if (isSkipMediaQueue && repeatMode != RepeatMode.REPEAT_MODE_ONE) {
+        if (isSkipMediaQueue() && repeatMode != RepeatMode.REPEAT_MODE_ONE) {
             throw IllegalStateException("isSkipMediaQueue 模式下只能设置单曲模式")
         }
         RepeatMode.saveRepeatMode(repeatMode, isLoop)
@@ -337,7 +332,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      * 正在播放删除后下一首开始播，暂停删除下一首暂停，跟随播放模式，删除后触发歌曲改变回调
      */
     fun removeSongInfo(songId: String?) {
-        if (isSkipMediaQueue) {
+        if (isSkipMediaQueue()) {
             throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
         }
         songId?.let { playbackManager.removeSongInfo(it) }
@@ -517,7 +512,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
         if (time <= 0) {
             return
         }
-        if (isSkipMediaQueue) {
+        if (isSkipMediaQueue()) {
             throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
         }
         playbackManager.onStopByTimedOff(time, isPause, isFinishCurrSong)
@@ -564,7 +559,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      * 进度监听
      */
     fun setOnPlayProgressListener(listener: OnPlayProgressListener) {
-        val pkgActivityName = StarrySky.getCurrActivity()?.toString()
+        val pkgActivityName = StarrySky.getVisibleActivity()?.toString()
         pkgActivityName?.let {
             progressListener.put(it, listener)
         }
@@ -602,8 +597,8 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
         focusChangeState.postValue(info)
     }
 
-    fun resetVariable() {
-        playbackManager.resetVariable()
+    fun resetVariable(activity: Activity?) {
+        playbackManager.resetVariable(activity)
     }
 
     fun release() {

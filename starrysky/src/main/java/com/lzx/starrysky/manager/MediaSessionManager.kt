@@ -72,7 +72,7 @@ class MediaSessionManager(val context: Context,
             metaDta.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, songInfo.coverBitmap)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val count = if (playbackManager.isSkipMediaQueue) 1 else getMusicCount().toLong()
+            val count = if (playbackManager.isSkipMediaQueue()) 1 else getMusicCount().toLong()
             metaDta.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, count)
         }
         mediaSession?.setMetadata(metaDta.build())

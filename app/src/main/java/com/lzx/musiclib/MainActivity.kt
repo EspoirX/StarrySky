@@ -6,12 +6,13 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import com.gcssloop.widget.RCImageView
 import com.lzx.musiclib.adapter.addItem
 import com.lzx.musiclib.adapter.itemClicked
 import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
+import com.lzx.musiclib.card.CardActivity
+import com.lzx.musiclib.dynamic.DynamicActivity
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.SongInfo
@@ -48,7 +49,8 @@ class MainActivity : AppCompatActivity() {
             initRecycleView(list)
         }
 
-        StarrySky.with().playbackState().observe(this, Observer {
+        StarrySky.with().playbackState().observe(this, {
+            if (it.songInfo?.tag != "home") return@observe
             when (it.stage) {
                 PlaybackStage.PLAYING -> {
                     rotationAnim?.start()
@@ -66,6 +68,8 @@ class MainActivity : AppCompatActivity() {
         })
         StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {
             override fun onPlayProgress(currPos: Long, duration: Long) {
+                val info = StarrySky.with().getNowPlayingSongInfo()
+                if (info?.tag != "home") return
                 if (donutProgress.getMax().toLong() != duration) {
                     donutProgress.setMax(duration.toInt())
                 }
@@ -108,8 +112,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        StarrySky.setIsOpenNotification(true)
         if (StarrySky.with().isPlaying()) {
-            rotationAnim?.start()
+            val info = StarrySky.with().getNowPlayingSongInfo()
+            if (info?.tag == "home") {
+                rotationAnim?.start()
+            }
         }
     }
 

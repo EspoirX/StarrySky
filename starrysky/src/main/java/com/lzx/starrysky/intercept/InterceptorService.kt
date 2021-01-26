@@ -24,10 +24,9 @@ class InterceptorService {
                     interceptorCounter.await(60L, TimeUnit.SECONDS)
                     when {
                         interceptorCounter.count > 0 -> {
-                            callback?.onInterrupt(RuntimeException("拦截器超时啦，超时时间可通过 StarrySkyConfig 配置，默认 60 秒"))
-                        }
-                        null != songInfo?.tag -> {
-                            callback?.onInterrupt(RuntimeException(songInfo.tag.toString()))
+                            MainLooper.instance.runOnUiThread {
+                                callback?.onInterrupt(RuntimeException("拦截器超时啦，超时时间可通过 StarrySkyConfig 配置，默认 60 秒"))
+                            }
                         }
                         else -> {
                             MainLooper.instance.runOnUiThread {
@@ -37,11 +36,15 @@ class InterceptorService {
                     }
                 } catch (ex: Exception) {
                     ex.printStackTrace()
-                    callback?.onInterrupt(ex)
+                    MainLooper.instance.runOnUiThread {
+                        callback?.onInterrupt(ex)
+                    }
                 }
             }
         } else {
-            callback?.onContinue(songInfo)
+            MainLooper.instance.runOnUiThread {
+                callback?.onContinue(songInfo)
+            }
         }
     }
 

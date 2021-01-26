@@ -14,9 +14,13 @@ import java.io.BufferedInputStream
 
 class MusicViewModel : ViewModel() {
 
-    fun getHomeMusic() = getMusicList("home.json")
+    companion object {
+        val baseUrl = "http://qnir7r5td.hn-bkt.clouddn.com/"
+    }
 
-    private fun getMusicList(file: String): MutableList<SongInfo> {
+    fun getHomeMusic() = getMusicList("home.json", "home")
+
+    private fun getMusicList(file: String, tag: String): MutableList<SongInfo> {
         var json: String
         val asset = TestApplication.context?.assets ?: return mutableListOf()
         asset.open(file).use { it ->
@@ -29,6 +33,7 @@ class MusicViewModel : ViewModel() {
         val list = mutableListOf<SongInfo>()
         arrayJson.forEach<JSONObject> {
             val info = SongInfo()
+            info.tag = tag
             info.songName = it?.getString("songname").orEmpty()
             info.songId = it?.getString("songmid").orEmpty()
             info.artist = it?.getArray("singer")?.getJSONObject(0)?.getString("name").orEmpty()

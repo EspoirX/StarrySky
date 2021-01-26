@@ -146,6 +146,7 @@ class CustomNotification constructor(
         } else {
             val notification = createNotification()
             if (notification != null && state != PlaybackStage.BUFFERING) {
+                mStarted = true
                 notificationManager?.notify(NOTIFICATION_ID, notification)
             }
         }

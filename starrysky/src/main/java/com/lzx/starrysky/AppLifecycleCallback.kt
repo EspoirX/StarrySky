@@ -8,21 +8,28 @@ import android.os.Bundle
 class AppLifecycleCallback : ActivityLifecycleCallbacks {
 
     internal var currActivity: Activity? = null
+    internal var activityList = mutableListOf<Activity?>()
+
+    fun getVisibleActivity() = activityList.getOrNull(activityList.lastIndex)
 
     override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
-        currActivity = activity
+
     }
 
     override fun onActivityStarted(activity: Activity?) {
+        activityList.add(activity)
     }
 
     override fun onActivityResumed(activity: Activity?) {
+        currActivity = activity
     }
 
     override fun onActivityPaused(activity: Activity?) {
+        currActivity = null
     }
 
     override fun onActivityStopped(activity: Activity?) {
+        activityList.remove(activity)
     }
 
     override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
@@ -30,7 +37,6 @@ class AppLifecycleCallback : ActivityLifecycleCallbacks {
 
     override fun onActivityDestroyed(activity: Activity?) {
         StarrySky.with().removeProgressListener(activity)
-        currActivity = null
-        StarrySky.with().resetVariable()
+        StarrySky.with().resetVariable(activity)
     }
 }

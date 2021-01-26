@@ -1,4 +1,4 @@
-package com.lzx.musiclib
+package com.lzx.musiclib.dynamic
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -11,6 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import com.lzx.musiclib.R
+import com.lzx.musiclib.dp
+import com.lzx.musiclib.loadImage
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.manager.PlaybackStage
 import kotlinx.android.synthetic.main.activity_card.tabLayout
@@ -37,6 +40,9 @@ class DynamicActivity : AppCompatActivity() {
         viewpager.removeAllViewsInLayout()
         viewpager.adapter = adapter
         tabLayout.setViewPager(viewpager)
+
+        StarrySky.closeNotification()
+        StarrySky.setIsOpenNotification(false)
 
         StarrySky.with().playbackState().observe(this, {
             when (it.stage) {
@@ -74,7 +80,7 @@ class DynamicActivity : AppCompatActivity() {
         }
     }
 
-    private fun showVoiceBar() {
+    fun showVoiceBar() {
         if (voiceBar.translationY == 0f) {
             return
         }

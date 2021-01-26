@@ -23,6 +23,7 @@ class ServiceBinder(private val context: Context) : Binder() {
     private var notificationConfig: NotificationConfig? = null
     private var notificationManager = NotificationManager()
     var notification: INotification? = null
+    private var isShowNotification = false
     private var notificationFactory: NotificationManager.NotificationFactory? = null
     private var playerCache: ICache? = null
     private var cacheDestFileDir: String = ""
@@ -42,6 +43,10 @@ class ServiceBinder(private val context: Context) : Binder() {
         if (isOpenNotification) {
             createNotification()
         }
+    }
+
+    fun setIsOpenNotification(open: Boolean) {
+        isOpenNotification = open
     }
 
     private fun createNotification() {
@@ -70,24 +75,31 @@ class ServiceBinder(private val context: Context) : Binder() {
     fun getNotificationType() = notificationType
 
     fun onChangedNotificationState(songInfo: SongInfo?, playbackState: String,
-                                   hasNextSong: Boolean, hasPreSong: Boolean, open: Boolean) {
-        if (open) {
+                                   hasNextSong: Boolean, hasPreSong: Boolean) {
+        if (isOpenNotification) {
             notification?.onPlaybackStateChanged(songInfo, playbackState, hasNextSong, hasPreSong)
+            isShowNotification = true
         }
     }
 
-    fun startNotification(currPlayInfo: SongInfo?, state: String, open: Boolean) {
-        if (open) {
+    fun startNotification(currPlayInfo: SongInfo?, state: String) {
+        if (isOpenNotification) {
             notification?.startNotification(currPlayInfo, state)
+            isShowNotification = true
         }
     }
 
     fun stopNotification() {
-        notification?.stopNotification()
+        if (isOpenNotification) {
+            notification?.stopNotification()
+            isShowNotification = false
+        }
     }
 
     fun setSessionToken(mediaSession: MediaSessionCompat.Token?) {
-        notification?.setSessionToken(mediaSession)
+        if (isOpenNotification) {
+            notification?.setSessionToken(mediaSession)
+        }
     }
 
     fun setPlayerCache(cache: ICache?, cacheDestFileDir: String, cacheMaxBytes: Long) {
