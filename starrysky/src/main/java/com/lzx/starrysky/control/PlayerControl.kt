@@ -135,7 +135,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     }
 
     /**
-     * 添加拦截器
+     * 添加局部拦截器，执行顺序是先执行局部拦截器再执行全局拦截器，当前Activity结束后局部拦截器会清空
      */
     fun addInterceptor(interceptor: ISyInterceptor): PlayerControl {
         val noSame = interceptors.filter { it.getTag() == interceptor.getTag() }.isNullOrEmpty()

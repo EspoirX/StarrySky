@@ -7,201 +7,211 @@ open class TestApplication : Application() {
     @Override
     override fun onCreate() {
         super.onCreate()
-       StarrySky.init(this)
+        StarrySky.init(this).apply()
     }
 }
 ```
-StarrySky 最简单的初始化如上所示，但它可以配置更多的功能，让我们看看 init 方法：
+StarrySky 最简单的初始化如上所示，但它可以配置更多的功能，让我们看看初始化的所有 API 方法：
+
 ```kotlin
-/**
- * 上下文，配置，连接服务监听
- */
-@JvmStatic
-fun init(application: Application, config: StarrySkyConfig = StarrySkyConfig(), connection: ServiceConnection? = null) {
-   //...
-}
+ StarrySky.init(this)
+        .setDebug(..)               //是否debug，区别就是是否打印一些内部 log
+        .connService(..)            //是否需要后台服务，默认true
+        .isStartService(..)         //是否需要 startService，默认false
+        .onlyStartService(..)       //是否只是 startService 而不需要 startForegroundService，默认true
+        .connServiceListener(..)    //连接服务回调
+        .addInterceptor(..)         //添加全局拦截器，可以添加多个
+        .setNotificationSwitch(..)  //通知栏开关
+        .setNotificationFactory(..) //配置自定义通知栏
+        .setNotificationConfig(..)  //配置通知栏其他参数
+        .setNotificationType(..)    //选择通知栏类型，系统通知栏和自定义通知栏
+        .setOpenCache(..)           //是否开启缓存
+        .setCacheDestFileDir(..)    //配置缓存路径
+        .setCacheMaxBytes(..)       //配置最大缓存大小，默认512 * 1024 * 1024
+        .setCache(..)               //缓存自定义实现
+        .setAutoManagerFocus(..)    //是否自动焦点管理
+        .setPlayback(..)            //自定义实现播放器
+        .setImageLoader(..)         //配置自定义图片加载器
+        .apply()
 ```
-可以看到有三个参数，第三个参数是连接音频 Service 的监听，大家可以通过它来监听 Service 是否连接成功。  
-重点看下第二个配置参数 StarrySkyConfig。
 
-## StarrySkyConfig
-StarrySkyConfig 是一个配置类，通过 Build 模式去设置各种配置，具体有什么配置可以自行查看代码，里面有注释。
+可根据自己需要在初始化时配置不同的东西，具体的注释或者使用方法可以查看代码注释和 demo 代码。
 
-### 1. 配置通知栏
+### 1. 主页播放
+如果你的项目中存在打开主页面需要马上需要播放音频，而你又需要后台 Service 的时候，最好通过 connServiceListener 监听
+Service 是否连接成功，等成功后再去播放，否则会出现 Service 没初始化完成，你去播放时，是播放不了的。
+
+
+### 2. 拦截器
+拦截器的功能是在播放前处理一些自己的操作，比如播放器请求播放音频的 url，播放器请求一下某些权限等等操作。都可以通过拦截器去处理。
+拦截器配置通过 addInterceptor 方法添加，可以添加多个拦截器，执行顺序跟添加顺序一致。
+
+实现拦截器需要继承 AsyncInterceptor 或者 SyncInterceptor，然后实现 process 方法。
+
+两者的区别相信看命名就知道，因为在实际运用中，有些操作是需要 callback 去回调的，有些则可以直接返回，比如在拦截器中进行同步
+请求，你就可以直接拿到结果，如果进行异步请求，则需要一个 callback，这里可根据自己的实际需要选择继承不同的类。
+
+注意一点，process 方法是运行在子线程中的，如果有 UI 操作，可以自己通过 Handler 或者使用库里面封装好的一个 MainLooper 工具类去操作。
+
+拦截器分为两种，在初始化时添加的拦截器称为全局拦截器，然后通过 **  StarrySky.with().addInterceptor(..) ** 添加的拦截器称为局部拦截器，
+他们的执行顺序是先执行局部，再执行全局，局部拦截器在当前 Activity onDestroy 后会清空。
+
+
+### 3. 通知栏
 
 通知栏分为系统通知栏和自定义通知栏，默认开启的是系统通知栏。
 
-** 开启系统通知栏： ** 
+在初始化时可通过 setNotificationSwitch 去打开通知栏，可以通过 setNotificationType 去选择使用系统通知栏还是自己定义的通知栏。
+在配置之后，你也可以通过 StarrySky 类里面的通知栏相关 API 去单独操作通知栏。
 
-把配置中的 isOpenNotification 设为 true 即可开启。
+** 通知栏配置 NotificationConfig 说明 **
 
-** 开启自定义通知栏： ** 
+初始化时通过 setNotificationConfig 方法可以设置一个 NotificationConfig，NotificationConfig 里面主要就是配置通知栏的一些
+ PendingIntent，UI 资源以及点击时转跳的界面等内容，可以按需配置。
 
-在 StarrySky 中，通知栏都是实现了 INotification 接口的，而所有通知栏都是通过 NotificationFactory 工厂类去创建，StarrySky 默认帮大家创建了
-一个自定义通知栏实现：CustomNotification。所有要配置自定义通知栏，只需要通过配置的 setNotificationFactory 方法即可：
+NotificationConfig 是一个 builder 模式，如果你用的是 kotlin 的话，也可以通过这样去构建：
 ```kotlin
-val config = StarrySkyConfig().newBuilder()
-    .setNotificationFactory(object : StarrySkyNotificationManager.NotificationFactory {
-        override fun build(context: Context, config: NotificationConfig?): INotification {
-            //使用自定义通知栏
-            return StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY.build(context, config)
-        }
-    })
-    .build()
+val notificationConfig = NotificationConfig.create {
+    targetClass { "com.lzx.musiclib.home.MainActivity" }
+    targetClassBundle {
+        val bundle = Bundle()
+        bundle.putString("notifyKey", "我是点击通知栏转跳带的参数")
+        return@targetClassBundle bundle
+    }
+    pauseIntent {
+       //...
+        return@pauseIntent xxx
+    }
+    //...
+}
 ```
 
-CUSTOM_NOTIFICATION_FACTORY 对象指的就是 CustomNotification 的 NotificationFactory 实现。  
-当然，自定义通知栏并不是这样就完成了，还需要自己根据需要和相应的命名规则创建对应的布局才算完成。  
-具体操作请参考文档： [快速集成通知栏](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/快速集成通知栏.md)
+** 如何使用自定义通知栏 **
+使用自定义通知栏，需要在初始化是配置 setNotificationType 为 INotification.CUSTOM_NOTIFICATION 即可。对应的内部实现是 CustomNotification
+而使用自定义通知栏，还需要自己按照命名规则定义好自己想要的布局和资源，CustomNotification 内部会自动读取。
 
-### 2. 配置缓存
-打开缓存功能只需要在配置中设置 isOpenCache 为 true 即可完成，同时，你也可以通过配置 cacheDestFileDir 来自定义缓存的文件夹。
-缓存的默认实现是使用了 Exoplayer 自带的缓存功能。如果你要自定义，比如使用 videocache 等第三方缓存库的话，你也可以通过配置 cache 去完成：
-```kotlin
-val config = StarrySkyConfig().newBuilder()
-    .isOpenCache(true)
-    .setCacheDestFileDir("xxx")
-    .setCache(object :ICache{
-        override fun getProxyUrl(url: String): String? {
-        }
-    
-        override fun getCacheDirectory(context: Context, destFileDir: String?): File? {
-        }
-    
-        override fun isCache(url: String): Boolean {
-        }
-    
-        override fun startCache(url: String) {
-        }
-    })
-    .build()
-```
-更多操作请参考文档：[媒体缓存功能](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/媒体缓存功能.md)
+在 CustomNotification 内部，使用两种 RemoteViews，对应的是通知栏展开和收起的两种布局。
 
-### 3. 配置拦截器
-拦截器的功能是在播放前处理一些自己的操作，比如播放器请求播放音频的 url，播放器请求一下某些权限等等操作。都可以通过拦截器去处理。
-拦截器配置通过 addInterceptor 方法添加，可以添加多个拦截器，执行顺序跟添加顺序一致。比如项目 demo 中的两个拦截器配置：
-```kotlin
-val config = StarrySkyConfig().newBuilder()
-    .addInterceptor(RequestSongInfoInterceptor())
-    .addInterceptor(RequestSongCoverInterceptor())
-    .build()
-```
-更多操作请参考文档： [拦截器](https://github.com/lizixian18/MusicLibrary/blob/StarrySkyJava/readme/拦截器.md)
+两种布局的命名规则分别为 ** view_notify_play.xml ** 和 ** view_notify_big_play.xml ** ， 分别对应收起和展开两种。
 
-### 4. 配置是否需要后台服务
-StarrySky 启动后，音频播放默认会在服务 MusicService 中运行，以方便可以在后台播放。但是，StarrySky 提供是否需要后台服务的配置
-功能，即你可以正常的让音频运行在后台服务中，也可以不要后台服务，只把 StarrySky 当作是一个普通的播放器封装。该功能可以通过
-isUserService 配置即可：
-```kotlin
-val config = StarrySkyConfig().newBuilder()
-    .isUserService(false)
-    .build()
+在布局内部，如果你的布局有使用以下功能按钮的话，按钮对应的控件 id 命名需要按照以下规则来命名：
+
+| 通知栏控件名称    |   命名                |   通知栏控件名称  |   命名         |
+| :--------       |   :----------         | :--------      |   :----------       |
+| 播放按钮         | img_notifyPlay        | 上一首按钮      | img_notifyPre       |
+| 暂停按钮         | img_notifyPause       | 关闭按钮        | img_notifyClose      |
+| 停止按钮         | img_notifyStop        | 喜欢或收藏按钮   | img_notifyFavorite   |
+| 播放或暂停按钮    | img_notifyPlayOrPause | 桌面歌词按钮    | img_notifyLyrics      |
+| 下一首按钮       | img_notifyNext        | 下载按钮        | img_notifyDownload    |
+| 封面图片         | img_notifyIcon        | 歌名 TextView   | txt_notifySongName   |
+| 艺术家 TextView  | txt_notifyArtistName  |                |                      |
+
+然而，不同的手机系统通知栏背景有可能是浅色也有可能是深黑色，比如 mumu 模拟器是黑底的，华为 mate20 是白底的。
+所以通知栏的字体颜色，以及按钮资源等则需要准备深浅颜色两套。（可以参考 demo）
+
+首先是字体适配：
+
+创建 values-v19 和 values-v21 文件夹，然后里面新建一个 style.xml，它们的内容是一样的，就是：
+
+```java
+<resources>
+    <style name="notification_info" parent="android:TextAppearance.Material.Notification.Info"/>
+    <style name="notification_title" parent="android:TextAppearance.Material.Notification.Title"/>
+</resources>
 ```
+
+然后在你写布局的时候，对应的通知栏 title 和 info 的 TextView 就可以引用它们。记住 TextView 不能写死字体颜色，不然就不能适配了。
+
+然后是资源适配：
+
+为了更好的 UI 效果，StarrySky 中的通知栏上一首、下一首、播放、暂停、播放或暂停这五个按钮使用的资源是 `selector`，
+ `selector` 里面就是你对应的 normal 和 pressed 图片了。
+
+如果你的布局有使用以下资源的话，对应的命名需要按照以下规则来命名：
+
+| 通知栏背景色  | 资源名称  |   命名       | 通知栏背景色  | 资源名称  |   命名       |
+| :-------- | :--------   | :------   | :-------- | :--------   | :------   |
+| 浅色背景   | 播放按钮 selector | notify_btn_light_play_selector.xml | 深色背景   | 播放按钮 selector | notify_btn_dark_play_selector.xml |
+| 浅色背景   | 暂停按钮 selector | notify_btn_light_pause_selector.xml | 深色背景   | 暂停按钮 selector | notify_btn_dark_pause_selector.xml |
+| 浅色背景   | 下一首按钮 selector | notify_btn_light_prev_selector.xml |  深色背景   | 下一首按钮 selector | notify_btn_dark_next_selector.xml |
+| 浅色背景   | 上一首按钮 selector | notify_btn_light_prev_selector.xml | 深色背景   | 上一首按钮 selector | notify_btn_dark_prev_selector.xml |
+| 浅色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_light_next_pressed | 深色背景   | 下一首按钮当没有下一首时的图片资源 | notify_btn_dark_next_pressed |
+| 浅色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_light_prev_pressed | 深色背景   | 上一首按钮当没有上一首时的图片资源 | notify_btn_dark_prev_pressed |
+| 浅色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_light_favorite_normal | 深色背景   | 喜欢或收藏按钮的图片资源 | notify_btn_dark_favorite_normal |
+| 浅色背景   | 桌面歌词按钮的图片资源 | notify_btn_light_lyrics_normal | 深色背景   | 桌面歌词按钮的图片资源 | notify_btn_dark_lyrics_normal |
+| 深白通用   | 喜欢按钮被选中时的图片资源 | notify_btn_favorite_checked | 深白通用   | 桌面歌词按钮选中时的图片资源 | notify_btn_lyrics_checked |
+| 深白通用   | 通知栏 smallIcon 图片资源 | icon_notification | 深白通用   | 下载按钮暂 | 暂时没什么规定，可以随便命名 |   |                      |
+
+自定义通知栏的布局还有资源等，都在代码中有例子，大家如果看得不太明白可以打开参考一下。
+
+
+** 如何自己实现自定义通知栏 **
+库内部以及实现好一个默认的自定义通知栏，你只需要按照规则创建好相关布局和资源即可使用，但如果不能满足你的需求，
+可以在初始化的时候通过 setNotificationFactory 方法去自己实现一个通知栏。
+
+该方法传入的是 NotificationFactory 接口，我们需要实现里面的 build 方法，build 方法返回的是一个 INotification 接口，所以说
+你自己实现的通知栏需要实现 INotification 接口。
+
+INotification 接口有几个重要的方法，分别是 startNotification，stopNotification，onPlaybackStateChanged 等，在实现的时候可以参考
+已经有的默认实现 SystemNotification 或者 CustomNotification 即可。
+
+
+** 自定义通知栏点击事件例子 **
+
+有时候我们要在通知栏里面的按钮点击事件上做一些自己的逻辑，比如埋点等，那么就需要自定义点击事件了。自己管理点击事件，其实就是配置一开始说了的
+ NotificationConfig 里面的各种 PendingIntent。
+
+关于如何使用，这里举个例子：
+```kotlin
+private fun getPendingIntent(action: String): PendingIntent? {
+    val intent = Intent(action)
+    intent.setClass(this, NotificationReceiver::class.java)
+    return PendingIntent.getBroadcast(this, 0, intent, 0)
+}
+
+val notificationConfig = NotificationConfig.create {
+        targetClass { "com.lzx.musiclib.example.PlayDetailActivity" }
+        favoriteIntent { getPendingIntent(ACTION_PAUSE) }
+    }
+
+//然后初始化的时候设置 notificationConfig 进去
+
+class NotificationReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        when (intent.action) {
+            INotification.ACTION_PAUSE -> {
+                StarrySky.with().pauseMusic()
+            }
+        }
+    }
+}
+```
+
+当然广播别忘记注册了。
+
+
+### 4. 配置缓存
+打开缓存功能只需要在配置中设置 isOpenCache 为 true 即可完成，同时，你也可以通过配置 setCacheDestFileDir 来自定义缓存的文件夹。
+
+缓存的默认实现是使用了 Exoplayer 自带的缓存功能。如果你要自定义，比如使用 videocache 等第三方缓存库的话，你也可以通过配置 setCache 去完成，
+自定义缓存需要实现 ICache 接口。在 demo 中，有使用 videocache 实现的自定义缓存例子，大家可以参考一下。
+
 
 ### 5. 配置图片加载器
 大家知道，在通知栏中，需要显示歌曲封面，所有就需要用到图片加载功能，StarrySky 默认的图片加载使用最普通的 HttpURLConnection 去完成。
-如果大家需要自己实现，比如用 Glide 之类的，即可以通过 imageLoader 去配置：
-```kotlin
-val config = StarrySkyConfig().newBuilder()
-    .setImageLoader(object : ImageLoaderStrategy {
-            //使用自定义图片加载器
-            override fun loadImage(context: Context, url: String?, callBack: ImageLoaderCallBack) {
-                Glide.with(context).asBitmap().load(url).into(object : CustomTarget<Bitmap?>() {
-                    override fun onLoadCleared(placeholder: Drawable?) {}
-    
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                        callBack.onBitmapLoaded(resource)
-                    }
-    
-                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                        super.onLoadFailed(errorDrawable)
-                        callBack.onBitmapFailed(errorDrawable)
-                    }
-                })
-            }
-        })
-    .build()
-```
-具体实现就是实现 ImageLoaderStrategy 接口，然后通过 callback 返回。注意参数中的 Context 上下文并不是 Activity 的上下文，而是音频服务
-MusicService 的上下文，如果你配置了不需要后台服务的话，那它就是 Application 的上下文。
+如果大家需要自己实现，比如用 Glide 之类的，即可以通过 setImageLoader 去配置，demo 中有使用 Glide 加载的例子，大家可以参考一下。
+
+
 
 ### 6. 配置播放器实现
 StarrySky 的默认播放器实现是 ExoPlayer ，并且支持了多种音频格式：DASH, SmoothStreaming, HLS，rtmp，flac，  
 但是在某些特殊需求里，或许默认的播放实现并不能满足你的需要，所以 StarrySky 支持配置自定义播放器，播放器实现需要实现 Playback 接口。
-默认的实现类是 ExoPlayback ，大家若有自定义播放器的需要可以先看看这个类，参加实现。如何配置自定义播放器？只需要配置 playback 方法即可：
-```kotlin
-val config = StarrySkyConfig().newBuilder()
-    .setPlayback(MediaPlayerImpl())
-    .build()
+默认的实现类是 ExoPlayback ，大家若有自定义播放器的需要可以先看看这个类，参加实现
 
-class MediaPlayerImpl : Playback {
-  //...
-}
-```
 
 ### 7. 配置是否让播放器自动管理焦点
 什么是焦点，焦点管理有什么用？不明白的可以自己百度谷歌一下音频焦点的定义。ExoPlayer 有一个功能，是可以自己自动管理焦点，该功能是默认打开的，
-如果不想自动管理，要把它关掉，可以通过配置 isAutoManagerFocus 即可：
-```kotlin
-val config = StarrySkyConfig().newBuilder()
-    .isAutoManagerFocus(false) 
-    .build()
-```
-那么关掉之后，想要自己处理怎么办，StarrySky 默认实现了一套自定义焦点管理，具体的实现类是 FocusManager，在配置中可以通过 setOnAudioFocusChangeListener 
-去监听焦点变化以便自己去做一些操作：
-```kotlin
-val config = StarrySkyConfig().newBuilder()
-    .isAutoManagerFocus(false)
-    .setOnAudioFocusChangeListener(object : AudioFocusChangeListener {
-            override fun onAudioFocusChange(focusInfo: FocusInfo) {
-                StarrySky.with().setVolume(focusInfo.volume)
-                if (focusInfo.playerCommand == FocusManager.DO_NOT_PLAY || focusInfo.playerCommand == FocusManager.WAIT_FOR_CALLBACK) {
-                    StarrySky.with().pauseMusic()
-                } else if (focusInfo.playerCommand == FocusManager.PLAY_WHEN_READY) {
-                    StarrySky.with().restoreMusic()
-                }
-            }
-        })
-    .build()
-```
-上面的代码是自己实现焦点管理的一个示例代码，当然这个监听只有在 isAutoManagerFocus 为 false 的时候才会生效。  
-参数 FocusInfo 包含了焦点变化相关的信息：
-```kotlin
-/**
- *  songInfo : 当前播放的音频信息
- *  audioFocusState：焦点状态，4 个值：
- *  STATE_NO_FOCUS            -> 当前没有音频焦点
- *  STATE_HAVE_FOCUS          -> 所请求的音频焦点当前处于保持状态
- *  STATE_LOSS_TRANSIENT      -> 音频焦点已暂时丢失
- *  STATE_LOSS_TRANSIENT_DUCK -> 音频焦点已暂时丢失，但播放时音量可能会降低
- *
- *  playerCommand：播放指令，3 个值：
- *  DO_NOT_PLAY       -> 不要播放
- *  WAIT_FOR_CALLBACK -> 等待回调播放
- *  PLAY_WHEN_READY   -> 可以播放
- *
- *  volume：焦点变化后推荐设置的音量，两个值：
- *  VOLUME_DUCK   -> 0.2f
- *  VOLUME_NORMAL ->  1.0f
- */
-data class FocusInfo(var songInfo: SongInfo?, var audioFocusState: Int, var playerCommand: Int, var volume: Float)
-```
-具体意义可看注释，其中变量的定义都在 FocusManager 中。有兴趣可以了解一下。
+如果不想自动管理，要把它关掉，可以通过配置 setAutoManagerFocus 即可。
 
 
-### 8. 配置副歌播放器
-副歌播放器？说白了就是允许同时播放 2 个音频的功能，比如在正常播放的同时再播放一些伴奏，播放一些音效的功能，通过 isCreateRefrainPlayer 即可开启：
-```kotlin
-val config = StarrySkyConfig().newBuilder()
-    .isAutoManagerFocus(false)
-    .isCreateRefrainPlayer(true)
-    .build()
-```
-同时播放 2 个音频，需要把焦点自动管理给关掉，不然当另一首音频播放的时候，第一首音频会自动停掉。  
-如何操作第二个音频播放停止这些功能，可以阅读一下 PlayerControl 这个类，里面定义了音频操作的所有方法，并且都有注释，写得很清楚。  
-如何实现这个功能的？原理就是创建了 2 个播放器实例，如果你的需求要同时播放 3 个音频，那么你可以根据这个原理去自己改源码。
-
-
- 
 如果问题请查看项目 demo 或者加群咨询。

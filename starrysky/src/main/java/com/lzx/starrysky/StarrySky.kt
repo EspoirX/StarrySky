@@ -87,14 +87,14 @@ object StarrySky {
     }
 
     /**
-     * 是否需要后台服务，默认true
+     * 是否需要后台服务，默认true，区别是播放器能不能运行在后台
      */
     fun connService(isConnectionService: Boolean) = apply {
         this.isConnectionService = isConnectionService
     }
 
     /**
-     * 是否 startService，默认false
+     * 是否需要 startService，默认false，只有 bindService
      */
     fun isStartService(isStartService: Boolean) = apply {
         this.isStartService = isStartService
@@ -108,33 +108,35 @@ object StarrySky {
     }
 
     /**
-     * 连接服务回调
+     * 连接服务回调，可通过这个监听查看 Service 是否连接成功
      */
     fun connServiceListener(connection: ServiceConnection?) = apply {
         this.connection = connection
     }
 
     /**
-     * 拦截器
+     * 获取全局拦截器集合
      */
+    @JvmStatic
     fun interceptors(): MutableList<ISyInterceptor> = interceptors
 
     /**
-     * 拦截器
+     * 添加全局拦截器
      */
     fun addInterceptor(interceptor: ISyInterceptor) = apply {
         interceptors += interceptor
     }
 
     /**
-     * 拦截器
+     * 清除全局拦截器
      */
+    @JvmStatic
     fun clearInterceptor() {
         interceptors.clear()
     }
 
     /**
-     * 通知栏开关
+     * 通知栏开关，打开则显示通知栏，关闭则不显示
      */
     fun setNotificationSwitch(isOpenNotification: Boolean) = apply {
         this.isOpenNotification = isOpenNotification
@@ -144,6 +146,7 @@ object StarrySky {
      * 通知栏类型
      * INotification.SYSTEM_NOTIFICATION
      * INotification.CUSTOM_NOTIFICATION
+     * 默认系统通知栏
      */
     fun setNotificationType(notificationType: Int) = apply {
         this.notificationType = notificationType
@@ -157,31 +160,45 @@ object StarrySky {
     }
 
     /**
-     * 自定义通知栏
+     * 自定义通知栏，可参考 NotificationManager 内部的两个默认实现
      */
     fun setNotificationFactory(factory: NotificationManager.NotificationFactory) = apply {
         this.notificationFactory = factory
     }
 
     /**
-     * 图片加载
+     * 自定义图片加载
      */
     fun setImageLoader(loader: ImageLoaderStrategy) = apply {
         this.imageStrategy = loader
     }
 
     /**
-     * 是否开启缓存
+     * 是否开启缓存功能
      */
     fun setOpenCache(open: Boolean) = apply {
         isOpenCache = open
     }
 
     /**
-     * 缓存自定义实现
+     * 自定义缓存实现
      */
     fun setCache(cache: ICache) = apply {
         this.playerCache = cache
+    }
+
+    /**
+     * 设置缓存路径
+     */
+    fun setCacheDestFileDir(cacheDestFileDir: String) = apply {
+        this.cacheDestFileDir = cacheDestFileDir
+    }
+
+    /**
+     * 设置最大缓存大小
+     */
+    fun setCacheMaxBytes(cacheMaxBytes: Long) = apply {
+        this.cacheMaxBytes = cacheMaxBytes
     }
 
     /**
@@ -192,21 +209,7 @@ object StarrySky {
     }
 
     /**
-     * 缓存路径
-     */
-    fun setCacheDestFileDir(cacheDestFileDir: String) = apply {
-        this.cacheDestFileDir = cacheDestFileDir
-    }
-
-    /**
-     * 最大缓存大小
-     */
-    fun setCacheMaxBytes(cacheMaxBytes: Long) = apply {
-        this.cacheMaxBytes = cacheMaxBytes
-    }
-
-    /**
-     * 播放器
+     * 自定义播放器实现
      */
     fun setPlayback(playback: Playback) = apply {
         this.playback = playback

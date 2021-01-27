@@ -5,8 +5,6 @@ StarrySky 是一个音频集成库，鉴于在一些项目中如果需要集成�
 
 StarrySky 主打集成简单，代码小巧简单易读懂，扩展性强，使用方便等方向。
 
-
-
 ## StarrySky 播放流程图：
 
 <img src="https://github.com/EspoirX/StarrySky/raw/androidx/art/StarrySky流程图.png">
