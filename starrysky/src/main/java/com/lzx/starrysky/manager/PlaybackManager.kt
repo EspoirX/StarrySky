@@ -2,7 +2,6 @@ package com.lzx.starrysky.manager
 
 
 import android.app.Activity
-import android.util.Log
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
@@ -15,7 +14,6 @@ import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.queue.MediaQueueManager
 import com.lzx.starrysky.queue.MediaSourceProvider
 import com.lzx.starrysky.utils.md5
-import com.lzx.starrysky.utils.orDef
 
 class PlaybackManager(private val provider: MediaSourceProvider,
                       private val appInterceptors: MutableList<ISyInterceptor>
@@ -27,8 +25,9 @@ class PlaybackManager(private val provider: MediaSourceProvider,
     private var lastSongInfo: SongInfo? = null
     private var serviceCallback: PlaybackServiceCallback? = null
     private var isActionStop = false
-    private var isSkipMediaQueueMap = hashMapOf<String, Boolean>()
-    private var withOutCallbackMap = hashMapOf<String, Boolean>()
+    var isSkipMediaQueue = false
+    private var withOutCallback = false
+
 
     fun attachPlayerCallback(serviceCallback: PlaybackServiceCallback) {
         player()?.setCallback(this)
@@ -54,28 +53,25 @@ class PlaybackManager(private val provider: MediaSourceProvider,
     /**
      * 是否跳过播放队列
      */
-    fun attachSkipMediaQueue(map: HashMap<String, Boolean>) = apply {
-        this.isSkipMediaQueueMap = map
+    fun attachSkipMediaQueue(isSkipMediaQueue: Boolean) = apply {
+        this.isSkipMediaQueue = isSkipMediaQueue
     }
 
     /**
      * 是否需要回调
      */
-    fun attachWithOutCallback(map: HashMap<String, Boolean>) = apply {
-        this.withOutCallbackMap = map
+    fun attachWithOutCallback(withOutCallback: Boolean) = apply {
+        this.withOutCallback = withOutCallback
     }
 
     /**
      * onDestroy 后重置变量
      */
     internal fun resetVariable(activity: Activity?) {
-        isSkipMediaQueueMap.remove(activity.toString())
-        withOutCallbackMap.remove(activity.toString())
+        isSkipMediaQueue = false
+        withOutCallback = false
         interceptorService.attachInterceptors(appInterceptors)
     }
-
-    fun isSkipMediaQueue() = isSkipMediaQueueMap[StarrySky.getVisibleActivity().toString()].orDef()
-    fun withOutCallback() = withOutCallbackMap[StarrySky.getVisibleActivity().toString()].orDef()
 
     /**
      * 播放
@@ -83,7 +79,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
     fun onPlayMusicImpl(songInfo: SongInfo?, isPlayWhenReady: Boolean) {
         if (songInfo == null) return
         isActionStop = false
-        if (isSkipMediaQueue()) {
+        if (isSkipMediaQueue) {
             player()?.currentMediaId = ""
         } else {
             mediaQueue.updateIndexBySongId(songInfo.songId)
@@ -125,7 +121,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
      * 下一首
      */
     fun onSkipToNext() {
-        if (isSkipMediaQueue()) {
+        if (isSkipMediaQueue) {
             throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
         }
         if (mediaQueue.skipQueuePosition(1)) {
@@ -138,7 +134,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
      * 上一首
      */
     fun onSkipToPrevious() {
-        if (isSkipMediaQueue()) {
+        if (isSkipMediaQueue) {
             throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
         }
         if (mediaQueue.skipQueuePosition(-1)) {
@@ -151,7 +147,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
      * 下一首(通知栏用)
      */
     override fun skipToNext() {
-        if (!isSkipMediaQueue()) {
+        if (!isSkipMediaQueue) {
             onSkipToNext()
         }
     }
@@ -160,7 +156,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
      * 上一首(通知栏用)
      */
     override fun skipToPrevious() {
-        if (!isSkipMediaQueue()) {
+        if (!isSkipMediaQueue) {
             onSkipToPrevious()
         }
     }
@@ -190,7 +186,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
      * 准备播放
      */
     fun onPrepareByUrl(songUrl: String) {
-        if (!isSkipMediaQueue()) {
+        if (!isSkipMediaQueue) {
             var isMoreThenOne: Boolean
             val list = mediaQueue.getCurrSongList().filter { it.songUrl == songUrl }
                 .also { isMoreThenOne = it.size > 1 }
@@ -208,7 +204,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
      * 准备播放
      */
     fun onPrepareByInfo(info: SongInfo) {
-        if (!isSkipMediaQueue()) {
+        if (!isSkipMediaQueue) {
             onPrepareById(info.songId)
         } else {
             onPlayMusicImpl(info, false)
@@ -270,7 +266,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
      * 是否可以下一首
      */
     fun isSkipToNextEnabled(): Boolean {
-        if (isSkipMediaQueue()) return false
+        if (isSkipMediaQueue) return false
         val repeatMode = RepeatMode.with
         if (repeatMode.repeatMode == RepeatMode.REPEAT_MODE_NONE ||
             repeatMode.repeatMode == RepeatMode.REPEAT_MODE_ONE ||
@@ -284,7 +280,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
      * 是否可以上一首
      */
     fun isSkipToPreviousEnabled(): Boolean {
-        if (isSkipMediaQueue()) return false
+        if (isSkipMediaQueue) return false
         val repeatMode = RepeatMode.with
         if (repeatMode.repeatMode == RepeatMode.REPEAT_MODE_NONE ||
             repeatMode.repeatMode == RepeatMode.REPEAT_MODE_ONE ||
@@ -341,7 +337,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
             state.lastSongInfo = lastSongInfo
             state.songInfo = songInfo
             state.stage = PlaybackStage.SWITCH
-            if (!withOutCallback() && lastSongInfo != null) {
+            if (!withOutCallback && lastSongInfo != null) {
                 serviceCallback?.onPlaybackStateUpdated(state)
             }
             lastSongInfo = songInfo
@@ -414,7 +410,7 @@ class PlaybackManager(private val provider: MediaSourceProvider,
         playbackState.isStop = isActionStop
 
         sessionManager.updateMetaData(currPlayInfo)
-        if (!withOutCallback()) {
+        if (!withOutCallback) {
             serviceCallback?.onPlaybackStateUpdated(playbackState)
         }
     }

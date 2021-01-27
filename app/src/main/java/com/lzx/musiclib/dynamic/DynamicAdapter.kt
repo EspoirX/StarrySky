@@ -10,6 +10,7 @@ import com.gcssloop.widget.RCImageView
 import com.lzx.musiclib.R
 import com.lzx.musiclib.loadImage
 import com.lzx.musiclib.navigationTo
+import com.lzx.musiclib.user.UserInfoActivity
 import com.lzx.musiclib.weight.MomentAudioView
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
@@ -47,7 +48,10 @@ class DynamicAdapter(val context: Context?) : RecyclerView.Adapter<DynamicAdapte
             StarrySky.with().playMusic(list, position)
             context?.navigationTo<DynamicDetailActivity>("songInfo" to info, "from" to "dynamic")
         }
-
+        holder.userHeader.setOnClickListener {
+            StarrySky.with().stopMusic()
+            context?.navigationTo<UserInfoActivity>()
+        }
     }
 
     override fun getItemCount(): Int = list.size

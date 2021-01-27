@@ -1,4 +1,4 @@
-package com.lzx.musiclib
+package com.lzx.musiclib.home
 
 import android.annotation.SuppressLint
 import android.graphics.Color
@@ -15,12 +15,17 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
+import com.lzx.musiclib.R
 import com.lzx.musiclib.adapter.addItem
 import com.lzx.musiclib.adapter.itemClicked
 import com.lzx.musiclib.adapter.notifyDataSetChanged
 import com.lzx.musiclib.adapter.removedData
 import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
+import com.lzx.musiclib.formatTime
+import com.lzx.musiclib.getSelfViewModel
+import com.lzx.musiclib.loadImage
+import com.lzx.musiclib.showToast
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.musiclib.weight.SpectrumDrawView
 import com.lzx.starrysky.OnPlayProgressListener

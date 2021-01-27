@@ -1,10 +1,13 @@
-package com.lzx.musiclib
+package com.lzx.musiclib.home
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import com.lzx.musiclib.R
+import com.lzx.musiclib.formatTime
+import com.lzx.musiclib.showToast
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky

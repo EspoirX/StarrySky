@@ -11,7 +11,9 @@ import com.lzx.musiclib.R
 import com.lzx.musiclib.dynamic.DynamicDetailActivity
 import com.lzx.musiclib.loadImage
 import com.lzx.musiclib.navigationTo
+import com.lzx.musiclib.user.UserInfoActivity
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.StarrySky
 
 class CardAdapter(private val context: Activity?) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -44,6 +46,10 @@ class CardAdapter(private val context: Activity?) :
         cardHolder.singer.text = info?.artist
         cardHolder.itemView.setOnClickListener {
             context?.navigationTo<DynamicDetailActivity>("songInfo" to info, "from" to "card")
+        }
+        cardHolder.headerImg.setOnClickListener {
+            StarrySky.with().stopMusic()
+            context?.navigationTo<UserInfoActivity>()
         }
     }
 

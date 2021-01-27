@@ -112,4 +112,6 @@ class MusicViewModel : ViewModel() {
             }
         }
     }
+
+    fun getUserMusicList() = getMusicList("user.json", "user")
 }

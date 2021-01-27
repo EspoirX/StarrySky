@@ -48,7 +48,7 @@ open class TestApplication : Application() {
         //bugly
         CrashReport.initCrashReport(applicationContext, "9e447caa98", false)
         val notificationConfig = NotificationConfig.create {
-            targetClass { "com.lzx.musiclib.MainActivity" }
+            targetClass { "com.lzx.musiclib.home.MainActivity" }
             targetClassBundle {
                 val bundle = Bundle()
                 bundle.putString("notifyKey", "我是点击通知栏转跳带的参数")

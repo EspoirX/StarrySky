@@ -1,4 +1,4 @@
-package com.lzx.musiclib
+package com.lzx.musiclib.home
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -7,12 +7,18 @@ import android.os.Bundle
 import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import com.gcssloop.widget.RCImageView
+import com.lzx.musiclib.R
 import com.lzx.musiclib.adapter.addItem
 import com.lzx.musiclib.adapter.itemClicked
 import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
 import com.lzx.musiclib.card.CardActivity
 import com.lzx.musiclib.dynamic.DynamicActivity
+import com.lzx.musiclib.getSelfViewModel
+import com.lzx.musiclib.loadImage
+import com.lzx.musiclib.navigationTo
+import com.lzx.musiclib.showToast
+import com.lzx.musiclib.user.UserInfoActivity
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.SongInfo
@@ -23,6 +29,7 @@ import kotlinx.android.synthetic.main.activity_main.donutProgress
 import kotlinx.android.synthetic.main.activity_main.dynamic
 import kotlinx.android.synthetic.main.activity_main.recycleView
 import kotlinx.android.synthetic.main.activity_main.songCover
+import kotlinx.android.synthetic.main.activity_main.user
 
 class MainActivity : AppCompatActivity() {
 
@@ -88,6 +95,9 @@ class MainActivity : AppCompatActivity() {
             StarrySky.with().stopMusic()
             StarrySky.closeNotification()
             navigationTo<DynamicActivity>()
+        }
+        user?.setOnClickListener {
+            navigationTo<UserInfoActivity>()
         }
     }
 

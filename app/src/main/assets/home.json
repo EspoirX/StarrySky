@@ -299,6 +299,266 @@
         ],
         songmid: "002KNcIH2LzRyz",
         songname: "恒温动物"
+      },
+      {
+        albummid: "0029GgMd2qVyYA",
+        albumname: "Fighting！生存之道",
+        singer: [
+          {
+            id: 4996,
+            mid: "002fvJdl2yNaXT",
+            name: "Tank"
+          }
+        ],
+        songmid: "004eLxeo1h5x3L",
+        songname: "三国恋"
+      },
+      {
+        albummid: "004HT5I70OKE2y",
+        albumname: "宝贝有戏·天籁童声",
+        singer: [
+          {
+            id: 1233588,
+            mid: "001yMNFV23daTV",
+            name: "冯提莫"
+          }
+        ],
+        songmid: "004KR4941TwIeL",
+        songname: "青空 (纯享版)"
+      },
+      {
+        albummid: "001fi1zG0EjU2u",
+        albumname: "有理想",
+        singer: [
+          {
+            id: 60505,
+            mid: "000aHmbL2aPXWH",
+            name: "李荣浩"
+          }
+        ],
+        songmid: "001xBUtF3rgn7O",
+        songname: "爸爸妈妈"
+      },
+      {
+        albummid: "002RspIW36U4Nn",
+        albumname: "爱，存在",
+        singer: [
+          {
+            id: 6099772,
+            mid: "002EAAXG3QpAUO",
+            name: "林小珂"
+          }
+        ],
+        songmid: "003rsS2e3r8YNS",
+        songname: "爱，存在"
+      },
+      {
+        albummid: "002G9aKI3UbdsG",
+        albumname: "化身孤岛的鲸",
+        singer: [
+          {
+            id: 199509,
+            mid: "003fA5G40k6hKc",
+            name: "周深"
+          }
+        ],
+        songmid: "0004adDk3wsULz",
+        songname: "化身孤岛的鲸"
+      },
+      {
+        albummid: "004Xx5GF3J1lbP",
+        albumname: "你走",
+        singer: [
+          {
+            id: 2078756,
+            mid: "004HCusr2QejTN",
+            name: "松紧先生（李宗锦）"
+          }
+        ],
+        songmid: "0009iUjr32xUXR",
+        songname: "你走 (Demo)"
+      },
+      {
+        albummid: "001hRg6L2eWevf",
+        albumname: "想起了你",
+        singer: [
+          {
+            id: 4246,
+            mid: "003iPzNg35cWzp",
+            name: "程响"
+          }
+        ],
+        songmid: "002jyUB34ePDOv",
+        songname: "想起了你"
+      },
+      {
+        albummid: "003B7Uad3mnAu5",
+        albumname: "落差",
+        singer: [
+          {
+            id: 6597642,
+            mid: "002yupVT2XEFaA",
+            name: "IN-K"
+          }
+        ],
+        songmid: "000CPsaO448jvN",
+        songname: "落差"
+      },
+      {
+        albummid: "00363n7y1Ft6gE",
+        albumname: "情人",
+        singer: [
+          {
+            id: 1016794,
+            mid: "002nXp292LIOGV",
+            name: "蔡徐坤"
+          }
+        ],
+        songmid: "000aWBBQ2fMyBJ",
+        songname: "情人"
+      },
+      {
+        albummid: "001ooeyd1kAh9w",
+        albumname: "旧梦一场",
+        singer: [
+          {
+            id: 3026094,
+            mid: "002oKQfI4E0PBk",
+            name: "阿悠悠"
+          }
+        ],
+        songmid: "0049iR603EJHAY",
+        songname: "旧梦一场"
+      },
+      {
+        albummid: "002yOiJ347ly2o",
+        albumname: "溯 (Reverse) feat. 马吟吟",
+        singer: [
+          {
+            id: 197898,
+            mid: "004569pS4AaBj8",
+            name: "CORSAK胡梦周"
+          }
+        ],
+        songmid: "002eDlpu4U223F",
+        songname: "溯 (Reverse) feat. 马吟吟"
+      },
+      {
+        albummid: "003Lr7ct0vUSj3",
+        albumname: "微微",
+        singer: [
+          {
+            id: 5292579,
+            mid: "0014X2tu05PYbH",
+            name: "傅如乔"
+          }
+        ],
+        songmid: "000B4ijs4Ufwql",
+        songname: "微微"
+      },
+      {
+        albummid: "001HUiKw0QsiUb",
+        albumname: "万有引力",
+        singer: [
+          {
+            id: 3954,
+            mid: "001z2JmX09LLgL",
+            name: "汪苏泷"
+          }
+        ],
+        songmid: "0026MTtC4QJxxq",
+        songname: "万有引力"
+      },
+      {
+        albummid: "000MkMni19ClKG",
+        albumname: "叶惠美",
+        singer: [
+          {
+            id: 4558,
+            mid: "0025NhlN2yWrP4",
+            name: "周杰伦"
+          }
+        ],
+        songmid: "0039MnYb0qxYhV",
+        songname: "晴天"
+      },
+      {
+        albummid: "001Jegbz00ePg5",
+        albumname: "辞九门回忆",
+        singer: [
+          {
+            id: 2907567,
+            mid: "001B2drs3Jq4EX",
+            name: "等什么君"
+          }
+        ],
+        songmid: "003izpqf19Dwps",
+        songname: "辞九门回忆"
+      },
+      {
+        albummid: "001gTzQA1I61B3",
+        albumname: "破茧(《斗罗大陆》动画2020年新主题曲)",
+        singer: [
+          {
+            id: 224,
+            mid: "002raUWw3PXdkT",
+            name: "张韶涵"
+          }
+        ],
+        songmid: "001Y7zXa1p0ryF",
+        songname: "破茧"
+      },
+      {
+        albummid: "002dOge41xlS8x",
+        albumname: "若你碰到他",
+        singer: [
+          {
+            id: 112,
+            mid: "000hNnWC3kko2c",
+            name: "蔡健雅"
+          }
+        ],
+        songmid: "003IGhQO0JdnuC",
+        songname: "红色高跟鞋"
+      },
+      {
+        albummid: "002lMPc30c4rOO",
+        albumname: "没有发生的爱情",
+        singer: [
+          {
+            id: 29858,
+            mid: "00067r4p0wBDDN",
+            name: "任然"
+          }
+        ],
+        songmid: "001fTFGe0LqzdT",
+        songname: "无人之岛"
+      },
+      {
+        albummid: "004MGitN0zEHpb",
+        albumname: "八度空间",
+        singer: [
+          {
+            id: 4558,
+            mid: "0025NhlN2yWrP4",
+            name: "周杰伦"
+          }
+        ],
+        songmid: "002OKIox28ad9a",
+        songname: "半岛铁盒"
+      },
+      {
+        albummid: "0020I7sO0ayXhN",
+        albumname: "后青春期的诗",
+        singer: [
+          {
+            id: 74,
+            mid: "000Sp0Bz4JXH0o",
+            name: "五月天"
+          }
+        ],
+        songmid: "002M8hNI2QgtRY",
+        songname: "突然好想你"
       }
     ]
   }

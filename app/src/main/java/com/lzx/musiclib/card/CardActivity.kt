@@ -7,16 +7,23 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.lzx.musiclib.R
+import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.utils.orDef
 import kotlinx.android.synthetic.main.activity_card.tabLayout
 import kotlinx.android.synthetic.main.activity_card.viewpager
 
 class CardActivity : AppCompatActivity() {
 
     private var categoryList = mutableListOf<CardCategory>()
+    private var isStopByOnPause = false
+    private var adapter: CardCategoryAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card)
+
+        StarrySky.closeNotification()
+        StarrySky.setIsOpenNotification(false)
 
         categoryList.add(CardCategory("card1", "推荐"))
         categoryList.add(CardCategory("card2", "流行电音"))
@@ -24,13 +31,26 @@ class CardActivity : AppCompatActivity() {
         categoryList.add(CardCategory("card4", "动感地带"))
         categoryList.add(CardCategory("card5", "劲歌金曲"))
 
-        val adapter = CardCategoryAdapter(supportFragmentManager, categoryList)
+        adapter = CardCategoryAdapter(supportFragmentManager, categoryList)
         viewpager.removeAllViews()
         viewpager.removeAllViewsInLayout()
         viewpager.adapter = adapter
         tabLayout.setViewPager(viewpager)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (isStopByOnPause) {
+            val pos = adapter?.currFragment?.curPlayPos.orDef()
+            adapter?.currFragment?.playCurVoice(pos)
+            isStopByOnPause = false
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isStopByOnPause = true
+    }
 }
 
 class CardCategoryAdapter(
