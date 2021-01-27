@@ -64,7 +64,7 @@ Service 是否连接成功，等成功后再去播放，否则会出现 Service 
 在初始化时可通过 setNotificationSwitch 去打开通知栏，可以通过 setNotificationType 去选择使用系统通知栏还是自己定义的通知栏。
 在配置之后，你也可以通过 StarrySky 类里面的通知栏相关 API 去单独操作通知栏。
 
-** 通知栏配置 NotificationConfig 说明 **
+#### 通知栏配置 NotificationConfig 说明
 
 初始化时通过 setNotificationConfig 方法可以设置一个 NotificationConfig，NotificationConfig 里面主要就是配置通知栏的一些
  PendingIntent，UI 资源以及点击时转跳的界面等内容，可以按需配置。
@@ -86,7 +86,7 @@ val notificationConfig = NotificationConfig.create {
 }
 ```
 
-** 如何使用自定义通知栏 **
+#### 如何使用自定义通知栏
 使用自定义通知栏，需要在初始化是配置 setNotificationType 为 INotification.CUSTOM_NOTIFICATION 即可。对应的内部实现是 CustomNotification
 而使用自定义通知栏，还需要自己按照命名规则定义好自己想要的布局和资源，CustomNotification 内部会自动读取。
 
@@ -145,7 +145,7 @@ val notificationConfig = NotificationConfig.create {
 自定义通知栏的布局还有资源等，都在代码中有例子，大家如果看得不太明白可以打开参考一下。
 
 
-** 如何自己实现自定义通知栏 **
+#### 如何自己实现自定义通知栏
 库内部以及实现好一个默认的自定义通知栏，你只需要按照规则创建好相关布局和资源即可使用，但如果不能满足你的需求，
 可以在初始化的时候通过 setNotificationFactory 方法去自己实现一个通知栏。
 
@@ -156,7 +156,7 @@ INotification 接口有几个重要的方法，分别是 startNotification，sto
 已经有的默认实现 SystemNotification 或者 CustomNotification 即可。
 
 
-** 自定义通知栏点击事件例子 **
+#### 自定义通知栏点击事件例子
 
 有时候我们要在通知栏里面的按钮点击事件上做一些自己的逻辑，比如埋点等，那么就需要自定义点击事件了。自己管理点击事件，其实就是配置一开始说了的
  NotificationConfig 里面的各种 PendingIntent。
