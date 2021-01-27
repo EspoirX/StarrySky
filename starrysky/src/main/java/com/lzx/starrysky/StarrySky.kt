@@ -294,9 +294,15 @@ object StarrySky {
     fun getNotificationType() = getBinder()?.getNotificationType()
         ?: INotification.SYSTEM_NOTIFICATION
 
+    /**
+     * 是否打开了缓存开关
+     */
     @JvmStatic
     fun isOpenCache() = StarrySkyConstant.KEY_CACHE_SWITCH
 
+    /**
+     * 获取播放缓存类
+     */
     @JvmStatic
     fun getPlayerCache(): ICache? = getBinder()?.getPlayerCache()
 

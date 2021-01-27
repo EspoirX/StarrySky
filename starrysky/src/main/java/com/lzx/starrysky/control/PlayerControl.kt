@@ -55,7 +55,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     }
 
     /**
-     * 是否跳过播放队列
+     * 是否跳过播放队列，false的话，播放将不经过播放队列，直接走播放器，当前Activity结束后恢复false状态
      */
     fun skipMediaQueue(isSkipMediaQueue: Boolean) = apply {
         this.isSkipMediaQueue = isSkipMediaQueue
@@ -63,7 +63,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     }
 
     /**
-     * 不需要回调
+     * 是否需要状态回调，false的话将收不到回调，即使你已经设置了，当前Activity结束后恢复true状态
      */
     fun setWithOutCallback(withOutCallback: Boolean) = apply {
         playbackManager.attachWithOutCallback(withOutCallback)
@@ -135,11 +135,6 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     }
 
     /**
-     * 获取拦截器
-     */
-    fun interceptors(): MutableList<ISyInterceptor> = interceptors
-
-    /**
      * 添加拦截器
      */
     fun addInterceptor(interceptor: ISyInterceptor): PlayerControl {
@@ -148,13 +143,6 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
             interceptors += interceptor
         }
         return this
-    }
-
-    /**
-     * 清除拦截器
-     */
-    fun clearInterceptor() {
-        interceptors.clear()
     }
 
     /**
@@ -459,7 +447,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     fun getVolume(): Float = playbackManager.player()?.getVolume().orDef()
 
     /**
-     * 获取媒体时长，单位毫秒 195146
+     * 获取媒体时长，单位毫秒
      */
     fun getDuration(): Long = playbackManager.player()?.duration().orDef()
 
@@ -540,7 +528,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     }
 
     /**
-     * 焦点变化监听
+     * 焦点变化监听,LiveData 方式
      */
     fun focusStateChange(): MutableLiveData<FocusInfo> = focusChangeState
 
@@ -550,7 +538,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
     fun playbackState(): MutableLiveData<PlaybackStage> = playbackState
 
     /**
-     * 进度监听
+     * 设置进度监听
      */
     fun setOnPlayProgressListener(listener: OnPlayProgressListener) {
         val pkgActivityName = StarrySky.getVisibleActivity()?.toString()
