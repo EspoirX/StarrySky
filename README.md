@@ -118,6 +118,7 @@ StarrySky.with().playMusicByInfo(info)
 
 ## 使用文档
 
+- [StarrySky介绍和API一览表](https://github.com/EspoirX/StarrySky/blob/androidx/readme/StarrySky%E4%BB%8B%E7%BB%8D.md)
 - [StarrySky使用说明 点我！点我！点我！](https://github.com/EspoirX/StarrySky/blob//androidx/readme/StarrySky%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
 - [StarrySky使用说明 点我！点我！点我！](https://github.com/EspoirX/StarrySky/blob/androidx/readme/StarrySky%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
 - [StarrySky使用说明 点我！点我！点我！](https://github.com/EspoirX/StarrySky/blob/androidx/readme/StarrySky%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)

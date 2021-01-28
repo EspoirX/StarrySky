@@ -74,7 +74,7 @@ class BTestInterceptor : SyncInterceptor {
 
 注意一点，process 方法是运行在子线程中的，如果有 UI 操作，可以自己通过 Handler 或者使用库里面封装好的一个 MainLooper 工具类去操作。
 
-拦截器分为两种，在初始化时添加的拦截器称为全局拦截器，然后通过 **  StarrySky.with().addInterceptor(..) ** 添加的拦截器称为局部拦截器，
+拦截器分为两种，在初始化时添加的拦截器称为全局拦截器，然后通过 StarrySky.with().addInterceptor(..) 添加的拦截器称为局部拦截器，
 他们的执行顺序是先执行局部，再执行全局，局部拦截器在当前 Activity onDestroy 后会清空，所以避免重复添加，getTag() 方法就是用来区分避免重复添加的。
 
 
@@ -113,7 +113,7 @@ val notificationConfig = NotificationConfig.create {
 
 在 CustomNotification 内部，使用两种 RemoteViews，对应的是通知栏展开和收起的两种布局。
 
-两种布局的命名规则分别为 ** view_notify_play.xml ** 和 ** view_notify_big_play.xml ** ， 分别对应收起和展开两种。
+两种布局的命名规则分别为 view_notify_play.xml 和  view_notify_big_play.xml ， 分别对应收起和展开两种。
 
 在布局内部，如果你的布局有使用以下功能按钮的话，按钮对应的控件 id 命名需要按照以下规则来命名：
 
@@ -167,11 +167,17 @@ val notificationConfig = NotificationConfig.create {
 
 
 #### 如何自己实现自定义通知栏
-库内部以及实现好一个默认的自定义通知栏，你只需要按照规则创建好相关布局和资源即可使用，但如果不能满足你的需求，
+库内部已经实现好一个默认的自定义通知栏，你只需要按照规则创建好相关布局和资源即可使用，但如果不能满足你的需求，
 可以在初始化的时候通过 setNotificationFactory 方法去自己实现一个通知栏。
 
 该方法传入的是 NotificationFactory 接口，我们需要实现里面的 build 方法，build 方法返回的是一个 INotification 接口，所以说
 你自己实现的通知栏需要实现 INotification 接口。
+
+```kotlin
+interface NotificationFactory {
+    fun build(context: Context, config: NotificationConfig?): INotification
+}
+```
 
 INotification 接口有几个重要的方法，分别是 startNotification，stopNotification，onPlaybackStateChanged 等，在实现的时候可以参考
 已经有的默认实现 SystemNotification 或者 CustomNotification 即可。
