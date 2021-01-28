@@ -34,7 +34,7 @@ object NotificationUtils {
     ): PendingIntent {
         //构建 Intent
         val openUI = Intent(context, targetClass)
-        openUI.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+//        openUI.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         openUI.putExtra("notification_entry", INotification.ACTION_INTENT_CLICK)
         songInfo?.let {
             openUI.putExtra("songInfo", it)

@@ -73,7 +73,8 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      * 根据 songId 播放,调用前请确保已经设置了播放列表
      * skipMediaQueue 模式下不能使用
      */
-    fun playMusicById(songId: String) {
+    fun playMusicById(songId: String?) {
+        if (songId == null) return
         if (isSkipMediaQueue) {
             throw IllegalStateException("skipMediaQueue 模式下不能使用该方法")
         }
@@ -541,7 +542,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
      * 设置进度监听
      */
     fun setOnPlayProgressListener(listener: OnPlayProgressListener) {
-        val pkgActivityName = StarrySky.getVisibleActivity()?.toString()
+        val pkgActivityName = StarrySky.getStackTopActivity()?.toString()
         pkgActivityName?.let {
             progressListener.put(it, listener)
         }

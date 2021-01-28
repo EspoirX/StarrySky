@@ -48,12 +48,15 @@ open class TestApplication : Application() {
         //bugly
         CrashReport.initCrashReport(applicationContext, "9e447caa98", false)
         val notificationConfig = NotificationConfig.create {
-            targetClass { "com.lzx.musiclib.home.MainActivity" }
+            targetClass { "com.lzx.musiclib.NotificationReceiver" }
             targetClassBundle {
                 val bundle = Bundle()
-                bundle.putString("notifyKey", "我是点击通知栏转跳带的参数")
+                bundle.putString("title", "我是点击通知栏转跳带的参数")
+                bundle.putString("targetClass", "com.lzx.musiclib.home.PlayDetailActivity")
+                //参数自带当前音频播放信息，不用自己传
                 return@targetClassBundle bundle
             }
+            pendingIntentMode { NotificationConfig.MODE_BROADCAST }
         }
         StarrySky.init(this)
             .setOpenCache(false)
@@ -80,8 +83,28 @@ open class TestApplication : Application() {
                 }
             })
             .setNotificationSwitch(true)
-            //.setNotificationConfig(notificationConfig)
+            .setNotificationConfig(notificationConfig)
             .apply()
+    }
+
+
+    class ATestInterceptor : AsyncInterceptor() {
+        override fun process(songInfo: SongInfo?, callback: InterceptorCallback) {
+            //do something...
+            callback.onContinue(songInfo)
+        }
+
+        override fun getTag(): String = "ATestInterceptor"
+
+    }
+
+    class BTestInterceptor : SyncInterceptor {
+        override fun process(songInfo: SongInfo?): SongInfo? {
+            //do something...
+            return songInfo
+        }
+
+        override fun getTag(): String = "BTestInterceptor"
     }
 
     /**

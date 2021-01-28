@@ -46,7 +46,28 @@ Service 是否连接成功，等成功后再去播放，否则会出现 Service 
 拦截器的功能是在播放前处理一些自己的操作，比如播放器请求播放音频的 url，播放器请求一下某些权限等等操作。都可以通过拦截器去处理。
 拦截器配置通过 addInterceptor 方法添加，可以添加多个拦截器，执行顺序跟添加顺序一致。
 
-实现拦截器需要继承 AsyncInterceptor 或者 SyncInterceptor，然后实现 process 方法。
+实现拦截器需要继承 AsyncInterceptor 或者 SyncInterceptor，然后实现 process 和 getTag 方法。
+
+```kotlin
+class ATestInterceptor : AsyncInterceptor() {
+    override fun process(songInfo: SongInfo?, callback: InterceptorCallback) {
+        //do something...
+        callback.onContinue(songInfo)
+    }
+
+    override fun getTag(): String = "ATestInterceptor"
+
+}
+
+class BTestInterceptor : SyncInterceptor {
+    override fun process(songInfo: SongInfo?): SongInfo? {
+        //do something...
+        return songInfo
+    }
+
+    override fun getTag(): String = "BTestInterceptor"
+}
+```
 
 两者的区别相信看命名就知道，因为在实际运用中，有些操作是需要 callback 去回调的，有些则可以直接返回，比如在拦截器中进行同步
 请求，你就可以直接拿到结果，如果进行异步请求，则需要一个 callback，这里可根据自己的实际需要选择继承不同的类。
@@ -54,7 +75,7 @@ Service 是否连接成功，等成功后再去播放，否则会出现 Service 
 注意一点，process 方法是运行在子线程中的，如果有 UI 操作，可以自己通过 Handler 或者使用库里面封装好的一个 MainLooper 工具类去操作。
 
 拦截器分为两种，在初始化时添加的拦截器称为全局拦截器，然后通过 **  StarrySky.with().addInterceptor(..) ** 添加的拦截器称为局部拦截器，
-他们的执行顺序是先执行局部，再执行全局，局部拦截器在当前 Activity onDestroy 后会清空。
+他们的执行顺序是先执行局部，再执行全局，局部拦截器在当前 Activity onDestroy 后会清空，所以避免重复添加，getTag() 方法就是用来区分避免重复添加的。
 
 
 ### 3. 通知栏

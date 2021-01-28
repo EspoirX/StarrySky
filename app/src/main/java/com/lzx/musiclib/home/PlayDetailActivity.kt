@@ -53,15 +53,16 @@ import kotlinx.android.synthetic.main.activity_play_detail.tvVolume
 class PlayDetailActivity : AppCompatActivity() {
 
     private var viewModel: MusicViewModel? = null
-    private var songId: String = ""
+    private var songId: String? = ""
     private var songList = mutableListOf<SongInfo>()
     private var dialog: MaterialDialog? = null
+    private var songInfo: SongInfo? = null
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_detail)
-        songId = intent.getStringExtra("songId")
+        songId = intent?.getStringExtra("songId")
         viewModel = getSelfViewModel {
             songList = getHomeMusic()
             val currSong = songList.filter { it.songId == songId }.getOrNull(0)

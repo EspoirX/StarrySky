@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.lzx.musiclib.home.MainActivity
 import com.lzx.musiclib.home.TestActivity
+import com.lzx.starrysky.StarrySky
 import kotlinx.android.synthetic.main.activity_home.btn1
 import kotlinx.android.synthetic.main.activity_home.btn2
 

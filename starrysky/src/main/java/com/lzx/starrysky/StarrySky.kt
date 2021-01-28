@@ -250,9 +250,9 @@ object StarrySky {
         }
     }
 
-    internal fun getCurrActivity() = appLifecycleCallback.currActivity
+    fun getStackTopActivity() = appLifecycleCallback.getStackTopActivity()
 
-    internal fun getVisibleActivity() = appLifecycleCallback.getVisibleActivity()
+    fun getActivityStack() = appLifecycleCallback.activityStack
 
     /**
      * 获取操作 api
