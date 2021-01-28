@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.provider.MediaStore
 import androidx.lifecycle.MutableLiveData
+import com.lzx.starrysky.GlobalPlaybackStageListener
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
@@ -23,7 +24,10 @@ import com.lzx.starrysky.utils.orDef
 import com.lzx.starrysky.utils.title
 
 
-class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackManager.PlaybackServiceCallback {
+class PlayerControl(
+    appInterceptors: MutableList<ISyInterceptor>,
+    private val globalPlaybackStageListener: GlobalPlaybackStageListener?
+) : PlaybackManager.PlaybackServiceCallback {
 
     private val focusChangeState = MutableLiveData<FocusInfo>()
     private val playbackState = MutableLiveData<PlaybackStage>()
@@ -569,6 +573,7 @@ class PlayerControl(appInterceptors: MutableList<ISyInterceptor>) : PlaybackMana
                 isRunningTimeTask = false
             }
         }
+        globalPlaybackStageListener?.onPlaybackStageChange(playbackStage)
         //postValue 可能会丢数据，这里保证主线程调用
         playbackState.value = playbackStage
         playerEventListener.forEach {

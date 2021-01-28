@@ -74,6 +74,9 @@ object StarrySky {
     //callback
     private var appLifecycleCallback = AppLifecycleCallback()
 
+    //全局状态监听
+    private var globalPlaybackStageListener: GlobalPlaybackStageListener? = null
+
     @JvmStatic
     fun init(application: Application) = apply {
         globalContext = application
@@ -216,6 +219,13 @@ object StarrySky {
     }
 
     /**
+     * 设置全局状态监听器
+     */
+    fun setGlobalPlaybackStageListener(listener: GlobalPlaybackStageListener) = apply {
+        this.globalPlaybackStageListener = listener
+    }
+
+    /**
      * 初始化
      */
     fun apply() {
@@ -226,7 +236,7 @@ object StarrySky {
         KtPreferences.init(globalContext)
         StarrySkyConstant.KEY_CACHE_SWITCH = isOpenCache
         //图片加载
-        playerControl = PlayerControl(interceptors)
+        playerControl = PlayerControl(interceptors, globalPlaybackStageListener)
         imageLoader = ImageLoader(globalContext)
         if (imageStrategy == null) {
             imageLoader?.init(DefaultImageLoader())
@@ -421,6 +431,7 @@ object StarrySky {
         serviceToken = null
         binder = null
         globalContext = null
+        globalPlaybackStageListener = null
         interceptors.clear()
         connectionMap.clear()
     }
