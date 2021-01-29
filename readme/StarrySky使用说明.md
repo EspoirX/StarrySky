@@ -125,7 +125,8 @@ val notificationConfig = NotificationConfig.create {
 | 播放或暂停按钮    | img_notifyPlayOrPause | 桌面歌词按钮    | img_notifyLyrics      |
 | 下一首按钮       | img_notifyNext        | 下载按钮        | img_notifyDownload    |
 | 封面图片         | img_notifyIcon        | 歌名 TextView   | txt_notifySongName   |
-| 艺术家 TextView  | txt_notifyArtistName  |                |                      |
+| 艺术家 TextView  | txt_notifyArtistName  | 进度条 ProgressBar |    pro_notifyProgressBar |
+| 当前进度 TextView  | pro_notifyCurrProText  | 总时间 TextView  |    pro_notifyTotalProText |
 
 然而，不同的手机系统通知栏背景有可能是浅色也有可能是深黑色，比如 mumu 模拟器是黑底的，华为 mate20 是白底的。
 所以通知栏的字体颜色，以及按钮资源等则需要准备深浅颜色两套。（可以参考 demo）
