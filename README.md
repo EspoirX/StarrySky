@@ -104,7 +104,7 @@ open class TestApplication : Application() {
     @Override
     override fun onCreate() {
         super.onCreate()
-        StarrySky.init(this)
+        StarrySky.init(this).apply()
     }
 }
 
