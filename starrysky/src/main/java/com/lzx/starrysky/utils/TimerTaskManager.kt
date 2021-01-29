@@ -21,6 +21,7 @@ class TimerTaskManager : LifecycleObserver {
     private val mExecutorService: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     private var mScheduleFuture: ScheduledFuture<*>? = null
     private var mUpdateProgressTask: Runnable? = null
+    private var isRunning = false
 
     /**
      * 开始更新进度条
@@ -29,7 +30,10 @@ class TimerTaskManager : LifecycleObserver {
         stopToUpdateProgress()
         if (!mExecutorService.isShutdown) {
             mScheduleFuture = mExecutorService.scheduleAtFixedRate({
-                mUpdateProgressTask?.let { MainLooper.instance.post(it) }
+                mUpdateProgressTask?.let {
+                    isRunning = true
+                    MainLooper.instance.post(it)
+                }
             }, PROGRESS_UPDATE_INITIAL_INTERVAL,
                 timeInternal,
                 TimeUnit.MILLISECONDS)
@@ -48,6 +52,7 @@ class TimerTaskManager : LifecycleObserver {
      */
     fun stopToUpdateProgress() {
         mScheduleFuture?.cancel(false)
+        isRunning = false
     }
 
     /**
@@ -58,6 +63,11 @@ class TimerTaskManager : LifecycleObserver {
         mExecutorService.shutdown()
         MainLooper.instance.removeCallbacksAndMessages(null)
     }
+
+    /**
+     * 是否在运行
+     */
+    fun isRunning() = isRunning
 
     /**
      * 绑定生命周期，onDestroy时自动释放

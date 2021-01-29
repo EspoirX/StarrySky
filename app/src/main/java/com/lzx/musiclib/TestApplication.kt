@@ -19,6 +19,7 @@ import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.intercept.AsyncInterceptor
 import com.lzx.starrysky.intercept.InterceptorCallback
 import com.lzx.starrysky.intercept.SyncInterceptor
+import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.imageloader.ImageLoaderCallBack
 import com.lzx.starrysky.notification.imageloader.ImageLoaderStrategy
@@ -83,6 +84,7 @@ open class TestApplication : Application() {
                 }
             })
             .setNotificationSwitch(true)
+            .setNotificationType(INotification.CUSTOM_NOTIFICATION)
             .setNotificationConfig(notificationConfig)
             .apply()
     }

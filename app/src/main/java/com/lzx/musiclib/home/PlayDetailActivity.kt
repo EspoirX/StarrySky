@@ -22,7 +22,6 @@ import com.lzx.musiclib.adapter.notifyDataSetChanged
 import com.lzx.musiclib.adapter.removedData
 import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
-import com.lzx.musiclib.formatTime
 import com.lzx.musiclib.getSelfViewModel
 import com.lzx.musiclib.loadImage
 import com.lzx.musiclib.showToast
@@ -33,6 +32,7 @@ import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.manager.PlaybackStage
+import com.lzx.starrysky.utils.formatTime
 import kotlinx.android.synthetic.main.activity_play_detail.btnNextSong
 import kotlinx.android.synthetic.main.activity_play_detail.btnPlayMode
 import kotlinx.android.synthetic.main.activity_play_detail.btnPlayState

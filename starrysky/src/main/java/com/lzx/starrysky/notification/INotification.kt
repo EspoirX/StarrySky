@@ -70,6 +70,9 @@ interface INotification {
         const val ID_IMG_NOTIFY_ICON = "img_notifyIcon" //封面图片id
         const val ID_TXT_NOTIFY_SONGNAME = "txt_notifySongName" //歌名TextView id
         const val ID_TXT_NOTIFY_ARTISTNAME = "txt_notifyArtistName"//艺术家TextView id
+        const val ID_PROGRESSBAR = "pro_notifyProgressBar" //进度条 ProgressBar id
+        const val ID_CURR_PRO_TEXT = "pro_notifyCurrProText" //当前进度 TextView id
+        const val ID_TOTAL_PRO_TEXT = "pro_notifyTotalProText" //总时间 TextView id
 
         //资源
         const val DRAWABLE_NOTIFY_BTN_FAVORITE = "notify_btn_favorite_checked"//喜欢按钮选中时的图片资源

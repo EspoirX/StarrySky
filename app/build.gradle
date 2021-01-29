@@ -46,6 +46,7 @@ android {
         implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-beta01"
 
         implementation project(':starrysky')
+//        implementation 'com.lzx:StarrySkyX:2.5.2'
         implementation 'com.lzx:StarrySkyFlacExt:1.0.0'
 
         implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.0'

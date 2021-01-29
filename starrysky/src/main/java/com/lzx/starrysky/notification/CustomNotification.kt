@@ -51,6 +51,7 @@ import com.lzx.starrysky.notification.INotification.Companion.DRAWABLE_NOTIFY_BT
 import com.lzx.starrysky.notification.INotification.Companion.DRAWABLE_NOTIFY_BTN_LIGHT_PREV_PRESSED
 import com.lzx.starrysky.notification.INotification.Companion.DRAWABLE_NOTIFY_BTN_LIGHT_PREV_SELECTOR
 import com.lzx.starrysky.notification.INotification.Companion.DRAWABLE_NOTIFY_BTN_LYRICS
+import com.lzx.starrysky.notification.INotification.Companion.ID_CURR_PRO_TEXT
 import com.lzx.starrysky.notification.INotification.Companion.ID_IMG_NOTIFY_CLOSE
 import com.lzx.starrysky.notification.INotification.Companion.ID_IMG_NOTIFY_DOWNLOAD
 import com.lzx.starrysky.notification.INotification.Companion.ID_IMG_NOTIFY_FAVORITE
@@ -62,6 +63,8 @@ import com.lzx.starrysky.notification.INotification.Companion.ID_IMG_NOTIFY_PLAY
 import com.lzx.starrysky.notification.INotification.Companion.ID_IMG_NOTIFY_PLAY_OR_PAUSE
 import com.lzx.starrysky.notification.INotification.Companion.ID_IMG_NOTIFY_PRE
 import com.lzx.starrysky.notification.INotification.Companion.ID_IMG_NOTIFY_STOP
+import com.lzx.starrysky.notification.INotification.Companion.ID_PROGRESSBAR
+import com.lzx.starrysky.notification.INotification.Companion.ID_TOTAL_PRO_TEXT
 import com.lzx.starrysky.notification.INotification.Companion.ID_TXT_NOTIFY_ARTISTNAME
 import com.lzx.starrysky.notification.INotification.Companion.ID_TXT_NOTIFY_SONGNAME
 import com.lzx.starrysky.notification.INotification.Companion.LAYOUT_NOTIFY_BIG_PLAY
@@ -73,6 +76,8 @@ import com.lzx.starrysky.notification.utils.NotificationColorUtils
 import com.lzx.starrysky.notification.utils.NotificationUtils
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.service.MusicService
+import com.lzx.starrysky.utils.TimerTaskManager
+import com.lzx.starrysky.utils.formatTime
 import com.lzx.starrysky.utils.getPendingIntent
 import com.lzx.starrysky.utils.getResourceId
 import com.lzx.starrysky.utils.getTargetClass
@@ -118,6 +123,8 @@ class CustomNotification constructor(
     private var hasNextSong = false
     private var hasPreSong = false
 
+    private var timerTaskManager: TimerTaskManager? = null
+
     init {
         notificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         packageName = context.applicationContext.packageName
@@ -141,6 +148,16 @@ class CustomNotification constructor(
         this.hasPreSong = hasPreSong
         playbackState = state
         this.songInfo = songInfo
+        when (state) {
+            PlaybackStage.PLAYING -> {
+                timerTaskManager?.startToUpdateProgress()
+            }
+            PlaybackStage.PAUSE,
+            PlaybackStage.ERROR,
+            PlaybackStage.IDEA -> {
+                timerTaskManager?.stopToUpdateProgress()
+            }
+        }
         if (state == PlaybackStage.IDEA) {
             stopNotification()
         } else {
@@ -310,12 +327,9 @@ class CustomNotification constructor(
         //设置下载按钮
         bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_DOWNLOAD.getResId(),
             isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_DOWNLOAD, DRAWABLE_NOTIFY_BTN_LIGHT_DOWNLOAD))
-
-
-//        //上一首下一首按钮
+        //上一首下一首按钮
         disableNextBtn(hasNextSong, isDark)
         disablePreviousBtn(hasPreSong, isDark)
-
         //封面
         var fetchArtUrl: String? = null
         if (art == null) {
@@ -404,6 +418,25 @@ class CustomNotification constructor(
                 mStarted = true
             }
         }
+        if (timerTaskManager == null) {
+            timerTaskManager = TimerTaskManager()
+            timerTaskManager?.setUpdateProgressTask {
+                val player = (context as MusicService).binder?.player
+                val position = player?.currentStreamPosition().orDef().toInt()
+                val duration = player?.duration().orDef().toInt()
+                mNotification?.let {
+                    //进度条
+                    bigRemoteView?.setProgressBar(ID_PROGRESSBAR.getResId(), duration, position, false)
+                    bigRemoteView?.setTextViewText(ID_CURR_PRO_TEXT.getResId(), position.formatTime())
+                    bigRemoteView?.setTextViewText(ID_TOTAL_PRO_TEXT.getResId(), duration.formatTime())
+                    notificationManager?.notify(NOTIFICATION_ID, it)
+                }
+            }
+        }
+        val player = (context as MusicService).binder?.player
+        if (player?.isPlaying() == true && timerTaskManager?.isRunning() == false) {
+            timerTaskManager?.startToUpdateProgress()
+        }
     }
 
     override fun stopNotification() {
@@ -417,6 +450,8 @@ class CustomNotification constructor(
             }
             (context as MusicService).stopForeground(true)
         }
+        timerTaskManager?.removeUpdateProgressTask()
+        timerTaskManager = null
     }
 
     override fun onCommand(command: String?, extras: Bundle?) {

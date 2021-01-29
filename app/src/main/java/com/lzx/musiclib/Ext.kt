@@ -213,22 +213,6 @@ private fun fillIntentArguments(intent: Intent, params: Array<out Pair<String, A
     }
 }
 
-fun Long.formatTime(): String {
-    var time = ""
-    val minute = this / 60000
-    val seconds = this % 60000
-    val second = (seconds.toInt() / 1000.toFloat()).roundToInt().toLong()
-    if (minute < 10) {
-        time += "0"
-    }
-    time += "$minute:"
-    if (second < 10) {
-        time += "0"
-    }
-    time += second
-    return time
-}
-
 fun View.setUpLayoutParams(
     width: Int = ViewGroup.LayoutParams.MATCH_PARENT,
     height: Int = ViewGroup.LayoutParams.MATCH_PARENT

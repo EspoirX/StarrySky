@@ -9,12 +9,12 @@ import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import com.lzx.musiclib.R
-import com.lzx.musiclib.formatTime
 import com.lzx.musiclib.loadImage
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.manager.PlaybackStage
+import com.lzx.starrysky.utils.formatTime
 import kotlinx.android.synthetic.main.activiity_dynamic_detail.cover
 import kotlinx.android.synthetic.main.activiity_dynamic_detail.progressText
 import kotlinx.android.synthetic.main.activiity_dynamic_detail.seekBar

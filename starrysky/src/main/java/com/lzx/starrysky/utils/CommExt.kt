@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.util.Locale
 import java.util.regex.Pattern
+import kotlin.math.roundToInt
 
 inline val Cursor.albumId: String
     get() = getString(getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID))
@@ -238,4 +239,36 @@ fun Context.showToast(msg: String?) {
     MainLooper.instance.post {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
+}
+
+fun Int.formatTime(): String {
+    var time = ""
+    val minute = this / 60000
+    val seconds = this % 60000
+    val second = (seconds.toInt() / 1000.toFloat()).roundToInt().toLong()
+    if (minute < 10) {
+        time += "0"
+    }
+    time += "$minute:"
+    if (second < 10) {
+        time += "0"
+    }
+    time += second
+    return time
+}
+
+fun Long.formatTime(): String {
+    var time = ""
+    val minute = this / 60000
+    val seconds = this % 60000
+    val second = (seconds.toInt() / 1000.toFloat()).roundToInt().toLong()
+    if (minute < 10) {
+        time += "0"
+    }
+    time += "$minute:"
+    if (second < 10) {
+        time += "0"
+    }
+    time += second
+    return time
 }

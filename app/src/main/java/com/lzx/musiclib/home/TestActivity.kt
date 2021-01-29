@@ -6,7 +6,6 @@ import android.util.Log
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import com.lzx.musiclib.R
-import com.lzx.musiclib.formatTime
 import com.lzx.musiclib.showToast
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.SongInfo
@@ -18,6 +17,7 @@ import com.lzx.starrysky.intercept.SyncInterceptor
 import com.lzx.starrysky.manager.PlaybackStage
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.utils.MainLooper
+import com.lzx.starrysky.utils.formatTime
 import com.lzx.starrysky.utils.md5
 import kotlinx.android.synthetic.main.activity_test.cacheSwitch
 import kotlinx.android.synthetic.main.activity_test.delete

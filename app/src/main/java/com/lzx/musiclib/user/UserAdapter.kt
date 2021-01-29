@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.lzx.musiclib.R
-import com.lzx.musiclib.formatTime
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.utils.formatTime
 
 class UserAdapter : RecyclerView.Adapter<UserAdapter.UserHolder>() {
 
