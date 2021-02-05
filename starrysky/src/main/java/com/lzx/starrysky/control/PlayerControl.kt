@@ -435,14 +435,7 @@ class PlayerControl(
     /**
      * 设置音量, 范围 0到1
      */
-    fun setVolume(audioVolume: Float) {
-        var volume = audioVolume
-        if (volume < 0) {
-            volume = 0f
-        }
-        if (volume > 1) {
-            volume = 1f
-        }
+    fun setVolume(volume: Float) {
         playbackManager.player()?.setVolume(volume)
     }
 

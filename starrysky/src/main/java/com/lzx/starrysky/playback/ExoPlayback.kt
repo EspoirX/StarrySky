@@ -2,7 +2,6 @@ package com.lzx.starrysky.playback
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.DefaultRenderersFactory.ExtensionRendererMode
@@ -95,7 +94,14 @@ class ExoPlayback(val context: Context,
 
     override var currentMediaId: String = ""
 
-    override fun setVolume(volume: Float) {
+    override fun setVolume(audioVolume: Float) {
+        var volume = audioVolume
+        if (volume < 0) {
+            volume = 0f
+        }
+        if (volume > 1) {
+            volume = 1f
+        }
         player?.volume = volume
     }
 
@@ -408,6 +414,8 @@ class ExoPlayback(val context: Context,
                 ExoPlaybackException.TYPE_SOURCE -> error.sourceException.message.toString()
                 ExoPlaybackException.TYPE_RENDERER -> error.rendererException.message.toString()
                 ExoPlaybackException.TYPE_UNEXPECTED -> error.unexpectedException.message.toString()
+                ExoPlaybackException.TYPE_OUT_OF_MEMORY -> error.outOfMemoryError.message.toString()
+                ExoPlaybackException.TYPE_TIMEOUT -> error.timeoutException.message.toString()
                 else -> "Unknown: $error"
             }
             if (error.type == ExoPlaybackException.TYPE_SOURCE) {
