@@ -358,6 +358,8 @@ class PlaybackManager(private val provider: MediaSourceProvider,
                     onSkipToNext()
                 } else if (!mediaQueue.currSongIsLastSong()) {
                     onSkipToNext()
+                } else {
+                    player()?.currentMediaId = ""
                 }
             }
             //单曲播放
@@ -379,6 +381,8 @@ class PlaybackManager(private val provider: MediaSourceProvider,
                     onSkipToPrevious()
                 } else if (!mediaQueue.currSongIsFirstSong()) {
                     onSkipToPrevious()
+                } else {
+                    player()?.currentMediaId = ""
                 }
             }
         }
