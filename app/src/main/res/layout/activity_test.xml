@@ -73,9 +73,9 @@
 
         <Button
             android:id="@+id/delete"
-            android:text="删除第一首"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="删除第一首" />
     </LinearLayout>
 
     <LinearLayout
@@ -147,6 +147,18 @@
             android:layout_height="wrap_content"
             android:text="播放m3u8" />
 
+
+        <Button
+            android:id="@+id/newPlayer1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="同时播放多个音频1" />
+
+        <Button
+            android:id="@+id/newPlayer2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="同时播放多个音频2" />
     </LinearLayout>
 
     <LinearLayout
@@ -249,5 +261,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="播放rtmp" />
+
+
+        <Button
+            android:id="@+id/stopNewPlayer1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止播放多个音频1" />
+
+        <Button
+            android:id="@+id/stopNewPlayer2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止播放多个音频2" />
     </LinearLayout>
 </LinearLayout>

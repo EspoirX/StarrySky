@@ -31,6 +31,8 @@ import kotlinx.android.synthetic.main.activity_test.interceptor
 import kotlinx.android.synthetic.main.activity_test.isSkipToNextEnabled
 import kotlinx.android.synthetic.main.activity_test.isSkipToPreviousEnabled
 import kotlinx.android.synthetic.main.activity_test.m3u8Btn
+import kotlinx.android.synthetic.main.activity_test.newPlayer1
+import kotlinx.android.synthetic.main.activity_test.newPlayer2
 import kotlinx.android.synthetic.main.activity_test.notifySwitch
 import kotlinx.android.synthetic.main.activity_test.pauseMusic
 import kotlinx.android.synthetic.main.activity_test.playMusic
@@ -48,6 +50,8 @@ import kotlinx.android.synthetic.main.activity_test.skipToNext
 import kotlinx.android.synthetic.main.activity_test.skipToPrevious
 import kotlinx.android.synthetic.main.activity_test.soundPool
 import kotlinx.android.synthetic.main.activity_test.stopMusic
+import kotlinx.android.synthetic.main.activity_test.stopNewPlayer1
+import kotlinx.android.synthetic.main.activity_test.stopNewPlayer2
 import kotlinx.android.synthetic.main.activity_test.tvPro
 import kotlinx.android.synthetic.main.activity_test.tvSpeed
 import kotlinx.android.synthetic.main.activity_test.tvVolume
@@ -64,7 +68,6 @@ open class TestActivity : AppCompatActivity() {
     val e = "https://github.com/EspoirX/lzxTreasureBox/raw/master/e.aac"
     val f = "https://github.com/EspoirX/lzxTreasureBox/raw/master/f.aac"
     val g = "https://github.com/EspoirX/lzxTreasureBox/raw/master/g.aac"
-
 
 
     @SuppressLint("SetTextI18n")
@@ -275,6 +278,20 @@ open class TestActivity : AppCompatActivity() {
             val list = StarrySky.with().getPlayList()
             StarrySky.with().removeSongInfo(list.getOrNull(1)?.songId)
             showToast("已删除")
+        }
+        newPlayer1?.setOnClickListener {
+            val info = SongInfo(a.md5(), a)
+            StarrySky.newPlayer(0)?.play(info, true)
+        }
+        newPlayer2?.setOnClickListener {
+            val info = SongInfo(b.md5(), b)
+            StarrySky.newPlayer(1)?.play(info, true)
+        }
+        stopNewPlayer1?.setOnClickListener {
+            StarrySky.newPlayer(0)?.stop()
+        }
+        stopNewPlayer2?.setOnClickListener {
+            StarrySky.newPlayer(1)?.stop()
         }
 
         StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {

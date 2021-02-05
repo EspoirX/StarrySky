@@ -241,5 +241,23 @@ StarrySky 的默认播放器实现是 ExoPlayer ，并且支持了多种音频�
 什么是焦点，焦点管理有什么用？不明白的可以自己百度谷歌一下音频焦点的定义。ExoPlayer 有一个功能，是可以自己自动管理焦点，该功能是默认打开的，
 如果不想自动管理，要把它关掉，可以通过配置 setAutoManagerFocus 即可。
 
+### 8. 多个音频同时播放
+在项目需求里，有可能需要同时播放多个音频，比如播放音乐的时候播放一些音效等。 StarrySky 支持同时创建多个播放器实例。如下：
+
+```kotlin
+val info = SongInfo(a.md5(), a)
+StarrySky.newPlayer(0)?.play(info, true)
+```
+
+使用 newPlayer API 可以创建一个新的播放器实例，通过传入下标参数区分，下标范围是 0 到 32，即你可以同时创建最多 32 个播放器实例。
+当然，创建出来的播放都是单例的。 newPlayer 返回的是 Playback 实例，即你可以使用 Playback 里面的所有 API。
+
+注意：
+1. 创建的播放只有 Playback 里面的 API 功能，除此之外没有其他功能。
+2. 使用 newPlayer 时，下标要按照顺序创建，即如果你要创建 3 个播放器实例，你要 newPlayer(0)，newPlayer(1)，newPlayer(2)，而不能
+newPlayer(0)，newPlayer(2)，newPlayer(5)。
+3. 如果你要使用 newPlayer ，请在初始化时设置 setAutoManagerFocus(false) ，把自动管理焦点关闭，因为不关闭的话，会相互抢焦点。
+
+
 
 如果问题请查看项目 demo 或者加群咨询。

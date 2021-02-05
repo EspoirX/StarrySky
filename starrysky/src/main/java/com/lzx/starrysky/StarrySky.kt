@@ -320,6 +320,13 @@ object StarrySky {
     fun getPlayerCache(): ICache? = getBinder()?.getPlayerCache()
 
     /**
+     * 创新新的播放器，即可以多个音频同时播放，client 是播放器下标，0到32，按顺序创建
+     * 根据下标可以拿到对应的播放器
+     */
+    @JvmStatic
+    fun newPlayer(client: Int): Playback? = getBinder()?.newPlayer(client)
+
+    /**
      * 获取图片加载器
      */
     internal fun getImageLoader() = imageLoader
