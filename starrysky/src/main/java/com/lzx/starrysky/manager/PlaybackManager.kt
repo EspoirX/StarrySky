@@ -355,9 +355,13 @@ class PlaybackManager(private val provider: MediaSourceProvider,
             RepeatMode.REPEAT_MODE_NONE -> {
                 if (repeatMode.isLoop) {
                     player()?.currentMediaId = ""
-                    onSkipToNext()
+                    if (!isSkipMediaQueue) {
+                        onSkipToNext()
+                    }
                 } else if (!mediaQueue.currSongIsLastSong()) {
-                    onSkipToNext()
+                    if (!isSkipMediaQueue) {
+                        onSkipToNext()
+                    }
                 } else {
                     player()?.currentMediaId = ""
                 }
@@ -372,15 +376,21 @@ class PlaybackManager(private val provider: MediaSourceProvider,
             //随机播放
             RepeatMode.REPEAT_MODE_SHUFFLE -> {
                 player()?.currentMediaId = ""
-                onSkipToNext()
+                if (!isSkipMediaQueue) {
+                    onSkipToNext()
+                }
             }
             //倒序播放
             RepeatMode.REPEAT_MODE_REVERSE -> {
                 if (repeatMode.isLoop) {
                     player()?.currentMediaId = ""
-                    onSkipToPrevious()
+                    if (!isSkipMediaQueue) {
+                        onSkipToPrevious()
+                    }
                 } else if (!mediaQueue.currSongIsFirstSong()) {
-                    onSkipToPrevious()
+                    if (!isSkipMediaQueue) {
+                        onSkipToPrevious()
+                    }
                 } else {
                     player()?.currentMediaId = ""
                 }
