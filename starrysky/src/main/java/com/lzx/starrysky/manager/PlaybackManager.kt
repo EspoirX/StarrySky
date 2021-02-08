@@ -325,6 +325,15 @@ class PlaybackManager(private val provider: MediaSourceProvider,
     }
 
     /**
+     * 根据当前播放信息更新下标
+     */
+    fun updateCurrIndex() {
+        player()?.getCurrPlayInfo()?.let {
+            mediaQueue.updateIndexByPlayingInfo(it)
+        }
+    }
+
+    /**
      * 定时暂停
      */
     fun onStopByTimedOff(time: Long, isPause: Boolean, finishCurrSong: Boolean) {

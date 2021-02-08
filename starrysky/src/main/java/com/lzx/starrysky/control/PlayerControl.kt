@@ -333,6 +333,13 @@ class PlayerControl(
     }
 
     /**
+     * 根据当前播放信息更新下标
+     */
+    fun updateCurrIndex() {
+        playbackManager.updateCurrIndex()
+    }
+
+    /**
      * 获取当前播放的歌曲信息
      */
     fun getNowPlayingSongInfo(): SongInfo? = playbackManager.player()?.getCurrPlayInfo()

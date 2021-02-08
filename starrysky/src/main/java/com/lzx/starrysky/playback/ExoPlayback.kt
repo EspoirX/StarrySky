@@ -405,6 +405,9 @@ class ExoPlayback(val context: Context,
             if (playbackState == Player.STATE_READY) {
                 sourceTypeErrorInfo.clear()
             }
+            if (playbackState == Player.STATE_IDLE) {
+                currentMediaId = ""
+            }
         }
 
         override fun onPlayerError(error: ExoPlaybackException) {
