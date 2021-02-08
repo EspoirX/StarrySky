@@ -15,23 +15,24 @@ StarrySky 最简单的初始化如上所示，但它可以配置更多的功能�
 
 ```kotlin
  StarrySky.init(this)
-        .setDebug(..)               //是否debug，区别就是是否打印一些内部 log
-        .connService(..)            //是否需要后台服务，默认true
-        .isStartService(..)         //是否需要 startService，默认false
-        .onlyStartService(..)       //是否只是 startService 而不需要 startForegroundService，默认true
-        .connServiceListener(..)    //连接服务回调
-        .addInterceptor(..)         //添加全局拦截器，可以添加多个
-        .setNotificationSwitch(..)  //通知栏开关
-        .setNotificationFactory(..) //配置自定义通知栏
-        .setNotificationConfig(..)  //配置通知栏其他参数
-        .setNotificationType(..)    //选择通知栏类型，系统通知栏和自定义通知栏
-        .setOpenCache(..)           //是否开启缓存
-        .setCacheDestFileDir(..)    //配置缓存路径
-        .setCacheMaxBytes(..)       //配置最大缓存大小，默认512 * 1024 * 1024
-        .setCache(..)               //缓存自定义实现
-        .setAutoManagerFocus(..)    //是否自动焦点管理
-        .setPlayback(..)            //自定义实现播放器
-        .setImageLoader(..)         //配置自定义图片加载器
+        .setDebug(..)                        //是否debug，区别就是是否打印一些内部 log
+        .connService(..)                     //是否需要后台服务，默认true
+        .isStartService(..)                  //是否需要 startService，默认false
+        .onlyStartService(..)                //是否只是 startService 而不需要 startForegroundService，默认true
+        .connServiceListener(..)             //连接服务回调
+        .addInterceptor(..)                  //添加全局拦截器，可以添加多个
+        .setNotificationSwitch(..)           //通知栏开关
+        .setNotificationFactory(..)          //配置自定义通知栏
+        .setNotificationConfig(..)           //配置通知栏其他参数
+        .setNotificationType(..)             //选择通知栏类型，系统通知栏和自定义通知栏
+        .setOpenCache(..)                    //是否开启缓存
+        .setCacheDestFileDir(..)             //配置缓存路径
+        .setCacheMaxBytes(..)                //配置最大缓存大小，默认512 * 1024 * 1024
+        .setCache(..)                        //缓存自定义实现
+        .setAutoManagerFocus(..)             //是否自动焦点管理
+        .setPlayback(..)                     //自定义实现播放器
+        .setImageLoader(..)                  //配置自定义图片加载器
+        .setGlobalPlaybackStageListener(..)  //配置全局的播放状态监听器
         .apply()
 ```
 

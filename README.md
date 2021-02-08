@@ -115,6 +115,8 @@ info.songUrl = "http://music.163.com/song/media/outer/url?id=317151.mp3"
 StarrySky.with().playMusicByInfo(info)
 ```
 
+SongInfo 是 StarrySky 播放信息的载体，至少要配置 songId 和 songUrl 才能播放一首音频，其中 songId 是该音频的唯一标识。
+
 几乎所有 API 都是通过 StarrySky.with() 方法去调用，API 本身也会有注释。
 
 ## 使用文档

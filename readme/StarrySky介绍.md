@@ -3,7 +3,9 @@
 StarrySky 是一个音频集成库，鉴于在一些项目中如果需要集成音频播放功能的话，都离不开对播放器的封装，对播放控制的封装，对 API 的
 封装等操作，其实这些操作在不同项目中都是大同小异的，所以 StarrySky 就是这样一个集成了播放音频所需的操作的一个库。
 
-StarrySky 主打集成简单，代码小巧简单易读懂，扩展性强，使用方便等方向。
+StarrySky 主打集成简单，代码小巧简单易读懂，扩展性强，使用方便等方向。经本人和众多开发者在实际项目中使用，证明了
+灵活运用 StarrySky 是可以能够应付项目中足够复杂的播放场景的，欢迎尝试使用。
+
 
 ## StarrySky 播放流程图：
 
@@ -41,6 +43,7 @@ StarrySky 类 API:
 |    8     | getPlayerCache         | 获取播放缓存类                     |
 |    9     | bindService            | 绑定服务                          |
 |    10    | unBindService          | 解邦服务                          |
+|    11    | newPlayer              | 创建多个播放器实例                 |
 
 具体详细注释，参数和实现请查看源代码或者参考 demo。
 
@@ -80,6 +83,7 @@ PlayerControl 类 API:
 |    29    | getNowPlayingSongInfo      | 获取当前播放的歌曲信息                |    58    | playbackState              | 状态监听,LiveData 方式                 |
 |    30    | getNowPlayingSongId        | 获取当前播放的歌曲songId             |  59    | setOnPlayProgressListener  | 设置进度监听                           |
 |    60    | skipMediaQueue             | 是否跳过播放队列                     |  61    | setWithOutCallback         | 是否需要状态回调                        |
+|    62    | updateCurrIndex            | 根据当前播放信息更新下标              |        |             |                           |
 
 
 
