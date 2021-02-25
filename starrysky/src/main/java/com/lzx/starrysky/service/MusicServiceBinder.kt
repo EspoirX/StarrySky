@@ -16,7 +16,7 @@ import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.playback.SoundPoolPlayback
 
 
-class ServiceBinder(private val context: Context) : Binder() {
+class MusicServiceBinder(private val context: Context) : Binder() {
 
     private val playbackInstances = arrayOfNulls<Playback>(32)
 

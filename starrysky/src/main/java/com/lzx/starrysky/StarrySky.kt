@@ -20,7 +20,7 @@ import com.lzx.starrysky.notification.imageloader.ImageLoader
 import com.lzx.starrysky.notification.imageloader.ImageLoaderStrategy
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.service.MusicService
-import com.lzx.starrysky.service.ServiceBinder
+import com.lzx.starrysky.service.MusicServiceBinder
 import com.lzx.starrysky.utils.KtPreferences
 import com.lzx.starrysky.utils.StarrySkyConstant
 import java.util.WeakHashMap
@@ -57,7 +57,7 @@ object StarrySky {
 
     //全局拦截器
     private val interceptors = mutableListOf<ISyInterceptor>()
-    private var binder: ServiceBinder? = null
+    private var binder: MusicServiceBinder? = null
 
     //播放器缓存
     private var isOpenCache = false
@@ -246,7 +246,7 @@ object StarrySky {
         if (isConnectionService) {
             bindService()
         } else {
-            binder = ServiceBinder(globalContext!!)
+            binder = MusicServiceBinder(globalContext!!)
             binder?.setPlayerCache(playerCache, cacheDestFileDir, cacheMaxBytes)
             binder?.setAutoManagerFocus(isAutoManagerFocus)
             binder?.initPlaybackManager(playback)
@@ -346,7 +346,7 @@ object StarrySky {
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             retryLineService = 0
-            binder = service as ServiceBinder?
+            binder = service as MusicServiceBinder?
             binder?.setNotificationConfig(isOpenNotification, notificationType, notificationConfig, notificationFactory)
             binder?.setPlayerCache(playerCache, cacheDestFileDir, cacheMaxBytes)
             binder?.setAutoManagerFocus(isAutoManagerFocus)

@@ -22,7 +22,7 @@ import com.lzx.starrysky.utils.orDef
 
 class MusicService : Service() {
 
-    var binder: ServiceBinder? = null
+    var binder: MusicServiceBinder? = null
     private var noisyReceiver: BecomingNoisyReceiver? = null
     private var timerTaskManager: TimerTaskManager? = null
     private var timedOffDuration = -1L
@@ -38,7 +38,7 @@ class MusicService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        binder = ServiceBinder(this)
+        binder = MusicServiceBinder(this)
         return binder
     }
 
