@@ -36,14 +36,15 @@ StarrySky 类 API:
 |    1     | with                   | 获取 PlayerControl 实例，操作 API  |
 |    2     | soundPool              | 获取 soundPool 操作               |
 |    3     | changeNotification     | 切换系统和自定义通知栏              |
-|    4     | closeNotification      | 关闭通知栏                         |
-|    5     | setIsOpenNotification  | 控制是否打开通知栏                  |
-|    6     | getNotificationType    | 获取当前通知栏类型                  |
-|    7     | isOpenCache            | 是否打开了缓存开关                  |
-|    8     | getPlayerCache         | 获取播放缓存类                     |
-|    9     | bindService            | 绑定服务                          |
-|    10    | unBindService          | 解邦服务                          |
-|    11    | newPlayer              | 创建多个播放器实例                 |
+|    4     | openNotification       | 打开通知栏                         |
+|    5     | closeNotification      | 关闭通知栏                         |
+|    6     | setIsOpenNotification  | 控制是否打开通知栏（开关性质）       |
+|    7     | getNotificationType    | 获取当前通知栏类型                  |
+|    8     | isOpenCache            | 是否打开了缓存开关                  |
+|    9     | getPlayerCache         | 获取播放缓存类                     |
+|    10     | bindService            | 绑定服务                          |
+|    11    | unBindService          | 解邦服务                          |
+|    12    | newPlayer              | 创建多个播放器实例                 |
 
 具体详细注释，参数和实现请查看源代码或者参考 demo。
 
