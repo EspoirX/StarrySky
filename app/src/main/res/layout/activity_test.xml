@@ -76,6 +76,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="删除第一首" />
+
+        <Button
+            android:id="@+id/closeN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="关闭通知栏" />
+
+        <Button
+            android:id="@+id/openN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打开通知栏" />
     </LinearLayout>
 
     <LinearLayout

@@ -20,6 +20,7 @@ import com.lzx.starrysky.utils.MainLooper
 import com.lzx.starrysky.utils.formatTime
 import com.lzx.starrysky.utils.md5
 import kotlinx.android.synthetic.main.activity_test.cacheSwitch
+import kotlinx.android.synthetic.main.activity_test.closeN
 import kotlinx.android.synthetic.main.activity_test.delete
 import kotlinx.android.synthetic.main.activity_test.flac
 import kotlinx.android.synthetic.main.activity_test.getAudioSessionId
@@ -34,6 +35,7 @@ import kotlinx.android.synthetic.main.activity_test.m3u8Btn
 import kotlinx.android.synthetic.main.activity_test.newPlayer1
 import kotlinx.android.synthetic.main.activity_test.newPlayer2
 import kotlinx.android.synthetic.main.activity_test.notifySwitch
+import kotlinx.android.synthetic.main.activity_test.openN
 import kotlinx.android.synthetic.main.activity_test.pauseMusic
 import kotlinx.android.synthetic.main.activity_test.playMusic
 import kotlinx.android.synthetic.main.activity_test.playMusicById
@@ -292,6 +294,12 @@ open class TestActivity : AppCompatActivity() {
         }
         stopNewPlayer2?.setOnClickListener {
             StarrySky.newPlayer(1)?.stop()
+        }
+        closeN?.setOnClickListener {
+            StarrySky.closeNotification()
+        }
+        openN?.setOnClickListener {
+            StarrySky.openNotification()
         }
 
         StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {

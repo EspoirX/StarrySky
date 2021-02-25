@@ -293,7 +293,15 @@ object StarrySky {
     }
 
     /**
-     * 是否打开通知栏
+     * 打开通知栏
+     */
+    @JvmStatic
+    fun openNotification() {
+        getBinder()?.openNotification()
+    }
+
+    /**
+     * 是否打开通知栏（开关性质的api）
      */
     @JvmStatic
     fun setIsOpenNotification(open: Boolean) {

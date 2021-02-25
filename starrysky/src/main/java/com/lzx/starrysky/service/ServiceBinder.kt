@@ -6,6 +6,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.cache.ICache
+import com.lzx.starrysky.manager.PlaybackStage
 import com.lzx.starrysky.manager.changePlaybackState
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
@@ -87,6 +88,12 @@ class ServiceBinder(private val context: Context) : Binder() {
             notification?.onPlaybackStateChanged(songInfo, playbackState, hasNextSong, hasPreSong)
             isShowNotification = true
         }
+    }
+
+    fun openNotification() {
+        val info = player?.getCurrPlayInfo()
+        val state = player?.playbackState()?.changePlaybackState() ?: PlaybackStage.IDEA
+        startNotification(info, state)
     }
 
     fun startNotification(currPlayInfo: SongInfo?, state: String) {
