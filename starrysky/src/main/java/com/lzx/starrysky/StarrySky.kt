@@ -23,6 +23,7 @@ import com.lzx.starrysky.service.MusicService
 import com.lzx.starrysky.service.MusicServiceBinder
 import com.lzx.starrysky.utils.KtPreferences
 import com.lzx.starrysky.utils.StarrySkyConstant
+import com.lzx.starrysky.utils.isMainProcess
 import java.util.WeakHashMap
 
 object StarrySky {
@@ -232,6 +233,9 @@ object StarrySky {
         if (globalContext == null) {
             throw NullPointerException("context is null")
         }
+
+        if (!globalContext!!.isMainProcess()) return
+
         globalContext!!.registerActivityLifecycleCallbacks(appLifecycleCallback)
         KtPreferences.init(globalContext)
         StarrySkyConstant.KEY_CACHE_SWITCH = isOpenCache
@@ -345,15 +349,21 @@ object StarrySky {
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            retryLineService = 0
-            binder = service as MusicServiceBinder?
-            binder?.setNotificationConfig(isOpenNotification, notificationType, notificationConfig, notificationFactory)
-            binder?.setPlayerCache(playerCache, cacheDestFileDir, cacheMaxBytes)
-            binder?.setAutoManagerFocus(isAutoManagerFocus)
-            binder?.initPlaybackManager(playback)
-            playerControl?.attachPlayerCallback()
-            isBindService = true
-            connection?.onServiceConnected(name, service)
+            try {
+                if (service is MusicServiceBinder) {
+                    retryLineService = 0
+                    binder = service
+                    binder?.setNotificationConfig(isOpenNotification, notificationType, notificationConfig, notificationFactory)
+                    binder?.setPlayerCache(playerCache, cacheDestFileDir, cacheMaxBytes)
+                    binder?.setAutoManagerFocus(isAutoManagerFocus)
+                    binder?.initPlaybackManager(playback)
+                    playerControl?.attachPlayerCallback()
+                    isBindService = true
+                    connection?.onServiceConnected(name, service)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
