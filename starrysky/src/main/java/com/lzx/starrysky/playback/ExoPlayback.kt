@@ -400,8 +400,8 @@ class ExoPlayback(val context: Context,
             }
             if (!hasError) {
                 callback?.onPlayerStateChanged(currSongInfo, playWhenReady, newState)
-                hasError = false
             }
+            hasError = false
             if (playbackState == Player.STATE_READY) {
                 sourceTypeErrorInfo.clear()
             }
