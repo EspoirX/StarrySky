@@ -15,7 +15,7 @@ import java.io.BufferedInputStream
 class MusicViewModel : ViewModel() {
 
     companion object {
-        val baseUrl = "http://qnir7r5td.hn-bkt.clouddn.com/"
+        val baseUrl = "http://espoir.aifield.biz/"
     }
 
     fun getHomeMusic() = getMusicList("home.json", "home")
