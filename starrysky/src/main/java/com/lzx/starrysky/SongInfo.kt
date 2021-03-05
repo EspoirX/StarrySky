@@ -36,7 +36,7 @@ class SongInfo(
         } catch (e: CloneNotSupportedException) {
             e.printStackTrace()
         }
-        return obj!!
+        return obj ?: SongInfo()
     }
 
     override fun equals(other: Any?): Boolean {
