@@ -63,6 +63,7 @@ class ExoPlayback(val context: Context,
     private val mEventListener by lazy { ExoPlayerEventListener() }
     private var sourceTypeErrorInfo: SourceTypeErrorInfo = SourceTypeErrorInfo()
     private var focusManager = FocusManager(context)
+    private var hasError = false
 
     init {
         focusManager.listener = this
@@ -171,6 +172,7 @@ class ExoPlayback(val context: Context,
         //如果准备好就播放
         if (isPlayWhenReady) {
             player?.playWhenReady = true
+            hasError = false
             if (!isAutoManagerFocus) {
                 player?.playbackState?.let { focusManager.updateAudioFocus(getPlayWhenReady(), it) }
             }
@@ -384,7 +386,7 @@ class ExoPlayback(val context: Context,
     }
 
     private inner class ExoPlayerEventListener : Player.EventListener {
-        private var hasError = false
+
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             var newState = STATE_IDLE
             when (playbackState) {
@@ -401,7 +403,6 @@ class ExoPlayback(val context: Context,
             if (!hasError) {
                 callback?.onPlayerStateChanged(currSongInfo, playWhenReady, newState)
             }
-            hasError = false
             if (playbackState == Player.STATE_READY) {
                 sourceTypeErrorInfo.clear()
             }

@@ -60,11 +60,11 @@ open class TestApplication : Application() {
             pendingIntentMode { NotificationConfig.MODE_BROADCAST }
         }
         StarrySky.init(this)
-            .setOpenCache(false)
+            .setOpenCache(true)
             .setAutoManagerFocus(false)   //使用多实例的时候要关掉，不然会相互抢焦点
             .setCacheDestFileDir("000StarrySkyCache/".toSdcardPath())
             .setCacheMaxBytes(1024 * 1024 * 1024)  //设置缓存上限，默认 512 * 1024 * 1024
-            .setCache(AndroidVideoCache(this))
+            //.setCache(AndroidVideoCache(this))
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor())
             .setImageLoader(object : ImageLoaderStrategy {
