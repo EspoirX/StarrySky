@@ -144,7 +144,7 @@ StarrySky 目前为止有 **17000+** 的下载量，感谢各位开发者的支�
 ## QQ群（929420228）
 
 <a href="art/qq_qun.jpg"><img src="art/qq_qun.jpg" width="30%"/></a>
-
+<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=1mxC3aClBm7IoynoMi6Faz1YMwwrxaMq&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="StarrySky交流和反馈" title="StarrySky交流和反馈"></a>
 <br><br>
 
 你的打赏是我改 Bug 的动力
