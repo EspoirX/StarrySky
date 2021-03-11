@@ -42,13 +42,17 @@ StarrySky 类 API:
 |    7     | getNotificationType    | 获取当前通知栏类型                  |
 |    8     | isOpenCache            | 是否打开了缓存开关                  |
 |    9     | getPlayerCache         | 获取播放缓存类                     |
-|    10     | bindService            | 绑定服务                          |
+|    10    | bindService            | 绑定服务                          |
 |    11    | unBindService          | 解邦服务                          |
 |    12    | newPlayer              | 创建多个播放器实例                 |
+|    13    | effectSwitch           | 音效开关                          |
+|    13    | getEffectSwitch        | 获取音效开关                       |
+|    13    | saveEffectConfig       | 音效的相关配置是否缓存到本地         |
+|    13    | effect                 | 获取音效操作类                     |
 
 具体详细注释，参数和实现请查看源代码或者参考 demo。
 
-PlayerControl 类 API:
+## PlayerControl 类 API:
 
 通过 StarrySky.with() 调用
 
