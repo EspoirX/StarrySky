@@ -22,8 +22,10 @@ import com.lzx.musiclib.adapter.notifyDataSetChanged
 import com.lzx.musiclib.adapter.removedData
 import com.lzx.musiclib.adapter.setText
 import com.lzx.musiclib.adapter.setup
+import com.lzx.musiclib.effect.EffectActivity
 import com.lzx.musiclib.getSelfViewModel
 import com.lzx.musiclib.loadImage
+import com.lzx.musiclib.navigationTo
 import com.lzx.musiclib.showToast
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.musiclib.weight.SpectrumDrawView
@@ -38,6 +40,7 @@ import kotlinx.android.synthetic.main.activity_play_detail.btnPlayMode
 import kotlinx.android.synthetic.main.activity_play_detail.btnPlayState
 import kotlinx.android.synthetic.main.activity_play_detail.btnPreSong
 import kotlinx.android.synthetic.main.activity_play_detail.btnTime
+import kotlinx.android.synthetic.main.activity_play_detail.effect
 import kotlinx.android.synthetic.main.activity_play_detail.progressText
 import kotlinx.android.synthetic.main.activity_play_detail.seekBar
 import kotlinx.android.synthetic.main.activity_play_detail.seekBarSpeed
@@ -206,6 +209,11 @@ class PlayDetailActivity : AppCompatActivity() {
         //播放列表
         btnTime?.setOnClickListener {
             showCustomViewDialog(BottomSheet(LayoutMode.WRAP_CONTENT))
+        }
+
+
+        effect?.setOnClickListener {
+            navigationTo<EffectActivity>()
         }
     }
 

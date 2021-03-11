@@ -1,5 +1,6 @@
 package com.lzx.starrysky
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
@@ -11,6 +12,7 @@ import android.os.IBinder
 import android.util.Log
 import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.control.PlayerControl
+import com.lzx.starrysky.control.VoiceEffect
 import com.lzx.starrysky.intercept.ISyInterceptor
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
@@ -41,6 +43,8 @@ object StarrySky {
     @Volatile
     private var isBindService = false
     private val connectionMap = WeakHashMap<Context, ServiceConnection>()
+
+    @SuppressLint("StaticFieldLeak")
     private var serviceToken: ServiceToken? = null
 
     //通知栏相关
@@ -51,6 +55,8 @@ object StarrySky {
 
     //图片加载相关
     private var imageStrategy: ImageLoaderStrategy? = null
+
+    @SuppressLint("StaticFieldLeak")
     private var imageLoader: ImageLoader? = null
 
     //播放控制
@@ -58,6 +64,8 @@ object StarrySky {
 
     //全局拦截器
     private val interceptors = mutableListOf<ISyInterceptor>()
+
+    @SuppressLint("StaticFieldLeak")
     private var binder: MusicServiceBinder? = null
 
     //播放器缓存
@@ -72,7 +80,11 @@ object StarrySky {
     //播放器
     private var playback: Playback? = null
 
+    //音效相关
+    private var voiceEffect = VoiceEffect()
+
     //callback
+    @SuppressLint("StaticFieldLeak")
     private var appLifecycleCallback = AppLifecycleCallback()
 
     //全局状态监听
@@ -247,6 +259,7 @@ object StarrySky {
         } else {
             imageLoader?.init(imageStrategy!!)
         }
+
         if (isConnectionService) {
             bindService()
         } else {
@@ -337,6 +350,34 @@ object StarrySky {
      */
     @JvmStatic
     fun newPlayer(client: Int): Playback? = getBinder()?.newPlayer(client)
+
+    /**
+     * 音效相关，获取音效操作类
+     */
+    @JvmStatic
+    fun effect() = voiceEffect
+
+    /**
+     * 音效相关，音效开关
+     */
+    fun effectSwitch(isOpen: Boolean) {
+        StarrySkyConstant.keyEffectSwitch = isOpen
+        if (isOpen) {
+            effect().attachAudioEffect(with().getAudioSessionId())
+        }
+    }
+
+    /**
+     * 获取音效开关
+     */
+    fun getEffectSwitch() = StarrySkyConstant.keyEffectSwitch
+
+    /**
+     * 音效相关，音效配置信息是否要本地存储
+     */
+    fun saveEffectConfig(save: Boolean) {
+        StarrySkyConstant.keySaveEffectConfig = save
+    }
 
     /**
      * 获取图片加载器

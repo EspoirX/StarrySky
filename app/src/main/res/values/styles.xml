@@ -20,4 +20,23 @@
         <item name="android:windowEnterAnimation">@anim/popup_bottom_enter</item>
         <item name="android:windowExitAnimation">@anim/popup_bottom_exit</item>
     </style>
+
+    <style name="crollerStyle">
+        <item name="back_circle_color">@color/back_circle_color</item>
+        <item name="back_circle_disable_color">@color/back_circle_disable_color
+        </item>
+        <item name="indicator_color">@color/indicator_color</item>
+        <item name="indicator_disable_color">@color/indicator_disable_color</item>
+        <item name="main_circle_color">@color/main_circle_color</item>
+        <item name="main_circle_disable_color">@color/main_circle_disable_color
+        </item>
+        <item name="progress_primary_color">@color/progress_primary_color</item>
+        <item name="progress_primary_disable_color">
+            @color/progress_primary_disable_color
+        </item>
+        <item name="progress_secondary_color">@color/progress_secondary_color</item>
+        <item name="progress_secondary_disable_color">
+            @color/progress_secondary_disable_color
+        </item>
+    </style>
 </resources>

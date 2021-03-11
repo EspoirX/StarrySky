@@ -565,6 +565,10 @@ class PlayerControl(
         when (playbackStage.stage) {
             PlaybackStage.PLAYING -> {
                 timerTaskManager?.startToUpdateProgress()
+                val effectSwitch = StarrySkyConstant.keyEffectSwitch
+                if (effectSwitch) {
+                    StarrySky.effect().attachAudioEffect(getAudioSessionId())
+                }
             }
             PlaybackStage.PAUSE,
             PlaybackStage.ERROR,

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">StarrySky</string>
     <string name="dialog_title">播放列表</string>
+    <string name="dialog_title2">音效选择</string>
     <string name="geci">塞纳河畔
         \n左岸的咖啡
         \n我手一杯

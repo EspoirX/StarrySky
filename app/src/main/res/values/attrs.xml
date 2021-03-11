@@ -49,4 +49,13 @@
             <enum name="center_horizontal" value="2"/>
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="VerticalSeekBar">
+        <attr name="seekBarRotation">
+            <!-- Clock wise - 90 deg; top = min, bottom = max -->
+            <enum name="CW90" value="90"/>
+            <!-- Clock wise - 270 deg; bottom = min, top = max -->
+            <enum name="CW270" value="270"/>
+        </attr>
+    </declare-styleable>
 </resources>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <layer-list>
+            <!--背景层-->
+            <item android:id="@android:id/background">
+                <shape android:shape="line">
+                    <stroke android:width="2dp" android:color="#EEEEEE" />
+                </shape>
+            </item>
+
+            <!--缓冲层-->
+            <item android:id="@android:id/secondaryProgress">
+                <shape android:shape="line">
+                    <stroke android:width="2dp" android:color="#EEEEEE" />
+                </shape>
+            </item>
+
+            <!--进度层-->
+            <item android:id="@android:id/progress">
+                <clip>
+                    <shape android:shape="line">
+                        <stroke android:width="2dp" android:color="#EEEEEE" />
+                    </shape>
+                </clip>
+            </item>
+        </layer-list>
+    </item>
+
+    <item android:state_enabled="true">
+        <layer-list>
+            <!--背景层-->
+            <item android:id="@android:id/background">
+                <shape android:shape="line">
+                    <stroke android:width="2dp" android:color="#EEEEEE" />
+                </shape>
+            </item>
+
+            <!--缓冲层-->
+            <item android:id="@android:id/secondaryProgress">
+                <shape android:shape="line">
+                    <stroke android:width="2dp" android:color="#EEEEEE" />
+                </shape>
+            </item>
+
+            <!--进度层-->
+            <item android:id="@android:id/progress">
+                <clip>
+                    <shape android:shape="line">
+                        <stroke android:width="2dp" android:color="#7E57C2" />
+                    </shape>
+                </clip>
+            </item>
+        </layer-list>
+    </item>
+</selector>

@@ -39,10 +39,14 @@
         <activity android:name=".home.MainActivity" />
         <activity android:name=".home.PlayDetailActivity" />
         <activity android:name=".card.CardActivity" />
-        <activity android:name=".dynamic.DynamicDetailActivity" android:launchMode="singleTask"/>
-        <activity android:name=".dynamic.DynamicActivity"/>
-        <activity android:name=".user.UserInfoActivity"/>
-        <receiver android:name=".NotificationReceiver"/>
+        <activity
+            android:name=".dynamic.DynamicDetailActivity"
+            android:launchMode="singleTask" />
+        <activity android:name=".dynamic.DynamicActivity" />
+        <activity android:name=".user.UserInfoActivity" />
+        <activity android:name=".effect.EffectActivity" />
+
+        <receiver android:name=".NotificationReceiver" />
     </application>
 
 </manifest>

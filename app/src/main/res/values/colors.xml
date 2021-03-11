@@ -3,4 +3,15 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="main_circle_color">#FFFFFF</color>
+    <color name="main_circle_disable_color">#F5F5F5</color>
+    <color name="back_circle_color">#E0E0E0</color>
+    <color name="back_circle_disable_color">#BDBDBD</color>
+    <color name="indicator_color">#7E57C2</color>
+    <color name="indicator_disable_color">#757575</color>
+    <color name="progress_primary_color">#7E57C2</color>
+    <color name="progress_primary_disable_color">#757575</color>
+    <color name="progress_secondary_color">#BDBDBD</color>
+    <color name="progress_secondary_disable_color">#9E9E9E</color>
 </resources>

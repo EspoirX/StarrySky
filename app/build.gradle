@@ -67,6 +67,6 @@ android {
         implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
 
         implementation "com.github.ssseasonnn.RxDownload:rxdownload4:1.0.9"
-
+        implementation 'com.github.Lundez:Croller:1.0.3'
     }
 }
