@@ -37,7 +37,7 @@ class EqualizerBandView @JvmOverloads constructor(context: Context?, attrs: Attr
     fun initData(){
         removeAllViews()
         mAllBand.clear()
-        val numberOfBands = StarrySky.effect().getEqualizerNumberOfBands().toInt()
+        val numberOfBands = StarrySky.effect().equalizerNumberOfBands().toInt()
         for (band in 0 until numberOfBands) {
             addBand(Band(band.toShort()))
         }
@@ -96,8 +96,8 @@ class EqualizerBandView @JvmOverloads constructor(context: Context?, attrs: Attr
         }
 
         fun notifyItemDataChanged() {
-            val bandLevelRange = StarrySky.effect().getEqualizerBandLevelRange()
-            val bandLevel = StarrySky.effect().getEqualizerBandLevel(mBand)
+            val bandLevelRange = StarrySky.effect().equalizerBandLevelRange()
+            val bandLevel = StarrySky.effect().equalizerBandLevel(mBand)
             if (bandLevelRange.isEmpty()) return
             val progress = bandLevel - bandLevelRange[0]
             seekBar?.progress = progress
@@ -113,9 +113,9 @@ class EqualizerBandView @JvmOverloads constructor(context: Context?, attrs: Attr
 
         @SuppressLint("SetTextI18n")
         private fun initViews() {
-            val bandLevelRange = StarrySky.effect().getEqualizerBandLevelRange()
-            val bandLevel = StarrySky.effect().getEqualizerBandLevel(mBand)
-            val centerFreq = StarrySky.effect().getEqualizerCenterFreq(mBand)
+            val bandLevelRange = StarrySky.effect().equalizerBandLevelRange()
+            val bandLevel = StarrySky.effect().equalizerBandLevel(mBand)
+            val centerFreq = StarrySky.effect().equalizerCenterFreq(mBand)
             if (bandLevelRange.isEmpty()) return
 
             val minLevel = bandLevelRange[0]
@@ -128,7 +128,7 @@ class EqualizerBandView @JvmOverloads constructor(context: Context?, attrs: Attr
             seekBar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     if (fromUser) {
-                        StarrySky.effect().setEqualizerBandLevel(mBand, (progress - center).toShort())
+                        StarrySky.effect().equalizerBandLevel(mBand, (progress - center).toShort())
                         notifyEqualizerSettingChanged()
                     }
                 }

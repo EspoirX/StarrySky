@@ -46,15 +46,18 @@ class EffectActivity : AppCompatActivity() {
             initVirtualizerCroller()
         }
 
-        val numberOfPresets = StarrySky.effect().getEqualizerNumberOfPresets()
+        //获取均衡器支持的预设总数
+        val numberOfPresets = StarrySky.effect().equalizerNumberOfPresets()
+        //获取当前的预设
+        val currentPreset = StarrySky.effect().equalizerCurrentPreset()
 
         allPresetName.clear()
         allPresetName.add("自定义")
         for (preset in 0 until numberOfPresets) {
-            val presetName = StarrySky.effect().getEqualizerPresetName(preset.toShort())
+            //获取预设名字
+            val presetName = StarrySky.effect().equalizerPresetName(preset.toShort())
             allPresetName.add(presetName.equalizerPresetName())
         }
-        val currentPreset = StarrySky.effect().getEqualizerCurrentPreset()
         frameLayout?.text = allPresetName.getOrNull(currentPreset + 1)
 
         frameLayout?.setOnClickListener {
@@ -63,12 +66,13 @@ class EffectActivity : AppCompatActivity() {
 
         swEnable?.setOnCheckedChangeListener { _, isChecked ->
             StarrySky.effectSwitch(isChecked)
+
             if (isChecked) {
                 StarrySky.effect().attachAudioEffect(StarrySky.with().getAudioSessionId())
                 equalizerBands?.initData()
                 initBassCroller()
                 initVirtualizerCroller()
-                val preset = StarrySky.effect().getEqualizerCurrentPreset()
+                val preset = StarrySky.effect().equalizerCurrentPreset()
                 frameLayout?.text = allPresetName.getOrNull(preset + 1)
             } else {
                 StarrySky.effect().attachAudioEffect(0)
@@ -78,21 +82,13 @@ class EffectActivity : AppCompatActivity() {
             bassCroller?.isEnabled = isChecked
             virtualizerCroller?.isEnabled = isChecked
         }
-
-        equalizerBands?.setOnBandChangeListener(object : EqualizerBandView.OnBandChangeListener {
-            override fun onBandChanged() {
-
-            }
-        })
-        equalizerBands?.setOnEqualizerSettingChangeListener(object : EqualizerBandView.OnEqualizerSettingChangeListener {
-            override fun onEqualizerSettingChanged() {
-
-            }
-        })
     }
 
     private var dialog: MaterialDialog? = null
 
+    /**
+     * 音效选择弹窗
+     */
     private fun showEffectDialog() {
         dialog = MaterialDialog(this, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.dialog_title2)
@@ -132,7 +128,7 @@ class EffectActivity : AppCompatActivity() {
     }
 
     private fun initBassCroller() {
-        val strength = StarrySky.effect().getBassBoostRoundedStrength()
+        val strength = StarrySky.effect().bassBoostRoundedStrength()
         val percent = strength * 1.0 / 1000
 
         // 因为 Croller 无法滑动到 0，因此将 min 设为 1，将 max 设置为 26
@@ -145,7 +141,7 @@ class EffectActivity : AppCompatActivity() {
         bassCroller.setOnCrollerChangeListener(object : OnCrollerChangeListener {
             override fun onProgressChanged(croller: Croller, progress: Int) {
                 val strength = ((progress - min) * (1000 / rangeSize)).toShort()
-                StarrySky.effect().setBassBoostStrength(strength)
+                StarrySky.effect().bassBoostStrength(strength)
             }
 
             override fun onStartTrackingTouch(croller: Croller) {
@@ -159,7 +155,7 @@ class EffectActivity : AppCompatActivity() {
     }
 
     private fun initVirtualizerCroller() {
-        val strength = StarrySky.effect().getVirtualizerStrength()
+        val strength = StarrySky.effect().virtualizerStrength()
         val percent = strength * 1.0 / 1000
 
         // 因为 Croller 无法滑动到 0，因此将 min 设为 1，将 max 设置为 26
@@ -172,7 +168,7 @@ class EffectActivity : AppCompatActivity() {
         virtualizerCroller.setOnCrollerChangeListener(object : OnCrollerChangeListener {
             override fun onProgressChanged(croller: Croller, progress: Int) {
                 val strength = ((progress - min) * (1000 / rangeSize)).toShort()
-                StarrySky.effect().setVirtualizerStrength(strength)
+                StarrySky.effect().virtualizerStrength(strength)
             }
 
             override fun onStartTrackingTouch(croller: Croller) {
