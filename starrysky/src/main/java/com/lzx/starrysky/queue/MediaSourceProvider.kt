@@ -26,6 +26,7 @@ class MediaSourceProvider {
             value.forEach {
                 songSources[it.songId] = it
             }
+            updateShuffleSongList()
         }
 
     fun getSourceSize() = songSources.size
@@ -48,6 +49,10 @@ class MediaSourceProvider {
     fun addSongInfo(info: SongInfo) {
         if (!hasSongInfo(info.songId)) {
             songSources[info.songId] = info
+            if (!shuffleSongSources.contains(info)) {
+                shuffleSongSources.add(info)
+                shuffleSongSources.shuffle()
+            }
         }
     }
 
@@ -64,6 +69,7 @@ class MediaSourceProvider {
             list.forEach {
                 songSources[it.first] = it.second
             }
+            updateShuffleSongList()
         }
     }
 

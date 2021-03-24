@@ -333,6 +333,13 @@ class PlayerControl(
     }
 
     /**
+     * 刷新随机列表
+     */
+    fun updateShuffleSongList() {
+        provider.updateShuffleSongList()
+    }
+
+    /**
      * 根据当前播放信息更新下标
      */
     fun updateCurrIndex() {
