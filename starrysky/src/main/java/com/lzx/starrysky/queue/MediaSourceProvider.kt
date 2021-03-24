@@ -49,10 +49,7 @@ class MediaSourceProvider {
     fun addSongInfo(info: SongInfo) {
         if (!hasSongInfo(info.songId)) {
             songSources[info.songId] = info
-            if (!shuffleSongSources.contains(info)) {
-                shuffleSongSources.add(info)
-                shuffleSongSources.shuffle()
-            }
+            updateShuffleSongList()
         }
     }
 
