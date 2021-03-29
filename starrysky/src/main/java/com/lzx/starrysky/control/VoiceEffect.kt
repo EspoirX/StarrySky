@@ -3,6 +3,7 @@ package com.lzx.starrysky.control
 import android.media.audiofx.BassBoost
 import android.media.audiofx.Equalizer
 import android.media.audiofx.Virtualizer
+import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.utils.StarrySkyConstant
 
 /**
@@ -31,6 +32,7 @@ class VoiceEffect {
 
         releaseAudioEffect()
 
+        StarrySky.log("audioSessionId = $audioSessionId")
         if (audioSessionId == 0) return
 
         currSessionId = audioSessionId

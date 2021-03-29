@@ -10,6 +10,8 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.analytics.AnalyticsListener
+import com.google.android.exoplayer2.analytics.AnalyticsListener.EventTime
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.MediaSource
@@ -39,6 +41,7 @@ import com.lzx.starrysky.utils.isFLAC
 import com.lzx.starrysky.utils.isRTMP
 import com.lzx.starrysky.utils.orDef
 
+
 /**
  * isAutoManagerFocus 是否让播放器自动管理焦点
  */
@@ -60,10 +63,13 @@ class ExoPlayback(val context: Context,
 
     private var currSongInfo: SongInfo? = null
     private var callback: Playback.Callback? = null
-    private val mEventListener by lazy { ExoPlayerEventListener() }
+    private val eventListener by lazy { ExoPlayerEventListener() }
+    private val analyticsListener by lazy { ExoAnalyticsListener() }
     private var sourceTypeErrorInfo: SourceTypeErrorInfo = SourceTypeErrorInfo()
     private var focusManager = FocusManager(context)
     private var hasError = false
+    private var playerAudioSessionId = 0
+
 
     init {
         focusManager.listener = this
@@ -110,7 +116,7 @@ class ExoPlayback(val context: Context,
 
     override fun getCurrPlayInfo(): SongInfo? = currSongInfo
 
-    override fun getAudioSessionId(): Int = player?.audioSessionId.orDef()
+    override fun getAudioSessionId(): Int = playerAudioSessionId
 
     private fun getPlayWhenReady() = player?.playWhenReady ?: false
 
@@ -145,6 +151,7 @@ class ExoPlayback(val context: Context,
         if (mediaHasChanged || player == null) {
             //创建播放器实例
             createExoPlayer()
+
             player?.setMediaSource(mediaSource!!)
             player?.prepare()
             if (!isAutoManagerFocus) {
@@ -275,8 +282,9 @@ class ExoPlayback(val context: Context,
                 .setTrackSelector(trackSelector!!)
                 .build()
 
-            player?.addListener(mEventListener)
+            player?.addListener(eventListener)
             player?.setAudioAttributes(AudioAttributes.DEFAULT, isAutoManagerFocus)
+            player?.addAnalyticsListener(analyticsListener)
             if (!isAutoManagerFocus) {
                 player?.playbackState?.let { focusManager.updateAudioFocus(getPlayWhenReady(), it) }
             }
@@ -315,7 +323,8 @@ class ExoPlayback(val context: Context,
     override fun stop() {
         player?.stop(true)
         player?.release()
-        player?.removeListener(mEventListener)
+        player?.removeListener(eventListener)
+        player?.removeAnalyticsListener(analyticsListener)
         player = null
         if (!isAutoManagerFocus) {
             focusManager.release()
@@ -383,6 +392,12 @@ class ExoPlayback(val context: Context,
 
     override fun setCallback(callback: Playback.Callback?) {
         this.callback = callback
+    }
+
+    private inner class ExoAnalyticsListener : AnalyticsListener {
+        override fun onAudioSessionId(eventTime: EventTime, audioSessionId: Int) {
+            playerAudioSessionId = audioSessionId
+        }
     }
 
     private inner class ExoPlayerEventListener : Player.EventListener {
