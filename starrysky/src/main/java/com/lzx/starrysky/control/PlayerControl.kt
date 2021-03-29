@@ -48,10 +48,6 @@ class PlayerControl(
             isRunningTimeTask = true
             val position = getPlayingPosition()
             val duration = getDuration()
-            val effectSwitch = StarrySkyConstant.keyEffectSwitch
-            if (effectSwitch) {
-                StarrySky.effect().attachAudioEffect(getAudioSessionId())
-            }
             progressListener.forEach {
                 it.value.onPlayProgress(position, duration)
             }
@@ -576,6 +572,10 @@ class PlayerControl(
         when (playbackStage.stage) {
             PlaybackStage.PLAYING -> {
                 timerTaskManager?.startToUpdateProgress()
+                val effectSwitch = StarrySkyConstant.keyEffectSwitch
+                if (effectSwitch) {
+                    StarrySky.effect().attachAudioEffect(getAudioSessionId())
+                }
             }
             PlaybackStage.PAUSE,
             PlaybackStage.ERROR,
