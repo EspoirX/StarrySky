@@ -130,6 +130,13 @@ class PlayerControl(
         playMusicImpl(mediaList.getOrNull(index))
     }
 
+    /**
+     * 重播当前音频
+     */
+    fun replayCurrMusic() {
+        playbackManager.replayCurrMusic()
+    }
+
     private fun playMusicImpl(songInfo: SongInfo?) {
         if (songInfo == null) return
         playbackManager

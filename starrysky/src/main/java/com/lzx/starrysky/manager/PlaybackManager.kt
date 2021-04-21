@@ -340,6 +340,16 @@ class PlaybackManager(private val provider: MediaSourceProvider,
         StarrySky.getBinder()?.onStopByTimedOff(time, isPause, finishCurrSong)
     }
 
+    /**
+     * 重播当前音频
+     */
+    fun replayCurrMusic() {
+        player()?.getCurrPlayInfo()?.let {
+            player()?.currentMediaId = ""
+            player()?.play(it, true)
+        }
+    }
+
     override fun onPlayerStateChanged(songInfo: SongInfo?, playWhenReady: Boolean, playbackState: Int) {
         if (lastSongInfo?.songId != songInfo?.songId && !isActionStop) {
             val state = PlaybackStage()

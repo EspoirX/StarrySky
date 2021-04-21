@@ -42,6 +42,7 @@ import kotlinx.android.synthetic.main.activity_test.playMusicById
 import kotlinx.android.synthetic.main.activity_test.playMusicByInfo
 import kotlinx.android.synthetic.main.activity_test.playMusicByUrl
 import kotlinx.android.synthetic.main.activity_test.querySongInfoInLocal
+import kotlinx.android.synthetic.main.activity_test.replay
 import kotlinx.android.synthetic.main.activity_test.restoreMusic
 import kotlinx.android.synthetic.main.activity_test.rtmpBtn
 import kotlinx.android.synthetic.main.activity_test.seekBarPro
@@ -301,6 +302,9 @@ open class TestActivity : AppCompatActivity() {
         }
         openN?.setOnClickListener {
             StarrySky.openNotification()
+        }
+        replay?.setOnClickListener {
+            StarrySky.with().replayCurrMusic()
         }
 
         StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {
