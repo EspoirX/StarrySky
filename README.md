@@ -32,6 +32,9 @@
 若在使用中发现 Bug 或者有什么建议问题的可以在 issues 中提出或者添加 QQ 群交流，欢迎反馈。
 
 ## 集成
+
+##  bintray 被关了了，正在搞迁移，暂时引用不了，急的话可以先用源码，谢谢
+
 ```groovy
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
