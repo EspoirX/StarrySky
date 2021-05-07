@@ -38,11 +38,12 @@
 ```groovy
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.github.EspoirX:StarrySky:v2.6.3'
+    implementation 'com.github.EspoirX:StarrySky:vX.X.X'
 }
 ```
+[![](https://jitpack.io/v/EspoirX/StarrySky.svg)](https://jitpack.io/#EspoirX/StarrySky)
 
-x.x.x 填的是当前的版本号。(有些人反馈说看不到版本号，版本号在 Readme 一开始就有标明，若看不到可以查看代码 gradle 文件或者加群咨询)
+X.X.X 填的是当前的版本号。(有些人反馈说看不到版本号，版本号在 Readme 一开始就有标明，若看不到可以查看代码 gradle 文件或者加群咨询)
 
 请使用 Java8。此为 androidx 版本，请支持 androidx。
 (如果不是 androidx，可以通过下载源码的方式拷贝到自己项目中使用，然后自己修改，只有几个类要改而已，很简单)
