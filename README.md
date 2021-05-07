@@ -1,7 +1,7 @@
 # A Powerful and Streamline MusicLibrary
 
 [ ![](https://img.shields.io/badge/platform-android-green.svg) ](http://developer.android.com/index.html)
-[ ![Download](https://api.bintray.com/packages/lizixian/StarrySky/StarrySkyX/images/download.svg)](https://bintray.com/lizixian/StarrySky/StarrySkyX/_latestVersion)
+[![](https://jitpack.io/v/EspoirX/StarrySky.svg)](https://jitpack.io/#EspoirX/StarrySky)
 [ ![](https://img.shields.io/badge/license-MIT-green.svg) ](http://choosealicense.com/licenses/mit/)
 
 <a href="art/logo.jpg"><img src="art/logo.jpg" /></a>
@@ -33,12 +33,12 @@
 
 ## 集成
 
-##  bintray 被关了了，正在搞迁移，暂时引用不了，急的话可以先用源码，谢谢
+####  注意：由于 bintray 不能用了，所以 2.6.3 和以后版本都迁移到 JitPack 了
 
 ```groovy
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.lzx:StarrySkyX:x.x.x'
+    implementation 'com.github.EspoirX:StarrySky:v2.6.3'
 }
 ```
 
@@ -49,9 +49,7 @@ x.x.x 填的是当前的版本号。(有些人反馈说看不到版本号，版�
 
 如果导入不了可以试试加上这个：
 ```groovy
-maven{
-    url "https://dl.bintray.com/lizixian/StarrySky/"
-}
+maven { url 'https://jitpack.io' }
 ```
 
 ## 按需导入
@@ -85,15 +83,11 @@ dependencies {
 }
 ```
 
-若需支持 flac 无损音频，请另外导入
-```groovy
-dependencies {
-    implementation 'com.lzx:StarrySkyFlacExt:1.0.0'
-}
-```
+若需支持 flac 无损音频，可直接播放，已经支持。
+
 flac 音频特别说明：  
 ExoPlayer 要播放 flac 音频，是需要自己编译 so 的，具体怎么操作可以看 ExoPlayer 的 github，本项目已经把编译好的代码放在了 extension-flac2120 
-这个 module 里面，2120 代表 版本号是 2.12.0。大家可以通过上面说明添加依赖即可轻松使用。
+这个 module 里面，2120 代表 版本号是 2.12.0。
 
 若不知道要导入哪一种，可以在播放时抛出的异常崩溃中根据异常信息提示导入。
 

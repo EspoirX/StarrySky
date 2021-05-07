@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+//apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 28
@@ -32,15 +32,15 @@ android {
         }
     }
 
-    publish {
-        repoName = 'StarrySky'
-        userOrg = 'lizixian'
-        groupId = 'com.lzx'
-        artifactId = 'StarrySkyFlacExt'
-        publishVersion = '1.0.0'
-        desc = 'A Powerful and Streamline MusicLibrary'
-        website = "https://github.com/lizixian18/StarrySky"
-    }
+//    publish {
+//        repoName = 'StarrySky'
+//        userOrg = 'lizixian'
+//        groupId = 'com.lzx'
+//        artifactId = 'StarrySkyFlacExt'
+//        publishVersion = '1.0.0'
+//        desc = 'A Powerful and Streamline MusicLibrary'
+//        website = "https://github.com/lizixian18/StarrySky"
+//    }
 }
 
 dependencies {
