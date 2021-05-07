@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.novoda.bintray-release'
+//apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 28
@@ -34,15 +34,15 @@ android {
         experimental = true
     }
 
-    publish {
-        repoName = 'StarrySky'
-        userOrg = 'lizixian'
-        groupId = 'com.lzx'
-        artifactId = 'StarrySkyX'
-        publishVersion = '2.6.3'
-        desc = 'A Powerful and Streamline MusicLibrary'
-        website = "https://github.com/lizixian18/StarrySky"
-    }
+//    publish {
+//        repoName = 'StarrySky'
+//        userOrg = 'lizixian'
+//        groupId = 'com.lzx'
+//        artifactId = 'StarrySkyX'
+//        publishVersion = '2.6.3'
+//        desc = 'A Powerful and Streamline MusicLibrary'
+//        website = "https://github.com/lizixian18/StarrySky"
+//    }
 }
 
 dependencies {

@@ -47,7 +47,8 @@ android {
 
         implementation project(':starrysky')
 //         implementation 'com.lzx:StarrySkyX:2.5.8'
-        implementation 'com.lzx:StarrySkyFlacExt:1.0.0'
+//        implementation 'com.github.EspoirX:StarrySky:v2.6.3'
+//        implementation 'com.lzx:StarrySkyFlacExt:1.0.0'
 
         implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.0'
         implementation 'com.google.android.exoplayer:extension-rtmp:2.12.0'
