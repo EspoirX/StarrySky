@@ -49,8 +49,12 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //noinspection GradleCompatible
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    api "com.google.android.exoplayer:exoplayer-core:2.12.0"
-    api "com.google.android.exoplayer:extension-mediasession:2.12.0"
+    api "com.google.android.exoplayer:exoplayer-core:2.14.1"
+    api "com.google.android.exoplayer:extension-mediasession:2.14.1"
+    compileOnly ("com.google.android.exoplayer:exoplayer-dash:2.14.1")
+    compileOnly ("com.google.android.exoplayer:exoplayer-hls:2.14.1")
+    compileOnly ("com.google.android.exoplayer:exoplayer-smoothstreaming:2.14.1")
+    compileOnly ("com.google.android.exoplayer:extension-rtmp:2.14.1")
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 repositories {

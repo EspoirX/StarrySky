@@ -456,7 +456,11 @@ class PlayerControl(
     /**
      * 设置音量, 范围 0到1
      */
-    fun setVolume(volume: Float) {
+    fun setVolume(audioVolume: Float) {
+        var volume = audioVolume
+        if (audioVolume > 1 && audioVolume < 100) {
+            volume = audioVolume / 100f
+        }
         playbackManager.player()?.setVolume(volume)
     }
 
@@ -482,13 +486,15 @@ class PlayerControl(
         val songInfos = mutableListOf<SongInfo>()
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null,
-            null, MediaStore.Audio.AudioColumns.IS_MUSIC) ?: return songInfos
+            null, MediaStore.Audio.AudioColumns.IS_MUSIC
+        ) ?: return songInfos
         while (cursor.moveToNext()) {
             val song = SongInfo()
             song.songUrl = cursor.data
             song.songName = cursor.title
             song.duration = cursor.duration
-            val songId = if (song.songUrl.isNotEmpty()) song.songUrl.md5() else System.currentTimeMillis().toString().md5()
+            val songId =
+                if (song.songUrl.isNotEmpty()) song.songUrl.md5() else System.currentTimeMillis().toString().md5()
             song.songId = songId
             songInfos.add(song)
         }

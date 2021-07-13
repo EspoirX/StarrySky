@@ -10,17 +10,16 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.analytics.AnalyticsListener
-import com.google.android.exoplayer2.analytics.AnalyticsListener.EventTime
 import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
+import com.google.android.exoplayer2.source.dash.DashMediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector.ParametersBuilder
-import com.google.android.exoplayer2.trackselection.TrackSelection
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
@@ -45,10 +44,11 @@ import com.lzx.starrysky.utils.orDef
 /**
  * isAutoManagerFocus 是否让播放器自动管理焦点
  */
-class ExoPlayback(val context: Context,
-                  private val cache: ICache?,
-                  private val isAutoManagerFocus: Boolean)
-    : Playback, FocusManager.OnFocusStateChangeListener {
+class ExoPlayback(
+    val context: Context,
+    private val cache: ICache?,
+    private val isAutoManagerFocus: Boolean
+) : Playback, FocusManager.OnFocusStateChangeListener {
 
     companion object {
         const val TYPE_RTMP = 4
@@ -64,12 +64,9 @@ class ExoPlayback(val context: Context,
     private var currSongInfo: SongInfo? = null
     private var callback: Playback.Callback? = null
     private val eventListener by lazy { ExoPlayerEventListener() }
-    private val analyticsListener by lazy { ExoAnalyticsListener() }
     private var sourceTypeErrorInfo: SourceTypeErrorInfo = SourceTypeErrorInfo()
     private var focusManager = FocusManager(context)
     private var hasError = false
-    private var playerAudioSessionId = 0
-
 
     init {
         focusManager.listener = this
@@ -116,7 +113,7 @@ class ExoPlayback(val context: Context,
 
     override fun getCurrPlayInfo(): SongInfo? = currSongInfo
 
-    override fun getAudioSessionId(): Int = playerAudioSessionId
+    override fun getAudioSessionId(): Int = player?.audioSessionId ?: 0
 
     private fun getPlayWhenReady() = player?.playWhenReady ?: false
 
@@ -134,7 +131,8 @@ class ExoPlayback(val context: Context,
             "title = " + songInfo.songName +
                 " \n音频是否有改变 = " + mediaHasChanged +
                 " \n是否立即播放 = " + isPlayWhenReady +
-                " \nurl = " + songInfo.songUrl)
+                " \nurl = " + songInfo.songUrl
+        )
 
         //url 处理
         var source = songInfo.songUrl
@@ -186,6 +184,14 @@ class ExoPlayback(val context: Context,
         }
     }
 
+    private fun String.hasMediaSource(): Boolean =
+        runCatching {
+            Class.forName("com.google.android.exoplayer2.$this")
+            return@runCatching true
+        }.onFailure {
+            it.printStackTrace()
+        }.getOrElse { false }
+
     @Synchronized
     private fun createMediaSource(source: String): MediaSource {
         val uri = Uri.parse(source)
@@ -198,59 +204,37 @@ class ExoPlayback(val context: Context,
 
         }
         dataSourceFactory = buildDataSourceFactory(type)
-        val basePath = "com.google.android.exoplayer2.source."
         return when (type) {
             C.TYPE_DASH -> {
-                try {
-                    val clazz = Class.forName(basePath + "dash.DashMediaSource" + "\$Factory")
-                    val constructors = clazz.getConstructor(DataSource.Factory::class.java)
-                    constructors.isAccessible = true
-                    val factory = constructors.newInstance(dataSourceFactory) as MediaSourceFactory
-                    return factory.createMediaSource(MediaItem.fromUri(uri))
-                } catch (e: ClassNotFoundException) {
-                    throw RuntimeException("Error instantiating ClassNotFoundException DashMediaSource", e)
-                } catch (e: Exception) {
-                    throw RuntimeException("Error instantiating DASH extension", e)
+                if ("source.dash.DashMediaSource".hasMediaSource()) {
+                    return DashMediaSource.Factory(dataSourceFactory!!).createMediaSource(MediaItem.fromUri(uri))
+                } else {
+                    throw IllegalStateException("has not DashMediaSource")
                 }
             }
             C.TYPE_SS -> {
-                try {
-                    val clazz = Class.forName(basePath + "smoothstreaming.SsMediaSource" + "\$Factory")
-                    val constructors = clazz.getConstructor(DataSource.Factory::class.java)
-                    constructors.isAccessible = true
-                    val factory = constructors.newInstance(dataSourceFactory) as MediaSourceFactory
-                    return factory.createMediaSource(MediaItem.fromUri(uri))
-                } catch (e: ClassNotFoundException) {
-                    throw RuntimeException("Error instantiating ClassNotFoundException SsMediaSource", e)
-                } catch (e: Exception) {
-                    throw RuntimeException("Error instantiating SS extension", e)
+                if ("source.smoothstreaming.SsMediaSource".hasMediaSource()) {
+                    return SsMediaSource.Factory(dataSourceFactory!!).createMediaSource(MediaItem.fromUri(uri))
+                } else {
+                    throw IllegalStateException("has not SsMediaSource")
                 }
             }
             C.TYPE_HLS -> {
-                try {
-                    val clazz = Class.forName(basePath + "hls.HlsMediaSource" + "\$Factory")
-                    val constructors = clazz.getConstructor(DataSource.Factory::class.java)
-                    constructors.isAccessible = true
-                    val factory = constructors.newInstance(dataSourceFactory) as MediaSourceFactory
-                    return factory.createMediaSource(MediaItem.fromUri(uri))
-                } catch (e: ClassNotFoundException) {
-                    throw RuntimeException("Error instantiating ClassNotFoundException HlsMediaSource", e)
-                } catch (e: Exception) {
-                    throw RuntimeException("Error instantiating HLS extension", e)
+                if ("source.hls.HlsMediaSource".hasMediaSource()) {
+                    return HlsMediaSource.Factory(dataSourceFactory!!).createMediaSource(MediaItem.fromUri(uri))
+                } else {
+                    throw IllegalStateException("has not HlsMediaSource")
                 }
             }
             C.TYPE_OTHER -> {
                 ProgressiveMediaSource.Factory(dataSourceFactory!!).createMediaSource(MediaItem.fromUri(uri))
             }
             TYPE_RTMP -> {
-                try {
-                    val clazz = Class.forName("com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory")
-                    val factory: DataSource.Factory = clazz.newInstance() as DataSource.Factory
+                if ("ext.rtmp.RtmpDataSourceFactory".hasMediaSource()) {
+                    val factory = RtmpDataSourceFactory()
                     return ProgressiveMediaSource.Factory(factory).createMediaSource(MediaItem.fromUri(uri))
-                } catch (e: ClassNotFoundException) {
-                    throw RuntimeException("Error instantiating ClassNotFoundException RtmpDataSourceFactory", e)
-                } catch (e: Exception) {
-                    throw RuntimeException("Error instantiating RTMP extension", e)
+                } else {
+                    throw IllegalStateException("has not RtmpDataSourceFactory")
                 }
             }
             TYPE_FLAC -> {
@@ -269,13 +253,8 @@ class ExoPlayback(val context: Context,
             val renderersFactory = DefaultRenderersFactory(context)
                 .setExtensionRendererMode(extensionRendererMode)
 
-            val builder = ParametersBuilder(context)
-            if (Util.SDK_INT >= 21) {
-                builder.setTunnelingAudioSessionId(C.generateAudioSessionIdV21(context))
-            }
-            trackSelectorParameters = builder.build()
-            val trackSelectionFactory: TrackSelection.Factory = AdaptiveTrackSelection.Factory()
-            trackSelector = DefaultTrackSelector(context, trackSelectionFactory)
+            trackSelectorParameters = ParametersBuilder(context).build()
+            trackSelector = DefaultTrackSelector(context)
             trackSelector?.parameters = trackSelectorParameters as DefaultTrackSelector.Parameters
 
             player = SimpleExoPlayer.Builder(context, renderersFactory)
@@ -284,7 +263,6 @@ class ExoPlayback(val context: Context,
 
             player?.addListener(eventListener)
             player?.setAudioAttributes(AudioAttributes.DEFAULT, isAutoManagerFocus)
-            player?.addAnalyticsListener(analyticsListener)
             if (!isAutoManagerFocus) {
                 player?.playbackState?.let { focusManager.updateAudioFocus(getPlayWhenReady(), it) }
             }
@@ -294,10 +272,12 @@ class ExoPlayback(val context: Context,
     @Synchronized
     private fun buildDataSourceFactory(type: Int): DataSource.Factory? {
         val userAgent = Util.getUserAgent(context, "StarrySky")
-        val httpDataSourceFactory = DefaultHttpDataSourceFactory(userAgent,
+        val httpDataSourceFactory = DefaultHttpDataSourceFactory(
+            userAgent,
             DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
             DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-            true)
+            true
+        )
         return if (cache?.isOpenCache() == true && cache is ExoCache && !type.isStreamingType()) {
             val upstreamFactory = DefaultDataSourceFactory(context, httpDataSourceFactory)
             buildCacheDataSource(upstreamFactory, cache.getDownloadCache())
@@ -324,7 +304,7 @@ class ExoPlayback(val context: Context,
         player?.stop(true)
         player?.release()
         player?.removeListener(eventListener)
-        player?.removeAnalyticsListener(analyticsListener)
+//        player?.removeAnalyticsListener(analyticsListener)
         player = null
         if (!isAutoManagerFocus) {
             focusManager.release()
@@ -394,12 +374,6 @@ class ExoPlayback(val context: Context,
         this.callback = callback
     }
 
-    private inner class ExoAnalyticsListener : AnalyticsListener {
-        override fun onAudioSessionId(eventTime: EventTime, audioSessionId: Int) {
-            playerAudioSessionId = audioSessionId
-        }
-    }
-
     private inner class ExoPlayerEventListener : Player.EventListener {
 
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
@@ -433,8 +407,6 @@ class ExoPlayback(val context: Context,
                 ExoPlaybackException.TYPE_SOURCE -> error.sourceException.message.toString()
                 ExoPlaybackException.TYPE_RENDERER -> error.rendererException.message.toString()
                 ExoPlaybackException.TYPE_UNEXPECTED -> error.unexpectedException.message.toString()
-                ExoPlaybackException.TYPE_OUT_OF_MEMORY -> error.outOfMemoryError.message.toString()
-                ExoPlaybackException.TYPE_TIMEOUT -> error.timeoutException.message.toString()
                 else -> "Unknown: $error"
             }
             if (error.type == ExoPlaybackException.TYPE_SOURCE) {
