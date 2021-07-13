@@ -43,6 +43,10 @@ dependencies {
 ```
 [![](https://jitpack.io/v/EspoirX/StarrySky.svg)](https://jitpack.io/#EspoirX/StarrySky)
 
+> 该版本更新了什么：
+> 1.升级了 ExoPlayer 版本到 2.14.1
+> 2.优化了拦截器相关逻辑和API，相关改动可看文档或者demo代码。
+
 X.X.X 填的是当前的版本号。(有些人反馈说看不到版本号，版本号在 Readme 一开始就有标明，若看不到可以查看代码 gradle 文件或者加群咨询)
 
 请使用 Java8。此为 androidx 版本，请支持 androidx。
@@ -54,33 +58,33 @@ maven { url 'https://jitpack.io' }
 ```
 
 ## 按需导入
-因为目前默认播放器 ExoPlayer 使用的是 2.12.0 版本，所以以下依赖都使用相同版本
+因为目前默认播放器 ExoPlayer 使用的是 2.14.1 版本，所以以下依赖都使用相同版本
 
 若要支持 dash 类流音频，请另外导入
 ```groovy
 dependencies {
-   implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.0'
+   implementation 'com.google.android.exoplayer:exoplayer-dash:2.14.1'
 }
 ```
 
 若要支持 hls 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.0'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.14.1'
 }
 ```
 
 若要支持 smoothstreaming 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.12.0'
+    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.14.1'
 }
 ```
 
 若要支持 rtmp 类流音频，请另外导入
 ```groovy
 dependencies {
-    implementation 'com.google.android.exoplayer:extension-rtmp:2.12.0'
+    implementation 'com.google.android.exoplayer:extension-rtmp:2.14.1'
 }
 ```
 
