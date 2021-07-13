@@ -9,7 +9,8 @@ import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.intercept.ISyInterceptor
+import com.lzx.starrysky.intercept.InterceptorThread
+import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.manager.PlaybackManager
 import com.lzx.starrysky.manager.PlaybackStage
 import com.lzx.starrysky.playback.FocusInfo
@@ -25,7 +26,7 @@ import com.lzx.starrysky.utils.title
 
 
 class PlayerControl(
-    appInterceptors: MutableList<ISyInterceptor>,
+    appInterceptors: MutableList<Pair<StarrySkyInterceptor, String>>,
     private val globalPlaybackStageListener: GlobalPlaybackStageListener?
 ) : PlaybackManager.PlaybackServiceCallback {
 
@@ -37,7 +38,7 @@ class PlayerControl(
     private var isRunningTimeTask = false
     private val provider = MediaSourceProvider()
 
-    private val interceptors = mutableListOf<ISyInterceptor>() //局部拦截器，用完会自动清理
+    private val interceptors = mutableListOf<Pair<StarrySkyInterceptor, String>>() //局部拦截器，用完会自动清理
     private var isSkipMediaQueue = false
 
     private val playbackManager = PlaybackManager(provider, appInterceptors)
@@ -149,10 +150,10 @@ class PlayerControl(
     /**
      * 添加局部拦截器，执行顺序是先执行局部拦截器再执行全局拦截器，当前Activity结束后局部拦截器会清空
      */
-    fun addInterceptor(interceptor: ISyInterceptor): PlayerControl {
-        val noSame = interceptors.filter { it.getTag() == interceptor.getTag() }.isNullOrEmpty()
+    fun addInterceptor(interceptor: StarrySkyInterceptor, thread: String = InterceptorThread.UI): PlayerControl {
+        val noSame = interceptors.filter { it.first.getTag() == interceptor.getTag() }.isNullOrEmpty()
         if (noSame) { //如果没有相同的才添加
-            interceptors += interceptor
+            interceptors += Pair(interceptor, thread)
         }
         return this
     }

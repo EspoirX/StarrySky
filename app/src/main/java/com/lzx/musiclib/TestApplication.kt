@@ -16,9 +16,9 @@ import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.cache.ICache
-import com.lzx.starrysky.intercept.AsyncInterceptor
-import com.lzx.starrysky.intercept.InterceptorCallback
-import com.lzx.starrysky.intercept.SyncInterceptor
+import com.lzx.starrysky.intercept.InterceptCallback
+import com.lzx.starrysky.intercept.InterceptorThread
+import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.imageloader.ImageLoaderCallBack
@@ -66,7 +66,7 @@ open class TestApplication : Application() {
             .setCacheMaxBytes(1024 * 1024 * 1024)  //设置缓存上限，默认 512 * 1024 * 1024
             //.setCache(AndroidVideoCache(this))
             .addInterceptor(PermissionInterceptor(this))
-            .addInterceptor(RequestSongInfoInterceptor())
+            .addInterceptor(RequestSongInfoInterceptor(), InterceptorThread.IO)
             .setImageLoader(object : ImageLoaderStrategy {
                 //使用自定义图片加载器
                 override fun loadImage(context: Context, url: String?, callBack: ImageLoaderCallBack) {
@@ -90,53 +90,34 @@ open class TestApplication : Application() {
             .apply()
     }
 
-
-    class ATestInterceptor : AsyncInterceptor() {
-        override fun process(songInfo: SongInfo?, callback: InterceptorCallback) {
-            //do something...
-            callback.onContinue(songInfo)
-        }
-
-        override fun getTag(): String = "ATestInterceptor"
-
-    }
-
-    class BTestInterceptor : SyncInterceptor {
-        override fun process(songInfo: SongInfo?): SongInfo? {
-            //do something...
-            return songInfo
-        }
-
-        override fun getTag(): String = "BTestInterceptor"
-    }
-
     /**
      * 权限申请拦截器
      */
-    class PermissionInterceptor internal constructor(private val mContext: Context) : AsyncInterceptor() {
-        override fun process(songInfo: SongInfo?, callback: InterceptorCallback) {
+    class PermissionInterceptor internal constructor(private val mContext: Context) : StarrySkyInterceptor() {
+        override fun process(songInfo: SongInfo?, callback: InterceptCallback) {
             if (songInfo == null) {
-                callback.onInterrupt(RuntimeException("SongInfo is null"))
+                callback.onInterrupt("SongInfo is null")
                 return
             }
             val hasPermission = SpConstant.HAS_PERMISSION
             if (hasPermission) {
-                callback.onContinue(songInfo)
+                callback.onNext(songInfo)
                 return
             }
             SoulPermission.getInstance().checkAndRequestPermissions(Permissions.build(
                 Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ),
                 object : CheckRequestPermissionsListener {
                     override fun onAllPermissionOk(allPermissions: Array<Permission>) {
                         SpConstant.HAS_PERMISSION = true
-                        callback.onContinue(songInfo)
+                        callback.onNext(songInfo)
                     }
 
                     override fun onPermissionDenied(refusedPermissions: Array<Permission>) {
                         SpConstant.HAS_PERMISSION = false
-                        callback.onInterrupt(RuntimeException("没有权限，播放失败"))
+                        callback.onInterrupt("没有权限，播放失败")
                         mContext.showToast("没有权限，播放失败")
                     }
                 })
@@ -148,7 +129,7 @@ open class TestApplication : Application() {
     /**
      * 模拟请求封面，url拦截器
      */
-    class RequestSongInfoInterceptor : SyncInterceptor {
+    class RequestSongInfoInterceptor : StarrySkyInterceptor() {
 
         val z = "https://n.sinaimg.cn/sinacn10115/439/w641h598/20200214/4a9b-ipmxpvz8164848.jpg"
         val a = "https://www.yxwoo.com/uploads/images/xiaz/2020/0629/1593419103514.jpg"
@@ -172,7 +153,7 @@ open class TestApplication : Application() {
             map["g"] = g
         }
 
-        override fun process(songInfo: SongInfo?): SongInfo? {
+        override fun process(songInfo: SongInfo?, callback: InterceptCallback) {
             if (songInfo?.songCover.isNullOrEmpty()) {
                 songInfo?.songCover = map[songInfo?.songName].orEmpty()
             }
@@ -180,7 +161,7 @@ open class TestApplication : Application() {
                 val name = songInfo?.songName + "(" + songInfo?.songId + ").m4a"
                 songInfo?.songUrl = MusicViewModel.baseUrl + name
             }
-            return songInfo
+            callback.onNext(songInfo)
         }
 
         override fun getTag(): String = "RequestSongCoverInterceptor"
@@ -218,7 +199,10 @@ open class TestApplication : Application() {
             if (url.isNullOrEmpty()) return ""
             val dotIndex = url.lastIndexOf('.')
             val slashIndex = url.lastIndexOf('/')
-            return if (dotIndex != -1 && dotIndex > slashIndex && dotIndex + 2 + 4 > url.length) url.substring(dotIndex + 1, url.length) else ""
+            return if (dotIndex != -1 && dotIndex > slashIndex && dotIndex + 2 + 4 > url.length) url.substring(
+                dotIndex + 1,
+                url.length
+            ) else ""
         }
 
         override fun getProxyUrl(url: String, songInfo: SongInfo): String? {

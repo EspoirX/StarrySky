@@ -2,36 +2,27 @@ package com.lzx.starrysky.intercept
 
 import com.lzx.starrysky.SongInfo
 
-
-/**
- * 拦截器
- */
-interface ISyInterceptor {
-
-    fun getTag(): String
-
-    /**
-     * 这个方法运行在子线程
-     */
-    fun process(songInfo: SongInfo?, callback: InterceptorCallback)
-
-    /**
-     * 这个方法运行在主线程
-     */
-    fun process(songInfo: SongInfo?): SongInfo?
+object InterceptorThread {
+    const val UI = "UI"
+    const val IO = "IO"
 }
 
-abstract class AsyncInterceptor : ISyInterceptor {
-    override fun process(songInfo: SongInfo?): SongInfo? {
-        //do nothing
-        return null
-    }
+abstract class StarrySkyInterceptor {
+    abstract fun getTag(): String
+    open fun process(songInfo: SongInfo?, callback: InterceptCallback) {}
 }
 
-interface SyncInterceptor : ISyInterceptor {
-    override fun process(songInfo: SongInfo?, callback: InterceptorCallback) {
-        //do nothing
-    }
+interface InterceptCallback {
+    /**
+     * 执行下一个，用于上传一个文件
+     */
+    fun onNext(songInfo: SongInfo?)
+
+    /**
+     * 中断
+     * msg:可以添加 msg
+     */
+    fun onInterrupt(msg: String?)
 }
 
 

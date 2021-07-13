@@ -13,7 +13,8 @@ import android.util.Log
 import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.control.VoiceEffect
-import com.lzx.starrysky.intercept.ISyInterceptor
+import com.lzx.starrysky.intercept.InterceptorThread
+import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.NotificationManager
@@ -63,7 +64,7 @@ object StarrySky {
     private var playerControl: PlayerControl? = null
 
     //全局拦截器
-    private val interceptors = mutableListOf<ISyInterceptor>()
+    private val interceptors = mutableListOf<Pair<StarrySkyInterceptor, String>>()
 
     @SuppressLint("StaticFieldLeak")
     private var binder: MusicServiceBinder? = null
@@ -134,13 +135,13 @@ object StarrySky {
      * 获取全局拦截器集合
      */
     @JvmStatic
-    fun interceptors(): MutableList<ISyInterceptor> = interceptors
+    fun interceptors(): MutableList<Pair<StarrySkyInterceptor, String>> = interceptors
 
     /**
      * 添加全局拦截器
      */
-    fun addInterceptor(interceptor: ISyInterceptor) = apply {
-        interceptors += interceptor
+    fun addInterceptor(interceptor: StarrySkyInterceptor, thread: String = InterceptorThread.UI) = apply {
+        interceptors += Pair(interceptor, thread)
     }
 
     /**
@@ -394,7 +395,12 @@ object StarrySky {
                 if (service is MusicServiceBinder) {
                     retryLineService = 0
                     binder = service
-                    binder?.setNotificationConfig(isOpenNotification, notificationType, notificationConfig, notificationFactory)
+                    binder?.setNotificationConfig(
+                        isOpenNotification,
+                        notificationType,
+                        notificationConfig,
+                        notificationFactory
+                    )
                     binder?.setPlayerCache(playerCache, cacheDestFileDir, cacheMaxBytes)
                     binder?.setAutoManagerFocus(isAutoManagerFocus)
                     binder?.initPlaybackManager(playback)

@@ -6,17 +6,18 @@ import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.control.isModeShuffle
-import com.lzx.starrysky.intercept.ISyInterceptor
-import com.lzx.starrysky.intercept.InterceptorCallback
+import com.lzx.starrysky.intercept.InterceptCallback
 import com.lzx.starrysky.intercept.InterceptorService
+import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.queue.MediaQueueManager
 import com.lzx.starrysky.queue.MediaSourceProvider
 import com.lzx.starrysky.utils.md5
 
-class PlaybackManager(private val provider: MediaSourceProvider,
-                      private val appInterceptors: MutableList<ISyInterceptor>
+class PlaybackManager(
+    provider: MediaSourceProvider,
+    private val appInterceptors: MutableList<Pair<StarrySkyInterceptor, String>>
 ) : Playback.Callback {
 
     private val interceptorService = InterceptorService()
@@ -43,8 +44,8 @@ class PlaybackManager(private val provider: MediaSourceProvider,
     /**
      * 配置拦截器
      */
-    fun attachInterceptors(interceptors: MutableList<ISyInterceptor>) = apply {
-        val list = mutableListOf<ISyInterceptor>()
+    fun attachInterceptors(interceptors: MutableList<Pair<StarrySkyInterceptor, String>>) = apply {
+        val list = mutableListOf<Pair<StarrySkyInterceptor, String>>()
         list += interceptors
         list += appInterceptors
         interceptorService.attachInterceptors(list)
@@ -84,8 +85,8 @@ class PlaybackManager(private val provider: MediaSourceProvider,
         } else {
             mediaQueue.updateIndexBySongId(songInfo.songId)
         }
-        interceptorService.doInterceptions(songInfo, object : InterceptorCallback {
-            override fun onContinue(songInfo: SongInfo?) {
+        interceptorService.handlerInterceptor(songInfo, object : InterceptCallback {
+            override fun onNext(songInfo: SongInfo?) {
                 if (songInfo == null || songInfo.songId.isEmpty() || songInfo.songUrl.isEmpty()) {
                     throw IllegalStateException("songId 或 songUrl 不能为空")
                 }
@@ -93,8 +94,8 @@ class PlaybackManager(private val provider: MediaSourceProvider,
                 player()?.play(songInfo, isPlayWhenReady)
             }
 
-            override fun onInterrupt(exception: Throwable?) {
-                onPlaybackError(songInfo, exception?.message.orEmpty())
+            override fun onInterrupt(msg: String?) {
+                onPlaybackError(songInfo, msg.orEmpty())
             }
         })
     }
@@ -270,7 +271,8 @@ class PlaybackManager(private val provider: MediaSourceProvider,
         val repeatMode = RepeatMode.with
         if (repeatMode.repeatMode == RepeatMode.REPEAT_MODE_NONE ||
             repeatMode.repeatMode == RepeatMode.REPEAT_MODE_ONE ||
-            repeatMode.repeatMode == RepeatMode.REPEAT_MODE_REVERSE) {
+            repeatMode.repeatMode == RepeatMode.REPEAT_MODE_REVERSE
+        ) {
             return if (repeatMode.isLoop) true else !mediaQueue.currSongIsLastSong()
         }
         return true
@@ -284,7 +286,8 @@ class PlaybackManager(private val provider: MediaSourceProvider,
         val repeatMode = RepeatMode.with
         if (repeatMode.repeatMode == RepeatMode.REPEAT_MODE_NONE ||
             repeatMode.repeatMode == RepeatMode.REPEAT_MODE_ONE ||
-            repeatMode.repeatMode == RepeatMode.REPEAT_MODE_REVERSE) {
+            repeatMode.repeatMode == RepeatMode.REPEAT_MODE_REVERSE
+        ) {
             return if (repeatMode.isLoop) true else !mediaQueue.currSongIsFirstSong()
         }
         return true
@@ -427,8 +430,10 @@ class PlaybackManager(private val provider: MediaSourceProvider,
 
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {
         val newState = state.changePlaybackState()
-        StarrySky.getBinder()?.onChangedNotificationState(currPlayInfo, newState,
-            isSkipToNextEnabled(), isSkipToPreviousEnabled())
+        StarrySky.getBinder()?.onChangedNotificationState(
+            currPlayInfo, newState,
+            isSkipToNextEnabled(), isSkipToPreviousEnabled()
+        )
         when (newState) {
             PlaybackStage.BUFFERING,
             PlaybackStage.PAUSE -> {

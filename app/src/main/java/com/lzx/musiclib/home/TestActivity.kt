@@ -11,9 +11,9 @@ import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
-import com.lzx.starrysky.intercept.AsyncInterceptor
-import com.lzx.starrysky.intercept.InterceptorCallback
-import com.lzx.starrysky.intercept.SyncInterceptor
+import com.lzx.starrysky.intercept.InterceptCallback
+import com.lzx.starrysky.intercept.InterceptorThread
+import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.manager.PlaybackStage
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.utils.MainLooper
@@ -226,7 +226,7 @@ open class TestActivity : AppCompatActivity() {
         interceptor?.setOnClickListener {
             StarrySky.with()
                 .addInterceptor(InterceptorA())
-                .addInterceptor(InterceptorB())
+                .addInterceptor(InterceptorB(), InterceptorThread.IO)
                 .playMusic(songList, 0)
         }
         var index = 0
@@ -396,21 +396,21 @@ open class TestActivity : AppCompatActivity() {
         showToast("当前：$result")
     }
 
-    private class InterceptorA : AsyncInterceptor() {
-        override fun process(songInfo: SongInfo?, callback: InterceptorCallback) {
+    private class InterceptorA : StarrySkyInterceptor() {
+        override fun process(songInfo: SongInfo?, callback: InterceptCallback) {
             val isInMainThread = MainLooper.instance.isInMainThread()
             Log.i("TestActivity", "InterceptorA#isInMainThread = $isInMainThread")
-            callback.onContinue(songInfo)
+            callback.onNext(songInfo)
         }
 
         override fun getTag(): String = "InterceptorA"
     }
 
-    private class InterceptorB : SyncInterceptor {
-        override fun process(songInfo: SongInfo?): SongInfo? {
+    private class InterceptorB : StarrySkyInterceptor() {
+        override fun process(songInfo: SongInfo?, callback: InterceptCallback) {
             val isInMainThread = MainLooper.instance.isInMainThread()
             Log.i("TestActivity", "InterceptorA#isInMainThread = $isInMainThread")
-            return songInfo
+            callback.onNext(songInfo)
         }
 
         override fun getTag(): String = "InterceptorB"
