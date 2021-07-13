@@ -72,6 +72,12 @@
             android:text="播放flac" />
 
         <Button
+            android:id="@+id/dash"
+            android:layout_width="wrap_content"
+            android:text="播放DASH"
+            android:layout_height="wrap_content"/>
+
+        <Button
             android:id="@+id/delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

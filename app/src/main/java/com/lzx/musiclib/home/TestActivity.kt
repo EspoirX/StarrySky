@@ -21,6 +21,7 @@ import com.lzx.starrysky.utils.formatTime
 import com.lzx.starrysky.utils.md5
 import kotlinx.android.synthetic.main.activity_test.cacheSwitch
 import kotlinx.android.synthetic.main.activity_test.closeN
+import kotlinx.android.synthetic.main.activity_test.dash
 import kotlinx.android.synthetic.main.activity_test.delete
 import kotlinx.android.synthetic.main.activity_test.flac
 import kotlinx.android.synthetic.main.activity_test.getAudioSessionId
@@ -63,7 +64,8 @@ import kotlinx.android.synthetic.main.activity_test.updateList
 
 open class TestActivity : AppCompatActivity() {
 
-    val z = "https://github.com/EspoirX/lzxTreasureBox/raw/master/%E5%91%A8%E6%9D%B0%E4%BC%A6-%E5%91%8A%E7%99%BD%E6%B0%94%E7%90%83.mp3"
+    val z =
+        "https://github.com/EspoirX/lzxTreasureBox/raw/master/%E5%91%A8%E6%9D%B0%E4%BC%A6-%E5%91%8A%E7%99%BD%E6%B0%94%E7%90%83.mp3"
     val a = "https://github.com/EspoirX/lzxTreasureBox/raw/master/a.aac"
     val b = "https://github.com/EspoirX/lzxTreasureBox/raw/master/b.aac"
     val c = "https://github.com/EspoirX/lzxTreasureBox/raw/master/c.aac"
@@ -271,6 +273,14 @@ open class TestActivity : AppCompatActivity() {
             list.add(info)
             StarrySky.with().playMusic(list, 0)
         }
+
+        dash?.setOnClickListener {
+            val info = SongInfo()
+            info.songId = "32313"
+            info.songUrl = "https://storage.googleapis.com/wvmedia/clear/hevc/tears/tears.mpd"
+            StarrySky.with().playMusicByInfo(info)
+        }
+
         m3u8Btn?.setOnClickListener {
             StarrySky.with().playMusic(m3u8List, 0)
         }
