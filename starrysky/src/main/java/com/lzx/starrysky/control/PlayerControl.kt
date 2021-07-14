@@ -415,7 +415,7 @@ class PlayerControl(
     /**
      * 比较方便的判断当前媒体是否空闲
      */
-    fun isIdea(): Boolean = playbackState.value?.stage == PlaybackStage.IDEA
+    fun isIdle(): Boolean = playbackState.value?.stage == PlaybackStage.IDLE
 
     /**
      * 比较方便的判断当前媒体是否缓冲
@@ -447,7 +447,7 @@ class PlayerControl(
     /**
      * 判断传入的音乐是否空闲
      */
-    fun isCurrMusicIsIdea(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isIdea()
+    fun isCurrMusicIsIdea(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isIdle()
 
     /**
      * 判断传入的音乐是否缓冲
@@ -593,7 +593,7 @@ class PlayerControl(
             }
             PlaybackStage.PAUSE,
             PlaybackStage.ERROR,
-            PlaybackStage.IDEA -> {
+            PlaybackStage.IDLE -> {
                 timerTaskManager?.stopToUpdateProgress()
                 isRunningTimeTask = false
             }

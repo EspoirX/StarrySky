@@ -92,7 +92,7 @@ class MusicServiceBinder(private val context: Context) : Binder() {
 
     fun openNotification() {
         val info = player?.getCurrPlayInfo()
-        val state = player?.playbackState()?.changePlaybackState() ?: PlaybackStage.IDEA
+        val state = player?.playbackState()?.changePlaybackState() ?: PlaybackStage.IDLE
         startNotification(info, state)
     }
 

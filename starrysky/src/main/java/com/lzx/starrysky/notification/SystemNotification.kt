@@ -43,7 +43,7 @@ class SystemNotification constructor(
     private var mNextIntent: PendingIntent? = null
     private var mPreviousIntent: PendingIntent? = null
 
-    private var playbackState: String = PlaybackStage.IDEA
+    private var playbackState: String = PlaybackStage.IDLE
     private var songInfo: SongInfo? = null
 
     private var mediaSession: MediaSessionCompat.Token? = null
@@ -73,7 +73,7 @@ class SystemNotification constructor(
         this.hasPreSong = hasPreSong
         this.playbackState = playbackState
         this.songInfo = songInfo
-        if (playbackState == PlaybackStage.IDEA) {
+        if (playbackState == PlaybackStage.IDLE) {
             stopNotification()
         } else {
             val notification = createNotification()

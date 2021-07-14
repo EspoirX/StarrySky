@@ -103,7 +103,7 @@ class PlayDetailActivity : AppCompatActivity() {
                     }
                 }
                 PlaybackStage.PAUSE,
-                PlaybackStage.IDEA -> {
+                PlaybackStage.IDLE -> {
                     btnPlayState?.setImageResource(R.drawable.gdt_ic_play)
                 }
                 PlaybackStage.ERROR -> {

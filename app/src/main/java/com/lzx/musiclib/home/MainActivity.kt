@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                     rotationAnim?.start()
                     songCover?.loadImage(it.songInfo?.songCover)
                 }
-                PlaybackStage.IDEA,
+                PlaybackStage.IDLE,
                 PlaybackStage.ERROR,
                 PlaybackStage.PAUSE -> {
                     rotationAnim?.cancel()

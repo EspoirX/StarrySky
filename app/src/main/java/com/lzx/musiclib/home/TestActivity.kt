@@ -372,7 +372,7 @@ open class TestActivity : AppCompatActivity() {
                 PlaybackStage.SWITCH -> {
                     showToast("切歌:last=" + it.lastSongInfo?.songName + " curr=" + it.songInfo?.songName)
                 }
-                PlaybackStage.IDEA -> {
+                PlaybackStage.IDLE -> {
                     seekBarPro.progress = 0
                     tvPro.text = "进度："
                     seekBarVolume.progress = 0

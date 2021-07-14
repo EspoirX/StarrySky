@@ -58,7 +58,7 @@ class DynamicActivity : AppCompatActivity() {
                 }
                 PlaybackStage.ERROR,
                 PlaybackStage.PAUSE,
-                PlaybackStage.IDEA -> {
+                PlaybackStage.IDLE -> {
                     btnPlay.setImageResource(R.drawable.icon_dynamic_top_play)
                 }
             }

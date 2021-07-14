@@ -108,7 +108,7 @@ class CustomNotification constructor(
     private var closeIntent: PendingIntent
 
 
-    private var playbackState: String = PlaybackStage.IDEA
+    private var playbackState: String = PlaybackStage.IDLE
     private var songInfo: SongInfo? = null
 
     private val notificationManager: NotificationManager?
@@ -154,11 +154,11 @@ class CustomNotification constructor(
             }
             PlaybackStage.PAUSE,
             PlaybackStage.ERROR,
-            PlaybackStage.IDEA -> {
+            PlaybackStage.IDLE -> {
                 timerTaskManager?.stopToUpdateProgress()
             }
         }
-        if (state == PlaybackStage.IDEA) {
+        if (state == PlaybackStage.IDLE) {
             stopNotification()
         } else {
             val notification = createNotification()

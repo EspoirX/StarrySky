@@ -53,7 +53,7 @@ class DynamicDetailActivity : AppCompatActivity() {
         rotationAnim?.start()
 
         StarrySky.with().playbackState().observe(this, {
-            if (it.stage == PlaybackStage.IDEA && !it.isStop) {
+            if (it.stage == PlaybackStage.IDLE && !it.isStop) {
                 //重播
                 StarrySky.with()
                     .skipMediaQueue(true)
