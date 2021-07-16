@@ -96,6 +96,15 @@ ExoPlayer 要播放 flac 音频，是需要自己编译 so 的，具体怎么操
 
 若不知道要导入哪一种，可以在播放时抛出的异常崩溃中根据异常信息提示导入。
 
+### 4.4 机器上如果报 MediaButtonReceiver 的崩溃，可以尝试注册下广播
+```xml
+<receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
+    <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON" />
+    </intent-filter>
+</receiver>
+```
+
 ## 初始化
 
 下面是最简单的初始化以及播放音频代码，更多功能请阅读使用文档或者查看项目demo。
