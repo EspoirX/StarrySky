@@ -142,20 +142,26 @@ class CustomNotification constructor(
         notificationManager.cancelAll()
     }
 
-    override fun onPlaybackStateChanged(songInfo: SongInfo?, state: String,
-                                        hasNextSong: Boolean, hasPreSong: Boolean) {
+    override fun onPlaybackStateChanged(
+        songInfo: SongInfo?, state: String,
+        hasNextSong: Boolean, hasPreSong: Boolean
+    ) {
         this.hasNextSong = hasNextSong
         this.hasPreSong = hasPreSong
         playbackState = state
         this.songInfo = songInfo
         when (state) {
             PlaybackStage.PLAYING -> {
-                timerTaskManager?.startToUpdateProgress()
+                if (ID_PROGRESSBAR.getResId() != 0) {
+                    timerTaskManager?.startToUpdateProgress()
+                }
             }
             PlaybackStage.PAUSE,
             PlaybackStage.ERROR,
             PlaybackStage.IDLE -> {
-                timerTaskManager?.stopToUpdateProgress()
+                if (ID_PROGRESSBAR.getResId() != 0) {
+                    timerTaskManager?.stopToUpdateProgress()
+                }
             }
         }
         if (state == PlaybackStage.IDLE) {
@@ -319,14 +325,20 @@ class CustomNotification constructor(
             bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_PLAY_OR_PAUSE.getResId(), name.getResDrawable())
         }
         //设置喜欢或收藏按钮
-        bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_FAVORITE.getResId(),
-            isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_FAVORITE, DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE))
+        bigRemoteView?.setImageViewResource(
+            ID_IMG_NOTIFY_FAVORITE.getResId(),
+            isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_FAVORITE, DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE)
+        )
         //设置歌词按钮
-        bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_LYRICS.getResId(),
-            isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_LYRICS, DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS))
+        bigRemoteView?.setImageViewResource(
+            ID_IMG_NOTIFY_LYRICS.getResId(),
+            isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_LYRICS, DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS)
+        )
         //设置下载按钮
-        bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_DOWNLOAD.getResId(),
-            isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_DOWNLOAD, DRAWABLE_NOTIFY_BTN_LIGHT_DOWNLOAD))
+        bigRemoteView?.setImageViewResource(
+            ID_IMG_NOTIFY_DOWNLOAD.getResId(),
+            isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_DOWNLOAD, DRAWABLE_NOTIFY_BTN_LIGHT_DOWNLOAD)
+        )
         //上一首下一首按钮
         disableNextBtn(hasNextSong, isDark)
         disablePreviousBtn(hasPreSong, isDark)
@@ -418,7 +430,7 @@ class CustomNotification constructor(
                 mStarted = true
             }
         }
-        if (timerTaskManager == null) {
+        if (timerTaskManager == null && ID_PROGRESSBAR.getResId() != 0) {
             timerTaskManager = TimerTaskManager()
             timerTaskManager?.setUpdateProgressTask {
                 val player = (context as MusicService).binder?.player
@@ -434,7 +446,7 @@ class CustomNotification constructor(
             }
         }
         val player = (context as MusicService).binder?.player
-        if (player?.isPlaying() == true && timerTaskManager?.isRunning() == false) {
+        if (player?.isPlaying() == true && timerTaskManager?.isRunning() == false && ID_PROGRESSBAR.getResId() != 0) {
             timerTaskManager?.startToUpdateProgress()
         }
     }
@@ -450,8 +462,10 @@ class CustomNotification constructor(
             }
             (context as MusicService).stopForeground(true)
         }
-        timerTaskManager?.removeUpdateProgressTask()
-        timerTaskManager = null
+        if (ID_PROGRESSBAR.getResId() != 0) {
+            timerTaskManager?.removeUpdateProgressTask()
+            timerTaskManager = null
+        }
     }
 
     override fun onCommand(command: String?, extras: Bundle?) {
@@ -477,12 +491,16 @@ class CustomNotification constructor(
         val isDark = colorUtils.isDarkNotificationBar(context, mNotification!!)
         //喜欢或收藏按钮选中时样式
         if (isFavorite) {
-            bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_FAVORITE.getResId(),
-                DRAWABLE_NOTIFY_BTN_FAVORITE.getResDrawable())
+            bigRemoteView?.setImageViewResource(
+                ID_IMG_NOTIFY_FAVORITE.getResId(),
+                DRAWABLE_NOTIFY_BTN_FAVORITE.getResDrawable()
+            )
         } else {
             //喜欢或收藏按钮没选中时样式
-            bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_FAVORITE.getResId(),
-                isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_FAVORITE, DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE))
+            bigRemoteView?.setImageViewResource(
+                ID_IMG_NOTIFY_FAVORITE.getResId(),
+                isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_FAVORITE, DRAWABLE_NOTIFY_BTN_LIGHT_FAVORITE)
+            )
         }
         if (mNotification != null) {
             notificationManager?.notify(NOTIFICATION_ID, mNotification)
@@ -499,12 +517,16 @@ class CustomNotification constructor(
         val isDark = colorUtils.isDarkNotificationBar(context, mNotification!!)
         //歌词按钮选中时样式
         if (isChecked) {
-            bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_LYRICS.getResId(),
-                DRAWABLE_NOTIFY_BTN_LYRICS.getResDrawable())
+            bigRemoteView?.setImageViewResource(
+                ID_IMG_NOTIFY_LYRICS.getResId(),
+                DRAWABLE_NOTIFY_BTN_LYRICS.getResDrawable()
+            )
         } else {
             //歌词按钮没选中时样式
-            bigRemoteView?.setImageViewResource(ID_IMG_NOTIFY_LYRICS.getResId(),
-                isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_LYRICS, DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS))
+            bigRemoteView?.setImageViewResource(
+                ID_IMG_NOTIFY_LYRICS.getResId(),
+                isDark.getResDrawableByDark(DRAWABLE_NOTIFY_BTN_DARK_LYRICS, DRAWABLE_NOTIFY_BTN_LIGHT_LYRICS)
+            )
         }
         if (mNotification != null) {
             notificationManager?.notify(NOTIFICATION_ID, mNotification)

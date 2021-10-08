@@ -45,8 +45,7 @@ dependencies {
 [![](https://jitpack.io/v/EspoirX/StarrySky.svg)](https://jitpack.io/#EspoirX/StarrySky)
 
 > 该版本更新了什么：<br>
-> 1.升级了 ExoPlayer 版本到 2.14.1<br>
-> 2.优化了拦截器相关逻辑和API，相关改动可看文档或者demo代码。
+> 修复了自定义通知栏因为进度条刷新太频繁导致的 TransactionTooLargeException（所以通知栏进度条功能要慎用哦）<br>
 
 X.X.X 填的是当前的版本号。(有些人反馈说看不到版本号，版本号在 Readme 一开始就有标明，若看不到可以查看代码 gradle 文件或者加群咨询)
 

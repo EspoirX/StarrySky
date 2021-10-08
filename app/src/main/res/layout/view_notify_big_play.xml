@@ -133,7 +133,7 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <ProgressBar
+    <!--<ProgressBar
         android:id="@+id/pro_notifyProgressBar"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
@@ -175,5 +175,5 @@
         android:layout_marginBottom="10dp"
         android:layout_toRightOf="@+id/line"
         android:text="14sp" />
-
+-->
 </RelativeLayout>
