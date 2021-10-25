@@ -86,6 +86,12 @@ dependencies {
 dependencies {
     implementation 'com.google.android.exoplayer:extension-rtmp:2.14.1'
 }
+
+若要支持 rtsp 类流音频，请另外导入
+```groovy
+dependencies {
+    implementation 'com.google.android.exoplayer:exoplayer-rtsp:2.14.1'
+}
 ```
 
 若需支持 flac 无损音频，可直接播放，已经支持。

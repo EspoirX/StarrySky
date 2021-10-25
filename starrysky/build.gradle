@@ -55,6 +55,7 @@ dependencies {
     compileOnly ("com.google.android.exoplayer:exoplayer-hls:2.14.1")
     compileOnly ("com.google.android.exoplayer:exoplayer-smoothstreaming:2.14.1")
     compileOnly ("com.google.android.exoplayer:extension-rtmp:2.14.1")
+    compileOnly ("com.google.android.exoplayer:exoplayer-rtsp:2.14.1")
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 repositories {

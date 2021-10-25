@@ -148,7 +148,8 @@ open class TestActivity : AppCompatActivity() {
             StarrySky.with().playMusicByUrl(test)
         }
         playMusicByInfo?.setOnClickListener {
-            StarrySky.with().playMusicByInfo(SongInfo("a", a))
+//            StarrySky.with().playMusicByInfo(SongInfo("a", a))
+            StarrySky.with().playMusicByInfo(SongInfo("a", "http://ting6.yymp3.net:82/new14/zhangyj/5.mp3"))
         }
         playMusic?.setOnClickListener {
             StarrySky.with().playMusic(songList, 0)
