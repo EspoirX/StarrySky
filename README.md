@@ -111,6 +111,11 @@ ExoPlayer 要播放 flac 音频，是需要自己编译 so 的，具体怎么操
 </receiver>
 ```
 
+### 4.5 一些网友反馈的问题和解决办法
+1. 当项目里存在GSY播放器时，或者说别的库已经引入了ExoPlayer的时候，首次播放音频会造成崩溃，后续播放无问题，而且是只有打包了之后的正式包会存在这种情况，AS直接运行时没有这个问题。
+解决办法：在 gradle.properties 中加入 android.enableDexingArtifactTransfrom=false 即可。
+
+
 ## 初始化
 
 下面是最简单的初始化以及播放音频代码，更多功能请阅读使用文档或者查看项目demo。
