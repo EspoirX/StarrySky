@@ -5,7 +5,6 @@ import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
-import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.utils.StarrySkyConstant
 
 // StarrySky -> PlayerControl -> PlaybackManager -> player
@@ -108,13 +107,6 @@ object StarrySky {
      */
     @JvmStatic
     fun getPlayerCache(): ICache? = getBinder()?.getPlayerCache()
-
-    /**
-     * 创新新的播放器，即可以多个音频同时播放，client 是播放器下标，0到32，按顺序创建
-     * 根据下标可以拿到对应的播放器
-     */
-    @JvmStatic
-    fun newPlayer(client: Int): Playback? = getBinder()?.newPlayer(client)
 
     /**
      * 音效相关，获取音效操作类

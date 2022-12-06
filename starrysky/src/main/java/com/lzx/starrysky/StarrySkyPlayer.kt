@@ -1,14 +1,16 @@
 package com.lzx.starrysky
 
+import android.app.Activity
 import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
 import com.lzx.starrysky.notification.NotificationManager
+import com.lzx.starrysky.playback.ExoPlayback
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.service.MusicServiceBinder
 
-class StarrySkyPlayer(private var userGlobalConfig: Boolean) {
+class StarrySkyPlayer(private var userGlobalConfig: Boolean = true) {
 
 
     companion object {
@@ -153,6 +155,10 @@ class StarrySkyPlayer(private var userGlobalConfig: Boolean) {
         this.playback = playback
     }
 
+    fun newPlayBack() = apply {
+        this.playback = StarrySkyInstall.globalContext?.let { ExoPlayback(it, playerCache, isAutoManagerFocus) }
+    }
+
     private var binder: MusicServiceBinder? = null
 
     fun with(): PlayerControl {
@@ -171,5 +177,10 @@ class StarrySkyPlayer(private var userGlobalConfig: Boolean) {
             binder?.initPlaybackManager(playback)
         }
         return playerControl!!
+    }
+
+    fun release(activity: Activity?) {
+        with().removeProgressListener(activity)
+        with().resetVariable(activity)
     }
 }

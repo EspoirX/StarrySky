@@ -10,6 +10,7 @@ import com.lzx.musiclib.showToast
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.StarrySkyPlayer
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.intercept.InterceptCallback
 import com.lzx.starrysky.intercept.InterceptorThread
@@ -144,8 +145,13 @@ open class TestActivity : AppCompatActivity() {
         playMusicById?.setOnClickListener {
             StarrySky.with().playMusicById("z")
         }
+
+        val player = StarrySkyPlayer.create()
+            .setAutoManagerFocus(false)
+            .newPlayBack()
         playMusicByUrl?.setOnClickListener {
-            StarrySky.with().playMusicByUrl(test)
+//            StarrySky.with().playMusicByUrl(test)
+            player.with().playMusicByUrl(test)
         }
         playMusicByInfo?.setOnClickListener {
 //            StarrySky.with().playMusicByInfo(SongInfo("a", a))
@@ -296,17 +302,17 @@ open class TestActivity : AppCompatActivity() {
         }
         newPlayer1?.setOnClickListener {
             val info = SongInfo(a.md5(), a)
-            StarrySky.newPlayer(0)?.play(info, true)
+//            StarrySky.newPlayer(0)?.play(info, true)
         }
         newPlayer2?.setOnClickListener {
             val info = SongInfo(b.md5(), b)
-            StarrySky.newPlayer(1)?.play(info, true)
+//            StarrySky.newPlayer(1)?.play(info, true)
         }
         stopNewPlayer1?.setOnClickListener {
-            StarrySky.newPlayer(0)?.stop()
+//            StarrySky.newPlayer(0)?.stop()
         }
         stopNewPlayer2?.setOnClickListener {
-            StarrySky.newPlayer(1)?.stop()
+//            StarrySky.newPlayer(1)?.stop()
         }
         closeN?.setOnClickListener {
             StarrySky.closeNotification()

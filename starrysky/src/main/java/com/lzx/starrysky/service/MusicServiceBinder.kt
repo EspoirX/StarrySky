@@ -18,12 +18,6 @@ import com.lzx.starrysky.playback.SoundPoolPlayback
 
 class MusicServiceBinder(private val context: Context) : Binder() {
 
-    private val playbackInstances = arrayOfNulls<Playback>(32)
-
-    @Volatile
-    private var sInstanceMask = 0
-    private var customizePlayback: Playback? = null
-
     var player: Playback? = null
     var soundPool: SoundPoolPlayback? = null
     private var isOpenNotification: Boolean = false
@@ -127,30 +121,12 @@ class MusicServiceBinder(private val context: Context) : Binder() {
     }
 
     fun initPlaybackManager(playback: Playback?) {
-        customizePlayback = playback
         //播放器
         if (playerCache == null) {
             playerCache = ExoCache(context, cacheDestFileDir, cacheMaxBytes)
         }
         player = playback ?: ExoPlayback(context, playerCache, isAutoManagerFocus)
         soundPool = SoundPoolPlayback(context)
-    }
-
-    /**
-     * 创建多实例播放器
-     */
-    fun newPlayer(client: Int): Playback? {
-        val mask = 1 shl client
-        if (sInstanceMask and mask == 0) {
-            synchronized(Playback::class.java) {
-                if (sInstanceMask and mask == 0) {
-                    playbackInstances[client] = customizePlayback
-                        ?: ExoPlayback(context, null, false)
-                    sInstanceMask = sInstanceMask or mask
-                }
-            }
-        }
-        return playbackInstances[client]
     }
 
     fun getPlayerCache(): ICache? = playerCache
