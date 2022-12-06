@@ -78,7 +78,12 @@ fun Context.getPendingIntent(requestCode: Int, action: String): PendingIntent {
     val packageName = applicationContext.packageName
     val intent = Intent(action)
     intent.setPackage(packageName)
-    return PendingIntent.getBroadcast(this, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+    val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    } else {
+        PendingIntent.FLAG_CANCEL_CURRENT
+    }
+    return PendingIntent.getBroadcast(this, requestCode, intent, flags)
 }
 
 
