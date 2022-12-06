@@ -140,7 +140,6 @@ class ExoPlayback(
         val proxyUrl = cache?.getProxyUrl(source, songInfo)
         source = if (proxyUrl.isNullOrEmpty()) source else proxyUrl
         mediaSource = createMediaSource(source)
-        if (mediaSource == null) return
         if (mediaHasChanged || player == null) {
             //创建播放器实例
             createExoPlayer()

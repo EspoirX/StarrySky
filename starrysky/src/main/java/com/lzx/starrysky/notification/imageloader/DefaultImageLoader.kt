@@ -3,8 +3,12 @@ package com.lzx.starrysky.notification.imageloader
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import androidx.collection.LruCache
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import java.io.BufferedInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -32,7 +36,8 @@ class DefaultImageLoader : ImageLoaderStrategy {
 
     init {
         val maxSize = MAX_ALBUM_ART_CACHE_SIZE.coerceAtMost(
-            Integer.MAX_VALUE.toLong().coerceAtMost(Runtime.getRuntime().maxMemory() / 4).toInt())
+            Integer.MAX_VALUE.toLong().coerceAtMost(Runtime.getRuntime().maxMemory() / 4).toInt()
+        )
         mCache = object : LruCache<String, Array<Bitmap>>(maxSize) {
             override fun sizeOf(key: String, value: Array<Bitmap>): Int {
                 return value[BIG_BITMAP_INDEX].byteCount + value[ICON_BITMAP_INDEX].byteCount
@@ -128,12 +133,35 @@ class DefaultImageLoader : ImageLoaderStrategy {
             return if (src != null && src.width > 0 && src.height > 0) {
                 val scaleFactor =
                     (maxWidth.toDouble() / src.width).coerceAtMost(
-                        maxHeight.toDouble() / src.height)
-                Bitmap.createScaledBitmap(src, (src.width * scaleFactor).toInt(),
-                    (src.height * scaleFactor).toInt(), false)
+                        maxHeight.toDouble() / src.height
+                    )
+                Bitmap.createScaledBitmap(
+                    src, (src.width * scaleFactor).toInt(),
+                    (src.height * scaleFactor).toInt(), false
+                )
             } else {
                 null
             }
         }
+    }
+}
+
+/**
+ * 记得引用glide
+ */
+class GlideImageLoader : ImageLoaderStrategy {
+    override fun loadImage(context: Context, url: String?, callBack: ImageLoaderCallBack) {
+        Glide.with(context).asBitmap().load(url).into(object : CustomTarget<Bitmap?>() {
+            override fun onLoadCleared(placeholder: Drawable?) {}
+
+            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                callBack.onBitmapLoaded(resource)
+            }
+
+            override fun onLoadFailed(errorDrawable: Drawable?) {
+                super.onLoadFailed(errorDrawable)
+                callBack.onBitmapFailed(errorDrawable)
+            }
+        })
     }
 }

@@ -2,6 +2,7 @@ package com.lzx.starrysky
 
 import android.graphics.Bitmap
 import android.os.Parcelable
+import com.lzx.starrysky.utils.md5
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 
@@ -19,6 +20,20 @@ class SongInfo(
     var decode: Boolean = false, //是否需要解码，如果要解码，最好用本地音频
     var headData: HashMap<String, String>? = hashMapOf() //header 信息
 ) : Parcelable, Cloneable {
+
+    companion object {
+        @JvmStatic
+        fun create(url: String): SongInfo = SongInfo().apply {
+            songId = url.md5()
+            songUrl = url
+        }
+
+        @JvmStatic
+        fun create(id: String, url: String): SongInfo = SongInfo().apply {
+            songId = id
+            songUrl = url
+        }
+    }
 
     @IgnoredOnParcel
     var objectValue: Any = Any()

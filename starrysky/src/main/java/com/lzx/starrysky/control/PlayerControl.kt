@@ -28,20 +28,22 @@ import com.lzx.starrysky.utils.title
 class PlayerControl(
     appInterceptors: MutableList<Pair<StarrySkyInterceptor, String>>,
     private val globalPlaybackStageListener: GlobalPlaybackStageListener?
-) : PlaybackManager.PlaybackServiceCallback {
+) {
 
     private val focusChangeState = MutableLiveData<FocusInfo>()
     private val playbackState = MutableLiveData<PlaybackStage>()
     private val playerEventListener = hashMapOf<String, OnPlayerEventListener>()
     private val progressListener = hashMapOf<String, OnPlayProgressListener>()
+
     private var timerTaskManager: TimerTaskManager? = null
     private var isRunningTimeTask = false
+
     private val provider = MediaSourceProvider()
 
     private val interceptors = mutableListOf<Pair<StarrySkyInterceptor, String>>() //局部拦截器，用完会自动清理
     private var isSkipMediaQueue = false
 
-    private val playbackManager = PlaybackManager(provider, appInterceptors)
+    private val playbackManager = PlaybackManager(provider, appInterceptors, this)
 
     init {
         timerTaskManager = TimerTaskManager()
@@ -55,9 +57,9 @@ class PlayerControl(
         }
     }
 
-    internal fun attachPlayerCallback() {
-        playbackManager.attachPlayerCallback(this)
-    }
+//    internal fun attachPlayerCallback() {
+//        playbackManager.attachPlayerCallback(this)
+//    }
 
     /**
      * 是否跳过播放队列，false的话，播放将不经过播放队列，直接走播放器，当前Activity结束后恢复false状态
@@ -92,10 +94,7 @@ class PlayerControl(
      * 根据songUrl播放，songId 默认为 url 的 md5
      */
     fun playMusicByUrl(url: String) {
-        val songInfo = SongInfo().apply {
-            songId = url.md5()
-            songUrl = url
-        }
+        val songInfo = SongInfo.create(url)
         if (!isSkipMediaQueue) {
             provider.addSongInfo(songInfo)
         }
@@ -120,7 +119,7 @@ class PlayerControl(
      */
     fun playMusic(mediaList: MutableList<SongInfo>, index: Int) {
         if (mediaList.isEmpty()) {
-            throw IllegalStateException("songInfos 不能为空")
+            throw IllegalStateException("播放列表不能为空")
         }
         if (!index.isIndexPlayable(mediaList)) {
             throw IllegalStateException("请检查下标合法性")
@@ -151,7 +150,7 @@ class PlayerControl(
      * 添加局部拦截器，执行顺序是先执行局部拦截器再执行全局拦截器，当前Activity结束后局部拦截器会清空
      */
     fun addInterceptor(interceptor: StarrySkyInterceptor, thread: String = InterceptorThread.UI): PlayerControl {
-        val noSame = interceptors.filter { it.first.getTag() == interceptor.getTag() }.isNullOrEmpty()
+        val noSame = interceptors.none { it.first.getTag() == interceptor.getTag() }
         if (noSame) { //如果没有相同的才添加
             interceptors += Pair(interceptor, thread)
         }
@@ -582,7 +581,7 @@ class PlayerControl(
         }
     }
 
-    override fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
+    fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
         when (playbackStage.stage) {
             PlaybackStage.PLAYING -> {
                 timerTaskManager?.startToUpdateProgress()
@@ -606,7 +605,7 @@ class PlayerControl(
         }
     }
 
-    override fun onFocusStateChange(info: FocusInfo) {
+    fun onFocusStateChange(info: FocusInfo) {
         focusChangeState.postValue(info)
     }
 

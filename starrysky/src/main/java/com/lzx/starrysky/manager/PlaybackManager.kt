@@ -4,6 +4,8 @@ package com.lzx.starrysky.manager
 import android.app.Activity
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.StarrySkyInstall
+import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.control.isModeShuffle
 import com.lzx.starrysky.intercept.InterceptCallback
@@ -17,29 +19,27 @@ import com.lzx.starrysky.utils.md5
 
 class PlaybackManager(
     provider: MediaSourceProvider,
-    private val appInterceptors: MutableList<Pair<StarrySkyInterceptor, String>>
+    private val appInterceptors: MutableList<Pair<StarrySkyInterceptor, String>>,
+    private val playerControl: PlayerControl
 ) : Playback.Callback {
 
     private val interceptorService = InterceptorService()
     val mediaQueue = MediaQueueManager(provider)
-    private var sessionManager = MediaSessionManager(StarrySky.context()!!, this)
+    private var sessionManager = MediaSessionManager(StarrySkyInstall.globalContext!!, this)
     private var lastSongInfo: SongInfo? = null
-    private var serviceCallback: PlaybackServiceCallback? = null
     private var isActionStop = false
     var isSkipMediaQueue = false
     private var withOutCallback = false
 
-
-    fun attachPlayerCallback(serviceCallback: PlaybackServiceCallback) {
+    init {
         player()?.setCallback(this)
-        StarrySky.getBinder()?.setSessionToken(sessionManager.getMediaSession())
-        this.serviceCallback = serviceCallback
+        StarrySkyInstall.binder?.setSessionToken(sessionManager.getMediaSession())
     }
 
     /**
      * 当前播放器
      */
-    fun player() = StarrySky.getBinder()?.player
+    fun player() = StarrySkyInstall.binder?.player
 
     /**
      * 配置拦截器
@@ -340,7 +340,7 @@ class PlaybackManager(
      * 定时暂停
      */
     fun onStopByTimedOff(time: Long, isPause: Boolean, finishCurrSong: Boolean) {
-        StarrySky.getBinder()?.onStopByTimedOff(time, isPause, finishCurrSong)
+        StarrySkyInstall.binder?.onStopByTimedOff(time, isPause, finishCurrSong)
     }
 
     /**
@@ -360,7 +360,7 @@ class PlaybackManager(
             state.songInfo = songInfo
             state.stage = PlaybackStage.SWITCH
             if (!withOutCallback && lastSongInfo != null) {
-                serviceCallback?.onPlaybackStateUpdated(state)
+                playerControl.onPlaybackStateUpdated(state)
             }
             lastSongInfo = songInfo
         }
@@ -425,19 +425,19 @@ class PlaybackManager(
     }
 
     override fun onFocusStateChange(info: FocusInfo) {
-        serviceCallback?.onFocusStateChange(info)
+        playerControl.onFocusStateChange(info)
     }
 
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {
         val newState = state.changePlaybackState()
-        StarrySky.getBinder()?.onChangedNotificationState(
+        StarrySkyInstall.binder?.onChangedNotificationState(
             currPlayInfo, newState,
             isSkipToNextEnabled(), isSkipToPreviousEnabled()
         )
         when (newState) {
             PlaybackStage.BUFFERING,
             PlaybackStage.PAUSE -> {
-                StarrySky.getBinder()?.startNotification(currPlayInfo, newState)
+                StarrySkyInstall.binder?.startNotification(currPlayInfo, newState)
             }
         }
         StarrySky.log("PlaybackStage = $newState")
@@ -449,12 +449,7 @@ class PlaybackManager(
 
         sessionManager.updateMetaData(currPlayInfo)
         if (!withOutCallback) {
-            serviceCallback?.onPlaybackStateUpdated(playbackState)
+            playerControl.onPlaybackStateUpdated(playbackState)
         }
-    }
-
-    interface PlaybackServiceCallback {
-        fun onPlaybackStateUpdated(playbackState: PlaybackStage)
-        fun onFocusStateChange(info: FocusInfo)
     }
 }

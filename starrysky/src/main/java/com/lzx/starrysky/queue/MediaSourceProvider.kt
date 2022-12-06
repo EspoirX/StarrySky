@@ -29,8 +29,6 @@ class MediaSourceProvider {
             updateShuffleSongList()
         }
 
-    fun getSourceSize() = songSources.size
-
     fun updateShuffleSongList() {
         if (shuffleSongSources.isNotEmpty()) {
             shuffleSongSources.clear()
@@ -38,6 +36,8 @@ class MediaSourceProvider {
         shuffleSongSources.addAll(songList)
         shuffleSongSources.shuffle()
     }
+
+    fun getSourceSize() = songSources.size
 
     fun getShuffleSongList(): MutableList<SongInfo> {
         if (shuffleSongSources.isEmpty()) {
@@ -97,7 +97,7 @@ class MediaSourceProvider {
         if (songId.isEmpty()) {
             return null
         }
-        return songSources.getOrElse(songId, { null })
+        return songSources.getOrElse(songId) { null }
     }
 
     fun getSongInfoByIndex(index: Int): SongInfo? {

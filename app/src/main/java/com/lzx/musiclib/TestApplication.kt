@@ -1,28 +1,21 @@
 package com.lzx.musiclib
 
-//import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import android.Manifest
 import android.app.Application
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.danikula.videocache.HttpProxyCacheServer
 import com.danikula.videocache.file.Md5FileNameGenerator
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.SongInfo
-import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.StarrySkyInstall
 import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.intercept.InterceptCallback
 import com.lzx.starrysky.intercept.InterceptorThread
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
 import com.lzx.starrysky.notification.NotificationConfig
-import com.lzx.starrysky.notification.imageloader.ImageLoaderCallBack
-import com.lzx.starrysky.notification.imageloader.ImageLoaderStrategy
+import com.lzx.starrysky.notification.imageloader.GlideImageLoader
 import com.lzx.starrysky.utils.StarrySkyConstant
 import com.lzx.starrysky.utils.toSdcardPath
 import com.qw.soul.permission.SoulPermission
@@ -59,7 +52,7 @@ open class TestApplication : Application() {
             }
             pendingIntentMode { NotificationConfig.MODE_BROADCAST }
         }
-        StarrySky.init(this)
+        StarrySkyInstall.init(this)
             .setOpenCache(true)
             .setAutoManagerFocus(false)   //使用多实例的时候要关掉，不然会相互抢焦点
             .setCacheDestFileDir("000StarrySkyCache/".toSdcardPath())
@@ -67,23 +60,7 @@ open class TestApplication : Application() {
             //.setCache(AndroidVideoCache(this))
             .addInterceptor(PermissionInterceptor(this))
             .addInterceptor(RequestSongInfoInterceptor(), InterceptorThread.IO)
-            .setImageLoader(object : ImageLoaderStrategy {
-                //使用自定义图片加载器
-                override fun loadImage(context: Context, url: String?, callBack: ImageLoaderCallBack) {
-                    Glide.with(context).asBitmap().load(url).into(object : CustomTarget<Bitmap?>() {
-                        override fun onLoadCleared(placeholder: Drawable?) {}
-
-                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                            callBack.onBitmapLoaded(resource)
-                        }
-
-                        override fun onLoadFailed(errorDrawable: Drawable?) {
-                            super.onLoadFailed(errorDrawable)
-                            callBack.onBitmapFailed(errorDrawable)
-                        }
-                    })
-                }
-            })
+            .setImageLoader(GlideImageLoader())
             .setNotificationSwitch(true)
             .setNotificationType(INotification.CUSTOM_NOTIFICATION)
             .setNotificationConfig(notificationConfig)

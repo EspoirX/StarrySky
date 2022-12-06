@@ -29,7 +29,7 @@ class MusicService : Service() {
     private var isPauseByTimedOff = true
     private var timedOffFinishCurrSong = false
     private var mustShowNotification = false
-    private var telephonyManager: TelephonyManager? = null
+//    private var telephonyManager: TelephonyManager? = null
 
 
     override fun onCreate() {
