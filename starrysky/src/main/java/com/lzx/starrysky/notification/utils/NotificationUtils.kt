@@ -46,7 +46,11 @@ object NotificationUtils {
         @SuppressLint("WrongConstant")
         val pendingIntent: PendingIntent
         val requestCode = INotification.REQUEST_CODE
-        val flags = PendingIntent.FLAG_CANCEL_CURRENT
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        } else {
+            PendingIntent.FLAG_CANCEL_CURRENT
+        }
         pendingIntent = when (config?.pendingIntentMode) {
             NotificationConfig.MODE_ACTIVITY -> {
                 PendingIntent.getActivity(context, requestCode, openUI, flags)
@@ -71,7 +75,11 @@ object NotificationUtils {
         manager: NotificationManager
     ) {
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
-            val notificationChannel = NotificationChannel(CHANNEL_ID, context.getString(R.string.notification_channel), NotificationManager.IMPORTANCE_LOW)
+            val notificationChannel = NotificationChannel(
+                CHANNEL_ID,
+                context.getString(R.string.notification_channel),
+                NotificationManager.IMPORTANCE_LOW
+            )
             notificationChannel.description = context.getString(R.string.notification_channel_description)
             manager.createNotificationChannel(notificationChannel)
         }
