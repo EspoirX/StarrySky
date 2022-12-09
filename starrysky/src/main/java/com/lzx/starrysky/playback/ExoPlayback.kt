@@ -46,8 +46,8 @@ class ExoPlayback(
 ) : Playback, FocusManager.OnFocusStateChangeListener {
 
     companion object {
-        const val TYPE_RTMP = 4
-        const val TYPE_FLAC = 5
+        const val TYPE_RTMP = 400
+        const val TYPE_FLAC = 500
     }
 
     private var dataSourceFactory: DataSource.Factory? = null
