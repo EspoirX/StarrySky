@@ -37,7 +37,8 @@ class StarrySkyPlayer(private var userGlobalConfig: Boolean = true) {
     private var isAutoManagerFocus: Boolean = true
 
     //播放器
-    private var playback: Playback? = null
+    private var playback: Playback? =
+        StarrySkyInstall.globalContext?.let { ExoPlayback(it, playerCache, isAutoManagerFocus) }
 
     //播放控制
     private var playerControl: PlayerControl? = null
@@ -148,25 +149,13 @@ class StarrySkyPlayer(private var userGlobalConfig: Boolean = true) {
      * 自定义播放器实现
      */
     fun setPlayback(playback: Playback) = apply {
-        if (userGlobalConfig) {
-            this.playback = StarrySkyInstall.playback
-            return@apply
-        }
         this.playback = playback
-    }
-
-    fun newPlayBack() = apply {
-        this.playback = StarrySkyInstall.globalContext?.let { ExoPlayback(it, playerCache, isAutoManagerFocus) }
     }
 
     private var binder: MusicServiceBinder? = null
 
     fun with(): PlayerControl {
         if (playerControl == null) {
-            playerControl = PlayerControl(
-                StarrySkyInstall.interceptors,
-                StarrySkyInstall.globalPlaybackStageListener
-            )
             binder = MusicServiceBinder(StarrySkyInstall.globalContext!!)
             binder?.setPlayerCache(
                 playerCache,
@@ -175,6 +164,11 @@ class StarrySkyPlayer(private var userGlobalConfig: Boolean = true) {
             )
             binder?.setAutoManagerFocus(isAutoManagerFocus)
             binder?.initPlaybackManager(playback)
+            playerControl = PlayerControl(
+                StarrySkyInstall.interceptors,
+                StarrySkyInstall.globalPlaybackStageListener,
+                binder
+            )
         }
         return playerControl!!
     }

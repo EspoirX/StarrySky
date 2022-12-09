@@ -15,12 +15,14 @@ import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.queue.MediaQueueManager
 import com.lzx.starrysky.queue.MediaSourceProvider
+import com.lzx.starrysky.service.MusicServiceBinder
 import com.lzx.starrysky.utils.md5
 
 class PlaybackManager(
     provider: MediaSourceProvider,
     private val appInterceptors: MutableList<Pair<StarrySkyInterceptor, String>>,
-    private val playerControl: PlayerControl
+    private val playerControl: PlayerControl,
+    private val binder: MusicServiceBinder?
 ) : Playback.Callback {
 
     private val interceptorService = InterceptorService()
@@ -33,13 +35,13 @@ class PlaybackManager(
 
     init {
         player()?.setCallback(this)
-        StarrySkyInstall.binder?.setSessionToken(sessionManager.getMediaSession())
+        binder?.setSessionToken(sessionManager.getMediaSession())
     }
 
     /**
      * 当前播放器
      */
-    fun player() = StarrySkyInstall.binder?.player
+    fun player() = binder?.player
 
     /**
      * 配置拦截器
@@ -340,7 +342,7 @@ class PlaybackManager(
      * 定时暂停
      */
     fun onStopByTimedOff(time: Long, isPause: Boolean, finishCurrSong: Boolean) {
-        StarrySkyInstall.binder?.onStopByTimedOff(time, isPause, finishCurrSong)
+        binder?.onStopByTimedOff(time, isPause, finishCurrSong)
     }
 
     /**
@@ -430,14 +432,14 @@ class PlaybackManager(
 
     private fun updatePlaybackState(currPlayInfo: SongInfo?, errorMsg: String?, state: Int) {
         val newState = state.changePlaybackState()
-        StarrySkyInstall.binder?.onChangedNotificationState(
+        binder?.onChangedNotificationState(
             currPlayInfo, newState,
             isSkipToNextEnabled(), isSkipToPreviousEnabled()
         )
         when (newState) {
             PlaybackStage.BUFFERING,
             PlaybackStage.PAUSE -> {
-                StarrySkyInstall.binder?.startNotification(currPlayInfo, newState)
+                binder?.startNotification(currPlayInfo, newState)
             }
         }
         StarrySky.log("PlaybackStage = $newState")

@@ -9,12 +9,14 @@ import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.OnPlayerEventListener
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.StarrySkyInstall
 import com.lzx.starrysky.intercept.InterceptorThread
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.manager.PlaybackManager
 import com.lzx.starrysky.manager.PlaybackStage
 import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.queue.MediaSourceProvider
+import com.lzx.starrysky.service.MusicServiceBinder
 import com.lzx.starrysky.utils.StarrySkyConstant
 import com.lzx.starrysky.utils.TimerTaskManager
 import com.lzx.starrysky.utils.data
@@ -27,7 +29,8 @@ import com.lzx.starrysky.utils.title
 
 class PlayerControl(
     appInterceptors: MutableList<Pair<StarrySkyInterceptor, String>>,
-    private val globalPlaybackStageListener: GlobalPlaybackStageListener?
+    private val globalPlaybackStageListener: GlobalPlaybackStageListener?,
+    private val binder: MusicServiceBinder?
 ) {
 
     private val focusChangeState = MutableLiveData<FocusInfo>()
@@ -43,7 +46,7 @@ class PlayerControl(
     private val interceptors = mutableListOf<Pair<StarrySkyInterceptor, String>>() //局部拦截器，用完会自动清理
     private var isSkipMediaQueue = false
 
-    private val playbackManager = PlaybackManager(provider, appInterceptors, this)
+    private val playbackManager = PlaybackManager(provider, appInterceptors, this, binder)
 
     init {
         timerTaskManager = TimerTaskManager()
@@ -587,7 +590,7 @@ class PlayerControl(
                 timerTaskManager?.startToUpdateProgress()
                 val effectSwitch = StarrySkyConstant.keyEffectSwitch
                 if (effectSwitch) {
-                    StarrySky.effect().attachAudioEffect(getAudioSessionId())
+                    StarrySkyInstall.voiceEffect.attachAudioEffect(getAudioSessionId())
                 }
             }
             PlaybackStage.PAUSE,

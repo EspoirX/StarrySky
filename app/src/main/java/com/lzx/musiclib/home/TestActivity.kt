@@ -148,7 +148,6 @@ open class TestActivity : AppCompatActivity() {
 
         val player = StarrySkyPlayer.create()
             .setAutoManagerFocus(false)
-            .newPlayBack()
         playMusicByUrl?.setOnClickListener {
 //            StarrySky.with().playMusicByUrl(test)
             player.with().playMusicByUrl(test)

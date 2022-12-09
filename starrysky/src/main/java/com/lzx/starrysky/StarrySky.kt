@@ -45,7 +45,8 @@ object StarrySky {
         if (playerControl == null) {
             playerControl = PlayerControl(
                 StarrySkyInstall.interceptors,
-                StarrySkyInstall.globalPlaybackStageListener
+                StarrySkyInstall.globalPlaybackStageListener,
+                getBinder()
             )
         }
         return playerControl!!
