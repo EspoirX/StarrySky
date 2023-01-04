@@ -1,5 +1,6 @@
 package com.lzx.starrysky.service
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
@@ -10,14 +11,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
+import android.os.Build
 import android.os.IBinder
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
+import androidx.work.*
+import androidx.work.impl.utils.futures.SettableFuture
+import com.google.common.util.concurrent.ListenableFuture
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.notification.utils.NotificationUtils
 import com.lzx.starrysky.utils.MainLooper
 import com.lzx.starrysky.utils.TimerTaskManager
 import com.lzx.starrysky.utils.orDef
+import androidx.work.OneTimeWorkRequestBuilder as OneTimeWorkRequestBuilder
 
 
 class MusicService : Service() {
@@ -84,13 +90,42 @@ class MusicService : Service() {
             MainLooper.instance.postDelayed({
                 if (binder?.notification == null) {
                     try {
-                        startForeground(10000, notification)
+                        customStartForeground(10000, notification)
                     } catch (ex: Exception) {
                         ex.printStackTrace()
                     }
                 }
             }, 3500L)
         }
+    }
+
+    /**
+     * 自定义启动前台服务
+     * If the app targeting API is
+     * {@link android.os.Build.VERSION_CODES#S} or later, and the service is restricted from
+     * becoming foreground service due to background restriction.
+     * {@link android.app.service#startForeground}
+     *
+     */
+    fun customStartForeground(id: Int,notification:Notification) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            startForegroundByWorkManager(id)
+        }else{
+            startForeground(id, notification)
+        }
+    }
+
+    /**
+     * 通过WordManager来实现前台服务启动，避免崩溃
+     */
+    private fun startForegroundByWorkManager(id:Int){
+        val uploadWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<UploadWorker>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .setInputData(workDataOf("id" to id))
+            .build()
+        WorkManager
+            .getInstance(this)
+            .enqueue(uploadWorkRequest)
     }
 
 
@@ -161,6 +196,7 @@ class MusicService : Service() {
             }
         }
 
+        @SuppressLint("MissingPermission")
         override fun onReceive(context: Context?, intent: Intent?) {
             //当前是正在运行的时候才能通过媒体按键来操作音频
             val isPlaying = binder?.player?.isPlaying().orDef()
@@ -191,5 +227,28 @@ class MusicService : Service() {
         binder?.player?.stop()
         binder?.player?.setCallback(null)
         binder?.notification?.stopNotification()
+    }
+}
+// 后台任务实例
+class UploadWorker(appContext: Context, workerParams: WorkerParameters):
+    Worker(appContext, workerParams) {
+    override fun doWork(): Result {
+        val id = inputData.getInt("id",1000)
+        kotlin.runCatching { setForegroundAsync(getForegroundInfo(id)) }
+        return Result.success()
+    }
+
+    @SuppressLint("RestrictedApi")
+    override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> {
+        val future = SettableFuture.create<ForegroundInfo>()
+        val id = inputData.getInt("id",1000)
+        future.set(getForegroundInfo(id))
+        return future
+
+    }
+
+    private fun getForegroundInfo(id:Int): ForegroundInfo {
+        val notification: Notification = NotificationUtils.createNoCrashNotification(applicationContext)
+        return ForegroundInfo(id, notification)
     }
 }

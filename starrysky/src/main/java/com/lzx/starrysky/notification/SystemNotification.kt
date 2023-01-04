@@ -131,7 +131,7 @@ class SystemNotification constructor(
                 filter.addAction(ACTION_PLAY)
                 filter.addAction(ACTION_PREV)
                 context.registerReceiver(this, filter)
-                (context as MusicService).startForeground(INotification.NOTIFICATION_ID, notification)
+                (context as MusicService).customStartForeground(INotification.NOTIFICATION_ID, notification)
                 mStarted = true
             }
         }

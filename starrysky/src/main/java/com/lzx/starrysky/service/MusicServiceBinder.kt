@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Binder
 import android.support.v4.media.session.MediaSessionCompat
 import com.lzx.starrysky.SongInfo
+import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.cache.ExoCache
 import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.manager.PlaybackStage
@@ -94,6 +95,14 @@ class MusicServiceBinder(private val context: Context) : Binder() {
         if (isOpenNotification) {
             notification?.startNotification(currPlayInfo, state)
             isShowNotification = true
+        }
+
+        if(state == PlaybackStage.IDLE){
+            // 释放锁
+            LockHelper.release()
+        }else{
+            // 添加锁
+            LockHelper.acquire(context)
         }
     }
 

@@ -39,9 +39,19 @@ class MusicViewModel : ViewModel() {
             info.artist = it?.getArray("singer")?.getJSONObject(0)?.getString("name").orEmpty()
             val albumid = it?.getString("albummid").orEmpty()
             info.songCover = "https://y.gtimg.cn/music/photo_new/T002R300x300M000${albumid}.jpg"
+            info.songUrl = getUrl(it)
             list.add(info)
         }
         return list
+    }
+
+    private fun getUrl(obj:JSONObject?):String{
+        obj?:return ""
+        return if(obj.has("songUrl")){
+            obj.getString("songUrl").orEmpty()
+        }else{
+            ""
+        }
     }
 
 
