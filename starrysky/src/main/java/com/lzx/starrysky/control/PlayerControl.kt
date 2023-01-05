@@ -380,6 +380,20 @@ class PlayerControl(
     }
 
     /**
+     * 获取当前的下标
+     * 区别于{@link getNowPlayingIndex()}，后者主要是通过当前正在（⚠️注意是正在播放的状态）播放的信息，来获取当前播放数据的下标
+     * 而后者是通过顺序、随机、单曲循环等播放模式来确定的当前下标，相对可靠。
+     * ⚠️由于StarrySky是全局单例，因此在需要从头播放音频列表的时候，如果此刻使用该方法可能造成误判，不能获取到当前的下标（直接播放指定歌曲，没有刷新下标造成），
+     * 可在播放列表歌曲后，手动调用{@link updateCurrIndex()}方法进行修正。
+     * 提供该方法，应用于播放被拦截时，需要全局刷新被拦截的音频信息。
+     * 例如播放VIP内容被拦截，此刻UI需要显示VIP内容信息，此时可以使用该方法
+     *
+     */
+    fun getNowIndex():Int{
+        return playbackManager.mediaQueue.getCurrIndex()
+    }
+
+    /**
      * 以ms为单位获取当前缓冲的位置。
      */
     fun getBufferedPosition(): Long = playbackManager.player()?.bufferedPosition().orDef()
