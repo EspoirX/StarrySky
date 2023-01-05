@@ -31,7 +31,7 @@ class PlaybackManager(
     private var lastSongInfo: SongInfo? = null
     private var isActionStop = false
     var isSkipMediaQueue = false
-    private var withOutCallback = false
+    private var withOutCallback = true
 
     init {
         player()?.setCallback(this)
@@ -72,7 +72,7 @@ class PlaybackManager(
      */
     internal fun resetVariable(activity: Activity?) {
         isSkipMediaQueue = false
-        withOutCallback = false
+        withOutCallback = true
         interceptorService.attachInterceptors(appInterceptors)
     }
 
@@ -361,7 +361,7 @@ class PlaybackManager(
             state.lastSongInfo = lastSongInfo
             state.songInfo = songInfo
             state.stage = PlaybackStage.SWITCH
-            if (!withOutCallback && lastSongInfo != null) {
+            if (withOutCallback && lastSongInfo != null) {
                 playerControl.onPlaybackStateUpdated(state)
             }
             lastSongInfo = songInfo
@@ -450,7 +450,7 @@ class PlaybackManager(
         playbackState.isStop = isActionStop
 
         sessionManager.updateMetaData(currPlayInfo)
-        if (!withOutCallback) {
+        if (withOutCallback) {
             playerControl.onPlaybackStateUpdated(playbackState)
         }
     }

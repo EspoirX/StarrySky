@@ -73,7 +73,9 @@ class PlayerControl(
     }
 
     /**
-     * 是否需要状态回调，false的话将收不到回调，即使你已经设置了，当前Activity结束后恢复true状态
+     * 是否需要状态回调，false的话将收不到回调，
+     * 即使你已经设置了，当前 Activity 结束后恢复true状态
+     * 意味着如果禁用状态回调，作用域仅代表着当前 activity 存活期间（onDestroyed会重置为true）
      */
     fun setWithOutCallback(withOutCallback: Boolean) = apply {
         playbackManager.attachWithOutCallback(withOutCallback)
