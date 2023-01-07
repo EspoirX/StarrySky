@@ -2,6 +2,7 @@ package com.lzx.starrysky.manager
 
 
 import android.app.Activity
+import android.graphics.BitmapFactory
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyInstall
@@ -9,6 +10,7 @@ import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.control.isModeShuffle
 import com.lzx.starrysky.intercept.InterceptCallback
+import com.lzx.starrysky.intercept.InterceptorPlace
 import com.lzx.starrysky.intercept.InterceptorService
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.playback.FocusInfo
@@ -87,7 +89,7 @@ class PlaybackManager(
         } else {
             mediaQueue.updateIndexBySongId(songInfo.songId)
         }
-        interceptorService.handlerInterceptor(songInfo, object : InterceptCallback {
+        interceptorService.handlerInterceptor(songInfo, InterceptorPlace.BEFORE, object : InterceptCallback {
             override fun onNext(songInfo: SongInfo?) {
                 if (songInfo == null || songInfo.songId.isEmpty() || songInfo.songUrl.isEmpty()) {
                     throw IllegalStateException("songId 或 songUrl 不能为空")
@@ -372,54 +374,65 @@ class PlaybackManager(
         }
     }
 
+
     private fun onPlaybackCompletion() {
-        val repeatMode = RepeatMode.with
-        when (repeatMode.repeatMode) {
-            //顺序播放
-            RepeatMode.REPEAT_MODE_NONE -> {
-                if (repeatMode.isLoop) {
-                    player()?.currentMediaId = ""
-                    if (!isSkipMediaQueue) {
-                        onSkipToNext()
+        interceptorService.handlerInterceptor(player()?.getCurrPlayInfo(), InterceptorPlace.AFTER, object : InterceptCallback {
+            override fun onNext(songInfo: SongInfo?) {
+                val repeatMode = RepeatMode.with
+                when (repeatMode.repeatMode) {
+                    //顺序播放
+                    RepeatMode.REPEAT_MODE_NONE -> {
+                        if (repeatMode.isLoop) {
+                            player()?.currentMediaId = ""
+                            if (!isSkipMediaQueue) {
+                                onSkipToNext()
+                            }
+                        } else if (!mediaQueue.currSongIsLastSong()) {
+                            if (!isSkipMediaQueue) {
+                                onSkipToNext()
+                            }
+                        } else {
+                            player()?.currentMediaId = ""
+                        }
                     }
-                } else if (!mediaQueue.currSongIsLastSong()) {
-                    if (!isSkipMediaQueue) {
-                        onSkipToNext()
+                    //单曲播放
+                    RepeatMode.REPEAT_MODE_ONE -> {
+                        player()?.currentMediaId = ""
+                        if (repeatMode.isLoop) {
+                            onRestoreMusic()
+                        }
                     }
-                } else {
-                    player()?.currentMediaId = ""
+                    //随机播放
+                    RepeatMode.REPEAT_MODE_SHUFFLE -> {
+                        player()?.currentMediaId = ""
+                        if (!isSkipMediaQueue) {
+                            onSkipToNext()
+                        }
+                    }
+                    //倒序播放
+                    RepeatMode.REPEAT_MODE_REVERSE -> {
+                        if (repeatMode.isLoop) {
+                            player()?.currentMediaId = ""
+                            if (!isSkipMediaQueue) {
+                                onSkipToPrevious()
+                            }
+                        } else if (!mediaQueue.currSongIsFirstSong()) {
+                            if (!isSkipMediaQueue) {
+                                onSkipToPrevious()
+                            }
+                        } else {
+                            player()?.currentMediaId = ""
+                        }
+                    }
                 }
             }
-            //单曲播放
-            RepeatMode.REPEAT_MODE_ONE -> {
-                player()?.currentMediaId = ""
-                if (repeatMode.isLoop) {
-                    onRestoreMusic()
-                }
+
+            override fun onInterrupt(msg: String?) {
+
             }
-            //随机播放
-            RepeatMode.REPEAT_MODE_SHUFFLE -> {
-                player()?.currentMediaId = ""
-                if (!isSkipMediaQueue) {
-                    onSkipToNext()
-                }
-            }
-            //倒序播放
-            RepeatMode.REPEAT_MODE_REVERSE -> {
-                if (repeatMode.isLoop) {
-                    player()?.currentMediaId = ""
-                    if (!isSkipMediaQueue) {
-                        onSkipToPrevious()
-                    }
-                } else if (!mediaQueue.currSongIsFirstSong()) {
-                    if (!isSkipMediaQueue) {
-                        onSkipToPrevious()
-                    }
-                } else {
-                    player()?.currentMediaId = ""
-                }
-            }
-        }
+        })
+
+
     }
 
     override fun onPlaybackError(songInfo: SongInfo?, error: String) {

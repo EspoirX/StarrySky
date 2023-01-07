@@ -26,11 +26,16 @@ import com.lzx.starrysky.utils.md5
 import com.lzx.starrysky.utils.orDef
 import com.lzx.starrysky.utils.title
 
-
+/**
+ * 播放控制器
+ * @param appInterceptors 全局拦截器
+ * @param globalPlaybackStageListener 播放状态监听回调
+ * @param binder 播放器示例提供者
+ */
 class PlayerControl(
     appInterceptors: MutableList<Pair<StarrySkyInterceptor, String>>,
     private val globalPlaybackStageListener: GlobalPlaybackStageListener?,
-    private val binder: MusicServiceBinder?
+    binder: MusicServiceBinder?
 ) {
 
     private val focusChangeState = MutableLiveData<FocusInfo>()
@@ -43,7 +48,16 @@ class PlayerControl(
 
     private val provider = MediaSourceProvider()
 
-    private val interceptors = mutableListOf<Pair<StarrySkyInterceptor, String>>() //局部拦截器，用完会自动清理
+    /**
+     * 临时拦截器，用完会自动清理
+     * <p class="note">
+     * 临时拦截器的生命周期很短
+     * <ul>
+     * <li>{@link #playMusicImpl(SongInfo)} 使用一次后，自动清除</li>
+     * <li>{@link PlaybackManager#resetVariable(Activity)} 如果在activity销毁时，还没有使用，此时会自动清除</li>
+     * </ul></p>
+     */
+    private val interceptors = mutableListOf<Pair<StarrySkyInterceptor, String>>()
     private var isSkipMediaQueue = false
 
     private val playbackManager = PlaybackManager(provider, appInterceptors, this, binder)
@@ -155,7 +169,9 @@ class PlayerControl(
      * 添加局部拦截器，执行顺序是先执行局部拦截器再执行全局拦截器，当前Activity结束后局部拦截器会清空
      */
     fun addInterceptor(interceptor: StarrySkyInterceptor, thread: String = InterceptorThread.UI): PlayerControl {
-        val noSame = interceptors.none { it.first.getTag() == interceptor.getTag() }
+        // 拦截器是否相同，增加拦截位置判断
+        val noSame = interceptors.none { it.first.getTag() == interceptor.getTag()
+                && it.first.getInterceptorPosition() == interceptor.getInterceptorPosition() }
         if (noSame) { //如果没有相同的才添加
             interceptors += Pair(interceptor, thread)
         }
@@ -628,7 +644,14 @@ class PlayerControl(
         focusChangeState.postValue(info)
     }
 
+    /**
+     * 清除临时拦截器
+     * 添加清除原因：
+     * 在销毁Activity后，playbackManager继续播放，在播放下一曲等行为时，此时临时拦截器没有生效，；
+     * 由于没有清空拦截器，此时如果因为业务逻辑需要调用playMusicBy**方法时，此时临时拦截器将再次生效，产生预期外的效果
+     */
     fun resetVariable(activity: Activity?) {
+        interceptors.clear()
         playbackManager.resetVariable(activity)
     }
 
