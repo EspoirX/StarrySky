@@ -36,7 +36,7 @@ class AppLifecycleCallback : ActivityLifecycleCallbacks {
 
     override fun onActivityDestroyed(activity: Activity) {
         activityStack.remove(activity)
-        StarrySky.with().removeProgressListener(activity)
+        StarrySky.with().removeProgressListener(activity.toString())
         StarrySky.with().resetVariable(activity)
     }
 }

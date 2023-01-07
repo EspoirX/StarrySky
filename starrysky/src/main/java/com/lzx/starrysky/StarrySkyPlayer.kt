@@ -174,7 +174,7 @@ class StarrySkyPlayer(private var userGlobalConfig: Boolean = true) {
     }
 
     fun release(activity: Activity?) {
-        with().removeProgressListener(activity)
+        with().removeProgressListener(activity.toString())
         with().resetVariable(activity)
     }
 }

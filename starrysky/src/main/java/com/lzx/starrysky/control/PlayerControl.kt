@@ -3,6 +3,7 @@ package com.lzx.starrysky.control
 import android.app.Activity
 import android.content.Context
 import android.provider.MediaStore
+import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.GlobalPlaybackStageListener
 import com.lzx.starrysky.OnPlayProgressListener
@@ -292,7 +293,7 @@ class PlayerControl(
      *
      * isLoop 播放倒最后一首时是否从第一首开始循环播放,该参数对随机播放无效
      */
-    fun setRepeatMode(repeatMode: Int, isLoop: Boolean) {
+    fun setRepeatMode(@RepeatModeFlag repeatMode: Int, isLoop: Boolean) {
         if (isSkipMediaQueue && repeatMode != RepeatMode.REPEAT_MODE_ONE) {
             throw IllegalStateException("isSkipMediaQueue 模式下只能设置单曲模式")
         }
@@ -600,20 +601,17 @@ class PlayerControl(
     /**
      * 设置进度监听
      */
-    fun setOnPlayProgressListener(listener: OnPlayProgressListener) {
-        val pkgActivityName = StarrySky.getStackTopActivity()?.toString()
-        pkgActivityName?.let {
-            progressListener.put(it, listener)
+    fun setOnPlayProgressListener(listener: OnPlayProgressListener,tag:String = StarrySky.getStackTopActivity().toString()) {
+        if(tag != "null"){
+            progressListener[tag] = listener
         }
         if (!isRunningTimeTask && isPlaying()) {
             timerTaskManager?.startToUpdateProgress()
         }
     }
 
-    internal fun removeProgressListener(activity: Activity?) {
-        activity?.let {
-            progressListener.remove(it.toString())
-        }
+    internal fun removeProgressListener(tag:String) {
+        progressListener.remove(tag)
     }
 
     fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
