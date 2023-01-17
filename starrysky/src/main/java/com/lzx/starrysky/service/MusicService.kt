@@ -1,5 +1,6 @@
 package com.lzx.starrysky.service
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
@@ -10,9 +11,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
+import android.os.Build
 import android.os.IBinder
-import android.telephony.PhoneStateListener
-import android.telephony.TelephonyManager
+import androidx.work.ForegroundInfo
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import androidx.work.impl.utils.futures.SettableFuture
+import androidx.work.workDataOf
+import com.google.common.util.concurrent.ListenableFuture
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.notification.utils.NotificationUtils
 import com.lzx.starrysky.utils.MainLooper
@@ -29,8 +39,6 @@ class MusicService : Service() {
     private var isPauseByTimedOff = true
     private var timedOffFinishCurrSong = false
     private var mustShowNotification = false
-//    private var telephonyManager: TelephonyManager? = null
-
 
     override fun onCreate() {
         super.onCreate()
@@ -52,8 +60,37 @@ class MusicService : Service() {
         return START_STICKY
     }
 
+    /**
+     * 自定义启动前台服务
+     * If the app targeting API is
+     * {@link android.os.Build.VERSION_CODES#S} or later, and the service is restricted from
+     * becoming foreground service due to background restriction.
+     * {@link android.app.service#startForeground}
+     *
+     */
+    fun customStartForeground(id: Int, notification: Notification) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            startForegroundByWorkManager(id)
+        } else {
+            startForeground(id, notification)
+        }
+    }
+
+    /**
+     * 通过WordManager来实现前台服务启动，避免崩溃
+     */
+    private fun startForegroundByWorkManager(id: Int) {
+        val uploadWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<UploadWorker>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .setInputData(workDataOf("id" to id))
+            .build()
+        WorkManager
+            .getInstance(this)
+            .enqueue(uploadWorkRequest)
+    }
+
+
     private fun initPlayerService() {
-//        initTelephony()
         if (noisyReceiver == null) {
             noisyReceiver = BecomingNoisyReceiver(this)
             noisyReceiver?.register()
@@ -84,7 +121,7 @@ class MusicService : Service() {
             MainLooper.instance.postDelayed({
                 if (binder?.notification == null) {
                     try {
-                        startForeground(10000, notification)
+                        customStartForeground(10000, notification)
                     } catch (ex: Exception) {
                         ex.printStackTrace()
                     }
@@ -110,26 +147,6 @@ class MusicService : Service() {
         timerTaskManager?.startToUpdateProgress()
     }
 
-//    /**
-//     * 初始化电话监听服务，电话响了要暂停
-//     */
-//
-//    private fun initTelephony() {
-//        if (telephonyManager == null) {
-//            telephonyManager = this.getSystemService(TELEPHONY_SERVICE) as TelephonyManager // 获取电话通讯服务
-//            telephonyManager?.listen(object : PhoneStateListener() {
-//                override fun onCallStateChanged(state: Int, phoneNumber: String?) {
-//                    super.onCallStateChanged(state, phoneNumber)
-//                    when (state) {
-//                        TelephonyManager.CALL_STATE_OFFHOOK,
-//                        TelephonyManager.CALL_STATE_RINGING -> {
-//                            binder?.player?.pause()
-//                        }
-//                    }
-//                }
-//            }, PhoneStateListener.LISTEN_CALL_STATE) // 创建一个监听对象，监听电话状态改变事件
-//        }
-//    }
 
     /**
      * 耳机拔出广播接收器
@@ -191,5 +208,28 @@ class MusicService : Service() {
         binder?.player?.stop()
         binder?.player?.setCallback(null)
         binder?.notification?.stopNotification()
+    }
+
+    // 后台任务实例
+    class UploadWorker(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
+        override fun doWork(): Result {
+            val id = inputData.getInt("id", 1000)
+            kotlin.runCatching { setForegroundAsync(getForegroundInfo(id)) }
+            return Result.success()
+        }
+
+        @SuppressLint("RestrictedApi")
+        override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> {
+            val future = SettableFuture.create<ForegroundInfo>()
+            val id = inputData.getInt("id", 1000)
+            future.set(getForegroundInfo(id))
+            return future
+
+        }
+
+        private fun getForegroundInfo(id: Int): ForegroundInfo {
+            val notification: Notification = NotificationUtils.createNoCrashNotification(applicationContext)
+            return ForegroundInfo(id, notification)
+        }
     }
 }

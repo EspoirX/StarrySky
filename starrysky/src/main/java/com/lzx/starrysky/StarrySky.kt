@@ -27,7 +27,7 @@ object StarrySky {
         StarrySkyInstall.interceptors.clear()
     }
 
-    internal fun log(msg: String?) {
+    internal fun log(msg: String) {
         if (StarrySkyInstall.isDebug) {
             Log.i("StarrySky", msg)
         }

@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             initRecycleView(list)
         }
 
-        StarrySky.with().playbackState().observe(this, {
+        StarrySky.with().playbackState().observe(this) {
             if (it.songInfo?.tag != "home") return@observe
             when (it.stage) {
                 PlaybackStage.PLAYING -> {
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-        })
+        }
         StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {
             override fun onPlayProgress(currPos: Long, duration: Long) {
                 val info = StarrySky.with().getNowPlayingSongInfo()

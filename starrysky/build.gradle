@@ -4,11 +4,11 @@ apply plugin: 'kotlin-android-extensions'
 //apply plugin: 'com.novoda.bintray-release'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 31
         versionCode 263
         versionName "2.6.3"
 
@@ -34,21 +34,16 @@ android {
         experimental = true
     }
 
-//    publish {
-//        repoName = 'StarrySky'
-//        userOrg = 'lizixian'
-//        groupId = 'com.lzx'
-//        artifactId = 'StarrySkyX'
-//        publishVersion = '2.6.3'
-//        desc = 'A Powerful and Streamline MusicLibrary'
-//        website = "https://github.com/lizixian18/StarrySky"
-//    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //noinspection GradleCompatible
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
     api "com.google.android.exoplayer:exoplayer-core:2.14.1"
     api "com.google.android.exoplayer:extension-mediasession:2.14.1"
     compileOnly ("com.google.android.exoplayer:exoplayer-dash:2.14.1")

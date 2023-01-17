@@ -60,10 +60,6 @@ class PlayerControl(
         }
     }
 
-//    internal fun attachPlayerCallback() {
-//        playbackManager.attachPlayerCallback(this)
-//    }
-
     /**
      * 是否跳过播放队列，false的话，播放将不经过播放队列，直接走播放器，当前Activity结束后恢复false状态
      */
@@ -274,7 +270,7 @@ class PlayerControl(
      *
      * isLoop 播放倒最后一首时是否从第一首开始循环播放,该参数对随机播放无效
      */
-    fun setRepeatMode(repeatMode: Int, isLoop: Boolean) {
+    fun setRepeatMode(@RepeatModeFlag repeatMode: Int, isLoop: Boolean) {
         if (isSkipMediaQueue && repeatMode != RepeatMode.REPEAT_MODE_ONE) {
             throw IllegalStateException("isSkipMediaQueue 模式下只能设置单曲模式")
         }
@@ -567,10 +563,13 @@ class PlayerControl(
 
     /**
      * 设置进度监听
+     * tag:进度标记
      */
-    fun setOnPlayProgressListener(listener: OnPlayProgressListener) {
-        val pkgActivityName = StarrySky.getStackTopActivity()?.toString()
-        pkgActivityName?.let {
+    fun setOnPlayProgressListener(
+        listener: OnPlayProgressListener,
+        tag: String? = StarrySky.getStackTopActivity()?.toString()
+    ) {
+        tag?.let {
             progressListener.put(it, listener)
         }
         if (!isRunningTimeTask && isPlaying()) {
@@ -578,10 +577,12 @@ class PlayerControl(
         }
     }
 
-    internal fun removeProgressListener(activity: Activity?) {
-        activity?.let {
-            progressListener.remove(it.toString())
-        }
+    /**
+     * 移除进度监听
+     * tag:进度标记
+     */
+    fun removeProgressListener(tag: String) {
+        progressListener.remove(tag)
     }
 
     fun onPlaybackStateUpdated(playbackStage: PlaybackStage) {
@@ -613,6 +614,7 @@ class PlayerControl(
     }
 
     fun resetVariable(activity: Activity?) {
+        interceptors.clear()
         playbackManager.resetVariable(activity)
     }
 

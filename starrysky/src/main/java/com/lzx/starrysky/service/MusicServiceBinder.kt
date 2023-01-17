@@ -95,6 +95,14 @@ class MusicServiceBinder(private val context: Context) : Binder() {
             notification?.startNotification(currPlayInfo, state)
             isShowNotification = true
         }
+
+        if(state == PlaybackStage.IDLE){
+            // 释放锁
+            WifiLockHelper.release()
+        }else{
+            // 添加锁
+            WifiLockHelper.acquire(context)
+        }
     }
 
     fun stopNotification() {

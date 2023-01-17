@@ -1,5 +1,6 @@
 package com.lzx.starrysky.control
 
+import androidx.annotation.IntDef
 import com.lzx.starrysky.utils.StarrySkyConstant
 import org.json.JSONObject
 
@@ -39,6 +40,15 @@ data class RepeatMode(val repeatMode: Int, val isLoop: Boolean) {
             }
     }
 }
+
+@IntDef(
+    RepeatMode.REPEAT_MODE_NONE,
+    RepeatMode.REPEAT_MODE_ONE,
+    RepeatMode.REPEAT_MODE_SHUFFLE,
+    RepeatMode.REPEAT_MODE_REVERSE
+)
+@Retention(AnnotationRetention.SOURCE)
+annotation class RepeatModeFlag
 
 fun Int.isModeNone() = this == RepeatMode.REPEAT_MODE_NONE
 fun Int.isModeOne() = this == RepeatMode.REPEAT_MODE_ONE

@@ -4,6 +4,7 @@
       {
         albummid: "003g4JnU23vCjt",
         albumname: "2005 年终舞曲总冠军",
+        songUrl: "https://ws.stream.qqmusic.qq.com/C400000o6bhv2ugwjN.m4a?guid=69114368&vkey=B30D13A2E97D318F346389E146E646C02AE6EEF6FCE399230482F16EB30D6ED4859E3C97F08DF63548EC9342B119BD4A5EBA74B19CF9156B&uin=&fromtag=103032",
         singer: [
           {
             id: 4884,
@@ -17,6 +18,7 @@
       {
         albummid: "001IPNxq3vvwa8",
         albumname: "Hear My Voice",
+        songUrl: "https://m10.music.126.net/20230104144944/85fa6e42df2c810fbeb360424b42b1ed/ymusic/a2eb/2b04/1625/56952844ffe4cdb4337b769e0c8f1577.mp3",
         singer: [
           {
             id: 265,
@@ -30,6 +32,7 @@
       {
         albummid: "0048pWY92Ex9T4",
         albumname: "无尽的爱",
+        songUrl: "https://ws.stream.qqmusic.qq.com/C400001Ymwjm0egSJE.m4a?guid=5314973&vkey=CC91397263F966B66EC4817CD0AEF7BE329D2ED6CD4B03A0B616F217B964E4CA89E9F5C4A67018636BD7110F389FFCF7A570E9AC91E19C91&uin=626567678&fromtag=103032",
         singer: [
           {
             id: 13,
@@ -43,6 +46,7 @@
       {
         albummid: "0024bjiL2aocxT",
         albumname: "十一月的萧邦",
+        songUrl: "https://ws.stream.qqmusic.qq.com/C400000bDWCU1xfx7q.m4a?guid=8723755&vkey=EF24F107D5D5610A6E8AA15CDF2C3C819DF8509ED2A7836BE2D11FC54DE8A020CB43BECC73F54AF0F1E1BE63BAA8A98EA950460F775B75D2&uin=626567678&fromtag=103032",
         singer: [
           {
             id: 4558,
@@ -56,6 +60,7 @@
       {
         albummid: "002gMsEJ3gUI0b",
         albumname: "琦乐无穷",
+        songUrl: "https://m10.music.126.net/20230104145129/7e2bb135762caab092755b2e368c3a09/ymusic/obj/w5zDlMODwrDDiGjCn8Ky/3944283695/8307/7c9a/e90b/35eed2d6cda7bd99343f36c654fa16da.mp3",
         singer: [
           {
             id: 4933,
@@ -69,6 +74,7 @@
       {
         albummid: "0024bjiL2aocxT",
         albumname: "十一月的萧邦",
+        songUrl: "https://isure.stream.qqmusic.qq.com/M5000046tRJB3SkUUV.mp3?guid=1371522944&vkey=F681D178BDC2ED0C3C4FC5E426E2D0BD4A82B10740FF455EE0C019BA97D0121686361C2E98A708E0CFCAFB446DF28465515A15E0F87F512B&uin=&fromtag=120042",
         singer: [
           {
             id: 4558,
@@ -82,6 +88,7 @@
       {
         albummid: "0025CwW50uC4hZ",
         albumname: "高手",
+        "songUrl": "https://isure.stream.qqmusic.qq.com/M500002YaOAQ0aBllE.mp3?guid=1161794620&vkey=0DFA9B45696048D691751F0F20D5FDD852767A1815B34988F9C407268865D0701BD49A258CEC8DD097B23BA60B8C5B947E13FE8E3472197A&uin=&fromtag=120042",
         singer: [
           {
             id: 4359,
