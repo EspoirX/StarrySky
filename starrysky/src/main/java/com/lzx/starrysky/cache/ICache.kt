@@ -12,13 +12,13 @@ interface ICache {
     fun getProxyUrl(url: String, songInfo: SongInfo): String?
 
     /**
-     * 是否打开缓存,默认取 StarrySkyConfig 中的配置，重写可修改
+     * 是否打开缓存
      */
     fun isOpenCache(): Boolean = false
 
     /**
      * 获取缓存文件夹
-     * destFileDir 文件夹路径，可通过 StarrySkyConfig 配置
+     * destFileDir 文件夹路径
      */
     fun getCacheDirectory(context: Context, destFileDir: String?): File?
 

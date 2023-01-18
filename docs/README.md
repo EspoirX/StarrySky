@@ -3,14 +3,7 @@
 [ ![](https://img.shields.io/badge/platform-android-green.svg) ](http://developer.android.com/index.html)
 [![](https://jitpack.io/v/EspoirX/StarrySky.svg)](https://jitpack.io/#EspoirX/StarrySky)
 [ ![](https://img.shields.io/badge/license-MIT-green.svg) ](http://choosealicense.com/licenses/mit/)
-
-<a href="art/logo.jpg"><img src="art/logo.jpg" /></a>
-<a href="art/a4074094959_10.jpg"><img src="art/a4074094959_10.jpg"/></a>
-
-# StarrySky
-
-`StarrySky` `MusicLibrary` `Music` `音频集成` 
-
+ 
 
 一个丰富，舒服的音乐播放封装库，针对快速集成音频播放功能，减少大家搬砖的时间，你值得拥有。
 
@@ -33,9 +26,7 @@
 （七牛账号欠费没钱了，demo的音乐都播放不了，但是功能是没问题的，哈哈哈）
 
 ## 集成
-
-####  注意：由于 bintray 不能用了，所以 2.6.3 和以后版本都迁移到 JitPack 了，旧版本的没有离线包，除非你用源码，不然建议全都升级，不然构建会失败。
-
+ 
 ```groovy
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -43,15 +34,7 @@ dependencies {
 }
 ```
 [![](https://jitpack.io/v/EspoirX/StarrySky.svg)](https://jitpack.io/#EspoirX/StarrySky)
-
-> 该版本更新了什么：<br>
-> 修复了自定义通知栏因为进度条刷新太频繁导致的 TransactionTooLargeException（所以通知栏进度条功能要慎用哦）<br>
-
-X.X.X 填的是当前的版本号。(有些人反馈说看不到版本号，版本号在 Readme 一开始就有标明，若看不到可以查看代码 gradle 文件或者加群咨询)
-
-请使用 Java8。此为 androidx 版本，请支持 androidx。
-(如果不是 androidx，可以通过下载源码的方式拷贝到自己项目中使用，然后自己修改，只有几个类要改而已，很简单)
-
+  
 如果导入不了可以试试加上这个：
 ```groovy
 maven { url 'https://jitpack.io' }
@@ -115,64 +98,21 @@ ExoPlayer 要播放 flac 音频，是需要自己编译 so 的，具体怎么操
 1. 当项目里存在GSY播放器时，或者说别的库已经引入了ExoPlayer的时候，首次播放音频会造成崩溃，后续播放无问题，而且是只有打包了之后的正式包会存在这种情况，AS直接运行时没有这个问题。
 解决办法：在 gradle.properties 中加入 android.enableDexingArtifactTransfrom=false 即可。
 
-
-## 初始化
-
-下面是最简单的初始化以及播放音频代码，更多功能请阅读使用文档或者查看项目demo。
-
-```kotlin
-open class TestApplication : Application() {
-
-    @Override
-    override fun onCreate() {
-        super.onCreate()
-        StarrySky.init(this).apply()
-    }
-}
-
-//简单播放一首歌曲
-val info = SongInfo()
-info.songId = "111" 
-info.songUrl = "http://music.163.com/song/media/outer/url?id=317151.mp3"
-StarrySky.with().playMusicByInfo(info)
-```
-
-SongInfo 是 StarrySky 播放信息的载体，至少要配置 songId 和 songUrl 才能播放一首音频，其中 songId 是该音频的唯一标识。
-
-几乎所有 API 都是通过 StarrySky.with() 方法去调用，API 本身也会有注释。
-
-## 使用文档
-
-- [StarrySky介绍和API一览表](https://github.com/EspoirX/StarrySky/blob/androidx/readme/StarrySky%E4%BB%8B%E7%BB%8D.md)
-- [StarrySky使用说明 点我！点我！点我！](https://github.com/EspoirX/StarrySky/blob//androidx/readme/StarrySky%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
-- [StarrySky使用说明 点我！点我！点我！](https://github.com/EspoirX/StarrySky/blob/androidx/readme/StarrySky%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
-- [StarrySky使用说明 点我！点我！点我！](https://github.com/EspoirX/StarrySky/blob/androidx/readme/StarrySky%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
-
-
+ 
 PS：
 - 如果有兴趣，建议稍微阅读一下源码，这样对使用或者解决问题有很大帮助。
 - 如果发现库中功能满足不了你的需求，建议通过下载源码修改成你要的样子来使用。
 - 如果该项目对你有所帮助，欢迎 star 或 fork，谢谢各位。
 
-## 成功案例
-
-StarrySky 目前为止有 **17000+** 的下载量，感谢各位开发者的支持，下面是部分 app 成功案例。
-
-<a href="art/成功案例.png"><img src="art/成功案例.png"/></a>
-
-（还有很多 App，只不过没要到 😂 。如有违法或者侵权行为请联系我删除！）
-
-
 ## QQ群（929420228）
 
-<a href="art/qq_qun.jpg"><img src="art/qq_qun.jpg" width="30%"/></a>  
 <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=1mxC3aClBm7IoynoMi6Faz1YMwwrxaMq&jump_from=webapi"><img border="0" src="https://pub.idqqimg.com/wpa/images/group.png" alt="StarrySky交流和反馈" title="StarrySky交流和反馈"></a>
 <br><br>
 
 你的打赏是我改 Bug 的动力
-<a href="art/biaoqing.gif"><img src="art/biaoqing.gif"/></a>
+<a href="#"><img src="https://github.com/EspoirX/StarrySky/blob/androidx/art/biaoqing.gif?raw=true"/></a>
 
-<a href="art/WechatIMG1.jpeg"><img src="art/WechatIMG1.jpeg" width="30%"/></a>
+<a href="#"><img src="https://github.com/EspoirX/StarrySky/blob/androidx/art/WechatIMG1.jpeg?raw=true" width="30%"/></a>
 
 
 ## 关于我
@@ -180,8 +120,6 @@ StarrySky 目前为止有 **17000+** 的下载量，感谢各位开发者的支�
 An android developer in GuangZhou
 
 掘金：[https://juejin.im/user/5861c3bb128fe10069e69f0a](https://juejin.im/user/5861c3bb128fe10069e69f0a)
-
-语雀：[https://www.yuque.com/espoir](https://www.yuque.com/espoir)
 
 Email:386707112@qq.com
 
