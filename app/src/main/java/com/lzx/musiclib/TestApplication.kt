@@ -25,6 +25,21 @@ import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import com.tencent.bugly.crashreport.CrashReport
 import java.io.File
 
+class TestApp : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+
+        StarrySkyInstall.init(this)
+            .setOpenCache(true)
+            .setCacheMaxBytes(100000)
+            .setCacheDestFileDir("xxxxxx")
+            .apply()
+
+
+    }
+}
 
 /**
  * create by lzx
@@ -143,76 +158,73 @@ open class TestApplication : Application() {
 
         override fun getTag(): String = "RequestSongCoverInterceptor"
     }
+}
 
-    /**
-     * 使用 AndroidVideoCache 这个第三方库做缓存的例子
-     */
-    class AndroidVideoCache(private val context: Context) : ICache {
+/**
+ * 使用 AndroidVideoCache 这个第三方库做缓存的例子
+ */
+class AndroidVideoCache(private val context: Context) : ICache {
 
-        private var proxy: HttpProxyCacheServer? = null
-        private var cacheFile: File? = null
+    private var proxy: HttpProxyCacheServer? = null
+    private var cacheFile: File? = null
 
-        private fun getProxy(songInfo: SongInfo?): HttpProxyCacheServer? {
-            return if (proxy == null) newProxy(songInfo).also { proxy = it } else proxy
+    override fun getProxyUrl(url: String, songInfo: SongInfo): String? {
+        return if (isOpenCache()) getProxy(songInfo)?.getProxyUrl(url) else url
+    }
+
+    override fun isOpenCache() = StarrySkyConstant.KEY_CACHE_SWITCH
+
+    override fun getCacheDirectory(context: Context, destFileDir: String?): File? {
+        var fileDir = destFileDir
+        if (fileDir.isNullOrEmpty()) {
+            fileDir = "00StarrySkyCache/".toSdcardPath()
         }
-
-        private fun newProxy(songInfo: SongInfo?): HttpProxyCacheServer? {
-            val builder = HttpProxyCacheServer.Builder(context)
-                .maxCacheSize(1024 * 1024 * 1024)       // 1 Gb for cache
-                .cacheDirectory(getCacheDirectory(context, ""))
-            if (songInfo == null) {
-                builder.fileNameGenerator(Md5FileNameGenerator())
-            } else {
-                builder.fileNameGenerator { url ->
-                    val extension = getExtension(url)
-                    val name = songInfo.songId
-                    if (extension.isEmpty()) name else "$name.$extension"
-                }
+        if (cacheFile == null && fileDir.isNotEmpty()) {
+            cacheFile = File(fileDir)
+            if (cacheFile?.exists() == false) {
+                cacheFile?.mkdirs()
             }
-            return builder.build()
         }
-
-        private fun getExtension(url: String?): String {
-            if (url.isNullOrEmpty()) return ""
-            val dotIndex = url.lastIndexOf('.')
-            val slashIndex = url.lastIndexOf('/')
-            return if (dotIndex != -1 && dotIndex > slashIndex && dotIndex + 2 + 4 > url.length) url.substring(
-                dotIndex + 1,
-                url.length
-            ) else ""
-        }
-
-        override fun getProxyUrl(url: String, songInfo: SongInfo): String? {
-            return if (isOpenCache()) getProxy(songInfo)?.getProxyUrl(url) else url
-        }
-
-        override fun isOpenCache(): Boolean {
-            return StarrySkyConstant.KEY_CACHE_SWITCH
-        }
-
-        override fun getCacheDirectory(context: Context, destFileDir: String?): File? {
-            var fileDir = destFileDir
-            if (fileDir.isNullOrEmpty()) {
-                fileDir = "00StarrySkyCache/".toSdcardPath()
-            }
-            if (cacheFile == null && fileDir.isNotEmpty()) {
-                cacheFile = File(fileDir)
-                if (cacheFile?.exists() == false) {
-                    cacheFile?.mkdirs()
-                }
-            }
+        if (cacheFile == null) {
+            cacheFile = context.getExternalFilesDir(null)
             if (cacheFile == null) {
-                cacheFile = context.getExternalFilesDir(null)
-                if (cacheFile == null) {
-                    cacheFile = context.filesDir
-                }
+                cacheFile = context.filesDir
             }
-            return cacheFile
         }
+        return cacheFile
+    }
 
-        override fun isCache(url: String): Boolean {
-            return true
-            // return getProxy(null)?.isCached(url) ?: false
+    override fun isCache(url: String): Boolean {
+        return true
+    }
+
+    private fun getProxy(songInfo: SongInfo?): HttpProxyCacheServer? {
+        return if (proxy == null) newProxy(songInfo).also { proxy = it } else proxy
+    }
+
+    private fun newProxy(songInfo: SongInfo?): HttpProxyCacheServer? {
+        val builder = HttpProxyCacheServer.Builder(context)
+            .maxCacheSize(1024 * 1024 * 1024)       // 1 Gb for cache
+            .cacheDirectory(getCacheDirectory(context, ""))
+        if (songInfo == null) {
+            builder.fileNameGenerator(Md5FileNameGenerator())
+        } else {
+            builder.fileNameGenerator { url ->
+                val extension = getExtension(url)
+                val name = songInfo.songId
+                if (extension.isEmpty()) name else "$name.$extension"
+            }
         }
+        return builder.build()
+    }
+
+    private fun getExtension(url: String?): String {
+        if (url.isNullOrEmpty()) return ""
+        val dotIndex = url.lastIndexOf('.')
+        val slashIndex = url.lastIndexOf('/')
+        return if (dotIndex != -1 && dotIndex > slashIndex && dotIndex + 2 + 4 > url.length) url.substring(
+            dotIndex + 1,
+            url.length
+        ) else ""
     }
 }
