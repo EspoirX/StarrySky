@@ -13,11 +13,14 @@ import com.lzx.starrysky.utils.getTargetClass
  */
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
+
         //songInfo是当前播放的音频信息
         val songInfo = intent?.getParcelableExtra<SongInfo?>("songInfo")
+
         //bundleInfo是你在配置通知栏的那个bundle，里面可以拿到你自定义的参数
         val bundleInfo = intent?.getBundleExtra("bundleInfo")
         val targetClass = bundleInfo?.getString("targetClass")?.getTargetClass()
+
         if (StarrySky.getActivityStack().isNullOrEmpty()) {
             val mainIntent = Intent(context, HomeActivity::class.java)
             mainIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

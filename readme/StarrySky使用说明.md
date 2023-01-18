@@ -191,7 +191,7 @@ private fun getPendingIntent(action: String): PendingIntent? {
 
 val notificationConfig = NotificationConfig.create {
         targetClass { "com.lzx.musiclib.example.PlayDetailActivity" }
-        favoriteIntent { getPendingIntent(ACTION_PAUSE) }
+        pauseIntent { getPendingIntent(ACTION_PAUSE) }
     }
 
 //然后初始化的时候设置 notificationConfig 进去
@@ -206,6 +206,8 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 }
 ```
+
+
 
 当然广播别忘记注册了。
 
