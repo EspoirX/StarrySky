@@ -7,10 +7,18 @@
   - [Service相关配置](Service相关配置.md) 
   - [其他配置](其他配置.md) 
 
-- Spring框架
+- 播放相关
 
-  - [初识spring框架](spring/【10分钟学Spring】：（一）初识Spring框架.md)
-  - [依赖注入及示例](spring/【10分钟学Spring】：（二）一文搞懂spring依赖注入（DI）.md)
-  - [spring的条件化装配](spring/【10分钟学Spring】：（三）你了解spring的高级装配吗_条件化装配bean.md)
+  - [相关api介绍](播放相关api介绍.md)
+  
+- 多实例播放器
 
-- 数据库
+  - [多实例播放器](多实例播放器.md)
+
+- SoundPool
+
+  - [SoundPool](SoundPool.md)
+
+- 音效相关
+
+  - [音效相关](音效相关.md)
