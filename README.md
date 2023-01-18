@@ -14,5 +14,5 @@
 
 一个丰富，舒服的音乐播放封装库，针对快速集成音频播放功能，减少大家搬砖的时间，你值得拥有。
 
-![项目文档](https://espoirx.github.io/StarrySky/#/)
+[项目文档](https://espoirx.github.io/StarrySky/#/)
 
