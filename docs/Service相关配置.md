@@ -11,3 +11,5 @@
 **onlyStartService**：是否只是 startService 而不需要 startForegroundService，默认true
 
 **connServiceListener**：连接服务回调，可通过这个监听查看 Service 是否连接成功
+
+**startForegroundByWorkManager**：开关，可选择是否使用WorkManager来启动安卓12的后台服务，默认关闭
