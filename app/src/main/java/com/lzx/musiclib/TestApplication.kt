@@ -9,6 +9,7 @@ import com.danikula.videocache.file.Md5FileNameGenerator
 import com.lzx.musiclib.viewmodel.MusicViewModel
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySkyInstall
+import com.lzx.starrysky.StarrySkyInstall.setOpenCache
 import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.intercept.InterceptCallback
 import com.lzx.starrysky.intercept.InterceptorThread
@@ -52,6 +53,7 @@ open class TestApplication : Application() {
             pendingIntentMode { NotificationConfig.MODE_BROADCAST }
         }
         StarrySkyInstall.init(this)
+            .startForegroundByWorkManager(true)
             .setOpenCache(true)
             .setAutoManagerFocus(false)   //使用多实例的时候要关掉，不然会相互抢焦点
             .setCacheDestFileDir("000StarrySkyCache/".toSdcardPath())

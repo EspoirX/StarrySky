@@ -225,7 +225,7 @@ object StarrySkyInstall {
     /**
      * 是否使用 WorkManager
      */
-    fun startForegroundByWorkManager(value: Boolean) {
+    fun startForegroundByWorkManager(value: Boolean) = apply {
         isStartForegroundByWorkManager = value
     }
 
