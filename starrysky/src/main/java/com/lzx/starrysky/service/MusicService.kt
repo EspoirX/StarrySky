@@ -69,7 +69,7 @@ class MusicService : Service() {
      *
      */
     fun customStartForeground(id: Int, notification: Notification) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && binder?.isStartForegroundByWorkManager() == true) {
             startForegroundByWorkManager(id)
         } else {
             startForeground(id, notification)

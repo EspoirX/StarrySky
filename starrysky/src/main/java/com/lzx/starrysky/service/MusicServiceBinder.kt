@@ -31,11 +31,13 @@ class MusicServiceBinder(private val context: Context) : Binder() {
     private var cacheDestFileDir: String = ""
     private var cacheMaxBytes: Long = 512 * 1024 * 1024
     private var isAutoManagerFocus: Boolean = true
+    private var isStartForegroundByWorkManager = false
 
-    fun setNotificationConfig(openNotification: Boolean,
-                              notificationType: Int,
-                              notificationConfig: NotificationConfig?,
-                              notificationFactory: NotificationManager.NotificationFactory?
+    fun setNotificationConfig(
+        openNotification: Boolean,
+        notificationType: Int,
+        notificationConfig: NotificationConfig?,
+        notificationFactory: NotificationManager.NotificationFactory?
     ) {
         this.isOpenNotification = openNotification
         this.notificationType = notificationType
@@ -76,8 +78,10 @@ class MusicServiceBinder(private val context: Context) : Binder() {
 
     fun getNotificationType() = notificationType
 
-    fun onChangedNotificationState(songInfo: SongInfo?, playbackState: String,
-                                   hasNextSong: Boolean, hasPreSong: Boolean) {
+    fun onChangedNotificationState(
+        songInfo: SongInfo?, playbackState: String,
+        hasNextSong: Boolean, hasPreSong: Boolean
+    ) {
         if (isOpenNotification) {
             notification?.onPlaybackStateChanged(songInfo, playbackState, hasNextSong, hasPreSong)
             isShowNotification = true
@@ -96,10 +100,10 @@ class MusicServiceBinder(private val context: Context) : Binder() {
             isShowNotification = true
         }
 
-        if(state == PlaybackStage.IDLE){
+        if (state == PlaybackStage.IDLE) {
             // 释放锁
             WifiLockHelper.release()
-        }else{
+        } else {
             // 添加锁
             WifiLockHelper.acquire(context)
         }
@@ -143,5 +147,11 @@ class MusicServiceBinder(private val context: Context) : Binder() {
         if (context is MusicService) {
             context.onStopByTimedOffImpl(time, pause, finishCurrSong)
         }
+    }
+
+    fun isStartForegroundByWorkManager() = isStartForegroundByWorkManager
+
+    fun startForegroundByWorkManager(value: Boolean) {
+        isStartForegroundByWorkManager = value
     }
 }

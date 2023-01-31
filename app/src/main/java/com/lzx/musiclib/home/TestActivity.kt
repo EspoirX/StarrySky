@@ -366,7 +366,7 @@ open class TestActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
 
-        StarrySky.with().playbackState().observe(this, {
+        StarrySky.with().playbackState().observe(this) {
             when (it.stage) {
                 PlaybackStage.PLAYING -> {
                     seekBarVolume.progress = (StarrySky.with().getVolume() * 100f).toInt()
@@ -387,7 +387,7 @@ open class TestActivity : AppCompatActivity() {
                     tvSpeed.text = "音速："
                 }
             }
-        })
+        }
     }
 
     private fun getRepeatModelImpl() {

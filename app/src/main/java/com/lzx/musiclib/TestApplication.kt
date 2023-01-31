@@ -25,22 +25,6 @@ import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import com.tencent.bugly.crashreport.CrashReport
 import java.io.File
 
-class TestApp : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-
-
-        StarrySkyInstall.init(this)
-            .setOpenCache(true)
-            .setCacheMaxBytes(100000)
-            .setCacheDestFileDir("xxxxxx")
-            .apply()
-
-
-    }
-}
-
 /**
  * create by lzx
  * time:2018/11/9

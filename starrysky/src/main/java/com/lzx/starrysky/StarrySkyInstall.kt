@@ -86,6 +86,8 @@ object StarrySkyInstall {
     //音效相关
     internal var voiceEffect = VoiceEffect()
 
+    private var isStartForegroundByWorkManager = false
+
     @JvmStatic
     fun init(application: Application) = apply {
         globalContext = application
@@ -220,6 +222,12 @@ object StarrySkyInstall {
         this.globalPlaybackStageListener = listener
     }
 
+    /**
+     * 是否使用 WorkManager
+     */
+    fun startForegroundByWorkManager(value: Boolean) {
+        isStartForegroundByWorkManager = value
+    }
 
     /**
      * 初始化
@@ -246,6 +254,7 @@ object StarrySkyInstall {
             bindService()
         } else {
             binder = MusicServiceBinder(globalContext!!)
+            binder?.startForegroundByWorkManager(isStartForegroundByWorkManager)
             binder?.setPlayerCache(playerCache, cacheDestFileDir, cacheMaxBytes)
             binder?.setAutoManagerFocus(isAutoManagerFocus)
             binder?.initPlaybackManager(playback)
@@ -258,6 +267,7 @@ object StarrySkyInstall {
                 if (service is MusicServiceBinder) {
                     retryLineService = 0
                     binder = service
+                    binder?.startForegroundByWorkManager(isStartForegroundByWorkManager)
                     binder?.setNotificationConfig(
                         isOpenNotification,
                         notificationType,
