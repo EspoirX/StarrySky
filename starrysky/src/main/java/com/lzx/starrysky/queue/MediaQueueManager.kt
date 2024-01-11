@@ -75,7 +75,11 @@ class MediaQueueManager(val provider: MediaSourceProvider) {
     }
 
     fun updateIndexBySongId(songId: String): Boolean {
-        val index = provider.getIndexById(songId)
+        val index = if (RepeatMode.with.repeatMode.isModeShuffle()) {
+            provider.getIndexById(songId,true)
+        } else {
+            provider.getIndexById(songId)
+        }
         val list = provider.songList
         if (index.isIndexPlayable(list)) {
             currentIndex = index
