@@ -104,9 +104,14 @@ class MediaSourceProvider {
         return songList.elementAtOrNull(index)
     }
 
-    fun getIndexById(songId: String): Int {
+    fun getIndexById(songId: String, isShuffle:Boolean = false): Int {
         val info = getSongInfoById(songId)
-        return if (info != null) songList.indexOf(info) else -1
+        return if (info != null) {
+            when (isShuffle) {
+                true -> shuffleSongSources.indexOf(info)
+                false -> songList.indexOf(info)
+            }
+        } else -1
     }
 
     fun updateMusicArt(songInfo: SongInfo) {
